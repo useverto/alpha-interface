@@ -1,0 +1,15 @@
+name: Validate code
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    name: Validate code
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - run: 'npm i && npm run validate'
