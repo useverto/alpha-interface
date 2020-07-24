@@ -13,6 +13,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "page": "^1.11.6",
     "sass": "^1.26.10",
     "sirv-cli": "^1.0.3"
   },
