@@ -13,7 +13,7 @@
   </div>
   <div class="content">
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
-    <p>A token exchange system for Arweave Profit Sharing Tokens</p>
+    <p>A token exchange system for Arweave <br>Profit Sharing Tokens</p>
   </div>
 </div>
 
@@ -79,7 +79,7 @@
       h1.welcome
         font-family: "Inter", sans-serif
         font-weight: 600
-        font-size: 3em
+        font-size: 3.2em
         margin-bottom: .6em
 
         span
@@ -88,6 +88,7 @@
           -webkit-text-fill-color: transparent
 
       p
-        font-size: 1.2em
+        font-size: 1.4em
+        line-height: 1.5em
 
 </style>
