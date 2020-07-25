@@ -37,6 +37,11 @@
         bottom: 0
         background-color: #000
         width: 40vw
+        
+        @media screen and (max-width: 720px)
+          width: 100%
+          height: 45%
+          bottom: initial
 
       .blob
         position: absolute
@@ -45,6 +50,10 @@
         top: 50%
         height: 120%
         transform: translateY(-50%)
+
+        @media screen and (max-width: 720px)
+          left: 50% !important
+          transform: translate(-50%, -50%) !important
 
       .blob1
         left: 0
@@ -56,7 +65,12 @@
       z-index: 10
       position: absolute
       top: 50%
-      tranform: translateY(-50%)
+      left: 10%
+      transform: translateY(-50%)
+
+      @media screen and (max-width: 720px)
+        left: 0
+        padding: 0 1.5em
 
       h1, p
         color: #fff
