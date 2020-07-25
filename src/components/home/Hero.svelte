@@ -2,18 +2,20 @@
 
   import blob1 from "../../assets/blob1.svg";
   import blob2 from "../../assets/blob2.svg";
+  import Button from "../Button.svelte";
 
 </script>
 
 <div class="Hero">
   <div class="blobs">
-    <div class="Bg"></div>
     <img src={blob2} alt="blob2" class="blob blob2" draggable={false}>
     <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
   </div>
   <div class="content">
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
     <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
+    <Button reverse={true} clear={true}>Read more</Button>
+    <Button reverse={true}>Sign In</Button>
   </div>
 </div>
 
@@ -21,8 +23,8 @@
 
   .Hero
     height: 100vh
+    overflow-x: hidden
     position: relative
-    overflow: hidden
 
     .blobs
       position: absolute
@@ -31,24 +33,11 @@
       left: 0
       right: 0
 
-      .Bg
-        position: absolute
-        top: 0
-        bottom: 0
-        background-color: #000
-        width: 40vw
-        
-        @media screen and (max-width: 720px)
-          width: 100%
-          height: 45%
-          bottom: initial
-
       .blob
         position: absolute
         user-select: none
         -webkit-user-select: none
-        top: 50%
-        height: 120%
+        height: 200%
         transform: translateY(-50%)
 
         @media screen and (max-width: 720px)
@@ -56,10 +45,12 @@
           transform: translate(-50%, -50%) !important
 
       .blob1
-        left: 0
+        left: -25%
+        top: 25%
 
       .blob2
-        left: 10%
+        left: -10%
+        top: 20%
 
     .content
       z-index: 10
@@ -93,6 +84,7 @@
       p
         font-size: 1.4em
         line-height: 1.5em
+        margin-bottom: 1em
 
         @media screen and (max-width: 720px)
           font-size: 1.2em
