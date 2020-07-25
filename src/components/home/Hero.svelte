@@ -82,6 +82,9 @@
         font-size: 3.2em
         margin-bottom: .6em
 
+        @media screen and (max-width: 720px)
+          font-size: 3em
+
         span
           background: -webkit-linear-gradient(#9300B8, #C54DFD, #E1A1FF)
           -webkit-background-clip: text
@@ -90,5 +93,12 @@
       p
         font-size: 1.4em
         line-height: 1.5em
+
+        @media screen and (max-width: 720px)
+          font-size: 1.2em
+          line-height: 1.3em
+
+          br
+            display: none
 
 </style>
