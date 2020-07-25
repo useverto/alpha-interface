@@ -6,6 +6,7 @@ import { terser } from "rollup-plugin-terser";
 import sveltePreprocess, { sass } from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import image from "@rollup/plugin-image";
+import url from "@rollup/plugin-url";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -28,6 +29,7 @@ export default {
     typescript({ sourceMap: !production }),
     sass(),
     image(),
+    url(),
 
     !production && serve(),
     !production && livereload("public"),

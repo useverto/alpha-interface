@@ -1,8 +1,7 @@
 <script lang="ts">
 
-
+  import Hero from "../components/home/Hero.svelte";
 
 </script>
 
-<h1>Welcome to Coinary</h1>
-<a href="/test">Go to test (will throw 404)</a>
+<Hero />

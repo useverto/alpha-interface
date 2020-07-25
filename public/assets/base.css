@@ -1,27 +1,16 @@
 @font-face {
-
   font-family: JetBrainsMono;
-  src: url(./JetBrainsMono-Regular.woff2);
-
+  src: url(/assets/JetBrainsMono-Regular.woff2);
 }
-
 body {
-
   margin: 0;
   font-family: "JetBrainsMono", monospace;
-
 }
-
 ::selection {
-
-  background-color: #000;
+  background-color: #9300B8;
   color: #fff;
-
 }
-
 ::-moz-selection {
-
-  background-color: #000;
+  background-color: #9300B8;
   color: #fff;
-
 }

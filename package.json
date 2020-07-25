@@ -22,6 +22,7 @@
     "@rollup/plugin-image": "^2.0.5",
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@rollup/plugin-typescript": "^5.0.2",
+    "@rollup/plugin-url": "^5.0.1",
     "@tsconfig/svelte": "^1.0.3",
     "node-sass": "^4.14.1",
     "rollup": "^2.23.0",
