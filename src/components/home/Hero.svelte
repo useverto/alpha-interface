@@ -1,13 +1,15 @@
 <script lang="ts">
 
   import blob1 from "../../assets/blob1.svg";
+  import blob2 from "../../assets/blob2.svg";
 
 </script>
 
 <div class="Hero">
   <div class="blobs">
     <div class="Bg"></div>
-    <img src={blob1} alt="blob1">
+    <img src={blob2} alt="blob2" class="blob blob2" draggable={false}>
+    <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
   </div>
   <div class="content">
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
@@ -34,7 +36,21 @@
         top: 0
         bottom: 0
         background-color: #000
-        width: 20vw
+        width: 40vw
+
+      .blob
+        position: absolute
+        user-select: none
+        -webkit-user-select: none
+        top: 50%
+        height: 120%
+        transform: translateY(-50%)
+
+      .blob1
+        left: 0
+
+      .blob2
+        left: 10%
 
     .content
       z-index: 10
