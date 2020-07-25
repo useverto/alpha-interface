@@ -13,7 +13,7 @@
   </div>
   <div class="content">
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
-    <p>A token exchange system for Arweave <br>Profit Sharing Tokens</p>
+    <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
   </div>
 </div>
 
@@ -100,5 +100,13 @@
 
           br
             display: none
+        
+      a
+        transition: color linear 0.1s
+        color: #fff
+
+        &:hover
+          transition: color linear 0.1s
+          color: #C54DFD
 
 </style>

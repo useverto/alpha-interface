@@ -105,3 +105,4 @@ dist
 
 # Svelte build folder
 public/build/
+.vercel
