@@ -16,5 +16,12 @@ module.exports = {
       files: ["*.svelte"],
       processor: "svelte3/svelte3"
     }
-  ]
+  ],
+  rules: {
+    "quotes": ["error", "double", { avoidEscape: true }],
+    "multiline-ternary": "off",
+    "max-len": ["error", 80, 2],
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "no-process-exit": ["error"]
+  }
 }
