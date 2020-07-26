@@ -28,6 +28,9 @@
       transform: translate(-50%, -50%)
       text-align: center
 
+      @media screen and (min-width: 720px)
+        width: 60vw
+
       \:global(.Button)
         margin-bottom: 10px
 
@@ -35,10 +38,15 @@
         color: #fff
         text-align: center
 
+      p
+        padding: 0
+        margin: 1.35em 0
+
       h1
         font-family: "Inter", sans-serif
         font-weight: 600
         font-size: 3em
+        margin: 0
 
         @media screen and (max-width: 720px)
           font-size: 2.5em
