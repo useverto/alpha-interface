@@ -4,7 +4,7 @@
   "description": "Token Exchange Frontend for Arweave Profit Sharing Tokens",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w --host",
+    "dev": "rollup -c -w",
     "start:dev": "sirv public --single --dev --host",
     "start": "sirv public",
     "validate": "svelte-check",

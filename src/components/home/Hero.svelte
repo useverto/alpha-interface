@@ -6,11 +6,11 @@
 
 </script>
 
+<div class="blobs">
+  <img src={blob2} alt="blob2" class="blob blob2" draggable={false}>
+  <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
+</div>
 <div class="Hero">
-  <div class="blobs">
-    <img src={blob2} alt="blob2" class="blob blob2" draggable={false}>
-    <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
-  </div>
   <div class="content">
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
     <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
@@ -25,32 +25,6 @@
     height: 100vh
     overflow: hidden
     position: relative
-
-    .blobs
-      position: absolute
-      top: 0
-      bottom: 0
-      left: 0
-      right: 0
-
-      .blob
-        position: absolute
-        user-select: none
-        -webkit-user-select: none
-        height: 200%
-        transform: translateY(-50%)
-
-        @media screen and (max-width: 720px)
-          left: 50% !important
-          transform: translate(-50%, -50%) !important
-
-      .blob1
-        left: -30%
-        top: 25%
-
-      .blob2
-        left: -15%
-        top: 20%
 
     .content
       z-index: 10
@@ -103,5 +77,26 @@
         &:hover
           transition: color linear 0.1s
           color: #C54DFD
+
+  .blobs
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+
+    .blob
+      position: absolute
+      user-select: none
+      -webkit-user-select: none
+      top: 0
+      left: 0
+      width: 75%
+
+      &.blob2
+        width: 90%
+
+      @media screen and (max-width: 720px)
+        left: 50% !important
+        transform: translate(-50%, -50%) !important
 
 </style>

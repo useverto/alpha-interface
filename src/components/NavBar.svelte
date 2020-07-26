@@ -6,7 +6,7 @@
 </script>
 
 <svelte:window bind:scrollY={y} />
-<div class="NavBar" class:scrolled={y > 20 && blur}>
+<div class="NavBar" class:scrolled={y > 20 && blur} class:hero={blur}>
   <a href="/" class="title">coinary</a>
   <div class="menu">
     <a href="/">Home</a>
@@ -27,6 +27,9 @@
     right: 0
     z-index: 1000
     background-color: transparent
+    backdrop-filter: blur(0)
+    -webkit-backdrop-filter: blur(0)
+    border-bottom: 1px solid transparent
     padding: .5em 2em
     transition: all .3s
 
@@ -89,10 +92,16 @@
             background-color: transparent
             color: #000
 
+    &.hero:not(.scrolled)
+      padding:
+        top: 1.2em
+        bottom: 1.2em
+
     &.scrolled
-      background-color: rgba(#fff, .3)
-      backdrop-filter: saturate(180%) blur(5px)
-      -webkit-backdrop-filter: saturate(180%) blur(5px)
+      background-color: rgba(#fff, .7)
+      backdrop-filter: blur(5px)
+      -webkit-backdrop-filter: blur(5px)
+      border-color: rgba(#000, .075)
 
       a.title
         opacity: 1
