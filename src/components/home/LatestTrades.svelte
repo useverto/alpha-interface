@@ -61,9 +61,17 @@
   .LatestTrades
     padding: 1em 15vw 3em
 
+    @media screen and (max-width: 720px)
+      overflow-x: auto
+      margin-right: 15vw
+
     h1.title
       font-size: 2.3em
       font-weight: 600
+
+      @media screen and (max-width: 720px)
+        width: 100%
+        font-size: 2.01em
 
     table
       width: 100%
