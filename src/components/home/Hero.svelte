@@ -37,8 +37,10 @@
       transform: translateY(-50%)
 
       @media screen and (max-width: 720px)
-        left: 0
-        padding: 0 1.5em
+        left: 50%
+        width: 85vw
+        overflow-x: hidden
+        transform: translate(-50%, -50%)
 
       \:global(.Button)
         margin-bottom: 10px
@@ -85,6 +87,10 @@
     position: relative
     width: 100vw
 
+    @media screen and (max-width: 720px)
+      height: 100vh
+      overflow-x: hidden
+
     .blob
       user-select: none
       -webkit-user-select: none
@@ -95,11 +101,16 @@
         left: 0
         width: 75%
 
+        @media screen and (max-width: 720px)
+          height: 108%
+
       &.blob2
         width: 90%
 
+        @media screen and (max-width: 720px)
+          height: 128%
+
       @media screen and (max-width: 720px)
-        left: 50% !important
-        transform: translate(-50%, -50%) !important
+        width: 200% !important
 
 </style>

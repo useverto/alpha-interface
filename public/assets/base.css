@@ -13,3 +13,6 @@ body {
 ::-moz-selection {
   background-color: #9300B8;
 }
+h1.title {
+  font-family: "Inter", sans-serif;
+}
