@@ -15,7 +15,7 @@
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
     <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
     <Button reverse={true} clear={true}>Read more</Button>
-    <Button reverse={true}>Sign In</Button>
+    <Button reverse={true}>Exchange now</Button>
   </div>
 </div>
 
