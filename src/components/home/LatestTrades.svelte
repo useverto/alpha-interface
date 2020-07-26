@@ -9,7 +9,6 @@
     if(element !== undefined) {
       let componentY = element.offsetTop + element.offsetHeight;
       if(componentY <= (y + windowHeight + 120) && !shown) shown = true;
-      console.log(componentY, y);
     }
   }
 
