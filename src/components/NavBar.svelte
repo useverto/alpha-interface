@@ -72,7 +72,7 @@
           display: none
 
         &:hover
-          opacity: .7
+          color: rgba(#000, .7)
 
     &.hero:not(.scrolled)
       padding:
