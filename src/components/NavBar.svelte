@@ -34,9 +34,13 @@
     transition: all .3s
 
     a.title
-      color: #000
+      font-family: "Inter", sans-serif
       text-decoration: none
-      font-size: 1.5em
+      background: -webkit-linear-gradient(#9300B8, #C54DFD)
+      -webkit-background-clip: text
+      -webkit-text-fill-color: transparent
+      text-shadow: 1px 3px 7px rgba(87, 14, 106, .35)
+      font-size: 1.75em
       font-weight: 600
       margin: 0
       opacity: 0
@@ -47,50 +51,28 @@
       align-items: center
 
       a
+        $sideMargin: 5px
         color: #000
         position: relative
         text-decoration: none
-        font-family: "Inter", sans-serif
         font-size: 16px
-        margin: 0 10px
+        margin: 0 $sideMargin
         padding: 4px 0
         -webkit-tap-highlight-color: transparent
         cursor: pointer
-        font-weight: 500
+        font-weight: 400
         transition: all .3s
 
-        &::after
-          content: ""
-          position: absolute
-          bottom: 0
-          left: 0
-          width: 0
-          height: 2px
-          background-color: #000
-          opacity: 0
-          transition: all .3s
+        &::before
+          content: "/"
+          color: #9300B8
+          margin-right: $sideMargin * 2
 
-          @media screen and (max-width: 720px)
-            display: none
+        &:first-child::before
+          display: none
 
         &:hover
-          &::after
-            opacity: 1
-            width: 100%
-
-        &:last-child
-          background-color: #000
-          color: #fff
-          padding: 4px 7px
-          border: 1px solid #000
-          border-radius: 5px
-
-          &::after
-            display: none
-
-          &:hover
-            background-color: transparent
-            color: #000
+          opacity: .7
 
     &.hero:not(.scrolled)
       padding:
@@ -101,18 +83,6 @@
         .menu 
           a
             color: #fff
-
-            &::after
-              background-color: #fff
-
-            &:last-child
-              background-color: #fff
-              border-color: #fff
-              color: #000
-
-              &:hover
-                color: #fff
-                background-color: transparent
 
     &.scrolled
       background-color: rgba(#fff, .7)
