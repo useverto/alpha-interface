@@ -1,12 +1,14 @@
 <script lang="ts">
 
+  import { fade } from "svelte/transition";
+
   export let blur: boolean = false; // blur when not scrolled ? (used only in the her, as there is a black background)
   let y;
 
 </script>
 
 <svelte:window bind:scrollY={y} />
-<div class="NavBar" class:scrolled={y > 20 && blur} class:hero={blur}>
+<div class="NavBar" class:scrolled={y > 20 && blur} class:hero={blur} in:fade={{ duration: 750 }}>
   <a href="/" class="title">coinary</a>
   <div class="menu">
     <a href="/">Home</a>
@@ -36,10 +38,7 @@
     a.title
       font-family: "Inter", sans-serif
       text-decoration: none
-      background: -webkit-linear-gradient(#9300B8, #C54DFD)
-      -webkit-background-clip: text
-      -webkit-text-fill-color: transparent
-      text-shadow: 1px 3px 7px rgba(87, 14, 106, .35)
+      color: #000
       font-size: 1.75em
       font-weight: 600
       margin: 0

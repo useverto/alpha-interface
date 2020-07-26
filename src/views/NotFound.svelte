@@ -1,11 +1,12 @@
 <script lang="ts">
 
+  import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
 
 </script>
 
 <div class="NotFound">
-  <div class="content">
+  <div class="content" in:fade={{ duration: 750 }}>
     <h1><span>404</span> Not Found</h1>
     <p>This is not the page you're looking for.</p>
     <Button href="/" reverse={true}>Go home</Button>
