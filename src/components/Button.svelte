@@ -32,6 +32,9 @@
     text-align: center
     transition: all .3s
 
+    @media screen and (max-width: 720px)
+      min-width: 140px
+
     &:hover
       background-color: transparent
       color: #000

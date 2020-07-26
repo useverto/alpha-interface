@@ -41,6 +41,7 @@
         left: 50%
         width: 85vw
         overflow-x: hidden
+        text-align: center
         transform: translate(-50%, -50%)
 
       \:global(.Button)
