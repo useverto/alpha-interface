@@ -7,3 +7,4 @@
 
 <NavBar blur={true} />
 <Hero />
+<h1>test</h1>

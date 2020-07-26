@@ -5,6 +5,7 @@
 body {
   margin: 0;
   font-family: "JetBrainsMono", monospace;
+  overflow-x: hidden;
 }
 ::selection {
   background-color: #9300B8;

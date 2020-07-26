@@ -24,7 +24,10 @@
   .Hero
     height: 100vh
     overflow: hidden
-    position: relative
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
 
     .content
       z-index: 10
@@ -79,18 +82,18 @@
           color: #C54DFD
 
   .blobs
-    position: absolute
-    top: 0
-    left: 0
-    right: 0
+    position: relative
+    width: 100vw
 
     .blob
-      position: absolute
       user-select: none
       -webkit-user-select: none
-      top: 0
-      left: 0
-      width: 75%
+
+      &.blob1
+        position: absolute
+        top: 0
+        left: 0
+        width: 75%
 
       &.blob2
         width: 90%
