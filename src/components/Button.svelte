@@ -25,6 +25,7 @@
     font-family: "Inter", sans-serif
     text-decoration: none
     min-width: 110px
+    -webkit-tap-highlight-color: transparent
     display: inline-block
     font-size: 1.2em
     font-weight: 500

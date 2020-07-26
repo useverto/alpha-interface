@@ -23,7 +23,7 @@
 
   .Hero
     height: 100vh
-    overflow-x: hidden
+    overflow: hidden
     position: relative
 
     .blobs
@@ -45,11 +45,11 @@
           transform: translate(-50%, -50%) !important
 
       .blob1
-        left: -25%
+        left: -30%
         top: 25%
 
       .blob2
-        left: -10%
+        left: -15%
         top: 20%
 
     .content
@@ -62,6 +62,9 @@
       @media screen and (max-width: 720px)
         left: 0
         padding: 0 1.5em
+
+      \:global(.Button)
+        margin-bottom: 10px
 
       h1, p
         color: #fff
