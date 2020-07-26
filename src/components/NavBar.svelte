@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  export let blur: boolean = false; // blur when not scrolled ?
+  export let blur: boolean = false; // blur when not scrolled ? (used only in the her, as there is a black background)
   let y;
 
 </script>
@@ -96,6 +96,23 @@
       padding:
         top: 1.2em
         bottom: 1.2em
+
+      @media screen and (max-width: 720px)
+        .menu 
+          a
+            color: #fff
+
+            &::after
+              background-color: #fff
+
+            &:last-child
+              background-color: #fff
+              border-color: #fff
+              color: #000
+
+              &:hover
+                color: #fff
+                background-color: transparent
 
     &.scrolled
       background-color: rgba(#fff, .7)
