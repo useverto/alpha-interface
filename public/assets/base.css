@@ -16,3 +16,7 @@ body {
 h1.title {
   font-family: "Inter", sans-serif;
 }
+a {
+  color: #9300B8;
+  text-decoration: underline;
+}
