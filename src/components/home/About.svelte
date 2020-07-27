@@ -28,15 +28,6 @@
   .About
     padding: 1em 15vw 3em
 
-  :global(h1.about-title)
-    h1.title
-      font-size: 2.3em
-      font-weight: 600
-
-      @media screen and (max-width: 720px)
-        width: 100%
-        font-size: 2.01em
-
   :global(p.about-description)
     font-size: 1em
     line-height: 1.7rem
