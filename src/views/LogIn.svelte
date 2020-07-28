@@ -1,10 +1,11 @@
 <script lang="ts">
 
   import keyfileSVG from "../assets/keyfile.svg";
-  import dash from "../assets/dash.png";
+  import stroke from "../assets/stroke.svg";
 
 </script>
 
+<input type="file" class="FileInput">
 <div class="Login">
   <div class="instructions">
     <div class="content">
@@ -14,12 +15,23 @@
     </div>
   </div>
   <div class="arweave-login">
-    <img src={dash} alt="stroke" class="Stroke" draggable={false}>
+    <img src={stroke} alt="stroke" class="Stroke" draggable={false}>
     <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false}>
   </div>
 </div>
 
 <style lang="sass">
+
+  .FileInput
+    position: fixed
+    top: 0
+    bottom: 0
+    left: 0
+    opacity: 0
+    right: 0
+    width: 100vw
+    height: 100vh
+    z-index: 1000
 
   .Login
     height: 100vh
