@@ -5,18 +5,22 @@
   import { fade } from "svelte/transition";
 
   let isDragOver = false;
+  let files: FileList = [];
+
+  $: {
+    if(files[0] !== null && files[0] !== undefined && files[0].type === "application/json") console.log("File uploaded", files[0]); // TODO: login mechanism   
+  }
 
   function drop () {
     isDragOver = false;  
   }
-
   function drag () {
     isDragOver = true;
-  }
+  } 
 
 </script>
 
-<input type="file" class="FileInput" on:drop={drop} on:dragover={drag} on:dragleave={drop}>
+<input type="file" class="FileInput" accept=".json,application/json" on:drop={drop} on:dragover={drag} on:dragleave={drop} bind:files>
 {#if isDragOver}
   <div class="drag-overlay" in:fade={{ duration: 350 }} out:fade={{ duration: 160 }}>
     <h1>Drop your file here</h1>
