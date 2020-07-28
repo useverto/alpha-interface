@@ -39,9 +39,9 @@
       background-color: #121212
 
       .content
-        top: 10%
+        top: 50%
         left: 50%
-        transform: translateX(-50%)
+        transform: translate(-50%, -50%)
 
         h1
           font-family: "Inter", sans-serif
