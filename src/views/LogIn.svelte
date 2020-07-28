@@ -2,10 +2,26 @@
 
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
+  import { fade } from "svelte/transition";
+
+  let isDragOver = false;
+
+  function drop () {
+    isDragOver = false;  
+  }
+
+  function drag () {
+    isDragOver = true;
+  }
 
 </script>
 
-<input type="file" class="FileInput">
+<input type="file" class="FileInput" on:drop={drop} on:dragover={drag} on:dragleave={drop}>
+{#if isDragOver}
+  <div class="drag-overlay" in:fade={{ duration: 350 }} out:fade={{ duration: 160 }}>
+    <h1>Drop your file here</h1>
+  </div>
+{/if}
 <div class="Login">
   <div class="instructions">
     <div class="content">
@@ -22,16 +38,34 @@
 
 <style lang="sass">
 
-  .FileInput
+  =fixedFull()
     position: fixed
     top: 0
     bottom: 0
     left: 0
-    opacity: 0
     right: 0
     width: 100vw
     height: 100vh
+
+  .FileInput
+    +fixedFull()
+    opacity: 0
     z-index: 1000
+
+  .drag-overlay
+    +fixedFull()
+    z-index: 900
+    background-color: rgba(#000, .67)
+
+    h1
+      font-family: "Inter", sans-serif
+      font-size: 2.3em
+      color: #fff
+      font-weight: 400
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
 
   .Login
     height: 100vh
