@@ -9,7 +9,7 @@
   <div class="instructions">
     <div class="content">
       <h1>Sign in to <span>coinary</span></h1>
-      <p>To sign in, just drag and drop your Arweave Key file on this page. <br><br>If you don’t yet have a key file, you can get one by creating an Arweave Wallet</p>
+      <p>To sign in, just drag and drop your Arweave Key file on this page. <br><br>If you don’t yet have a key file, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
       <p class="notice">Your Arweave Key file does not leave your system.</p>
     </div>
   </div>
