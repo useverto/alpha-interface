@@ -1,4 +1,9 @@
-<script lang="ts"></script>
+<script lang="ts">
+
+  import keyfileSVG from "../assets/keyfile.svg";
+  import dash from "../assets/dash.png";
+
+</script>
 
 <div class="Login">
   <div class="instructions">
@@ -8,7 +13,10 @@
       <p class="notice">Your Arweave Key file does not leave your system.</p>
     </div>
   </div>
-  <div class="arweave-login"></div>
+  <div class="arweave-login">
+    <img src={dash} alt="stroke" class="Stroke" draggable={false}>
+    <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false}>
+  </div>
 </div>
 
 <style lang="sass">
@@ -21,7 +29,7 @@
     .instructions, .arweave-login
       position: relative
       width: 50vw
-      height: 50vw
+      height: 100%
 
       .content
         position: absolute
@@ -49,8 +57,8 @@
             -webkit-text-fill-color: transparent
 
         p
-          font-size: 1.3em
-          line-height: 1.7rem
+          font-size: 1.4em
+          line-height: 2rem
           text-align: justify
           color: #fff
 
@@ -59,5 +67,20 @@
           color: #828282
           margin-top: 4em
           text-align: center
+
+    .arweave-login
+      .Keyfile
+        position: absolute
+        width: 5em
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
+
+      .Stroke
+        position: absolute
+        width: 30vw
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
 
 </style>
