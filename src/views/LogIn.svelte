@@ -23,22 +23,22 @@
 <input type="file" class="FileInput" class:default={!isDragOver} accept=".json,application/json" on:drop={drop} on:dragover={drag} on:dragleave={drop} bind:files>
 {#if isDragOver}
   <div class="drag-overlay" in:fade={{ duration: 350 }} out:fade={{ duration: 160 }}>
-    <h1>Drop your file here</h1>
+    <h1>Drop your keyfile here</h1>
   </div>
 {/if}
 <div class="Login">
   <div class="instructions">
     <div class="content">
       <h1>Sign in to <span>coinary</span></h1>
-      <p>To sign in, just drag and drop your Arweave Key file on this page. <br><br>If you don’t yet have a key file, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
-      <p class="notice">Your Arweave Key file does not leave your system.</p>
+      <p>To sign in, just drag and drop your Arweave Keyfile on this page. <br><br>If you don’t yet have a keyfile, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
+      <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
   </div>
   <div class="arweave-login">
-    <h1>Sign in with your Arweave Key file</h1>
+    <h1>Sign in with your Arweave Keyfile</h1>
     <img src={stroke} alt="stroke" class="Stroke" draggable={false}>
     <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false}>
-    <p>If you don’t yet have a key file, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
+    <p>If you don’t yet have a keyfile, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
   </div>
 </div>
 
