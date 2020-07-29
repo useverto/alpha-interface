@@ -35,8 +35,10 @@
     </div>
   </div>
   <div class="arweave-login">
+    <h1>Sign in with your Arweave Key file</h1>
     <img src={stroke} alt="stroke" class="Stroke" draggable={false}>
     <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false}>
+    <p>If you don’t yet have a key file, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
   </div>
 </div>
 
@@ -55,6 +57,10 @@
     +fixedFull()
     opacity: 0
     z-index: 1000
+
+    @media screen and (max-width: 720px)
+      width: 100vw !important
+      height: 80vh !important
 
     &.default
       width: 50vw
@@ -81,10 +87,17 @@
     background-color: #000
     display: flex
 
+    @media screen and (max-width: 720px)
+      display: block
+
     .instructions, .arweave-login
       position: relative
       width: 50vw
       height: 100%
+
+      @media screen and (max-width: 720px)
+        width: 100vw
+        height: 100vh
 
       .content
         position: absolute
@@ -92,6 +105,9 @@
 
     .instructions
       background-color: #121212
+
+      @media screen and (max-width: 720px)
+        display: none
 
       .content
         top: 50%
@@ -137,5 +153,28 @@
         top: 50%
         left: 50%
         transform: translate(-50%, -50%)
+
+        @media screen and (max-width: 720px)
+          width: 80vw
+
+      h1, p
+        display: none
+        margin: none
+        position: absolute
+        font-size: 1.7em
+        color: #fff
+        text-align: center
+        width: 80vw
+        top: 1em
+        left: 50%
+        transform: translateX(-50%)
+
+        @media screen and (max-width: 720px)
+          display: block
+
+      p
+        font-size: 1.3em
+        top: unset
+        bottom: 5vh
 
 </style>
