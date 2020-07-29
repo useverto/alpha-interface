@@ -20,7 +20,7 @@
 
 </script>
 
-<input type="file" class="FileInput" accept=".json,application/json" on:drop={drop} on:dragover={drag} on:dragleave={drop} bind:files>
+<input type="file" class="FileInput" class:default={!isDragOver} accept=".json,application/json" on:drop={drop} on:dragover={drag} on:dragleave={drop} bind:files>
 {#if isDragOver}
   <div class="drag-overlay" in:fade={{ duration: 350 }} out:fade={{ duration: 160 }}>
     <h1>Drop your file here</h1>
@@ -55,6 +55,11 @@
     +fixedFull()
     opacity: 0
     z-index: 1000
+
+    &.default
+      width: 50vw
+      left: unset
+      right: 0
 
   .drag-overlay
     +fixedFull()
