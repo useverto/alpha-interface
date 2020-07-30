@@ -25,11 +25,11 @@
         div
             width: 30%
             display: inline-block
+            text-align: center
 
         a
             text-decoration: none
             width: 100% !important
-            text-align: center !important
             transition: color linear 0.1s
             color: black
         
