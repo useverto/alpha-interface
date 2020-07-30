@@ -28,6 +28,7 @@
             let ar = client.ar.winstonToAr(balance);
             console.log("Total Balance:", ar);
           });
+          location.href = "/app";
         });
       }
       reader.readAsText(files[0]);
