@@ -15,7 +15,7 @@
 <style lang="sass">
 
 .Footer
-    width: 85%
+    width: 80%
     border-top: 5px solid black
     margin: 0 auto
 
@@ -23,9 +23,13 @@
         margin: 30px auto
 
         div
-            width: 30%
+            width: 32%
             display: inline-block
             text-align: center
+
+            @media screen and (max-width: 720px)
+                display: inline-block
+                width: 30%
 
         a
             text-decoration: none
