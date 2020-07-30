@@ -146,6 +146,9 @@
             -webkit-background-clip: text
             -webkit-text-fill-color: transparent
 
+            a
+              text-decoration: none
+
         p
           font-size: 1.4em
           line-height: 2rem
