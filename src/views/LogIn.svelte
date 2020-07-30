@@ -25,13 +25,16 @@
         client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then((address) => {
           console.log("Arweave Address:", address);
           client.wallets.getBalance(address).then((balance) => {
-              let ar = client.ar.winstonToAr(balance);
-              console.log("Total Balance:", ar);
+            let ar = client.ar.winstonToAr(balance);
+            console.log("Total Balance:", ar);
           });
-          location.href = "/app";
         });
       }
       reader.readAsText(files[0]);
+    }
+    
+    if (localStorage.getItem("keyfile")) {
+      location.href = "/app";
     }
   }
 
