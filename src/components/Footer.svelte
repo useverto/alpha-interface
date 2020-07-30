@@ -4,7 +4,7 @@
             <a href="/docs">docs</a>
         </div>
         <div>
-            <a href="https://github.com/t8/coinary-app">source code</a>
+            <a href="https://github.com/t8/coinary-app">code</a>
         </div>
         <div>
             <a href="https://www.arweave.org/">arweave</a>
