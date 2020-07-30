@@ -13,7 +13,11 @@
   <div class="menu">
     <a href="/">Home</a>
     <a href="/docs">Docs</a>
-    <a href="/login">Sign In</a>
+    {#if localStorage.getItem("keyfile")}
+      <a href="/app">Trade</a>
+    {:else}
+      <a href="/login">Sign In</a>
+    {/if}
   </div>
 </div>
 
