@@ -7,8 +7,27 @@
   let isDragOver = false;
   let files: FileList = [];
 
+  // @ts-ignore
+  const client = new Arweave({
+    host: "arweave.net",
+    port: 443,
+    protocol: "https",
+    timeout: 20000,
+  });
+
   $: {
-    if(files[0] !== null && files[0] !== undefined && files[0].type === "application/json") console.log("File uploaded", files[0]); // TODO: login mechanism   
+    if(files[0] !== null && files[0] !== undefined && files[0].type === "application/json") {
+      var reader = new FileReader();
+      reader.onload = function() {
+        // @ts-ignore
+        sessionStorage.setItem('keyfile', reader.result);
+        
+        client.wallets.jwkToAddress(JSON.parse(sessionStorage.getItem('keyfile'))).then((address) => {
+          console.log("Arweave Address:", address);
+        });
+      }
+      reader.readAsText(files[0]);
+    }
   }
 
   function drop () {
@@ -29,7 +48,7 @@
 <div class="Login">
   <div class="instructions">
     <div class="content">
-      <h1>Sign in to <span>coinary</span></h1>
+      <h1>Sign in to <span><a href="/">coinary</a></span></h1>
       <p>To sign in, just drag and drop your Arweave Keyfile on this page. <br><br>If you don’t yet have a keyfile, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
       <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
