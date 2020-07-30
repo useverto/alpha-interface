@@ -20,9 +20,9 @@
       var reader = new FileReader();
       reader.onload = function() {
         // @ts-ignore
-        localStorage.setItem('keyfile', reader.result);
+        localStorage.setItem("keyfile", reader.result);
         
-        client.wallets.jwkToAddress(JSON.parse(localStorage.getItem('keyfile'))).then((address) => {
+        client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then((address) => {
           console.log("Arweave Address:", address);
         });
       }
