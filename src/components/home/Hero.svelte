@@ -7,11 +7,11 @@
 
 </script>
 
-<div class="blobs">
-  <img src={blob2} alt="blob2" class="blob blob2" draggable={false}>
-  <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
-</div>
 <div class="Hero">
+  <div class="blobs">
+    <img src={blob2} alt="blob2" class="blob blob2" draggable={false}>
+    <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
+  </div>
   <div class="content" in:fade={{ duration: 750 }}>
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
     <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
@@ -25,7 +25,7 @@
   .Hero
     height: 100vh
     overflow: hidden
-    position: absolute
+    position: relative
     top: 0
     left: 0
     right: 0
@@ -85,34 +85,43 @@
           transition: color linear 0.1s
           color: #C54DFD
 
-  .blobs
-    position: relative
-    width: 100vw
-
-    @media screen and (max-width: 720px)
-      height: 100vh
-      overflow-x: hidden
-
-    .blob
-      user-select: none
-      -webkit-user-select: none
-
-      &.blob1
-        position: absolute
-        top: 0
-        left: 0
-        width: 75%
-
-        @media screen and (max-width: 720px)
-          height: 108%
-
-      &.blob2
-        width: 90%
-
-        @media screen and (max-width: 720px)
-          height: 128%
+    .blobs
+      position: absolute
+      width: 200vh
 
       @media screen and (max-width: 720px)
-        width: 200% !important
+        height: 100vh
+        overflow-x: hidden
 
+      .blob
+        position: absolute
+        user-select: none
+        -webkit-user-select: none
+
+        &.blob1
+          top: -60vh
+          left: -10vw
+          width: 70%
+          animation: rotate 200s linear infinite reverse
+
+          @media screen and (max-width: 720px)
+            height: 108%
+
+        &.blob2
+          top: -65vh
+          left: -15vw
+          width: 80%
+          animation: rotate 180s linear infinite
+
+          @media screen and (max-width: 720px)
+            height: 128%
+
+        @media screen and (max-width: 720px)
+          width: 200% !important
+
+      @keyframes rotate
+        0%
+          transform: rotate(0deg)
+        100%
+          transform: rotate(360deg)
 </style>
