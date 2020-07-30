@@ -1,5 +1,6 @@
 {
   "discord.enabled": false,
   "discord.lowerDetailsEditing": "",
-  "discord.lowerDetailsDebugging": ""
+  "discord.lowerDetailsDebugging": "",
+  "deno.enable": false
 }
