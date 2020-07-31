@@ -6,7 +6,7 @@ Token Exchange Frontend for Arweave Profit Sharing Tokens
 yarn run dev
 ```
 
-## Build
+## Export to static sites 
 ```sh
-yarn run build
+yarn run export
 ```

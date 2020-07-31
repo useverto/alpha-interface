@@ -3,7 +3,7 @@
   import NavBar from "../components/NavBar.svelte";
   import Hero from "../components/home/Hero.svelte";
   import LatestTrades from "../components/home/LatestTrades.svelte";
-  import About from "../components/home/About.svelte"
+  import About from "../components/home/About.svelte";
 
 </script>
 
