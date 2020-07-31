@@ -7,7 +7,6 @@ import { terser } from "rollup-plugin-terser";
 import config from "sapper/config/rollup.js";
 import pkg from "./package.json";
 import sveltePreprocess, { sass } from "svelte-preprocess";
-import typescript from "@rollup/plugin-typescript";
 import image from "@rollup/plugin-image";
 import url from "@rollup/plugin-url";
 

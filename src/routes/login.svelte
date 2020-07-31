@@ -6,36 +6,40 @@
 
   let isDragOver = false;
   let files: FileList = [];
+  let client;
 
-  // @ts-ignore
-  const client = new Arweave({
-    host: "arweave.net",
-    port: 443,
-    protocol: "https",
-    timeout: 20000,
-  });
-
+  if(process.browser) {
+    // @ts-ignore
+    client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+  }
+  
   $: {
-    if(files[0] !== null && files[0] !== undefined && files[0].type === "application/json") {
-      var reader = new FileReader();
-      reader.onload = function() {
-        // @ts-ignore
-        localStorage.setItem("keyfile", reader.result);
-        
-        client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then((address) => {
-          console.log("Arweave Address:", address);
-          client.wallets.getBalance(address).then((balance) => {
-            let ar = client.ar.winstonToAr(balance);
-            console.log("Total Balance:", ar);
+    if(process.browser && client !== undefined) {
+      if(files[0] !== null && files[0] !== undefined && files[0].type === "application/json") {
+        let reader = new FileReader();
+        reader.onload = function() {
+          // @ts-ignore
+          localStorage.setItem("keyfile", reader.result);
+          
+          client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then((address) => {
+            console.log("Arweave Address:", address);
+            client.wallets.getBalance(address).then((balance) => {
+              let ar = client.ar.winstonToAr(balance);
+              console.log("Total Balance:", ar);
+            });
+            location.href = "/app";
           });
-          location.href = "/app";
-        });
+        }
+        reader.readAsText(files[0]);
       }
-      reader.readAsText(files[0]);
-    }
-    
-    if (localStorage.getItem("keyfile")) {
-      location.href = "/app";
+      if(localStorage.getItem("keyfile")) {
+        location.href = "/app";
+      }
     }
   }
 
