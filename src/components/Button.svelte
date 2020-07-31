@@ -4,25 +4,12 @@
   export let reverse: boolean = false;
   export let clear: boolean = false;
   export let target: string = undefined;
-  export let click: Function = undefined;
 
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
-  let component, ripple, rippleData = { x: 0, y: 0, width: 0.5 };
-
-  function onclick (e: MouseEvent) {
-    rippleData = { x: e.offsetX, y: e.offsetY, width: component.offsetWidth };
-    ripple = true;
-    setTimeout(() => {
-      ripple = false;
-      rippleData = { x: 0, y: 0, width: 0.5 };
-    }, 800)
-    if(click !== undefined) click();
-  }
 
 </script>
 
-<a href={href} target={target} rel={rel} class="Button" bind:this={component} on:click={onclick} class:clear class:reverse class:ripple>
-  <div class="ripple-element" style="transform: scale({rippleData.width * 2}); top: {rippleData.y}px; left: {rippleData.x}px;"></div>
+<a href={href} target={target} rel={rel} class="Button" class:clear class:reverse>
   <slot></slot>
 </a>
 
@@ -49,19 +36,6 @@
 
     @media screen and (max-width: 720px)
       min-width: 140px
-
-    .ripple-element
-      position: absolute
-      opacity: 0
-      width: 1px
-      height: 1px
-      border-radius: 100%
-      background-color: rgba(#fff, .45)
-      transition: transform .8s
-
-    &.ripple
-      .ripple-element
-        opacity: 1
 
     &:hover
       background-color: transparent

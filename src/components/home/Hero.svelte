@@ -91,7 +91,7 @@
 
       @media screen and (max-width: 720px)
         height: 100vh
-        overflow-x: hidden
+        overflow: hidden
 
       .blob
         position: absolute
@@ -104,20 +104,11 @@
           width: 70%
           animation: rotate 200s linear infinite reverse
 
-          @media screen and (max-width: 720px)
-            height: 108%
-
         &.blob2
           top: -65vh
           left: -15vw
           width: 80%
           animation: rotate 180s linear infinite
-
-          @media screen and (max-width: 720px)
-            height: 128%
-
-        @media screen and (max-width: 720px)
-          width: 200% !important
 
       @keyframes rotate
         0%
