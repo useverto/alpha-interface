@@ -1,6 +1,7 @@
 <script lang="ts">
 
   import { fade } from "svelte/transition";
+  import * as animateScroll from "svelte-scrollto";
   import blob1 from "../../assets/blob1.svg";
   import blob2 from "../../assets/blob2.svg";
   import Button from "../Button.svelte";
@@ -15,7 +16,7 @@
   <div class="content" in:fade={{ duration: 750 }}>
     <h1 class="welcome">Welcome to <span>coinary</span></h1>
     <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
-    <Button reverse={true} clear={true}>Read more</Button>
+    <Button reverse={true} clear={true} click={() => animateScroll.scrollTo({element: '#read-more'})}>Read more</Button>
     <Button reverse={true}>Exchange now</Button>
   </div>
 </div>

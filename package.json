@@ -38,6 +38,7 @@
     "svelte": "^3.24.0",
     "svelte-check": "^0.1.55",
     "svelte-preprocess": "^4.0.8",
+    "svelte-scrollto": "^0.2.0",
     "tslib": "^2.0.0",
     "typescript": "^3.9.7"
   }

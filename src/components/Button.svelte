@@ -4,12 +4,13 @@
   export let reverse: boolean = false;
   export let clear: boolean = false;
   export let target: string = undefined;
+  export let click: Function = () => {};
 
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
 
 </script>
 
-<a href={href} target={target} rel={rel} class="Button" class:clear class:reverse>
+<a href={href} target={target} rel={rel} class="Button" on:click={click} class:clear class:reverse>
   <slot></slot>
 </a>
 

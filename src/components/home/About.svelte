@@ -3,6 +3,8 @@
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
 
+  export let id: string = undefined;
+
   let element, y, windowHeight, shown = false;
 
   $: {
@@ -15,7 +17,7 @@
 </script>
 
 <svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
-<div class="About" bind:this={element}>
+<div class="About" bind:this={element} id={id}>
   {#if shown}
     <div class="about-content" in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
       <slot></slot>

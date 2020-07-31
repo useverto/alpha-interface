@@ -10,7 +10,7 @@
 <NavBar blur={true} />
 <Hero />
 <LatestTrades />
-<About>
+<About id="read-more">
   <h1 class="title">What are PSTs?</h1>
   <p class="about-description">Profit Sharing Tokens, or PSTs, are a new incentivization mechanism for the open web that allow developers to earn a stream of micro-dividends for the duration their application is used. (<a href="https://medium.com/@arweave/profit-sharing-tokens-a-new-incentivization-mechanism-for-an-open-web-1f2532411d6e">Source</a>)<br><br>In order for PSTs to have value, however, they need to be able to be exchanged for other PSTs or AR. This is where coinary comes in...</p>
 </About>
