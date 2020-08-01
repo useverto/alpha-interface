@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="typescript">
 
   import NavBar from "../components/NavBar.svelte";
   import Hero from "../components/home/Hero.svelte";
@@ -7,6 +7,10 @@
   import Footer from "../components/Footer.svelte";
 
 </script>
+
+<svelte:head>
+  <title>Coinary</title>
+</svelte:head>
 
 <NavBar blur={true} />
 <Hero />

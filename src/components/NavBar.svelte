@@ -1,9 +1,11 @@
-<script lang="ts">
+<script lang="typescript">
 
   import { fade } from "svelte/transition";
 
   export let blur: boolean = false; // blur when not scrolled ? (used only in the her, as there is a black background)
-  let y;
+  let y: number, keyfile: boolean = false;
+
+  $: loggedIn = (process.browser) ? ((localStorage.getItem("keyfile") !== null && localStorage.getItem("keyfile") !== undefined)) : false;
 
 </script>
 
@@ -13,7 +15,7 @@
   <div class="menu">
     <a href="/">Home</a>
     <a href="/docs">Docs</a>
-    {#if localStorage.getItem("keyfile")}
+    {#if loggedIn}
       <a href="/app">Trade</a>
     {:else}
       <a href="/login">Sign In</a>

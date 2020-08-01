@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="typescript">
 
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
@@ -30,7 +30,7 @@
   .About
     padding: 1em 15vw 3em
 
-  :global(p.about-description)
+  \:global(p.about-description)
     font-size: 1em
     line-height: 1.7rem
     text-align: justify
