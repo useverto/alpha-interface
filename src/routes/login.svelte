@@ -3,6 +3,7 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
+  import { keyfile } from "../stores/keyfileStore.js";
 
   let isDragOver = false;
   let files: FileList = [];
@@ -23,9 +24,7 @@
       if(files[0] !== null && files[0] !== undefined && files[0].type === "application/json") {
         let reader = new FileReader();
         reader.onload = function() {
-          // @ts-ignore
-          localStorage.setItem("keyfile", reader.result);
-          
+          if(typeof reader.result === "string") keyfile.set(reader.result);
           client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then((address) => {
             console.log("Arweave Address:", address);
             client.wallets.getBalance(address).then((balance) => {
@@ -37,7 +36,7 @@
         }
         reader.readAsText(files[0]);
       }
-      if(localStorage.getItem("keyfile")) {
+      if($keyfile !== "" && $keyfile !== null) {
         location.href = "/app";
       }
     }

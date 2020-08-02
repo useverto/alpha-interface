@@ -1,11 +1,12 @@
 <script lang="typescript">
 
   import { fade } from "svelte/transition";
+  import { keyfile } from "../stores/keyfileStore.js";
 
   export let blur: boolean = false; // blur when not scrolled ? (used only in the her, as there is a black background)
-  let y: number, keyfile: boolean = false;
+  let y: number;
 
-  $: loggedIn = (process.browser) ? ((localStorage.getItem("keyfile") !== null && localStorage.getItem("keyfile") !== undefined)) : false;
+  $: loggedIn = ($keyfile !== null && $keyfile !== undefined && $keyfile !== "");
 
 </script>
 
