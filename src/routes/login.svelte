@@ -1,5 +1,6 @@
 <script lang="typescript">
 
+  import { goto } from "@sapper/app";
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
@@ -36,13 +37,13 @@
               console.log("Total Balance:", ar);
               userinfo.set({ address, balance: ar });
             });
-            location.href = "/app";
+            goto("/app");
           });
         }
         reader.readAsText(files[0]);
       }
       if($keyfile !== "" && $keyfile !== null) { // redirect if logged in
-        location.href = "/app";
+        goto("/app");
       }
     }
   }
@@ -56,6 +57,18 @@
   } 
 
 </script>
+
+<svelte:head>
+  <title>Sign in to Coinary</title>
+  <meta name="description" content="Token Exchange System for Arweave Profit Sharing Tokens">
+  <meta content="Coinary" property="og:title">
+  <meta content="Token Exchange System for Arweave Profit Sharing Tokens" property="og:description">
+  <!--<meta property="og:image" content="https://image">
+  <meta name="twitter:card" content="summary_large_image">-->
+  <meta name="twitter:title" content="Coinary">
+  <meta name="twitter:description" content="Token Exchange System for Arweave Profit Sharing Tokens">
+  <!--<meta name="twitter:image" content="https://iimage">-->
+</svelte:head>
 
 <input type="file" class="FileInput" class:default={!isDragOver} accept=".json,application/json" on:drop={drop} on:dragover={drag} on:dragleave={drop} bind:files>
 {#if isDragOver}

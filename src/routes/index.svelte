@@ -10,6 +10,14 @@
 
 <svelte:head>
   <title>Coinary</title>
+  <meta name="description" content="Token Exchange System for Arweave Profit Sharing Tokens">
+  <meta content="Coinary" property="og:title">
+  <meta content="Token Exchange System for Arweave Profit Sharing Tokens" property="og:description">
+  <!--<meta property="og:image" content="https://image">
+  <meta name="twitter:card" content="summary_large_image">-->
+  <meta name="twitter:title" content="Coinary">
+  <meta name="twitter:description" content="Token Exchange System for Arweave Profit Sharing Tokens">
+  <!--<meta name="twitter:image" content="https://iimage">-->
 </svelte:head>
 
 <NavBar blur={true} />
