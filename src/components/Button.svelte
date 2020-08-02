@@ -4,8 +4,10 @@
   export let reverse: boolean = false;
   export let clear: boolean = false;
   export let target: string = undefined;
-  export let click: Function = () => {};
+  export let click: Function = () => {}; // click event
 
+  // don't let malicious links override the content of the site
+  // https://web.dev/external-anchors-use-rel-noopener/
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
 
 </script>

@@ -6,6 +6,7 @@
   export let blur: boolean = false; // blur when not scrolled ? (used only in the her, as there is a black background)
   let y: number;
 
+  // is the user logged in ?
   $: loggedIn = ($keyfile !== null && $keyfile !== undefined && $keyfile !== "");
 
 </script>

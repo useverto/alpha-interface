@@ -6,6 +6,7 @@
   import blob2 from "../../assets/blob2.svg";
   import Button from "../Button.svelte";
 
+  // is logged in?
   $: loggedIn = (process.browser) ? ((localStorage.getItem("keyfile") !== null && localStorage.getItem("keyfile") !== undefined)) : false;
 
 </script>

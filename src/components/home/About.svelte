@@ -7,6 +7,7 @@
 
   let element, y, windowHeight, shown = false;
 
+  // fade animation
   $: {
     if(element !== undefined) {
       let componentY = element.offsetTop + element.offsetHeight;

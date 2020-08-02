@@ -10,6 +10,7 @@
   let files: FileList = [];
   let client;
 
+  // let's create a new client
   if(process.browser) {
     // @ts-ignore
     client = new Arweave({
@@ -26,6 +27,8 @@
         let reader = new FileReader();
         reader.onload = function() {
           if(typeof reader.result === "string") keyfile.set(reader.result);
+          // getting the userinfo and updating the store
+          // TODO move this to the userStore.js store
           client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then((address) => {
             console.log("Arweave Address:", address);
             client.wallets.getBalance(address).then((balance) => {
@@ -38,12 +41,13 @@
         }
         reader.readAsText(files[0]);
       }
-      if($keyfile !== "" && $keyfile !== null) {
+      if($keyfile !== "" && $keyfile !== null) { // redirect if logged in
         location.href = "/app";
       }
     }
   }
 
+  // functions for the drag-overlay
   function drop () {
     isDragOver = false;  
   }

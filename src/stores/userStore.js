@@ -1,5 +1,9 @@
 import { writable } from "svelte/store";
 
+// We store the userinfo here
+// Balance, address...
+// TODO: a periodic update maybe?
+
 export const userinfo = createUserStore();
 
 function createUserStore () {
