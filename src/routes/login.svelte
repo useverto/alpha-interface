@@ -4,6 +4,7 @@
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
   import { keyfile } from "../stores/keyfileStore.js";
+  import { userinfo } from "../stores/userStore.js";
 
   let isDragOver = false;
   let files: FileList = [];
@@ -30,6 +31,7 @@
             client.wallets.getBalance(address).then((balance) => {
               let ar = client.ar.winstonToAr(balance);
               console.log("Total Balance:", ar);
+              userinfo.set({ address, balance: ar });
             });
             location.href = "/app";
           });

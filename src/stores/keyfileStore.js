@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-export const keyfile = createKeyfileStore()
+export const keyfile = createKeyfileStore();
 
 function createKeyfileStore () {
   const { subscribe, set } = writable("");
@@ -18,7 +18,6 @@ function createKeyfileStore () {
     set: (val) => {
       set(val);
       localStorage.setItem("keyfile", val);
-      console.log(val);
     }
   }
 }
