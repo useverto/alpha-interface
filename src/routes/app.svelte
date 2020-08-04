@@ -13,6 +13,13 @@
 
 <NavBar />
 <div class="dashboard">
+  <div class="section balance">
+    <p>Total balance</p>
+    <h1 class="total-balance">
+      3.08351<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span><span style="vertical-align: super; font-size: .4em; color: #FF375D; font-weight: 600">(-0.01%)</span>
+    </h1>
+    <p class="wallet">Wallet: KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</p>
+  </div>
   <div class="section">
     <h1 class="title">Assets</h1>
     <table>
@@ -57,27 +64,27 @@
         <th>Durration</th>
       </tr>
       <tr>
-        <td style="width: 30%">{moment().format("YYYY-mm-dd hh:mm:ss")}</td>
+        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
         <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
       <tr>
-        <td style="width: 30%">{moment().format("YYYY-mm-dd hh:mm:ss")}</td>
+        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
         <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status success"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
       <tr>
-        <td style="width: 30%">{moment().format("YYYY-mm-dd hh:mm:ss")}</td>
+        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
         <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status failure"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
       <tr>
-        <td style="width: 30%">{moment().format("YYYY-mm-dd hh:mm:ss")}</td>
+        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
         <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
     </table>
-    <a href="#" class="view-all">View all -></a>
+    <a href="/app/all-exchanges" class="view-all">View all -></a>
   </div>
   <div class="section">
     <h1 class="title">Transactions</h1>
@@ -113,7 +120,7 @@
         <td style="text-transform: uppercase">lum</td>
       </tr>
     </table>
-    <a href="#" class="view-all">View all -></a>
+    <a href="/app/all-transactions" class="view-all">View all -></a>
   </div>
 </div>
 <Footer />
@@ -134,7 +141,25 @@
         padding: .8em 0
 
       &:first-child
-        padding-top: 2.5em
+        padding-top: 3.5em
+
+    .balance
+
+      p
+        color: rgba(#000, .3)
+        text-transform: uppercase
+        font-size: .9em
+        margin: 0
+        font-weight: 600
+
+        &.wallet
+          text-transform: none
+
+      h1.total-balance
+        font-size: 2.3em
+        color: #000
+        font-weight: 400
+        margin: .14em 0
 
     h1.title
       font-size: 2.3em
