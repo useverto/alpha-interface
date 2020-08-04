@@ -77,6 +77,7 @@
         <td>4HRS 20MIN</td>
       </tr>
     </table>
+    <a href="#" class="view-all">View all -></a>
   </div>
 </div>
 <Footer />
@@ -88,6 +89,13 @@
 
     .section
       padding-bottom: 2.5em
+
+      a.view-all
+        display: block
+        text-align: center
+        color: rgba(#000, .5)
+        font-weight: 500
+        padding: .8em 0
 
       &:first-child
         padding-top: 2.5em
@@ -128,8 +136,8 @@
 
         .status
           display: inline-block
-          width: 7px
-          height: 7px
+          width: 8px
+          height: 8px
           vertical-align: middle
           background-color: #000
           border-radius: 100%

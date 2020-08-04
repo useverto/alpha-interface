@@ -17,11 +17,7 @@
   <div class="menu">
     <a href="/">Home</a>
     <a href="/docs">Docs</a>
-    {#if loggedIn}
-      <a href="/app">Trade</a>
-    {:else}
-      <a href="/login">Sign In</a>
-    {/if}
+    <a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Trade" : "Sign In"}</a>
   </div>
 </div>
 
@@ -79,11 +75,37 @@
           color: #9300B8
           margin-right: $sideMargin * 2
 
-        &:first-child::before
-          display: none
+        &::after
+          content: ""
+          position: absolute
+          top: 101%
+          left: $sideMargin * 4
+          height: 2px
+          width: 0
+          opacity: 0
+          background-color: #000
+          transition: all .18s
+
+          @media screen and (max-width: 720px)
+            display: none
+
+        &:first-child
+        
+          &::before
+            display: none
+
+          &::after
+            left: 0
 
         &:hover
           color: rgba(#000, .7)
+
+          &::after
+            width: calc(100% - #{$sideMargin * 4})
+            opacity: 1
+
+          &:first-child::after
+            width: 100%
 
     &.hero:not(.scrolled)
       padding:
