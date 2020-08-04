@@ -12,8 +12,8 @@
   if(process.browser && !$loggedIn) goto("/");
 
   function roundCurrency (val: number | string): string {
-    if(typeof val === "string") val = parseFloat(val)
-    return val.toFixed(5)
+    if(typeof val === "string") val = parseFloat(val);
+    return val.toFixed(5);
   }
 
 </script>
@@ -23,7 +23,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="post">
+<div class="post" in:fade={{ duration: 300 }}>
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
@@ -44,6 +44,7 @@
       <h1>{roundCurrency("80.0234")}<span class="currency">AR</span></h1>
     </div>
   </div>
+  <br>
   <div class="information">
     <div class="menu">
       <button class:active={activeMenu === "transactions"} on:click={() => activeMenu = "transactions"}>Transactions</button>

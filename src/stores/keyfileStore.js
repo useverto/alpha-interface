@@ -27,11 +27,17 @@ function createKeyfileStore () {
   }
 }
 
+// a derived store
+// acts like a computed variable in Vue
+// returns if the user is logged in
 export const loggedIn = derived(
   keyfile,
   $keyfile => ($keyfile !== "" && $keyfile !== "null" && $keyfile !== null && $keyfile !== undefined)
 )
 
+// log out
+// this removes the keyfile from local stroage 
+// and resets the userinfo (address, balance)
 export function logOut () {
   keyfile.reset();
   userinfo.reset();

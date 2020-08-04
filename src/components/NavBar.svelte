@@ -19,9 +19,9 @@
 
 <svelte:window bind:scrollY={y} />
 <div class="NavBar" class:scrolled={y > 20} class:hero={hero} in:fade={{ duration: 750 }}>
-  <a href="/" class="title">coinary</a>
+  <a href={$loggedIn ? "/app" : "/"} class="title">coinary</a>
   <div class="menu">
-    <a href="/">Home</a>
+    <a href={$loggedIn ? "/app" : "/"}>Home</a>
     <a href="/docs">Docs</a>
     <a href={$loggedIn ? "/" : "/login"} on:click={_logOut}>{$loggedIn ? "Sign Out" : "Sign In"}</a>
   </div>

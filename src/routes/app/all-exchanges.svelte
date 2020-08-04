@@ -5,6 +5,7 @@
   import moment from "moment";
   import { loggedIn } from "../../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
+  import { fade } from "svelte/transition";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -17,7 +18,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="all-exchanges">
+<div class="all-exchanges" in:fade={{ duration: 300 }}>
   <h1 class="title">All Exchanges</h1>
   <table>
     <tr>

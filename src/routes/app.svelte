@@ -6,9 +6,15 @@
   import { loggedIn } from "../stores/keyfileStore.js";
   import moment from "moment";
   import { goto } from "@sapper/app";
+  import { fade } from "svelte/transition";
 
   if(process.browser && !$loggedIn) goto("/");
-  
+
+  function roundCurrency (val: number | string): string {
+    if(typeof val === "string") val = parseFloat(val);
+    return val.toFixed(5);
+  }
+
 </script>
 
 <svelte:head>
@@ -16,11 +22,11 @@
 </svelte:head>
 
 <NavBar />
-<div class="dashboard">
+<div class="dashboard" in:fade={{ duration: 300 }}>
   <div class="section balance">
     <p>Total balance</p>
     <h1 class="total-balance">
-      3.08351<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span><span style="vertical-align: super; font-size: .4em; color: #FF375D; font-weight: 600">(-0.01%)</span>
+      {roundCurrency($userinfo.balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span><span style="vertical-align: super; font-size: .4em; color: #FF375D; font-weight: 600">(-0.01%)</span>
     </h1>
     <p class="wallet">Wallet: {$userinfo.address}</p>
   </div>
