@@ -83,9 +83,9 @@
     </tr>
   </table>
   <div class="pagination">
-    <a href="/app/all-exchanges/{currentPage <= 1 ? "" : currentPage - 1}" class="prev">{"<-"}</a>
+    <a href="/app/all-exchanges{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
     <span class="current">{currentPage}</span>
-    <a href="/app/all-exchanges/{lastPage >= currentPage ? "" : currentPage + 1}" class="next">{"->"}</a>
+    <a href="/app/all-exchanges{lastPage >= currentPage ? "" : ("?page=" + (currentPage + 1))}" class="next">{"->"}</a>
   </div>
 </div>
 <Footer />
