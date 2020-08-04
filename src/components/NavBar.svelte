@@ -19,7 +19,7 @@
     <a href="/">Home</a>
     <a href="/docs">Docs</a>
     {#if showLogout}
-    <a href="">Log Out</a>
+    <a href="/">Log Out</a>
     {:else}
     <a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Trade" : "Sign In"}</a>
     {/if}
