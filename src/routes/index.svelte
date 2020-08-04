@@ -8,7 +8,7 @@
   import { keyfile, loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
 
-  if($loggedIn) goto("/app");
+  if(process.browser && $loggedIn) goto("/app");
 
 </script>
 

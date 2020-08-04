@@ -3,6 +3,10 @@
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import moment from "moment";
+  import { loggedIn } from "../../stores/keyfileStore.js";
+  import { goto } from "@sapper/app";
+
+  if(process.browser && !$loggedIn) goto("/");
 
   let currentPage = 1, lastPage = 1;
 

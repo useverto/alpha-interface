@@ -11,7 +11,7 @@
   let files: FileList = [];
   let client;
 
-  if($loggedIn) goto("/app");
+  if(process.browser && $loggedIn) goto("/app");
 
   // let's create a new client
   if(process.browser) {

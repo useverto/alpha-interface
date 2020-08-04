@@ -1,4 +1,5 @@
 import { writable, derived } from "svelte/store";
+import { userinfo } from "./userStore.js";
 
 // We store the arweave keyfile here.
 // It gets saved to the local stroage of the browser
@@ -30,3 +31,8 @@ export const loggedIn = derived(
   keyfile,
   $keyfile => ($keyfile !== "" && $keyfile !== "null" && $keyfile !== null && $keyfile !== undefined)
 )
+
+export function logOut () {
+  keyfile.reset();
+  userinfo.reset();
+}

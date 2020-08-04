@@ -9,7 +9,7 @@
 
   let activeMenu: string = "transactions";
 
-  if($loggedIn) goto("/");
+  if(process.browser && !$loggedIn) goto("/");
 
   function roundCurrency (val: number | string): string {
     if(typeof val === "string") val = parseFloat(val)

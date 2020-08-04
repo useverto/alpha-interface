@@ -3,8 +3,12 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import { userinfo } from "../stores/userStore.js";
+  import { loggedIn } from "../stores/keyfileStore.js";
   import moment from "moment";
+  import { goto } from "@sapper/app";
 
+  if(process.browser && !$loggedIn) goto("/");
+  
 </script>
 
 <svelte:head>
@@ -18,7 +22,7 @@
     <h1 class="total-balance">
       3.08351<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span><span style="vertical-align: super; font-size: .4em; color: #FF375D; font-weight: 600">(-0.01%)</span>
     </h1>
-    <p class="wallet">Wallet: KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</p>
+    <p class="wallet">Wallet: {$userinfo.address}</p>
   </div>
   <div class="section">
     <h1 class="title">Assets</h1>

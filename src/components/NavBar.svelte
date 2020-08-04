@@ -1,13 +1,19 @@
 <script lang="typescript">
 
   import { fade } from "svelte/transition";
-  import { keyfile } from "../stores/keyfileStore.js";
+  import { loggedIn, logOut } from "../stores/keyfileStore.js";
+  import { goto } from "@sapper/app";
 
   export let hero: boolean = false;
   let y: number;
 
-  // is the user logged in ?
-  $: loggedIn = ($keyfile !== null && $keyfile !== undefined && $keyfile !== "");
+  function _logOut (e: MouseEvent) {
+    if(!process.browser) return;
+    if(!$loggedIn) return;
+    e.preventDefault();
+    logOut();
+    goto("/");
+  }
 
 </script>
 
@@ -17,7 +23,7 @@
   <div class="menu">
     <a href="/">Home</a>
     <a href="/docs">Docs</a>
-    <a href={loggedIn ? "/" : "/login"}>{loggedIn ? "Log Out" : "Sign In"}</a>
+    <a href={$loggedIn ? "/" : "/login"} on:click={_logOut}>{$loggedIn ? "Sign Out" : "Sign In"}</a>
   </div>
 </div>
 
