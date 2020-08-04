@@ -65,26 +65,26 @@
       </tr>
       <tr>
         <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
+        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
       <tr>
         <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status success"></span></td>
+        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status success"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
       <tr>
         <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status failure"></span></td>
+        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status failure"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
       <tr>
         <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> -> 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
+        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
         <td style="text-transform: uppercase">4hrs 20min</td>
       </tr>
     </table>
-    <a href="/app/all-exchanges" class="view-all">View all -></a>
+    <a href="/app/all-exchanges" class="view-all">View all {"->"}</a>
   </div>
   <div class="section">
     <h1 class="title">Transactions</h1>
@@ -120,15 +120,18 @@
         <td style="text-transform: uppercase">lum</td>
       </tr>
     </table>
-    <a href="/app/all-transactions" class="view-all">View all -></a>
+    <a href="/app/all-transactions" class="view-all">View all {"->"}</a>
   </div>
 </div>
 <Footer />
 
 <style lang="sass">
 
+  @import "../styles/tables.sass"
+
   .dashboard
     padding: 1em 15vw 3em
+    @include table
 
     .section
       padding-bottom: 2.5em
@@ -139,6 +142,10 @@
         color: rgba(#000, .5)
         font-weight: 500
         padding: .8em 0
+        transition: all .3s
+
+        &:hover
+          opacity: .7
 
       &:first-child
         padding-top: 3.5em
@@ -167,82 +174,6 @@
 
       @media screen and (max-width: 720px)
         width: 100%
-        font-size: 2.01em      
-
-  table
-    width: 100%
-
-    tr
-      th, td
-        text-align: left
-
-      th
-        font-weight: 600
-        padding-bottom: 1.15em
-        text-transform: uppercase
-        text-decoration: underline
-
-        &:last-child
-          text-align: right
-
-      td
-        width: 20%
-        padding-bottom: .7em
-
-        &:last-child
-          text-align: right
-
-        .currency
-          text-transform: uppercase
-
-        .status
-          display: inline-block
-          width: 8px
-          height: 8px
-          vertical-align: middle
-          background-color: #000
-          border-radius: 100%
-          position: relative
-
-          &::after
-            content: ""
-            position: absolute
-            top: 50%
-            left: 120%
-            z-index: -10000000
-            opacity: 0
-            padding: 2px 5px
-            background-color: #000
-            box-shadow: 0 8px 16px rgba(#000 , .24)
-            color: #fff
-            font-family: "Inter", sans-serif
-            font-size: 11px
-            font-weight: 300
-            border-radius: 4px
-            transform: translateY(-50%)
-            transition: opacity .3s
-
-          &:hover
-            &::after
-              z-index: 10
-              opacity: 1
-
-          &.success
-            background-color: #00D46E
-
-            &::after
-              content: "Success"
-
-          &.failure
-            background-color: #ff0000
-            
-            &::after
-              content: "Failure"
-
-          &.pending
-            background-color: #FFD336
-            
-            &::after
-              content: "Pending"
+        font-size: 2.01em
 
 </style>

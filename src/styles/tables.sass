@@ -1,0 +1,95 @@
+@mixin table
+  table
+    width: 100%
+
+    tr
+      th, td
+        text-align: left
+
+      th
+        font-weight: 600
+        padding-bottom: 1.15em
+        text-transform: uppercase
+        text-decoration: underline
+
+        &:last-child
+          text-align: right
+
+      td
+        width: 20%
+        padding-bottom: .7em
+
+        &:last-child
+          text-align: right
+
+        .currency
+          text-transform: uppercase
+
+        .status
+          display: inline-block
+          width: 8px
+          height: 8px
+          vertical-align: middle
+          background-color: #000
+          border-radius: 100%
+          position: relative
+
+          &::after
+            content: ""
+            position: absolute
+            top: 50%
+            left: 120%
+            z-index: -10000000
+            opacity: 0
+            padding: 2px 5px
+            background-color: #000
+            box-shadow: 0 8px 16px rgba(#000 , .24)
+            color: #fff
+            font-family: "Inter", sans-serif
+            font-size: 11px
+            font-weight: 300
+            border-radius: 4px
+            transform: translateY(-50%)
+            transition: opacity .3s
+
+          &:hover
+            &::after
+              z-index: 10
+              opacity: 1
+
+          &.success
+            background-color: #00D46E
+
+            &::after
+              content: "Success"
+
+          &.failure
+            background-color: #ff0000
+            
+            &::after
+              content: "Failure"
+
+          &.pending
+            background-color: #FFD336
+            
+            &::after
+              content: "Pending"
+
+@mixin pagination
+  display: block
+  text-align: center
+  
+  a, span
+    color: #000
+    text-decoration: none
+    font-size: 1.1em
+    display: inline-block
+    vertical-align: middle
+
+    &.current
+      background-color: rgba(#000, .2)
+      cursor: pointer
+      padding: 2px
+      border-radius: 100%
+      width: 1.2em
+      height: 1.2em
