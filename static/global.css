@@ -13,6 +13,9 @@ body {
 ::-moz-selection {
   background-color: #9300B8;
 }
+button, input, textarea, select {
+  font-family: "JetBrainsMono", monospace;
+}
 h1.title {
   font-family: "Inter", sans-serif;
   font-size: 2.3em;

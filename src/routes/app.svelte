@@ -11,7 +11,7 @@
   <title>Dashboard</title>
 </svelte:head>
 
-<NavBar showLogout={true} />
+<NavBar />
 <div class="dashboard">
   <div class="section balance">
     <p>Total balance</p>

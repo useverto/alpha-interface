@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { writable, derived } from "svelte/store";
 
 // We store the arweave keyfile here.
 // It gets saved to the local stroage of the browser
@@ -25,3 +25,8 @@ function createKeyfileStore () {
     }
   }
 }
+
+export const loggedIn = derived(
+  keyfile,
+  $keyfile => ($keyfile !== "" && $keyfile !== "null" && $keyfile !== null && $keyfile !== undefined)
+)

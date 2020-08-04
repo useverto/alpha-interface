@@ -5,6 +5,10 @@
   import LatestTrades from "../components/home/LatestTrades.svelte";
   import About from "../components/home/About.svelte";
   import Footer from "../components/Footer.svelte";
+  import { keyfile, loggedIn } from "../stores/keyfileStore.js";
+  import { goto } from "@sapper/app";
+
+  if($loggedIn) goto("/app");
 
 </script>
 

@@ -4,12 +4,14 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile } from "../stores/keyfileStore.js";
+  import { keyfile, loggedIn } from "../stores/keyfileStore.js";
   import { userinfo } from "../stores/userStore.js";
 
   let isDragOver = false;
   let files: FileList = [];
   let client;
+
+  if($loggedIn) goto("/app");
 
   // let's create a new client
   if(process.browser) {
@@ -41,9 +43,6 @@
           });
         }
         reader.readAsText(files[0]);
-      }
-      if($keyfile !== "" && $keyfile !== null) { // redirect if logged in
-        goto("/app");
       }
     }
   }
