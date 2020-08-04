@@ -3,7 +3,7 @@
   import { fade } from "svelte/transition";
   import { keyfile } from "../stores/keyfileStore.js";
 
-  export let blur: boolean = false; // blur when not scrolled ? (used only in the her, as there is a black background)
+  export let hero: boolean = false;
   let y: number;
 
   // is the user logged in ?
@@ -12,7 +12,7 @@
 </script>
 
 <svelte:window bind:scrollY={y} />
-<div class="NavBar" class:scrolled={y > 20 && blur} class:hero={blur} in:fade={{ duration: 750 }}>
+<div class="NavBar" class:scrolled={y > 20} class:hero={hero} in:fade={{ duration: 750 }}>
   <a href="/" class="title">coinary</a>
   <div class="menu">
     <a href="/">Home</a>
@@ -50,8 +50,12 @@
       font-size: 1.75em
       font-weight: 600
       margin: 0
-      opacity: 0
       -webkit-tap-highlight-color: transparent
+      transition: all .3s
+
+    &.hero
+      a.title
+        opacity: 0
 
     .menu
       display: flex

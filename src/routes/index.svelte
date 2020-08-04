@@ -20,7 +20,7 @@
   <!--<meta name="twitter:image" content="https://iimage">-->
 </svelte:head>
 
-<NavBar blur={true} />
+<NavBar hero={true} />
 <Hero />
 <LatestTrades />
 <About id="read-more">
