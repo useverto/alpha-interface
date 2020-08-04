@@ -4,6 +4,7 @@
   import { keyfile } from "../stores/keyfileStore.js";
 
   export let hero: boolean = false;
+  export let showLogout: boolean = false;
   let y: number;
 
   // is the user logged in ?
@@ -17,7 +18,11 @@
   <div class="menu">
     <a href="/">Home</a>
     <a href="/docs">Docs</a>
+    {#if showLogout}
+    <a href="">Log Out</a>
+    {:else}
     <a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Trade" : "Sign In"}</a>
+    {/if}
   </div>
 </div>
 
