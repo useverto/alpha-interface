@@ -3,13 +3,22 @@
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import { balance } from "../../stores/keyfileStore.js";
+  import Button from "../../components/Button.svelte";
 
   let selectedPost;
+  let sendAmount: number = 1;
+  let sendCurrency: string;
+  let recieveCurrency: string;
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
+  }
+
+  // exchange logic
+  function exchange () {
+    console.log(`Exchange ${ sendAmount } ${ sendCurrency } to ${ recieveCurrency }`);    
   }
 
 </script>
@@ -56,7 +65,21 @@
       </tr>
     </table>
     <div class="exchange">
-      test
+      <p>You send</p>
+      <div class="input">
+        <input type="number" bind:value={sendAmount} min={0} />
+        <select bind:value={sendCurrency}>
+          <option value="egg">EGG</option>
+        </select>
+      </div>
+      <p>You recieve</p>
+      <div class="input">
+        <input type="number" value={sendAmount * 3} disabled /><!-- logic here (calculate the exchange receive amount) -->
+        <select bind:value={recieveCurrency}>
+          <option value="lum">LUM</option>
+        </select>
+      </div>
+      <Button click={exchange}>EXCHANGE</Button>
     </div>
   </div>
 </div>
@@ -88,6 +111,8 @@
         margin-bottom: .5em
 
       .balance
+        width: 40%
+
         h1
           font-size: 2.35em
           color: #000
@@ -96,6 +121,12 @@
 
           span
             font-size: .4em
+
+      .recommended-post
+        width: 60%
+
+        select
+          width: 100%
 
     .trade-container
       display: flex
@@ -108,6 +139,36 @@
 
       .exchange
         padding-left: 2.5em
+
+        p
+          color: rgba(#000, .3)
+          font-weight: 600
+          font-size: .95em
+          margin: 0
+          text-transform: uppercase
+
+        .input
+          display: flex
+          align-items: center
+          border: 1px solid #000
+          border-radius: .4em
+          height: 2.35em
+          margin-bottom: 1.7em
+          overflow: hidden
+
+          input
+            width: 80%
+            height: 100%
+            border: none
+            outline: none
+            font-size: 1.2em
+            padding: 0 .5em
+            color: #000
+
+          select
+            width: 20%
+            height: 100%
+            border-radius: 0  
 
     select
       $sidePadding: .65em
@@ -130,5 +191,13 @@
 
       &:hover
         opacity: .8
+
+  \:global(.Button)
+    width: 100%
+    font-family: "JetBrainsMono", monospace !important
+    padding:
+      left: 0 !important
+      right: 0 !important
+    text-align: center !important
 
 </style>
