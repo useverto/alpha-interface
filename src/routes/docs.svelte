@@ -52,6 +52,7 @@
 
       p
         font-size: 1em
+        line-height: 1.5em
         margin: 0
         text-align: justify
 

@@ -48,13 +48,13 @@
 </script>
 
 <svelte:head>
-  <title>Sign in to Coinary</title>
+  <title>Sign in to Verto</title>
   <meta name="description" content="Token Exchange System for Arweave Profit Sharing Tokens">
-  <meta content="Coinary" property="og:title">
+  <meta content="Verto" property="og:title">
   <meta content="Token Exchange System for Arweave Profit Sharing Tokens" property="og:description">
   <!--<meta property="og:image" content="https://image">
   <meta name="twitter:card" content="summary_large_image">-->
-  <meta name="twitter:title" content="Coinary">
+  <meta name="twitter:title" content="Verto">
   <meta name="twitter:description" content="Token Exchange System for Arweave Profit Sharing Tokens">
   <!--<meta name="twitter:image" content="https://iimage">-->
 </svelte:head>
@@ -68,7 +68,7 @@
 <div class="Login">
   <div class="instructions">
     <div class="content">
-      <h1>Sign in to <span><a href="/">coinary</a></span></h1>
+      <h1>Sign in to <span><a href="/">Verto</a></span></h1>
       <p>To sign in, just drag and drop your Arweave Keyfile on this page. <br><br>If you don’t yet have a keyfile, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
       <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
