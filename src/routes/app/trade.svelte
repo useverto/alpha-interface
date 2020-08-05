@@ -4,6 +4,8 @@
   import Footer from "../../components/Footer.svelte";
   import { balance } from "../../stores/keyfileStore.js";
 
+  let selectedPost;
+
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
@@ -25,9 +27,36 @@
     </div>
     <div class="recommended-post">
       <p>Recommended trading post</p>
-      <select>
+      <select bind:value={selectedPost}>
         <option value="5483fchfe485FHJEndheUv7443434435uhjf49f">5483fchfe485FHJEndheUv7443434435uhjf49f</option>
       </select>
+    </div>
+  </div>
+  <div class="trade-container">
+    <table>
+      <tr>
+        <th>Token</th>
+        <th>Amount</th>
+      </tr>
+      <tr>
+        <td>nest.land token</td>
+        <td>0.00696969 <span class="currency">egg</span></td>
+      </tr>
+      <tr>
+        <td>Light Bulb Coin</td>
+        <td>0.00413056 <span class="currency">lum</span></td>
+      </tr>
+      <tr>
+        <td>SoundWave Inc.</td>
+        <td>0.00505455 <span class="currency">wav</span></td>
+      </tr>
+      <tr>
+        <td>Reddit Coin</td>
+        <td>0.00240055 <span class="currency">red</span></td>
+      </tr>
+    </table>
+    <div class="exchange">
+      test
     </div>
   </div>
 </div>
@@ -35,12 +64,20 @@
 
 <style lang="sass">
 
+  @import "../../styles/tables.sass"
+
   .trade
+    @include table
     padding: 4em 15vw 3em
+
+    table
+      td:last-child, th:last-child
+        text-align: left !important
 
     .trade-head
       display: flex
       justify-content: space-between
+      margin-bottom: 2.65em
 
       p
         color: rgba(#000, .3)
@@ -59,6 +96,18 @@
 
           span
             font-size: .4em
+
+    .trade-container
+      display: flex
+
+      table, .exchange
+        width: 50%
+
+      table
+        padding-right: 2.5em
+
+      .exchange
+        padding-left: 2.5em
 
     select
       $sidePadding: .65em
@@ -80,6 +129,6 @@
       transition: all .3s
 
       &:hover
-        opacity: .85
+        opacity: .8
 
 </style>
