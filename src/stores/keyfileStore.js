@@ -48,7 +48,7 @@ export const balance = derived(
     // refresh in every minute
     setInterval(getBalance, 60000);
   },
-  '?'
+  0
 );
 
 // a derived store
