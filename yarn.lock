@@ -1174,7 +1174,7 @@ array-find-index@^1.0.1:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
-arweave@^1.8.0:
+arweave@1.8:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.8.0.tgz#69235d27eb62f4b528ed08ab1b3a9c6c0856875c"
   integrity sha512-bBJ6HcbdJzB17UDLQkj1HjM4RbQEEONVoc4u3xLHxvd+HfOvSOLYfvUu/j06EqR8EnByKua1/d0MJhABkTNWwA==
