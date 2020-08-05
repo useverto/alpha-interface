@@ -2,11 +2,12 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
+  import { fade } from "svelte/transition";
 
 </script>
 
 <NavBar />
-<div class="docs">
+<div class="docs" in:fade={{ duration: 400 }}>
   <h1>Documentation</h1>
   <div class="docs-paragraph">
     <h1 class="title">How to use?</h1>
