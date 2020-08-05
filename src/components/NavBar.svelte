@@ -3,6 +3,7 @@
   import { fade } from "svelte/transition";
   import { loggedIn, logOut } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
+  import logo from "../assets/logo.svg";
 
   export let hero: boolean = false;
   let y: number;
@@ -19,7 +20,7 @@
 
 <svelte:window bind:scrollY={y} />
 <div class="NavBar" class:scrolled={y > 20} class:hero={hero} in:fade={{ duration: 750 }}>
-  <a href={$loggedIn ? "/app" : "/"} class="title">verto</a>
+  <a href={$loggedIn ? "/app" : "/"} class="title"><img src={logo} alt="v" />erto</a>
   <div class="menu">
     <a href={$loggedIn ? "/app" : "/"}>Home</a>
     <a href="/docs">Docs</a>
@@ -53,7 +54,12 @@
       font-weight: 600
       margin: 0
       -webkit-tap-highlight-color: transparent
+      display: flex
+      align-items: center
       transition: all .3s
+
+      img
+        height: 1em
 
     &.hero
       a.title
