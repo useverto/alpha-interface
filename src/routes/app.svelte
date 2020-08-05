@@ -2,8 +2,7 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import { userinfo } from "../stores/userStore.js";
-  import { loggedIn } from "../stores/keyfileStore.js";
+  import { loggedIn, address, balance } from "../stores/keyfileStore.js";
   import moment from "moment";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
@@ -11,6 +10,7 @@
   if(process.browser && !$loggedIn) goto("/");
 
   function roundCurrency (val: number | string): string {
+    if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
     return val.toFixed(5);
   }
@@ -26,9 +26,9 @@
   <div class="section balance">
     <p>Total balance</p>
     <h1 class="total-balance">
-      {roundCurrency($userinfo.balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span><span style="vertical-align: super; font-size: .4em; color: #FF375D; font-weight: 600">(-0.01%)</span>
+      {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span><span style="vertical-align: super; font-size: .4em; color: #FF375D; font-weight: 600">(-0.01%)</span>
     </h1>
-    <p class="wallet">Wallet: {$userinfo.address}</p>
+    <p class="wallet">Wallet: {$address}</p>
   </div>
   <div class="section">
     <h1 class="title">Assets</h1>

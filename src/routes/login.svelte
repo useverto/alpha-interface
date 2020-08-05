@@ -4,8 +4,7 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile, loggedIn } from "../stores/keyfileStore.js";
-  import { userinfo } from "../stores/userStore.js";
+  import { keyfile, loggedIn, address } from "../stores/keyfileStore.js";
 
   let isDragOver = false;
   let files: FileList = [];
@@ -25,25 +24,16 @@
   }
   
   $: {
-    if(process.browser && client !== undefined) {
-      if(files[0] !== null && files[0] !== undefined && files[0].type === "application/json") {
-        let reader = new FileReader();
-        reader.onload = function() {
-          if(typeof reader.result === "string") keyfile.set(reader.result);
-          // getting the userinfo and updating the store
-          // TODO move this to the userStore.js store
-          client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then((address) => {
-            console.log("Arweave Address:", address);
-            client.wallets.getBalance(address).then((balance) => {
-              let ar = client.ar.winstonToAr(balance);
-              console.log("Total Balance:", ar);
-              userinfo.set({ address, balance: ar });
-            });
-            goto("/app");
-          });
-        }
-        reader.readAsText(files[0]);
+    if(process.browser && client !== undefined && files[0] !== null && files[0] !== undefined && files[0].type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if(typeof reader.result === "string") keyfile.set(reader.result);
+        client.wallets.jwkToAddress(JSON.parse(localStorage.getItem("keyfile"))).then(_address => {
+          address.set(_address);
+          goto("/app");
+        });
       }
+      reader.readAsText(files[0]);
     }
   }
 

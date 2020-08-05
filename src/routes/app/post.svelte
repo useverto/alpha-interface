@@ -2,8 +2,7 @@
 
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
-  import { userinfo } from "../../stores/userStore.js";
-  import { loggedIn } from "../../stores/keyfileStore.js";
+  import { loggedIn, address, balance } from "../../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
 
@@ -12,6 +11,7 @@
   if(process.browser && !$loggedIn) goto("/");
 
   function roundCurrency (val: number | string): string {
+    if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
     return val.toFixed(5);
   }
@@ -27,7 +27,7 @@
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
-      <h1>{$userinfo.address}</h1>
+      <h1>{$address}</h1>
     </div>
     <div class="short-cell">
       <p>reputation</p>
@@ -37,7 +37,7 @@
   <div class="post-info big">
     <div class="long-cell">
       <p>total balance</p>
-      <h1>{roundCurrency($userinfo.balance)}<span class="currency">AR</span><span style="vertical-align: super; color: #00D46E; font-size: .5em">(+0.75%)</span></h1>
+      <h1>{roundCurrency($balance)}<span class="currency">AR</span><span style="vertical-align: super; color: #00D46E; font-size: .5em">(+0.75%)</span></h1>
     </div>
     <div class="short-cell">
       <p>total stake</p>
