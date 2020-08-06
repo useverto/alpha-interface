@@ -5,6 +5,7 @@
   export let clear: boolean = false;
   export let target: string = undefined;
   export let click: Function = () => {}; // click event
+  export let style: string = undefined; //TODO STYLE BINDING FOR FULL WIDTH BTN ON TRADE
 
   // don't let malicious links override the content of the site
   // https://web.dev/external-anchors-use-rel-noopener/
@@ -12,7 +13,7 @@
 
 </script>
 
-<a href={href} target={target} rel={rel} class="Button" on:click={click} class:clear class:reverse>
+<a href={href} target={target} rel={rel} class="Button" on:click={click} style={style} class:clear class:reverse>
   <slot></slot>
 </a>
 

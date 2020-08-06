@@ -79,7 +79,7 @@
           <option value="lum">LUM</option>
         </select>
       </div>
-      <Button click={exchange}>EXCHANGE</Button>
+      <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0;"}>EXCHANGE</Button>
     </div>
   </div>
 </div>
@@ -191,13 +191,5 @@
 
       &:hover
         opacity: .8
-
-  \:global(.Button)
-    width: 100%
-    font-family: "JetBrainsMono", monospace !important
-    padding:
-      left: 0 !important
-      right: 0 !important
-    text-align: center !important
 
 </style>
