@@ -42,6 +42,7 @@ yarn run export
 ## Special Thanks
 
 - [Sam Williams](https://twitter.com/samecwilliams)
+- [Cedrik Boudreau](https://github.com/cedriking)
 
 ## License
 
