@@ -1,4 +1,4 @@
-# coinary-app
+# Verto
 Token Exchange Frontend for Arweave Profit Sharing Tokens
 
 ## About
