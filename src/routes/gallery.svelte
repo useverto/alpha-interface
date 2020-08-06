@@ -2,8 +2,14 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
+  import { loggedIn } from "../stores/keyfileStore.js";
+  import { goto } from "@sapper/app";
+  import { fade } from "svelte/transition";
+
+  if(process.browser && !$loggedIn) goto("/");
 
   let sortingType: string;
+  let currentPage = 1, lastPage = 1;
 
 </script>
 
@@ -12,7 +18,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="gallery">
+<div class="gallery" in:fade={{ duration: 300 }}>
   <div class="gallery-head">
     <h1 class="title">Trading Posts</h1>
     <div class="sorting">
@@ -90,11 +96,18 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
+    <div class="pagination">
+      <a href="/gallery{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
+      <span class="current">{currentPage}</span>
+      <a href="/gallery{lastPage >= currentPage ? "" : ("?page=" + (currentPage + 1))}" class="next">{"->"}</a>
+    </div>
   </div>
 </div>
 <Footer />
 
 <style lang="sass">
+
+  @import "../styles/tables.sass"
 
   .gallery
     padding: 4.4em 15vw 3em
@@ -167,5 +180,9 @@
 
               &.reputation
                 text-decoration: underline
+
+    .pagination
+      margin-top: 1em
+      @include pagination
 
 </style>
