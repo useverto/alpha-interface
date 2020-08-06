@@ -2,8 +2,24 @@
 
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
+  import { onMount } from "svelte";
+  import { and, equals } from "arql-ops";
+
+  export let txs = [];
 
   let element, y, windowHeight, shown = false;
+  let client, allTxs;
+
+    // let's create a new client
+  if(process.browser) {
+    // @ts-ignore
+    client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+  }
 
   // fade animation
   $: {
@@ -12,6 +28,26 @@
       if(componentY <= (y + windowHeight + 120) && !shown) shown = true;
     }
   }
+
+  onMount(async () => {
+    //let query = equals("App-Name", "verto");
+    let query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls");
+    allTxs = await client.arql(query);
+    console.log(allTxs);
+    for (let i = 0; i < 5; i++) {
+      try {
+        let res = await client.transactions.get(allTxs[i]);
+        txs.push({
+          id: allTxs[i],
+          amount: client.ar.winstonToAr(res.quantity),
+          pst: "AR"
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    console.log(txs);
+	});
 
 </script>
 
@@ -26,31 +62,13 @@
           <th>AMOUNT</th>
           <th>PST</th>
         </tr>
+        {#each txs as tx}
         <tr>
-          <td>jYKHLCGQuhQyt9uyZNXA6852CzYTu3qVYRKC6pnxIbkzDThbAgip</td>
-          <td>0.00007337</td>
-          <td class="pst">egg</td>
+          <td>{tx.id}</td>
+          <td>{tx.amount}</td>
+          <td class="pst">{tx.pst}</td>
         </tr>
-        <tr>
-          <td>cHZG6U7TzXYykn8m5g6s7vpYpbRvVpthUUpgCI4r9n8AXJKD5Gs1</td>
-          <td>0.00003450</td>
-          <td class="pst">wav</td>
-        </tr>
-        <tr>
-          <td>v5ty9DKrcb9Lnk3yJAdkSA9Eg5Lb6tSwr8rjJNS7Mou5eyGxRbnD</td>
-          <td>0.00000043</td>
-          <td class="pst">arc</td>
-        </tr>
-        <tr>
-          <td>DHy8qyXUJYA3Ygb9y7jujuvwP8eVr9MTpK8Kbl45zYIj3g5KdzgK</td>
-          <td>0.02300443</td>
-          <td class="pst">egg</td>
-        </tr>
-        <tr>
-          <td>vWwPCJWLbFhJ253u25zb3rvtJCB7TvPQ9cxvmQk0qICHLYKfnPgd</td>
-          <td>0.00000242</td>
-          <td class="pst">lum</td>
-        </tr>
+        {/each}
       </table>
     </div>
   {/if}
