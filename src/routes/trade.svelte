@@ -35,7 +35,7 @@
 </script>
 
 <svelte:head>
-  <title>Trade</title>
+  <title>Verto — Trade</title>
 </svelte:head>
 
 <NavBar />

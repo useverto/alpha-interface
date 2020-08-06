@@ -48,7 +48,7 @@
 </script>
 
 <svelte:head>
-  <title>Sign in to Verto</title>
+  <title>Verto — Sign In</title>
   <meta name="description" content="Token Exchange System for Arweave Profit Sharing Tokens">
   <meta content="Verto" property="og:title">
   <meta content="Token Exchange System for Arweave Profit Sharing Tokens" property="og:description">

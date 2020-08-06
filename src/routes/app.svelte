@@ -18,7 +18,7 @@
 </script>
 
 <svelte:head>
-  <title>Dashboard</title>
+  <title>Verto — Dashboard</title>
 </svelte:head>
 
 <NavBar />

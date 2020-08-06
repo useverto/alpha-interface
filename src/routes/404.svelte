@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>404 Not Found</title>
+  <title>Verto — 404</title>
   <meta name="description" content="Not Found">
   <meta content="Verto 404" property="og:title">
   <meta content="Not Found" property="og:description">
