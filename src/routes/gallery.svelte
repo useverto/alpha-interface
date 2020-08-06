@@ -11,6 +11,14 @@
   let sortingType: string;
   let currentPage = 1, lastPage = 1;
 
+  // set current page
+  // redirect to first page if the current page is greater than the last page
+  if(process.browser) {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
+    if(currentPage > lastPage) goto("/gallery");
+  }
+
 </script>
 
 <svelte:head>
