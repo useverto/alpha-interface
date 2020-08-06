@@ -79,6 +79,7 @@
           <option value="lum">LUM</option>
         </select>
       </div>
+      <p class="info">1 {sendCurrency} ~= 0.3255 {recieveCurrency}</p>
       <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0;"}>EXCHANGE</Button>
     </div>
   </div>
@@ -146,6 +147,13 @@
           font-size: .95em
           margin: 0
           text-transform: uppercase
+
+          &.info
+            color: #000
+            font-weight: 400
+            font-size: .74em
+            text-transform: normal
+            margin-bottom: 1.7em
 
         .input
           display: flex
