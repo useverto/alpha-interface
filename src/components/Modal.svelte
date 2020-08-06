@@ -81,6 +81,7 @@
         color: #fff
         margin: 0 25px
         text-align: center
+        cursor: pointer
 
         &:hover
           text-decoration: underline
