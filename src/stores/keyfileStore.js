@@ -22,7 +22,7 @@ function createCustomStore (storeName) {
     subscribe,
     reset: () => { // reset / log out
       set("");
-      localStorage.removeItem(storeName)
+      localStorage.removeItem(storeName);
     },
     set: (val) => { // set
       set(val);
