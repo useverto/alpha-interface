@@ -14,7 +14,7 @@
 </script>
 
 {#if opened}
-  <div class="modal-overlay" in:fade={{ duration: 150 }} out:fade={{ duration: 100 }}></div>
+  <div class="modal-overlay" in:fade={{ duration: 150 }} out:fade={{ duration: 100 }} on:click={() => { if(!confirmation) close(); }}></div>
   <div class="Modal" in:fade={{ duration: 240 }} out:fade={{ duration: 180 }}>
     <div class="content">
       <slot></slot>
