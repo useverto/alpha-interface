@@ -8,11 +8,11 @@
 <svelte:head>
   <title>404 Not Found</title>
   <meta name="description" content="Not Found">
-  <meta content="Coinary 404" property="og:title">
+  <meta content="Verto 404" property="og:title">
   <meta content="Not Found" property="og:description">
   <!--<meta property="og:image" content="https://image">
   <meta name="twitter:card" content="summary_large_image">-->
-  <meta name="twitter:title" content="Coinary 404">
+  <meta name="twitter:title" content="Verto 404">
   <meta name="twitter:description" content="Not found">
   <!--<meta name="twitter:image" content="https://iimage">-->
 </svelte:head>
