@@ -21,7 +21,7 @@
     <div class="Footer" in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
       <div class="FooterContent">
         <div>
-          <a href="/docs">docs</a>
+          <a href="/trade">trade</a>
         </div>
         <div>
           <a href="https://github.com/t8/coinary-app">code</a>
