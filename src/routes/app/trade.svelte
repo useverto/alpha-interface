@@ -4,11 +4,13 @@
   import Footer from "../../components/Footer.svelte";
   import { balance } from "../../stores/keyfileStore.js";
   import Button from "../../components/Button.svelte";
+  import Modal from "../../components/Modal.svelte";
 
   let selectedPost;
   let sendAmount: number = 1;
   let sendCurrency: string;
   let recieveCurrency: string;
+  let confirmModalOpened: boolean = false;
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -16,9 +18,18 @@
     return val.toFixed(7);
   }
 
-  // exchange logic
+  // open confirmation modal
   function exchange () {
-    console.log(`Exchange ${ sendAmount } ${ sendCurrency } to ${ recieveCurrency }`);    
+    confirmModalOpened = true;
+  }
+
+  // todo exchange logic
+  function confirmTrade () {
+    console.log("Confirmed trade");
+  }
+
+  function cancelTrade () {
+    console.log("Cancelled trage");
   }
 
 </script>
@@ -84,6 +95,9 @@
     </div>
   </div>
 </div>
+<Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={confirmTrade} onCancel={cancelTrade}>
+  <p style="text-align: center;">Exchange {sendAmount} {sendCurrency} to {recieveCurrency}</p>
+</Modal>
 <Footer />
 
 <style lang="sass">
