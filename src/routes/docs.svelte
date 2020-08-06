@@ -7,27 +7,17 @@
 </script>
 
 <NavBar />
-<div class="docs" in:fade={{ duration: 400 }}>
+<div class="docs" in:fade={{ duration: 300 }}>
   <h1>Documentation</h1>
   <div class="docs-paragraph">
-    <h1 class="title">How to use?</h1>
+    <h1 class="title">Quick Start</h1>
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis eaque repudiandae minus dicta dignissimos assumenda, non amet. Facere neque sunt velit quibusdam expedita modi temporibus obcaecati aspernatur. Consequuntur, quos nostrum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, modi deleniti. Placeat odio ea id natus cum possimus repudiandae! Ducimus ex laborum provident quam velit quia, officia ipsam delectus vero.</p>
   </div>
   <div class="docs-paragraph">
-    <h1 class="title">Question?</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis eaque repudiandae minus dicta dignissimos assumenda, non amet. Facere neque sunt velit quibusdam expedita modi temporibus obcaecati aspernatur. Consequuntur, quos nostrum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, modi deleniti. Placeat odio ea id natus cum possimus repudiandae! Ducimus ex laborum provident quam velit quia, officia ipsam delectus vero.</p>
-  </div>
-  <div class="docs-paragraph">
-    <h1 class="title">Anything else?</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis eaque repudiandae minus dicta dignissimos assumenda, non amet. Facere neque sunt velit quibusdam expedita modi temporibus obcaecati aspernatur. Consequuntur, quos nostrum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, modi deleniti. Placeat odio ea id natus cum possimus repudiandae! Ducimus ex laborum provident quam velit quia, officia ipsam delectus vero.</p>
-  </div>
-  <div class="docs-paragraph">
-    <h1 class="title">Another question?</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis eaque repudiandae minus dicta dignissimos assumenda, non amet. Facere neque sunt velit quibusdam expedita modi temporibus obcaecati aspernatur. Consequuntur, quos nostrum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, modi deleniti. Placeat odio ea id natus cum possimus repudiandae! Ducimus ex laborum provident quam velit quia, officia ipsam delectus vero.</p>
-  </div>
-  <div class="docs-paragraph">
-    <h1 class="title">Last one</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis eaque repudiandae minus dicta dignissimos assumenda, non amet. Facere neque sunt velit quibusdam expedita modi temporibus obcaecati aspernatur. Consequuntur, quos nostrum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, modi deleniti. Placeat odio ea id natus cum possimus repudiandae! Ducimus ex laborum provident quam velit quia, officia ipsam delectus vero.</p>
+    <h1 class="title">Start a Trading Post</h1>
+    <p>
+      All of the necessary information to start a trading post of your own will be located on the <a href="https://github.com/t8/coinary-trading-post">trading post repository</a>.
+    </p>
   </div>
 </div>
 <Footer />
@@ -55,5 +45,13 @@
         line-height: 1.5em
         margin: 0
         text-align: justify
+
+      a
+        transition: color linear 0.1s
+        color: #000
+
+        &:hover
+          transition: color linear 0.1s
+          color: #C54DFD
 
 </style>
