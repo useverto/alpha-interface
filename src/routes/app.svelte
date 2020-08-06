@@ -26,7 +26,7 @@
   <div class="section balance">
     <p>Total balance</p>
     <h1 class="total-balance">
-      {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span><span style="vertical-align: super; font-size: .4em; color: #FF375D; font-weight: 600">(-0.01%)</span>
+      {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
     </h1>
     <p class="wallet">Wallet: {$address}</p>
   </div>
