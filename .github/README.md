@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://verto.exchange">
-    <img src="../static/logo_dark.svg" alt="Verto logo (dark version)" width="110">
+    <img src="../static/logo_light.svg" alt="Verto logo (dark version)" width="110">
   </a>
 
   <h3 align="center">Verto</h3>
