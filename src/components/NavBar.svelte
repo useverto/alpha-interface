@@ -3,7 +3,6 @@
   import { fade } from "svelte/transition";
   import { loggedIn, logOut } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
-  import logo from "../assets/logo.svg";
 
   export let hero: boolean = false;
   let y: number;
@@ -20,7 +19,7 @@
 
 <svelte:window bind:scrollY={y} />
 <div class="NavBar" class:scrolled={y > 20} class:hero={hero} in:fade={{ duration: 750 }}>
-  <a href={$loggedIn ? "/app" : "/"} class="title"><img src={logo} alt="v" /></a>
+  <a href={$loggedIn ? "/app" : "/"} class="title"><img src="/logo_light.svg" alt="v" /></a>
   <div class="menu">
     {#if $loggedIn}
       <a href="/trade">Trade</a>
