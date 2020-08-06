@@ -80,7 +80,7 @@
         </select>
       </div>
       <p class="info">1 {sendCurrency} ~= 0.3255 {recieveCurrency}</p>
-      <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0;"}>EXCHANGE</Button>
+      <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0; font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
     </div>
   </div>
 </div>

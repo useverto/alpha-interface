@@ -2,6 +2,7 @@
 
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
+  import Button from "../../components/Button.svelte";
   import { loggedIn, address, balance } from "../../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
@@ -49,7 +50,9 @@
     <div class="menu">
       <button class:active={activeMenu === "transactions"} on:click={() => activeMenu = "transactions"}>Transactions</button>
       <button class:active={activeMenu === "assets"} on:click={() => activeMenu = "assets"}>Assets</button>
-      <button class="trade">Trade now</button>
+      <div class="trade">
+        <Button href="/app/trade" style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Trade now</Button>
+      </div>
     </div>
     <div class="content">
       {#if activeMenu === "assets"}
@@ -210,17 +213,9 @@
             opacity: 1
             height: 3px
 
-          &.trade
-            position: absolute
-            right: 0
-            top: 0
-            background-color: #000
-            font-weight: 400
-            color: #fff
-            border-radius: 6px
-            transition: all .3s
-
-            &:hover
-              opacity: .8
+        .trade
+          position: absolute
+          right: 0
+          top: 0
 
 </style>
