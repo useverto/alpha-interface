@@ -13,7 +13,7 @@
 ## About
 This is the front-end/app for the PST exchange service. It is built in Svelte(Sapper), JS and TS. We use the export feature of Sapper to create an arweave-deployable app.
 
-You can access the code for trading posts [here](https://github.com/t8/coinary-trading-post).
+You can access the code for trading posts [here](https://github.com/useverto/trading-post).
 
 ## Guide
 To build/use the service on localhost, you will have to download Node, and install the yarn package manager (`npm i -g yarn`). When you have these, clone this repository and run `yarn install` to add the required dependencies. 

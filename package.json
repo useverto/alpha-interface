@@ -1,5 +1,5 @@
 {
-  "name": "verto",
+  "name": "verto-app",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",
