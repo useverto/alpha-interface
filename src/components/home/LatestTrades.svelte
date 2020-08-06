@@ -5,21 +5,8 @@
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
 
-  export let txs = [];
-
   let element, y, windowHeight, shown = false;
-  let client, allTxs;
-
-    // let's create a new client
-  if(process.browser) {
-    // @ts-ignore
-    client = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-  }
+  let txs = getLatestTrades();
 
   // fade animation
   $: {
@@ -29,15 +16,26 @@
     }
   }
 
-  onMount(async () => {
-    //let query = equals("App-Name", "verto");
-    let query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls");
-    allTxs = await client.arql(query);
-    console.log(allTxs);
-    for (let i = 0; i < 5; i++) {
+  async function getLatestTrades (): Promise<{ id: number, amount: number, pst: string }[]> {
+    if(!process.browser) return [];
+
+    // @ts-ignore
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let 
+      query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
+      _txs: { id: number, amount: number, pst: string }[] = [],
+      allTxs = await client.arql(query);
+
+    for(let i = 0; i < 5; i++) {
       try {
         let res = await client.transactions.get(allTxs[i]);
-        txs.push({
+        _txs.push({
           id: allTxs[i],
           amount: client.ar.winstonToAr(res.quantity),
           pst: "AR"
@@ -46,15 +44,16 @@
         console.log(error);
       }
     }
-    console.log(txs);
-	});
+    
+    return _txs;
+  }
 
 </script>
 
 <svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <div class="LatestTrades" bind:this={element}>
   {#if shown}
-    <div in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
+    <div in:fade={{ duration: 400, delay: 411, easing: backOut }}>
       <h1 class="title">Latest Trades</h1>
       <table>
         <tr>
@@ -62,13 +61,17 @@
           <th>AMOUNT</th>
           <th>PST</th>
         </tr>
-        {#each txs as tx}
-        <tr>
-          <td>{tx.id}</td>
-          <td>{tx.amount}</td>
-          <td class="pst">{tx.pst}</td>
-        </tr>
-        {/each}
+        {#await txs}
+          <p>Loading...</p>
+        {:then loadedTxs}
+          {#each loadedTxs as tx}
+            <tr>
+              <td>{tx.id}</td>
+              <td>{tx.amount}</td>
+              <td class="pst">{tx.pst}</td>
+            </tr>
+          {/each}
+        {/await}
       </table>
     </div>
   {/if}
