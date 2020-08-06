@@ -22,7 +22,7 @@
 <div class="NavBar" class:scrolled={y > 20} class:hero={hero} in:fade={{ duration: 750 }}>
   <a href={$loggedIn ? "/app" : "/"} class="title"><img src={logo} alt="v" /></a>
   <div class="menu">
-    <a href={$loggedIn ? "/app" : "/"}>Home</a>
+    <a href={$loggedIn ? "/app" : "/"}>{$loggedIn ? "Dashboard" : "Home"}</a>
     <a href="/docs">Docs</a>
     <a href={$loggedIn ? "/" : "/login"} on:click={_logOut}>{$loggedIn ? "Sign Out" : "Sign In"}</a>
   </div>
@@ -110,7 +110,6 @@
             left: 0
 
         &:hover
-          color: rgba(#000, .7)
 
           &::after
             width: calc(100% - #{$sideMargin * 4})
