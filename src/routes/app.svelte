@@ -6,8 +6,34 @@
   import moment from "moment";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
+  import { onMount } from "svelte";
+  import { and, equals } from "arql-ops";
+
+  let client;
 
   if(process.browser && !$loggedIn) goto("/");
+
+  // let"s create a new client
+  if(process.browser) {
+    // @ts-ignore
+    client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+  }
+
+  let txIds = [];
+  const txQuery = and(
+    equals("from", $address),
+    equals("App-Name", "verto"),
+  );
+  
+  onMount(async () => {
+    txIds = await client.arql(txQuery);
+    txIds.slice(0,3);
+  });
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -105,29 +131,11 @@
         <th>Pst</th>
       </tr>
       <tr>
-        <td style="width: 70%">jYKHLCGQuhQyt9uyZNXA6852CzYTu3qVYRKC6pnxIbkzDThbAgip <span class="status success"></span></td>
-        <td style="width: 20%">0.00007337</td>
-        <td style="text-transform: uppercase">egg</td>
-      </tr>
-      <tr>
-        <td style="width: 70%">cHZG6U7TzXYykn8m5g6s7vpYpbRvVpthUUpgCI4r9n8AXJKD5Gs1 <span class="status pending"></span></td>
-        <td style="width: 20%">0.00003450</td>
-        <td style="text-transform: uppercase">wav</td>
-      </tr>
-      <tr>
-        <td style="width: 70%">v5ty9DKrcb9Lnk3yJAdkSA9Eg5Lb6tSwr8rjJNS7Mou5eyGxRbnD <span class="status failure"></span></td>
-        <td style="width: 20%">0.00000043</td>
-        <td style="text-transform: uppercase">arc</td>
-      </tr>
-      <tr>
-        <td style="width: 70%">DHy8qyXUJYA3Ygb9y7jujuvwP8eVr9MTpK8Kbl45zYIj3g5KdzgK <span class="status failure"></span></td>
-        <td style="width: 20%">0.02300443</td>
-        <td style="text-transform: uppercase">egg</td>
-      </tr>
-      <tr>
-        <td style="width: 70%">vWwPCJWLbFhJ253u25zb3rvtJCB7TvPQ9cxvmQk0qICHLYKfnPgd <span class="status success"></span></td>
-        <td style="width: 20%">0.00000242</td>
-        <td style="text-transform: uppercase">lum</td>
+        {#each txIds as id}
+          <td style="width: 70%">{id} <span class="status success"></span></td>
+          <td style="width: 20%"></td>
+          <td style="text-transform: uppercase"></td>
+        {/each}
       </tr>
     </table>
     <a href="/app/all-transactions" class="view-all">View all {"->"}</a>

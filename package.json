@@ -12,6 +12,7 @@
     "test": "run-p --race dev cy:run"
   },
   "dependencies": {
+    "arql-ops": "^1.0.0",
     "arweave": "1.8",
     "compression": "^1.7.1",
     "moment": "^2.27.0",
