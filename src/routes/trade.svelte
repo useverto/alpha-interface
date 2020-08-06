@@ -1,10 +1,10 @@
 <script lang="typescript">
 
-  import NavBar from "../../components/NavBar.svelte";
-  import Footer from "../../components/Footer.svelte";
-  import { balance } from "../../stores/keyfileStore.js";
-  import Button from "../../components/Button.svelte";
-  import Modal from "../../components/Modal.svelte";
+  import NavBar from "../components/NavBar.svelte";
+  import Footer from "../components/Footer.svelte";
+  import { balance } from "../stores/keyfileStore.js";
+  import Button from "../components/Button.svelte";
+  import Modal from "../components/Modal.svelte";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -102,7 +102,7 @@
 
 <style lang="sass">
 
-  @import "../../styles/tables.sass"
+  @import "../styles/tables.sass"
 
   .trade
     @include table
