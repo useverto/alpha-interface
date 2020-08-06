@@ -13,17 +13,6 @@
     }
   }
 
-    // let's create a new client
-  if(process.browser) {
-    // @ts-ignore
-    client = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-  }
-
 </script>
 
 <svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
