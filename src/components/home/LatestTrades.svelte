@@ -44,7 +44,7 @@
         console.log(error);
       }
     }
-    
+
     return _txs;
   }
 
@@ -65,7 +65,7 @@
           <p>Loading...</p>
         {:then loadedTxs}
           {#each loadedTxs as tx}
-            <tr>
+            <tr in:fade={{ duration: 185 }}>
               <td>{tx.id}</td>
               <td>{tx.amount}</td>
               <td class="pst">{tx.pst}</td>
