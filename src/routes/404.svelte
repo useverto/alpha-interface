@@ -22,7 +22,6 @@
     <h1><span>404</span> Not Found</h1>
     <p>This is not the page you're looking for.</p>
     <Button href="/" reverse={true}>Go home</Button>
-    <Button href="/docs" reverse={true} clear={true}>View docs</Button>
   </div>
 </div>
 

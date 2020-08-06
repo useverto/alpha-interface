@@ -23,7 +23,6 @@
   <a href={$loggedIn ? "/app" : "/"} class="title"><img src={logo} alt="v" /></a>
   <div class="menu">
     <a href={$loggedIn ? "/app" : "/"}>{$loggedIn ? "Dashboard" : "Home"}</a>
-    <a href="/docs">Docs</a>
     <a href={$loggedIn ? "/" : "/login"} on:click={_logOut}>{$loggedIn ? "Sign Out" : "Sign In"}</a>
   </div>
 </div>
