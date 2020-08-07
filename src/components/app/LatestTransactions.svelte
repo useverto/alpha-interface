@@ -13,7 +13,7 @@
     return val.toFixed(7);
   }
 
-  async function getLatestTransactions (): Promise<{ id: string, amount: number }[]> {
+  async function getLatestTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
     if(!process.browser) return [];
 
     // @ts-ignore
@@ -26,7 +26,7 @@
 
     let 
       query = equals("from", $address),
-      _txs: { id: string, amount: number }[] = [],
+      _txs: { id: string, amount: number, status: string }[] = [],
       allTxs = await client.arql(query);
 
     for(let i = 0; i < 5; i++) {
@@ -34,8 +34,19 @@
         let res = await client.transactions.get(allTxs[i]);
         _txs.push({
           id: allTxs[i],
-          amount: client.ar.winstonToAr(res.quantity)
+          amount: client.ar.winstonToAr(res.quantity),
+          status: ""
         });
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        let res = await client.transactions.getStatus(allTxs[i]);
+        if (res.status === 200)
+          _txs[i].status = "success";
+        else
+          _txs[i].status = "pending";
       } catch (error) {
         console.log(error);
       }
@@ -51,15 +62,15 @@
   <table>
       <tr>
           <th style="text-transform: none">TxID</th>
-          <th>Amount (AR)</th>
+          <th>Amount</th>
       </tr>
       {#await transactions}
           <p>Loading...</p>
       {:then loadedTxs}
           {#each loadedTxs as tx}
           <tr>
-              <td style="width: 70%">{tx.id} <span class="status success"></span></td>
-              <td style="width: 20%">{roundCurrency(tx.amount)}</td>
+              <td style="width: 70%">{tx.id} <span class="status {tx.status}"></span></td>
+              <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
           </tr>
           {/each}
       {/await}
