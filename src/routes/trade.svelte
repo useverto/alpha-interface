@@ -117,6 +117,9 @@
       justify-content: space-between
       margin-bottom: 2.65em
 
+      @media screen and (max-width: 720px)
+        display: block
+
       p
         color: rgba(#000, .3)
         font-weight: 600
@@ -127,6 +130,10 @@
 
       .balance
         width: 40%
+
+        @media screen and (max-width: 720px)
+          width: auto
+          margin-bottom: 2em
 
         h1
           font-size: 2.35em
@@ -140,20 +147,36 @@
       .recommended-post
         width: 60%
 
+        @media screen and (max-width: 720px)
+          width: auto
+
         select
           width: 100%
 
     .trade-container
       display: flex
 
+      @media screen and (max-width: 720px)
+        display: block
+
       table, .exchange
         width: 50%
+
+        @media screen and (max-width: 720px)
+          width: auto
 
       table
         padding-right: 2.5em
 
+        @media screen and (max-width: 720px)
+          padding: 0
+          margin-bottom: 2em
+
       .exchange
         padding-left: 2.5em
+
+        @media screen and (max-width: 720px)
+          padding: 0
 
         p
           color: rgba(#000, .3)

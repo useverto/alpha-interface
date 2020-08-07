@@ -4,6 +4,7 @@
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
+  import Loading from "../Loading.svelte";
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
@@ -62,7 +63,7 @@
           <th>PST</th>
         </tr>
         {#await txs}
-          <p>Loading...</p>
+          <Loading style="position: absolute; left: 50%;" />
         {:then loadedTxs}
           {#each loadedTxs as tx}
             <tr in:fade={{ duration: 185 }}>

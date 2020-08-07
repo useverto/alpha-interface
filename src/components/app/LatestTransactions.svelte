@@ -2,6 +2,7 @@
 
   import { address } from "../../stores/keyfileStore.js";
   import moment from "moment";
+  import Loading from "../Loading.svelte";
   import { equals } from "arql-ops";
 
   let client;
@@ -65,14 +66,19 @@
           <th>Amount</th>
       </tr>
       {#await transactions}
-          <p>Loading...</p>
+        <Loading style="position: absolute; left: 50%;" />
+        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
       {:then loadedTxs}
-          {#each loadedTxs as tx}
+        {#if loadedTxs.length === 0}
+          <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
+          <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+        {/if}
+        {#each loadedTxs as tx}
           <tr>
-              <td style="width: 70%">{tx.id} <span class="status {tx.status}"></span></td>
-              <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+            <td style="width: 70%">{tx.id} <span class="status {tx.status}"></span></td>
+            <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
           </tr>
-          {/each}
+        {/each}
       {/await}
   </table>
   <a href="/app/all-transactions" class="view-all">View all {"->"}</a>

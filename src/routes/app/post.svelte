@@ -8,8 +8,15 @@
   import { goto } from "@sapper/app";
 
   let activeMenu: string = "transactions";
+  let id: string = "";
 
   if(process.browser && !$loggedIn) goto("/");
+
+  if(process.browser) {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("id") === null) goto("/gallery");
+    id = params.get("id");
+  }
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -28,7 +35,7 @@
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
-      <h1>{$address}</h1>
+      <h1>{id}</h1>
     </div>
     <div class="short-cell">
       <p>reputation</p>
@@ -139,11 +146,21 @@
       display: flex
       margin-bottom: 1.6em
 
+      @media screen and (max-width: 720px)
+        display: block
+
       .long-cell
         width: 78%
 
+        @media screen and (max-width: 720px)
+          width: auto
+          margin-bottom: 2em
+
       .short-cell
         width: 22%
+
+        @media screen and (max-width: 720px)
+          width: auto
 
       h1
         color: #000
@@ -184,6 +201,10 @@
         display: flex
         margin-bottom: 1.5em
 
+        @media screen and (max-width: 720px)
+          justify-content: space-between
+          padding-top: 4em
+
         button
           position: relative
           padding: .4em 1.8em
@@ -197,6 +218,11 @@
           outline: none
           text-align: center
           cursor: pointer
+
+          @media screen and (max-width: 720px)
+            padding:
+              left: 0
+              right: 0
 
           &::after
             content: ""
@@ -217,5 +243,9 @@
           position: absolute
           right: 0
           top: 0
+
+          @media screen and (max-width: 720px)
+            right: unset
+            left: 0
 
 </style>
