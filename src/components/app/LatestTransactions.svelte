@@ -2,6 +2,7 @@
 
   import { address } from "../../stores/keyfileStore.js";
   import moment from "moment";
+  import Loading from "../Loading.svelte";
   import { equals } from "arql-ops";
 
   let client;
@@ -65,7 +66,7 @@
           <th>Amount</th>
       </tr>
       {#await transactions}
-          <p>Loading...</p>
+        <Loading style="position: absolute; left: 50%;" />
       {:then loadedTxs}
           {#each loadedTxs as tx}
           <tr>
