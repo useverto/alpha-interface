@@ -16,7 +16,7 @@
     }
   }
 
-  async function getLatestTrades (): Promise<{ id: number, amount: number, pst: string }[]> {
+  async function getLatestTrades (): Promise<{ id: string, amount: number, pst: string }[]> {
     if(!process.browser) return [];
 
     // @ts-ignore
@@ -29,7 +29,7 @@
 
     let 
       query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
-      _txs: { id: number, amount: number, pst: string }[] = [],
+      _txs: { id: string, amount: number, pst: string }[] = [],
       allTxs = await client.arql(query);
 
     for(let i = 0; i < 5; i++) {

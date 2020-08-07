@@ -2,6 +2,7 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
+  import LatestTransactions from "../components/app/LatestTransactions.svelte";
   import { loggedIn, address, balance } from "../stores/keyfileStore.js";
   import moment from "moment";
   import { goto } from "@sapper/app";
@@ -13,34 +14,11 @@
 
   if(process.browser && !$loggedIn) goto("/");
 
-  // let"s create a new client
-  if(process.browser) {
-    // @ts-ignore
-    client = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-  }
-
-  let txIds = [];
-  const txQuery = and(
-    equals("from", $address),
-    equals("App-Name", "verto"),
-  );
-  
-  onMount(async () => {
-    txIds = await client.arql(txQuery);
-    txIds.slice(0,3);
-  });
-
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
   }
-
 </script>
 
 <svelte:head>
@@ -122,24 +100,7 @@
     </table>
     <a href="/app/all-exchanges" class="view-all">View all {"->"}</a>
   </div>
-  <div class="section">
-    <h1 class="title">Transactions</h1>
-    <table>
-      <tr>
-        <th style="text-transform: none">TxID</th>
-        <th>Amount</th>
-        <th>Pst</th>
-      </tr>
-      <tr>
-        {#each txIds as id}
-          <td style="width: 70%">{id} <span class="status success"></span></td>
-          <td style="width: 20%"></td>
-          <td style="text-transform: uppercase"></td>
-        {/each}
-      </tr>
-    </table>
-    <a href="/app/all-transactions" class="view-all">View all {"->"}</a>
-  </div>
+  <LatestTransactions />
 </div>
 <Footer />
 
