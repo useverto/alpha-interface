@@ -35,7 +35,7 @@
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
-      <h1>{$address}</h1>
+      <h1>{id}</h1>
     </div>
     <div class="short-cell">
       <p>reputation</p>
