@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class="gallery-content">
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>
@@ -48,7 +48,7 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>
@@ -56,7 +56,7 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>
@@ -64,7 +64,7 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>
@@ -72,7 +72,7 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>
@@ -80,7 +80,7 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>
@@ -88,7 +88,7 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>
@@ -96,7 +96,7 @@
         <p>Stake <span>{80.23102}AR</span></p>
       </div>
     </a>
-    <a class="post" href="/">
+    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
       <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
       <div class="post-info">
         <p>Reputation <span class="reputation">{51.7329}</span></p>

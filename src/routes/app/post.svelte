@@ -8,8 +8,15 @@
   import { goto } from "@sapper/app";
 
   let activeMenu: string = "transactions";
+  let id: string = "";
 
   if(process.browser && !$loggedIn) goto("/");
+
+  if(process.browser) {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("id") === null) goto("/gallery");
+    id = params.get("id");
+  }
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
