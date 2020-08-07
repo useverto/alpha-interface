@@ -146,11 +146,21 @@
       display: flex
       margin-bottom: 1.6em
 
+      @media screen and (max-width: 720px)
+        display: block
+
       .long-cell
         width: 78%
 
+        @media screen and (max-width: 720px)
+          width: auto
+          margin-bottom: 2em
+
       .short-cell
         width: 22%
+
+        @media screen and (max-width: 720px)
+          width: auto
 
       h1
         color: #000
@@ -191,6 +201,10 @@
         display: flex
         margin-bottom: 1.5em
 
+        @media screen and (max-width: 720px)
+          justify-content: space-between
+          padding-top: 4em
+
         button
           position: relative
           padding: .4em 1.8em
@@ -204,6 +218,11 @@
           outline: none
           text-align: center
           cursor: pointer
+
+          @media screen and (max-width: 720px)
+            padding:
+              left: 0
+              right: 0
 
           &::after
             content: ""
@@ -224,5 +243,9 @@
           position: absolute
           right: 0
           top: 0
+
+          @media screen and (max-width: 720px)
+            right: unset
+            left: 0
 
 </style>
