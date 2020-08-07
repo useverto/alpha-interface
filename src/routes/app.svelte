@@ -75,7 +75,7 @@
       <tr>
         <th>Timestamp</th>
         <th>Exchange</th>
-        <th>Durration</th>
+        <th>Duration</th>
       </tr>
       <tr>
         <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
