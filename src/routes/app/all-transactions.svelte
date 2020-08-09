@@ -1,15 +1,20 @@
 <script lang="typescript">
 
+  import { address } from "../../stores/keyfileStore.js";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
+  import Loading from "../../components/Loading.svelte";
   import moment from "moment";
   import { loggedIn } from "../../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
+  import { equals } from "arql-ops";
 
   if(process.browser && !$loggedIn) goto("/");
 
   let currentPage = 1, lastPage = 1;
+  let client;
+  let transactions = getAllTransactions();
 
   // set current page
   // redirect to first page if the current page is greater than the last page
@@ -17,6 +22,54 @@
     const params = new URLSearchParams(window.location.search);
     if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
     if(currentPage > lastPage) goto("/app/all-transactions");
+  }
+
+  function roundCurrency (val: number | string): string {
+    if(val === "?") return val;
+    if(typeof val === "string") val = parseFloat(val);
+    return val.toFixed(7);
+  }
+
+  async function getAllTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
+    if(!process.browser) return [];
+
+    // @ts-ignore
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let 
+      query = equals("from", $address),
+      _txs: { id: string, amount: number, status: string }[] = [],
+      allTxs = await client.arql(query);
+
+    for(let i = 0; i < 5; i++) {
+      try {
+        let res = await client.transactions.get(allTxs[i]);
+        _txs.push({
+          id: allTxs[i],
+          amount: client.ar.winstonToAr(res.quantity),
+          status: ""
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        let res = await client.transactions.getStatus(allTxs[i]);
+        if (res.status === 200)
+          _txs[i].status = "success";
+        else
+          _txs[i].status = "pending";
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    return _txs;
   }
 
 </script>
@@ -32,58 +85,22 @@
     <tr>
       <th style="text-transform: none">TxID</th>
       <th>Amount</th>
-      <th>Pst</th>
     </tr>
-    <tr>
-      <td style="width: 70%">jYKHLCGQuhQyt9uyZNXA6852CzYTu3qVYRKC6pnxIbkzDThbAgip <span class="status success"></span></td>
-      <td style="width: 20%">0.00007337</td>
-      <td style="text-transform: uppercase">egg</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">cHZG6U7TzXYykn8m5g6s7vpYpbRvVpthUUpgCI4r9n8AXJKD5Gs1 <span class="status pending"></span></td>
-      <td style="width: 20%">0.00003450</td>
-      <td style="text-transform: uppercase">wav</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">v5ty9DKrcb9Lnk3yJAdkSA9Eg5Lb6tSwr8rjJNS7Mou5eyGxRbnD <span class="status failure"></span></td>
-      <td style="width: 20%">0.00000043</td>
-      <td style="text-transform: uppercase">arc</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">DHy8qyXUJYA3Ygb9y7jujuvwP8eVr9MTpK8Kbl45zYIj3g5KdzgK <span class="status failure"></span></td>
-      <td style="width: 20%">0.02300443</td>
-      <td style="text-transform: uppercase">egg</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">vWwPCJWLbFhJ253u25zb3rvtJCB7TvPQ9cxvmQk0qICHLYKfnPgd <span class="status success"></span></td>
-      <td style="width: 20%">0.00000242</td>
-      <td style="text-transform: uppercase">lum</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">jYKHLCGQuhQyt9uyZNXA6852CzYTu3qVYRKC6pnxIbkzDThbAgip <span class="status success"></span></td>
-      <td style="width: 20%">0.00007337</td>
-      <td style="text-transform: uppercase">egg</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">cHZG6U7TzXYykn8m5g6s7vpYpbRvVpthUUpgCI4r9n8AXJKD5Gs1 <span class="status pending"></span></td>
-      <td style="width: 20%">0.00003450</td>
-      <td style="text-transform: uppercase">wav</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">v5ty9DKrcb9Lnk3yJAdkSA9Eg5Lb6tSwr8rjJNS7Mou5eyGxRbnD <span class="status failure"></span></td>
-      <td style="width: 20%">0.00000043</td>
-      <td style="text-transform: uppercase">arc</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">DHy8qyXUJYA3Ygb9y7jujuvwP8eVr9MTpK8Kbl45zYIj3g5KdzgK <span class="status failure"></span></td>
-      <td style="width: 20%">0.02300443</td>
-      <td style="text-transform: uppercase">egg</td>
-    </tr>
-    <tr>
-      <td style="width: 70%">vWwPCJWLbFhJ253u25zb3rvtJCB7TvPQ9cxvmQk0qICHLYKfnPgd <span class="status success"></span></td>
-      <td style="width: 20%">0.00000242</td>
-      <td style="text-transform: uppercase">lum</td>
-    </tr>
+    {#await transactions}
+      <Loading style="position: absolute; left: 50%;" />
+      <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+    {:then loadedTxs}
+      {#if loadedTxs.length === 0}
+        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
+        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+      {/if}
+      {#each loadedTxs as tx}
+        <tr>
+          <td style="width: 70%">{tx.id} <span class="status {tx.status}"></span></td>
+          <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+        </tr>
+      {/each}
+    {/await}
   </table>
   <div class="pagination">
     <a href="/app/all-transactions{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
