@@ -96,7 +96,12 @@
       {/if}
       {#each loadedTxs as tx}
         <tr>
-          <td style="width: 70%">{tx.id} <span class="status {tx.status}"></span></td>
+          <td style="width: 70%">
+            <a href="https://viewblock.io/arweave/tx/{tx.id}">
+              {tx.id} 
+              <span class="status {tx.status}"></span>
+            </a>
+          </td>
           <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
         </tr>
       {/each}
@@ -121,5 +126,10 @@
     .pagination
       margin-top: 1.3em
       @include pagination
+
+    td
+      a
+        text-decoration: none
+        color: black
 
 </style>
