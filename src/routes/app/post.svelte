@@ -8,14 +8,14 @@
   import { goto } from "@sapper/app";
 
   let activeMenu: string = "transactions";
-  let id: string = "";
+  let addr: string = "";
 
   if(process.browser && !$loggedIn) goto("/");
 
   if(process.browser) {
     const params = new URLSearchParams(window.location.search);
-    if(params.get("id") === null) goto("/gallery");
-    id = params.get("id");
+    if(params.get("addr") === null) goto("/gallery");
+    addr = params.get("addr");
   }
 
   function roundCurrency (val: number | string): string {
@@ -35,7 +35,7 @@
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
-      <h1>{id}</h1>
+      <h1>{addr}</h1>
     </div>
     <div class="short-cell">
       <p>reputation</p>

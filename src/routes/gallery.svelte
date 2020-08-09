@@ -85,7 +85,7 @@
         <p>No posts found</p>
       {/if}
       {#each loadedPosts as post}
-        <a class="post" href="/app/post?id={post.addr}">
+        <a class="post" href="/app/post?addr={post.addr}">
           <h1>{post.addr}</h1>
           <div class="post-info">
             <p>Reputation <span class="reputation">{post.reputation}</span></p>
