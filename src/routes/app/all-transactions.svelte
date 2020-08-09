@@ -46,7 +46,7 @@
       _txs: { id: string, amount: number, status: string }[] = [],
       allTxs = await client.arql(query);
 
-    for(let i = 0; i < 5; i++) {
+    for(let i = 0; i < allTxs.length; i++) {
       try {
         let res = await client.transactions.get(allTxs[i]);
         _txs.push({
