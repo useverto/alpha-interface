@@ -8,7 +8,7 @@
   import { loggedIn } from "../../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { equals } from "arql-ops";
+  import { equals, or } from "arql-ops";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -42,7 +42,10 @@
     });
 
     let 
-      query = equals("from", $address),
+      query = or(
+        equals("from", $address),
+        equals("to", $address),
+      ),
       _txs: { id: string, amount: number, status: string }[] = [],
       allTxs = await client.arql(query);
 

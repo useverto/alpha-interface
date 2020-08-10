@@ -3,7 +3,7 @@
   import { address } from "../../stores/keyfileStore.js";
   import moment from "moment";
   import Loading from "../Loading.svelte";
-  import { equals } from "arql-ops";
+  import { equals, or } from "arql-ops";
 
   let client;
   let transactions = getLatestTransactions();
@@ -26,7 +26,10 @@
     });
 
     let 
-      query = equals("from", $address),
+      query = or(
+        equals("from", $address),
+        equals("to", $address),
+      ),
       _txs: { id: string, amount: number, status: string }[] = [],
       allTxs = await client.arql(query);
 
