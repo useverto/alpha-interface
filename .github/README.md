@@ -48,3 +48,12 @@ yarn run export
 
 The code contained within this repository is licensed under the MIT license.
 See [`./LICENSE`](../LICENSE) for more information.
+
+## How to deploy
+Since Sapper needs to know the exact path it will be served from, and when you deploy on arweave, you don't know the path until after you've deployed, a workaround is needed.
+
+Sapper has to be given a string to be served from (for e.g. `FAKEROOTPATH`), that can be searched and replaced later in the build output with `./`.
+
+To keep the routings, a [custom build](https://github.com/aidanok/arweave-deploy/tree/feature/path-indexes) of arweave-deploy is also needed, that adds extra mappings. (for e.g. for `foo/bar/` mapping to `foo/bar/index.html`)
+
+Shoutout to (aidanok)[https://github.com/aidanok] for helping with this.
