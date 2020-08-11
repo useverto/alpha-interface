@@ -51,7 +51,7 @@ Sapper has to be given a string to be served from (for e.g. `FAKEROOTPATH`), tha
 
 To keep the routings, a [custom build](https://github.com/aidanok/arweave-deploy/tree/feature/path-indexes) of arweave-deploy is also needed, that adds extra mappings. (for e.g. for `foo/bar/` mapping to `foo/bar/index.html`)
 
-Shoutout to (aidanok)[https://github.com/aidanok] for helping with this.
+Shoutout to [@aidanok](https://github.com/aidanok) for helping with this.
 
 ## License
 
