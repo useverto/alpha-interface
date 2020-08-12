@@ -43,6 +43,7 @@ yarn run export
 
 - [Sam Williams](https://twitter.com/samecwilliams)
 - [Cedrik Boudreau](https://github.com/cedriking)
+- [Aidan O'Kelly](https://github.com/aidanok)
 
 ## How to deploy
 Since Sapper needs to know the exact path it will be served from, and when you deploy on arweave, you don't know the path until after you've deployed, a workaround is needed.
@@ -50,8 +51,6 @@ Since Sapper needs to know the exact path it will be served from, and when you d
 Sapper has to be given a string to be served from (for e.g. `FAKEROOTPATH`), that can be searched and replaced later in the build output with `./`.
 
 To keep the routings, a [custom build](https://github.com/aidanok/arweave-deploy/tree/feature/path-indexes) of arweave-deploy is also needed, that adds extra mappings. (for e.g. for `foo/bar/` mapping to `foo/bar/index.html`)
-
-Shoutout to [@aidanok](https://github.com/aidanok) for helping with this.
 
 ## License
 
