@@ -5,6 +5,7 @@
   import { balance } from "../stores/keyfileStore.js";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
+  import { fade } from "svelte/transition";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -39,7 +40,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="trade">
+<div class="trade" in:fade={{ duration: 300 }}>
   <div class="trade-head">
     <div class="balance">
       <p>Total balance</p>
