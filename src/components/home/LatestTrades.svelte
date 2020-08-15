@@ -4,7 +4,7 @@
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
-  import Loading from "../Loading.svelte";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
@@ -63,7 +63,31 @@
           <th>PST</th>
         </tr>
         {#await txs}
-          <Loading style="position: absolute; left: 50%;" />
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
         {:then loadedTxs}
           {#each loadedTxs as tx}
             <tr in:fade={{ duration: 185 }}>
