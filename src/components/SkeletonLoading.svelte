@@ -14,15 +14,24 @@
     width: 300px
     height: 22px
     border-radius: 4px
-    animation: shine 7s infinite linear
-    background: linear-gradient(to right, #f0f0f0 5%, #D6D6D6 35%, #f0f0f0 50%)
-    background-size: 3500px 100%
+    display: inline-block
+    position: relative
+    overflow: hidden
+    background-color: #f0f0f0
+
+    &::after
+      position: absolute
+      top: 0
+      right: 0
+      bottom: 0
+      left: 0
+      transform: translateX(-100%)
+      background: linear-gradient(to right, #f0f0f0 5%, #e0e0e0 35%, #f0f0f0 50%)
+      animation: shine 2.6s infinite
+      content: ''
 
     @keyframes shine
-      0%
-        background-position: -1000px 0
-
       100%
-        background-position: 4000px 0
+        transform: translateX(100%)
 
 </style>
