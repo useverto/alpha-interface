@@ -33,9 +33,10 @@
         equals("to", $address),
       ),
       _txs: { id: string, amount: number, type: string, status: string }[] = [],
-      allTxs = await client.arql(query);
+      allTxs = (await client.arql(query)).splice(0, 5);
 
-    for(let i = 0; i < 5; i++) {
+    let i = 0;
+    while (i < allTxs.length) {
       try {
         let res = await client.transactions.get(allTxs[i]);
         _txs.push({
@@ -57,6 +58,8 @@
       } catch (error) {
         console.log(error);
       }
+
+      i++;
     }
 
     return _txs;
