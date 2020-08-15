@@ -102,7 +102,8 @@
           </tr>
         </table>
       {:else}
-        <table>
+        <!-- the last 5 transactions for this trading post -->
+        <table in:fade={{ duration: 400 }}>
           <tr>
             <th style="text-transform: none">TxID</th>
             <th>Amount</th>
@@ -134,7 +135,6 @@
             <td style="text-transform: uppercase">lum</td>
           </tr>
         </table>
-        <a href="/app/all-transactions" class="view-all">View all {"->"}</a>
       {/if}
     </div>
   </div>
