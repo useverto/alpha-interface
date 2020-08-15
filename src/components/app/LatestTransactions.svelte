@@ -3,7 +3,7 @@
   import { address } from "../../stores/keyfileStore.js";
   import moment from "moment";
   import Loading from "../Loading.svelte";
-  import { equals } from "arql-ops";
+  import { equals, or } from "arql-ops";
 
   let client;
   let transactions = getLatestTransactions();
@@ -26,7 +26,10 @@
     });
 
     let 
-      query = equals("from", $address),
+      query = or(
+        equals("from", $address),
+        equals("to", $address),
+      ),
       _txs: { id: string, amount: number, status: string }[] = [],
       allTxs = await client.arql(query);
 
@@ -75,7 +78,12 @@
         {/if}
         {#each loadedTxs as tx}
           <tr>
-            <td style="width: 70%">{tx.id} <span class="status {tx.status}"></span></td>
+            <td style="width: 70%">
+              <a href="https://viewblock.io/arweave/tx/{tx.id}" class="transaction">
+                {tx.id} 
+                <span class="status {tx.status}"></span>
+              </a>
+            </td>
             <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
           </tr>
         {/each}
@@ -105,4 +113,9 @@
 
     &:first-child
       padding-top: 3.5em
+
+    a.transaction
+      text-decoration: none
+      color: black
+
 </style>
