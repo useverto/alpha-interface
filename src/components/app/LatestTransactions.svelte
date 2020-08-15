@@ -100,6 +100,7 @@
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 70%">
             <a href="https://viewblock.io/arweave/tx/{tx.id}" class="transaction">
+              <span class="direction">In</span>
               {tx.id} 
               <span class="status {tx.status}"></span>
             </a>
