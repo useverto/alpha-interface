@@ -107,8 +107,6 @@
           <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
         </tr>
         <tr>
-        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
       </tr>
       {/each}
     {/await}

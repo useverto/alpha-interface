@@ -12,17 +12,9 @@
 
   if(process.browser && !$loggedIn) goto("/");
 
-  let currentPage = 1, lastPage = 1;
-  let client;
+  let client, element;
   let transactions = getAllTransactions();
-
-  // set current page
-  // redirect to first page if the current page is greater than the last page
-  if(process.browser) {
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
-    if(currentPage > lastPage) goto("/app/all-transactions");
-  }
+  let y: number, windowHeight: number, shown: number = 20, transactionsLength = 0;
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -48,6 +40,8 @@
       ),
       _txs: { id: string, amount: number, status: string }[] = [],
       allTxs = await client.arql(query);
+
+    transactionsLength = allTxs.length;
 
     for(let i = 0; i < allTxs.length; i++) {
       try {
@@ -75,12 +69,20 @@
     return _txs;
   }
 
+  $: {
+    if(element !== undefined) {
+      let componentY = element.offsetTop + element.offsetHeight;
+      if(componentY <= (y + windowHeight + 120) && shown < transactionsLength) shown += 10;
+    }
+  }
+
 </script>
 
 <svelte:head>
   <title>Transactions overview</title>
 </svelte:head>
 
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
 <div class="all-transactions" in:fade={{ duration: 300 }}>
   <h1 class="title">All Transactions</h1>
@@ -94,27 +96,25 @@
       <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
     {:then loadedTxs}
       {#if loadedTxs.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
+        <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
         <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
       {/if}
-      {#each loadedTxs as tx}
-        <tr>
-          <td style="width: 70%">
-            <a href="https://viewblock.io/arweave/tx/{tx.id}">
-              {tx.id} 
-              <span class="status {tx.status}"></span>
-            </a>
-          </td>
-          <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
-        </tr>
+      {#each loadedTxs as tx, i}
+        {#if shown >= i}
+          <tr in:fade={{ duration: 150 }}>
+            <td style="width: 70%">
+              <a href="https://viewblock.io/arweave/tx/{tx.id}">
+                {tx.id} 
+                <span class="status {tx.status}"></span>
+              </a>
+            </td>
+            <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+          </tr>
+        {/if}
       {/each}
     {/await}
   </table>
-  <div class="pagination">
-    <a href="/app/all-transactions{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
-    <span class="current">{currentPage}</span>
-    <a href="/app/all-transactions{lastPage >= currentPage ? "" : ("?page=" + (currentPage + 1))}" class="next">{"->"}</a>
-  </div>
+  <span style="width: 100%; height: 1px" bind:this={element}></span>
 </div>
 <Footer />
 
