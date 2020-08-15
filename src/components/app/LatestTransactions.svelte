@@ -27,16 +27,14 @@
       timeout: 20000,
     });
 
-    let 
-      query = or(
-        equals("from", $address),
-        equals("to", $address),
-      ),
-      _txs: { id: string, amount: number, type: string, status: string }[] = [],
-      allTxs = (await client.arql(query)).splice(0, 5);
+    let query = or(
+      equals("from", $address),
+      equals("to", $address),
+    );
+    let _txs: { id: string, amount: number, type: string, status: string }[] = [];
+    let allTxs = await client.arql(query);
 
-    let i = 0;
-    while (i < allTxs.length) {
+    for (let i = 0; i <= 5; i++) {
       try {
         let res = await client.transactions.get(allTxs[i]);
         _txs.push({
@@ -45,21 +43,24 @@
           type: res.target === $address ? "in" : "out",
           status: ""
         });
+        console.log(_txs);
       } catch (error) {
         console.log(error);
       }
 
       try {
-        let res = await client.transactions.getStatus(allTxs[i]);
-        if (res.status === 200)
-          _txs[i].status = "success";
-        else
-          _txs[i].status = "pending";
+        let res = await client.transactions.getStatus(_txs[i - 1].id);
+        if (res.status === undefined) {
+          _txs[i - 1].status = "error";
+        }
+        else if (res.status === 200) {
+          _txs[i - 1].status = "success";
+        } else {
+          _txs[i - 1].status = "pending";
+        }
       } catch (error) {
         console.log(error);
       }
-
-      i++;
     }
 
     return _txs;
