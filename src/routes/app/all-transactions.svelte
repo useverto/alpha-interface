@@ -114,9 +114,9 @@
       {/each}
     {/await}
   </table>
-  <span style="width: 100%; height: 1px" bind:this={element}></span>
 </div>
 <Footer />
+<span style="width: 100%; height: 1px" bind:this={element}></span>
 
 <style lang="sass">
 

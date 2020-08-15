@@ -3,6 +3,11 @@
     width: 100%
 
     tr
+      transition: opacity .3s
+
+      &:not(:first-child):hover
+        opacity: .75
+
       th, td
         text-align: left
 
