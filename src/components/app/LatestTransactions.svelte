@@ -16,7 +16,7 @@
     return val.toFixed(7);
   }
 
-  async function getLatestTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
+  async function getLatestTransactions (): Promise<{ id: string, amount: number, type: string, status: string }[]> {
     if(!process.browser) return [];
 
     // @ts-ignore
@@ -32,7 +32,7 @@
         equals("from", $address),
         equals("to", $address),
       ),
-      _txs: { id: string, amount: number, status: string }[] = [],
+      _txs: { id: string, amount: number, type: string, status: string }[] = [],
       allTxs = await client.arql(query);
 
     for(let i = 0; i < 5; i++) {
@@ -41,6 +41,7 @@
         _txs.push({
           id: allTxs[i],
           amount: client.ar.winstonToAr(res.quantity),
+          type: res.target === $address ? "in" : "out",
           status: ""
         });
       } catch (error) {
@@ -100,7 +101,7 @@
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 70%">
             <a href="https://viewblock.io/arweave/tx/{tx.id}" class="transaction">
-              <span class="direction">In</span>
+              <span class="direction">{tx.type}</span>
               {tx.id} 
               <span class="status {tx.status}"></span>
             </a>
