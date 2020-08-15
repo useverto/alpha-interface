@@ -4,6 +4,8 @@
   import moment from "moment";
   import Loading from "../Loading.svelte";
   import { equals, or } from "arql-ops";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import { fade } from "svelte/transition";
 
   let client;
   let transactions = getLatestTransactions();
@@ -64,30 +66,52 @@
 <div class="section">
   <h1 class="title">Transactions</h1>
   <table>
+    <tr>
+      <th style="text-transform: none">TxID</th>
+      <th>Amount</th>
+    </tr>
+    {#await transactions}
       <tr>
-          <th style="text-transform: none">TxID</th>
-          <th>Amount</th>
+        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
       </tr>
-      {#await transactions}
-        <Loading style="position: absolute; left: 50%;" />
+      <tr>
+        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+      </tr>
+      <tr>
+        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+      </tr>
+      <tr>
+        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+      </tr>
+      <tr>
+        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+      </tr>
+    {:then loadedTxs}
+      {#if loadedTxs.length === 0}
+        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
         <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-      {:then loadedTxs}
-        {#if loadedTxs.length === 0}
-          <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
-          <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-        {/if}
-        {#each loadedTxs as tx}
-          <tr>
-            <td style="width: 70%">
-              <a href="https://viewblock.io/arweave/tx/{tx.id}" class="transaction">
-                {tx.id} 
-                <span class="status {tx.status}"></span>
-              </a>
-            </td>
-            <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
-          </tr>
-        {/each}
-      {/await}
+      {/if}
+      {#each loadedTxs as tx}
+        <tr in:fade={{ duration: 300 }}>
+          <td style="width: 70%">
+            <a href="https://viewblock.io/arweave/tx/{tx.id}" class="transaction">
+              {tx.id} 
+              <span class="status {tx.status}"></span>
+            </a>
+          </td>
+          <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+        </tr>
+        <tr>
+        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+      </tr>
+      {/each}
+    {/await}
   </table>
   <a href="/app/all-transactions" class="view-all">View all {"->"}</a>
 </div>
