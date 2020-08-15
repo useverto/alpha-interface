@@ -6,7 +6,7 @@
 
 </script>
 
-<div class="skeleton-loading" style={style} in:fade={{ duration: 100 }}></div>
+<div class="skeleton-loading" style={style} in:fade={{ duration: 100 }} out:fade={{ duration: 70 }}></div>
 
 <style lang="sass">
 

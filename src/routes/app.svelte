@@ -9,6 +9,7 @@
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   let client;
 
@@ -19,6 +20,7 @@
     if(typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
   }
+
 </script>
 
 <svelte:head>
@@ -28,11 +30,17 @@
 <NavBar />
 <div class="dashboard" in:fade={{ duration: 300 }}>
   <div class="section balance">
-    <p>Total balance</p>
-    <h1 class="total-balance">
-      {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
-    </h1>
-    <p class="wallet">Wallet: {$address}</p>
+    {#if $balance === 0}
+      <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
+      <h1 class="total-balance"><SkeletonLoading style="height: 1em; width: 300px" /></h1>
+      <p class="wallet"><SkeletonLoading style="height: 1em; width: 400px" /></p>
+    {:else}
+      <p in:fade={{ duration: 150 }}>Total balance</p>
+      <h1 class="total-balance" in:fade={{ duration: 150 }}>
+        {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
+      </h1>
+      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
+    {/if}
   </div>
   <div class="section">
     <h1 class="title">Assets</h1>
