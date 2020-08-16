@@ -8,7 +8,9 @@
   import { loggedIn } from "../../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { equals, or } from "arql-ops";
+
+  import ApolloClient from 'apollo-boost';
+  import gql from 'graphql-tag';
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -22,8 +24,10 @@
     return val.toFixed(7);
   }
 
-  async function getAllTransactions (): Promise<{ id: string, amount: number, type: string, status: string }[]> {
+  async function getAllTransactions (): Promise<{ id: string, amount: number, type: string, status: string, timestamp: number }[]> {
     if(!process.browser) return [];
+
+    let txs: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
 
     // @ts-ignore
     const client = new Arweave({
@@ -33,41 +37,78 @@
       timeout: 20000,
     });
 
-    let 
-      query = or(
-        equals("from", $address),
-        equals("to", $address),
-      ),
-      _txs: { id: string, amount: number, type: string, status: string }[] = [],
-      allTxs = await client.arql(query);
+    const gqlClient = new ApolloClient({
+      uri: "https://arweave.dev/graphql"
+    });
+    const outTxs = (await gqlClient.query({
+      query: gql`
+        query {
+          transactions(
+            owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
+            first: 50
+          ) {
+            edges {
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
+                }
+              }
+            }
+          }
+        }
+      `
+    })).data.transactions.edges;
+    const inTxs = (await gqlClient.query({
+      query: gql`
+        query {
+          transactions(
+            recipients: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
+            first: 50
+          ) {
+            edges {
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
+                }
+              }
+            }
+          }
+        }
+      `
+    })).data.transactions.edges;
 
-    transactionsLength = allTxs.length;
+    outTxs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        type: "out",
+        // TODO(@johnletey): Grab status data from Arweave
+        status: "",
+        timestamp: node.block.timestamp,
+      })
+    })
+    inTxs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        type: "in",
+        // TODO(@johnletey): Grab status data from Arweave
+        status: "",
+        timestamp: node.block.timestamp,
+      })
+    })
 
-    for(let i = 0; i < allTxs.length; i++) {
-      try {
-        let res = await client.transactions.get(allTxs[i]);
-        _txs.push({
-          id: allTxs[i],
-          amount: client.ar.winstonToAr(res.quantity),
-          type: res.target === $address ? "in" : "out",
-          status: ""
-        });
-      } catch (error) {
-        console.log(error);
-      }
+    txs.sort((a, b) => b.timestamp - a.timestamp)
 
-      try {
-        let res = await client.transactions.getStatus(allTxs[i]);
-        if (res.status === 200)
-          _txs[i].status = "success";
-        else
-          _txs[i].status = "pending";
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return _txs;
+    return txs;
   }
 
   $: {
