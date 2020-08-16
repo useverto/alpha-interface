@@ -3,8 +3,10 @@
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
-  import { and, equals } from "arql-ops";
   import SkeletonLoading from "../SkeletonLoading.svelte";
+
+  import ApolloClient from 'apollo-boost';
+  import gql from 'graphql-tag';
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
@@ -20,33 +22,42 @@
   async function getLatestTrades (): Promise<{ id: string, amount: number, pst: string }[]> {
     if(!process.browser) return [];
 
-    // @ts-ignore
-    const client = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
+    let txs: { id: string, amount: number, pst: string }[] = [];
+
+    const client = new ApolloClient({
+      uri: "https://arweave.dev/graphql"
     });
+    const _txs = (await client.query({
+      query: gql`
+        query {
+          transactions(
+            tags: [
+              {name: "App-Name", values: "verto"}
+            ]
+            first: 5
+          ) {
+            edges {
+              node {
+                id
+                quantity {
+                  ar
+                }
+              }
+            }
+          }
+        }
+      `
+    })).data.transactions.edges;
 
-    let 
-      query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
-      _txs: { id: string, amount: number, pst: string }[] = [],
-      allTxs = await client.arql(query);
+    _txs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        pst: "AR"
+      })
+    })
 
-    for(let i = 0; i < 5; i++) {
-      try {
-        let res = await client.transactions.get(allTxs[i]);
-        _txs.push({
-          id: allTxs[i],
-          amount: client.ar.winstonToAr(res.quantity),
-          pst: "AR"
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return _txs;
+    return txs;
   }
 
 </script>
