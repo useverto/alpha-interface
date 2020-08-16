@@ -7,7 +7,9 @@
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { fade } from "svelte/transition";
 
-  let client;
+  import ApolloClient from 'apollo-boost';
+  import gql from 'graphql-tag';
+
   let transactions = getLatestTransactions();
 
   function roundCurrency (val: number | string): string {
@@ -16,8 +18,10 @@
     return val.toFixed(7);
   }
 
-  async function getLatestTransactions (): Promise<{ id: string, amount: number, type: string, status: string }[]> {
+  async function getLatestTransactions (): Promise<{ id: string, amount: number, type: string, status: string, timestamp: number }[]> {
     if(!process.browser) return [];
+
+    let txs: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
 
     // @ts-ignore
     const client = new Arweave({
@@ -27,43 +31,89 @@
       timeout: 20000,
     });
 
-    let query = or(
-      equals("from", $address),
-      equals("to", $address),
-    );
-    let _txs: { id: string, amount: number, type: string, status: string }[] = [];
-    let allTxs = await client.arql(query);
-
-    for (let i = 0; i <= 5; i++) {
-      try {
-        let res = await client.transactions.get(allTxs[i]);
-        _txs.push({
-          id: allTxs[i],
-          amount: client.ar.winstonToAr(res.quantity),
-          type: res.target === $address ? "in" : "out",
-          status: ""
-        });
-        console.log(_txs);
-      } catch (error) {
-        console.log(error);
-      }
-
-      try {
-        let res = await client.transactions.getStatus(_txs[i - 1].id);
-        if (res.status === undefined) {
-          _txs[i - 1].status = "error";
+    const gqlClient = new ApolloClient({
+      uri: "https://arweave.dev/graphql"
+    });
+    const outTxs = (await gqlClient.query({
+      query: gql`
+        query {
+          transactions(
+            owners: ["${$address}"]
+            first: 50
+          ) {
+            edges {
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
+                }
+              }
+            }
+          }
         }
-        else if (res.status === 200) {
-          _txs[i - 1].status = "success";
-        } else {
-          _txs[i - 1].status = "pending";
+      `
+    })).data.transactions.edges;
+    const inTxs = (await gqlClient.query({
+      query: gql`
+        query {
+          transactions(
+            recipients: ["${$address}"]
+            first: 50
+          ) {
+            edges {
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
+                }
+              }
+            }
+          }
         }
+      `
+    })).data.transactions.edges;
+
+    outTxs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        type: "out",
+        status: "",
+        timestamp: node.block.timestamp,
+      })
+    })
+    inTxs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        type: "in",
+        status: "",
+        timestamp: node.block.timestamp,
+      })
+    })
+
+    txs.sort((a, b) => b.timestamp - a.timestamp)
+    txs = txs.slice(0, 5)
+
+    for (let i = 0; i < txs.length; i++) {
+      try {
+        let res = await client.transactions.getStatus(txs[i].id);
+        if (res.status === 200)
+          txs[i].status = "success";
+        else
+          txs[i].status = "pending";
       } catch (error) {
         console.log(error);
       }
     }
 
-    return _txs;
+    return txs;
   }
 
 </script>

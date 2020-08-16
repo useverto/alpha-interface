@@ -44,7 +44,7 @@
       query: gql`
         query {
           transactions(
-            owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
+            owners: ["${$address}"]
             first: 50
           ) {
             edges {
@@ -66,7 +66,7 @@
       query: gql`
         query {
           transactions(
-            recipients: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
+            recipients: ["${$address}"]
             first: 50
           ) {
             edges {
@@ -90,7 +90,6 @@
         id: node.id,
         amount: node.quantity.ar,
         type: "out",
-        // TODO(@johnletey): Grab status data from Arweave
         status: "",
         timestamp: node.block.timestamp,
       })
@@ -100,13 +99,24 @@
         id: node.id,
         amount: node.quantity.ar,
         type: "in",
-        // TODO(@johnletey): Grab status data from Arweave
         status: "",
         timestamp: node.block.timestamp,
       })
     })
 
     txs.sort((a, b) => b.timestamp - a.timestamp)
+
+    for (let i = 0; i < txs.length; i++) {
+      try {
+        let res = await client.transactions.getStatus(txs[i].id);
+        if (res.status === 200)
+          txs[i].status = "success";
+        else
+          txs[i].status = "pending";
+      } catch (error) {
+        console.log(error);
+      }
+    }
 
     return txs;
   }
