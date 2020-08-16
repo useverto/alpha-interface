@@ -5,7 +5,9 @@
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { and, equals } from "arql-ops";
+
+  import ApolloClient from 'apollo-boost';
+  import gql from 'graphql-tag';
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -20,11 +22,12 @@
     if(currentPage > lastPage) goto("/gallery");
   }
 
-  let client;
   let tradingPosts = getTradingPosts();
 
   async function getTradingPosts (): Promise<{ addr: string, reputation: string, balance: string, stake: string }[]> {
     if(!process.browser) return [];
+
+    let posts: { addr: string, reputation: string, balance: string, stake: string }[] = [];
 
     // @ts-ignore
     const client = new Arweave({
@@ -34,27 +37,42 @@
       timeout: 20000,
     });
 
-    let 
-      query = and(
-        equals("App-Name", "verto"),
-        equals("Trading-Post-Genesis", "G")
-      ),
-      _posts: { addr: string, reputation: string, balance: string, stake: string }[] = [],
-      txIds = await client.arql(query);
+    const gqlClient = new ApolloClient({
+      uri: "https://arweave.dev/graphql"
+    });
+    const _posts = (await gqlClient.query({
+      query: gql`
+        query {
+          transactions(
+            tags: [
+              {name: "App-Name", values: "verto"}
+              {name: "Trading-Post-Genesis", values: "G"}
+            ]
+          ) {
+            edges {
+              node {
+                owner {
+                  address
+                }
+              }
+            }
+          }
+        }
+      `
+    })).data.transactions.edges;
 
-    for (const txId of txIds) {
-      let res = await client.transactions.get(txId);
-      const addr = await client.wallets.ownerToAddress(res.owner);
-      const balance = client.ar.winstonToAr(await client.wallets.getBalance(addr));
-      _posts.push({
-        addr,
+    for (const post of _posts) {
+      let node = post.node;
+      const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));
+      posts.push({
+        addr: node.owner.address,
         "reputation": "",
         balance,
         "stake": "",
       });
     }
 
-    return _posts;
+    return posts;
   }
 
 </script>
@@ -85,7 +103,7 @@
         <p>No posts found</p>
       {/if}
       {#each loadedPosts as post}
-        <a class="post" href="/app/post?addr={post.addr}">
+        <a class="post" href="/post?addr={post.addr}">
           <h1>{post.addr}</h1>
           <div class="post-info">
             <p>Reputation <span class="reputation">{post.reputation}</span></p>

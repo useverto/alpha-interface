@@ -1,9 +1,9 @@
 <script lang="typescript">
 
-  import NavBar from "../../components/NavBar.svelte";
-  import Footer from "../../components/Footer.svelte";
-  import Button from "../../components/Button.svelte";
-  import { loggedIn, address, balance } from "../../stores/keyfileStore.js";
+  import NavBar from "../components/NavBar.svelte";
+  import Footer from "../components/Footer.svelte";
+  import Button from "../components/Button.svelte";
+  import { loggedIn, address, balance } from "../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
 
@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-  <title>Post</title>
+  <title>Verto — Trading Post</title>
 </svelte:head>
 
 <NavBar />
@@ -137,7 +137,7 @@
 
 <style lang="sass">
 
-  @import "../../styles/tables.sass"
+  @import "../styles/tables.sass"
 
   .post
     padding: 4.4em 15vw 3em
