@@ -3,7 +3,6 @@
   import { address } from "../../stores/keyfileStore.js";
   import moment from "moment";
   import Loading from "../Loading.svelte";
-  import { equals, or } from "arql-ops";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { fade } from "svelte/transition";
 
@@ -39,7 +38,6 @@
         query {
           transactions(
             owners: ["${$address}"]
-            first: 50
           ) {
             edges {
               node {
@@ -61,7 +59,6 @@
         query {
           transactions(
             recipients: ["${$address}"]
-            first: 50
           ) {
             edges {
               node {
