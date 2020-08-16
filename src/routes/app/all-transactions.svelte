@@ -157,9 +157,9 @@
             <td style="width: 70%">
               <a href="https://viewblock.io/arweave/tx/{tx.id}">
                 <span class="direction">{tx.type}</span>
-                {tx.id} 
-                <span class="status {tx.status}"></span>
+                {tx.id}
               </a>
+              <span class="status {tx.status}"></span>
             </td>
             <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
           </tr>
