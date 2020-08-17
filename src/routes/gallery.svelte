@@ -39,7 +39,7 @@
         query {
           transactions(
             tags: [
-              {name: "App-Name", values: "verto"}
+              {name: "App-Name", values: "Verto"}
               {name: "Trading-Post-Genesis", values: "G"}
             ]
           ) {
@@ -53,6 +53,7 @@
           }
         }
       `)).data.transactions.edges;
+
     for (const post of _posts) {
       let node = post.node;
       const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));
