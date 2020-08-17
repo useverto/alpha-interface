@@ -17,8 +17,8 @@
   let client, element;
   let transactions: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
   let lastCursorOut = "", lastCursorIn = "";
-  let hasNextOut = true, hasNextIn = true;
-  let y: number, windowHeight: number, transactionsLength = 0;
+  let hasNextOut = true, hasNextIn = true, loadedTransactions = false, loading = false;
+  let y: number, windowHeight: number;
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -30,6 +30,8 @@
 
   async function loadMoreTransactions () {
     if(!process.browser) return [];
+
+    loading = true;
 
     // @ts-ignore
     const 
@@ -48,7 +50,7 @@
         query: gql`
           query {
             transactions(
-              owners: ["${ /*$address*/'pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls' }"]
+              owners: ["${ $address }"]
               after: "${ lastCursorOut }"
             ) {
               pageInfo {
@@ -74,7 +76,7 @@
         query: gql`
           query {
             transactions(
-              recipients: ["${ /*$address*/'pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls' }"]
+              recipients: ["${ $address }"]
               after: "${ lastCursorIn }"
             ) {
               pageInfo {
@@ -145,12 +147,14 @@
     }
 
     transactions = transactions.concat(_transactions);
+    loadedTransactions = true;
+    setTimeout(() => loading = false, 400) // wait for animation and latency to complete (needed for the scroll)
   }
 
   $: {
     if(element !== undefined) {
       let componentY = element.offsetTop + element.offsetHeight;
-      if(componentY <= (y + windowHeight + 120)) loadMoreTransactions();
+      if(componentY <= (y + windowHeight + 120) && loadedTransactions && !loading && (hasNextOut || hasNextIn)) loadMoreTransactions();
     }
   }
 
@@ -169,18 +173,30 @@
       <th style="text-transform: none">TxID</th>
       <th>Amount</th>
     </tr>
-    {#each transactions as tx}
-      <tr in:fade={{ duration: 150 }}>
-        <td style="width: 70%">
-          <a href="https://viewblock.io/arweave/tx/{tx.id}">
-            <span class="direction">{tx.type}</span>
-            {tx.id}
-          </a>
-          <span class="status {tx.status}"></span>
-        </td>
-        <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
-      </tr>
-    {/each}
+    {#if !loadedTransactions}
+      <Loading style="position: absolute; left: 50%;" />
+      <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+    {:else if transactions.length === 0}
+      <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
+      <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+    {:else}
+      {#each transactions as tx}
+        <tr in:fade={{ duration: 150 }}>
+          <td style="width: 70%">
+            <a href="https://viewblock.io/arweave/tx/{tx.id}">
+              <span class="direction">{tx.type}</span>
+              {tx.id}
+            </a>
+            <span class="status {tx.status}"></span>
+          </td>
+          <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+        </tr>
+      {/each}
+      {#if loading} <!-- if the site is loading, but there are transactions already loaded  -->
+        <Loading style="position: absolute; left: 50%;" />
+        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+      {/if}
+    {/if}
   </table>
 </div>
 <Footer />

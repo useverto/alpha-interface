@@ -9,10 +9,12 @@ import pkg from "./package.json";
 import sveltePreprocess, { sass } from "svelte-preprocess";
 import image from "@rollup/plugin-image";
 import url from "@rollup/plugin-url";
+import typescript from "@rollup/plugin-typescript";
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+const tsconfigFile = require('./tsconfig.json')
 
 const onwarn = (warning, onwarn) => (warning.code === "CIRCULAR_DEPENDENCY" && /[/\\]@sapper[/\\]/.test(warning.message)) || onwarn(warning);
 
@@ -86,7 +88,7 @@ export default {
       commonjs(),
       sass(),
       image(),
-      url()
+      url(),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 
