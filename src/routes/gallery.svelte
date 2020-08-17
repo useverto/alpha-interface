@@ -5,6 +5,7 @@
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
+  import { query } from "../api-client.js";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -17,6 +18,54 @@
     const params = new URLSearchParams(window.location.search);
     if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
     if(currentPage > lastPage) goto("/gallery");
+  }
+
+  let tradingPosts = getTradingPosts();
+
+  async function getTradingPosts (): Promise<{ addr: string, reputation: string, balance: string, stake: string }[]> {
+    if(!process.browser) return [];
+
+    let posts: { addr: string, reputation: string, balance: string, stake: string }[] = [];
+
+    // @ts-ignore
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    const _posts = (await query(`
+      query {
+        transactions(
+          tags: [
+            {name: "App-Name", values: "Verto"}
+            {name: "Trading-Post-Genesis", values: "G"}
+          ]
+        ) {
+          edges {
+            node {
+              owner {
+                address
+              }
+            }
+          }
+        }
+      }
+    `)).data.transactions.edges;
+
+    for (const post of _posts) {
+      let node = post.node;
+      const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));
+      posts.push({
+        addr: node.owner.address,
+        "reputation": "",
+        balance,
+        "stake": "",
+      });
+    }
+
+    return posts;
   }
 
 </script>
@@ -40,70 +89,23 @@
     </div>
   </div>
   <div class="gallery-content">
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
-    <a class="post" href="/app/post?id=KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios">
-      <h1>KNfOyFvvVFJkeDU0Ga8huu3bNfLYeios</h1>
-      <div class="post-info">
-        <p>Reputation <span class="reputation">{51.7329}</span></p>
-        <p>Balance <span>{34.06959}AR</span></p>
-        <p>Stake <span>{80.23102}AR</span></p>
-      </div>
-    </a>
+    {#await tradingPosts}
+      <p>Loading</p>
+    {:then loadedPosts}
+      {#if loadedPosts.length === 0}
+        <p>No posts found</p>
+      {/if}
+      {#each loadedPosts as post}
+        <a class="post" href="/post?addr={post.addr}">
+          <h1>{post.addr}</h1>
+          <div class="post-info">
+            <p>Reputation <span class="reputation">{post.reputation}</span></p>
+            <p>Balance <span>{post.balance}AR</span></p>
+            <p>Stake <span>{post.stake}AR</span></p>
+          </div>
+        </a>
+      {/each}
+    {/await}
     <div class="pagination">
       <a href="/gallery{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
       <span class="current">{currentPage}</span>
