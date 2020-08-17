@@ -29,14 +29,14 @@ We use the arweave-js library with Svelte/Sapper. You can read more about these 
 
 This will start the app with live reload, according to the rollup config
 ```sh
-yarn run dev
+yarn dev
 ```
 
 ### Export
 
 This will export the app to static html/css/js to `__sapper__/export`
 ```sh
-yarn run export
+yarn export
 ```
 
 ## Special Thanks
