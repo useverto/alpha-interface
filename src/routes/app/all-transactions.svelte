@@ -8,15 +8,17 @@
   import { loggedIn } from "../../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-
+  import { onMount } from "svelte";
   import ApolloClient from 'apollo-boost';
   import gql from 'graphql-tag';
 
   if(process.browser && !$loggedIn) goto("/");
 
   let client, element;
-  let transactions = getAllTransactions();
-  let y: number, windowHeight: number, shown: number = 20, transactionsLength = 0;
+  let transactions: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
+  let lastCursorOut = "", lastCursorIn = "";
+  let hasNextOut = true, hasNextIn = true;
+  let y: number, windowHeight: number, transactionsLength = 0;
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -24,107 +26,131 @@
     return val.toFixed(7);
   }
 
-  async function getAllTransactions (): Promise<{ id: string, amount: number, type: string, status: string, timestamp: number }[]> {
+  onMount(() => loadMoreTransactions());
+
+  async function loadMoreTransactions () {
     if(!process.browser) return [];
 
-    let txs: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
-
     // @ts-ignore
-    const client = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
+    const 
+      client = new Arweave({
+        host: "arweave.net",
+        port: 443,
+        protocol: "https",
+        timeout: 20000,
+      }),
+      gqlClient = new ApolloClient({
+        uri: "https://arweave.dev/graphql"
+      });
 
-    const gqlClient = new ApolloClient({
-      uri: "https://arweave.dev/graphql"
-    });
-    const outTxs = (await gqlClient.query({
-      query: gql`
-        query {
-          transactions(
-            owners: ["${$address}"]
-            first: 50
-          ) {
-            edges {
-              node {
-                id
-                block {
-                  timestamp
-                }
-                quantity {
-                  ar
+    const 
+      outQuery = hasNextOut ? (await gqlClient.query({
+        query: gql`
+          query {
+            transactions(
+              owners: ["${ /*$address*/'pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls' }"]
+              after: "${ lastCursorOut }"
+            ) {
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                cursor
+                node {
+                  id
+                  block {
+                    timestamp
+                  }
+                  quantity {
+                    ar
+                  }
                 }
               }
             }
           }
-        }
-      `
-    })).data.transactions.edges;
-    const inTxs = (await gqlClient.query({
-      query: gql`
-        query {
-          transactions(
-            recipients: ["${$address}"]
-            first: 50
-          ) {
-            edges {
-              node {
-                id
-                block {
-                  timestamp
-                }
-                quantity {
-                  ar
+        `
+      })).data : null,
+      inQuery = hasNextIn ? (await gqlClient.query({
+        query: gql`
+          query {
+            transactions(
+              recipients: ["${ /*$address*/'pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls' }"]
+              after: "${ lastCursorIn }"
+            ) {
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                cursor
+                node {
+                  id
+                  block {
+                    timestamp
+                  }
+                  quantity {
+                    ar
+                  }
                 }
               }
             }
           }
-        }
-      `
-    })).data.transactions.edges;
+        `
+      })).data : null;
 
-    outTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "out",
-        status: "",
-        timestamp: node.block.timestamp,
-      })
-    })
-    inTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "in",
-        status: "",
-        timestamp: node.block.timestamp,
-      })
-    })
+    const 
+      outTxs = hasNextOut ? outQuery.transactions.edges : null,
+      inTxs = hasNextIn ? inQuery.transactions.edges : null;
 
-    txs.sort((a, b) => b.timestamp - a.timestamp)
+    hasNextOut = hasNextOut ? outQuery.transactions.pageInfo.hasNextPage : false;
+    hasNextIn = hasNextIn ? inQuery.transactions.pageInfo.hasNextPage : false;
 
-    for (let i = 0; i < txs.length; i++) {
+    let _transactions: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
+
+    if(outTxs !== null)
+      outTxs.map(({ node, cursor }) => {
+        lastCursorOut = cursor;
+        _transactions.push({
+          id: node.id,
+          amount: node.quantity.ar,
+          type: "out",
+          status: "",
+          timestamp: node.block.timestamp,
+        });
+      });
+    
+    if(inTxs !== null)
+      inTxs.map(({ node, cursor }) => {
+        lastCursorIn = cursor;
+        _transactions.push({
+          id: node.id,
+          amount: node.quantity.ar,
+          type: "in",
+          status: "",
+          timestamp: node.block.timestamp,
+        });
+      });
+
+    if(_transactions.length > 0) _transactions.sort((a, b) => b.timestamp - a.timestamp);
+
+    for (let i = 0; i < _transactions.length; i++) {
       try {
-        let res = await client.transactions.getStatus(txs[i].id);
+        let res = await client.transactions.getStatus(_transactions[i].id);
         if (res.status === 200)
-          txs[i].status = "success";
+          _transactions[i].status = "success";
         else
-          txs[i].status = "pending";
+          _transactions[i].status = "pending";
       } catch (error) {
         console.log(error);
       }
     }
 
-    return txs;
+    transactions = transactions.concat(_transactions);
   }
 
   $: {
     if(element !== undefined) {
       let componentY = element.offsetTop + element.offsetHeight;
-      if(componentY <= (y + windowHeight + 120) && shown < transactionsLength) shown += 10;
+      if(componentY <= (y + windowHeight + 120)) loadMoreTransactions();
     }
   }
 
@@ -143,29 +169,18 @@
       <th style="text-transform: none">TxID</th>
       <th>Amount</th>
     </tr>
-    {#await transactions}
-      <Loading style="position: absolute; left: 50%;" />
-      <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-    {:then loadedTxs}
-      {#if loadedTxs.length === 0}
-        <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
-        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-      {/if}
-      {#each loadedTxs as tx, i}
-        {#if shown >= i}
-          <tr in:fade={{ duration: 150 }}>
-            <td style="width: 70%">
-              <a href="https://viewblock.io/arweave/tx/{tx.id}">
-                <span class="direction">{tx.type}</span>
-                {tx.id}
-              </a>
-              <span class="status {tx.status}"></span>
-            </td>
-            <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
-          </tr>
-        {/if}
-      {/each}
-    {/await}
+    {#each transactions as tx}
+      <tr in:fade={{ duration: 150 }}>
+        <td style="width: 70%">
+          <a href="https://viewblock.io/arweave/tx/{tx.id}">
+            <span class="direction">{tx.type}</span>
+            {tx.id}
+          </a>
+          <span class="status {tx.status}"></span>
+        </td>
+        <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+      </tr>
+    {/each}
   </table>
 </div>
 <Footer />

@@ -32,7 +32,7 @@
         query {
           transactions(
             tags: [
-              {name: "App-Name", values: "verto"}
+              {name: "App-Name", values: "Verto"}
             ]
             first: 5
           ) {
