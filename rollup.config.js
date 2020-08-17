@@ -29,19 +29,20 @@ export default {
 			svelte({
 				dev,
 				hydratable: true,
-        emitCss: true,
-        css: css => css.write("public/build/bundle.css"),
-        preprocess: sveltePreprocess()
+				emitCss: true,
+				css: css => css.write("public/build/bundle.css"),
+				preprocess: sveltePreprocess()
 			}),
 			resolve({
 				browser: true,
-				dedupe: ["svelte"]
+				dedupe: ["svelte"],
+				preferBuiltins: false,
 			}),
-      commonjs(),
-      sass(),
-      image(),
-	  url(),
-	  json(),
+			commonjs(),
+			sass(),
+			image(),
+			url(),
+			json(),
 
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
@@ -79,17 +80,18 @@ export default {
 			}),
 			svelte({
 				generate: "ssr",
-        dev,
-        preprocess: sveltePreprocess()
+				dev,
+				preprocess: sveltePreprocess()
 			}),
 			resolve({
-				dedupe: ["svelte"]
+				dedupe: ["svelte"],
+				preferBuiltins: false,
 			}),
-      commonjs(),
-      sass(),
-      image(),
-	  url(),
-	  json(),
+			commonjs(),
+			sass(),
+			image(),
+			url(),
+			json(),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 

@@ -1,5 +1,5 @@
 import { writable, derived } from "svelte/store";
-// import Arweave from "arweave/web";
+import Arweave from "arweave";
 
 // We store the arweave keyfile here.
 // It gets saved to the local stroage of the browser
