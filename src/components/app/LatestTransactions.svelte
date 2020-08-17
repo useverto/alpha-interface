@@ -3,6 +3,7 @@
   import { address } from "../../stores/keyfileStore.js";
   import moment from "moment";
   import Loading from "../Loading.svelte";
+  import { ITransaction } from "../../types/types.ts";
   import { equals, or } from "arql-ops";
 
   let client;
@@ -14,7 +15,7 @@
     return val.toFixed(7);
   }
 
-  async function getLatestTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
+  async function getLatestTransactions (): Promise<ITransaction[]> {
     if(!process.browser) return [];
 
     // @ts-ignore
@@ -30,7 +31,7 @@
         equals("from", $address),
         equals("to", $address),
       ),
-      _txs: { id: string, amount: number, status: string }[] = [],
+      _txs: ITransaction[] = [],
       allTxs = await client.arql(query);
 
     for(let i = 0; i < 5; i++) {

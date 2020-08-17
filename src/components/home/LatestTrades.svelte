@@ -4,6 +4,7 @@
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
+  import { ITrade } from "../../types/types.ts";
   import Loading from "../Loading.svelte";
 
   let element, y, windowHeight, shown = false;
@@ -17,7 +18,7 @@
     }
   }
 
-  async function getLatestTrades (): Promise<{ id: string, amount: number, pst: string }[]> {
+  async function getLatestTrades (): Promise<ITrade[]> {
     if(!process.browser) return [];
 
     // @ts-ignore
@@ -30,7 +31,7 @@
 
     let 
       query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
-      _txs: { id: string, amount: number, pst: string }[] = [],
+      _txs: ITrade[] = [],
       allTxs = await client.arql(query);
 
     for(let i = 0; i < 5; i++) {

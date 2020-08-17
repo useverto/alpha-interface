@@ -11,7 +11,7 @@ export const address = createCustomStore("address");
 
 // this is a custom store
 // it enables saving to local storage
-function createCustomStore (storeName) {
+function createCustomStore (storeName: string) {
   const { subscribe, set } = writable("");
 
   // @ts-ignore

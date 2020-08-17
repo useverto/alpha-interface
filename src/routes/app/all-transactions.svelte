@@ -1,10 +1,11 @@
 <script lang="typescript">
 
-  import { address } from "../../stores/keyfileStore.js";
+  import moment from "moment";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import Loading from "../../components/Loading.svelte";
-  import moment from "moment";
+  import { ITransaction } from "../../types/types.ts";
+  import { address } from "../../stores/keyfileStore.ts";
   import { loggedIn } from "../../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
@@ -30,7 +31,7 @@
     return val.toFixed(7);
   }
 
-  async function getAllTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
+  async function getAllTransactions (): Promise<ITransaction[]> {
     if(!process.browser) return [];
 
     // @ts-ignore
@@ -46,7 +47,7 @@
         equals("from", $address),
         equals("to", $address),
       ),
-      _txs: { id: string, amount: number, status: string }[] = [],
+      _txs: ITransaction[] = [],
       allTxs = await client.arql(query);
 
     for(let i = 0; i < allTxs.length; i++) {
