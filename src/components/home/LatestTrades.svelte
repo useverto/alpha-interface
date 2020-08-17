@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
   import Loading from "../Loading.svelte";
+  import Arweave from "arweave";
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
@@ -20,7 +21,6 @@
   async function getLatestTrades (): Promise<{ id: string, amount: number, pst: string }[]> {
     if(!process.browser) return [];
 
-    // @ts-ignore
     const client = new Arweave({
       host: "arweave.net",
       port: 443,

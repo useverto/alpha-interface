@@ -9,7 +9,8 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { equals, or } from "arql-ops";
-
+  import Arweave from "arweave";
+  
   if(process.browser && !$loggedIn) goto("/");
 
   let currentPage = 1, lastPage = 1;
@@ -33,7 +34,6 @@
   async function getAllTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
     if(!process.browser) return [];
 
-    // @ts-ignore
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
