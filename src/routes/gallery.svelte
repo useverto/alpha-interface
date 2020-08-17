@@ -5,9 +5,7 @@
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-
-  import ApolloClient from 'apollo-boost';
-  import gql from 'graphql-tag';
+  import { query } from "../api-client.js";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -37,11 +35,7 @@
       timeout: 20000,
     });
 
-    const gqlClient = new ApolloClient({
-      uri: "https://arweave.dev/graphql"
-    });
-    const _posts = (await gqlClient.query({
-      query: gql`
+    const _posts = (await query(`
         query {
           transactions(
             tags: [
@@ -58,8 +52,7 @@
             }
           }
         }
-      `
-    })).data.transactions.edges;
+      `)).data.transactions.edges;
 
     for (const post of _posts) {
       let node = post.node;
