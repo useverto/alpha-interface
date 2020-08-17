@@ -36,23 +36,23 @@
     });
 
     const _posts = (await query(`
-        query {
-          transactions(
-            tags: [
-              {name: "App-Name", values: "Verto"}
-              {name: "Trading-Post-Genesis", values: "G"}
-            ]
-          ) {
-            edges {
-              node {
-                owner {
-                  address
-                }
+      query {
+        transactions(
+          tags: [
+            {name: "App-Name", values: "Verto"}
+            {name: "Trading-Post-Genesis", values: "G"}
+          ]
+        ) {
+          edges {
+            node {
+              owner {
+                address
               }
             }
           }
         }
-      `)).data.transactions.edges;
+      }
+    `)).data.transactions.edges;
 
     for (const post of _posts) {
       let node = post.node;
