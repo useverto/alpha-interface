@@ -10,6 +10,7 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { equals, or } from "arql-ops";
+  import { roundCurrency } from "../../utils.ts";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -23,12 +24,6 @@
     const params = new URLSearchParams(window.location.search);
     if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
     if(currentPage > lastPage) goto("/app/all-transactions");
-  }
-
-  function roundCurrency (val: number | string): string {
-    if(val === "?") return val;
-    if(typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
   }
 
   async function getAllTransactions (): Promise<ITransaction[]> {

@@ -5,15 +5,10 @@
   import Loading from "../Loading.svelte";
   import { ITransaction } from "../../types.ts";
   import { equals, or } from "arql-ops";
+  import { roundCurrency } from "../../utils.ts";
 
   let client;
   let transactions = getLatestTransactions();
-
-  function roundCurrency (val: number | string): string {
-    if(val === "?") return val;
-    if(typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
-  }
 
   async function getLatestTransactions (): Promise<ITransaction[]> {
     if(!process.browser) return [];

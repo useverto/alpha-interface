@@ -6,18 +6,13 @@
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
+  import { roundCurrency } from "../utils.ts";
 
   let selectedPost;
   let sendAmount: number = 1;
   let sendCurrency: string;
   let recieveCurrency: string;
   let confirmModalOpened: boolean = false;
-
-  function roundCurrency (val: number | string): string {
-    if(val === "?") return val;
-    if(typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
-  }
 
   // open confirmation modal
   function exchange () {

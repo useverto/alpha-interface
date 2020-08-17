@@ -9,16 +9,12 @@
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
+  import { roundCurrency } from "../utils.ts";
 
   let client;
 
   if(process.browser && !$loggedIn) goto("/");
 
-  function roundCurrency (val: number | string): string {
-    if(val === "?") return val;
-    if(typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
-  }
 </script>
 
 <svelte:head>

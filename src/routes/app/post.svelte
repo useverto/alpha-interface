@@ -6,6 +6,7 @@
   import { loggedIn, address, balance } from "../../stores/keyfileStore.ts";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
+  import { roundCurrency } from "../../utils.ts";
 
   let activeMenu: string = "transactions";
   let id: string = "";
@@ -16,12 +17,6 @@
     const params = new URLSearchParams(window.location.search);
     if(params.get("id") === null) goto("/gallery");
     id = params.get("id");
-  }
-
-  function roundCurrency (val: number | string): string {
-    if(val === "?") return val;
-    if(typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
   }
 
 </script>
