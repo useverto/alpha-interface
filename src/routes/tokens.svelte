@@ -7,45 +7,35 @@
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { and, equals } from "arql-ops";
+  import { query } from "../api-client.js";
 
   if(process.browser && !$loggedIn) goto("/");
 
   let supportedTokens = getSupportedPSTs();
 
-    async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
+  async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
     if(!process.browser) return [];
 
-    // @ts-ignore
-    const client = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let 
-      query = and(
-        equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
-        equals("App-Name", "Verto"),
-        equals("Support", "PST")
-      ),
-      _txs: { id: string, name: string, ticker: string }[] = [],
-      allTxs = await client.arql(query);
-
-    for(let i = 0; i < allTxs.length; i++) {
-      try {
-        let res = await client.transactions.get(allTxs[i]);
-        _txs.push({
-          id: allTxs[i],
-          name: res.name,
-          ticker: res.ticker
-        });
-      } catch (error) {
-        console.log(error);
+    const _posts = (await query(`
+      query {
+        transactions(
+          tags: [
+            {name: "App-Name", values: "Verto"}
+            {name: "Support", values: "PST"}
+          ]
+        ) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
       }
-    }
-    return _txs;
+    `)).data.transactions.edges;
+
+    // TODO(@t8, @johnletey): Parse transactions
+
+    return [];
   }
 
 </script>
