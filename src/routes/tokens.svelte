@@ -2,21 +2,50 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
+  import Button from "../components/Button.svelte";
+  import Loading from "../components/Loading.svelte";
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
+  import { and, equals } from "arql-ops";
 
   if(process.browser && !$loggedIn) goto("/");
 
-  let sortingType: string;
-  let currentPage = 1, lastPage = 1;
+  let supportedTokens = getSupportedPSTs();
 
-  // set current page
-  // redirect to first page if the current page is greater than the last page
-  if(process.browser) {
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
-    if(currentPage > lastPage) goto("/gallery");
+    async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
+    if(!process.browser) return [];
+
+    // @ts-ignore
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let 
+      query = and(
+        equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
+        equals("App-Name", "Verto"),
+        equals("Support", "PST")
+      ),
+      _txs: { id: string, name: string, ticker: string }[] = [],
+      allTxs = await client.arql(query);
+
+    for(let i = 0; i < allTxs.length; i++) {
+      try {
+        let res = await client.transactions.get(allTxs[i]);
+        _txs.push({
+          id: allTxs[i],
+          name: res.name,
+          ticker: res.ticker
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    return _txs;
   }
 
 </script>
@@ -29,22 +58,22 @@
 <div class="gallery" in:fade={{ duration: 300 }}>
   <div class="gallery-head">
     <h1 class="title">Supported Tokens</h1>
+    <Button style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Add token</Button>
   </div>
   <div class="gallery-content">
-    <a class="token" href="#">
-      <h1>Nest.land Token</h1>
-      <div class="post-info">
-        <p>Ticker <span>DNO</span></p>
-        <p>Type <span>PST</span></p>
-      </div>
-    </a>
-    <a class="token" href="#">
-      <h1>Lightbulb Token</h1>
-      <div class="post-info">
-        <p>Ticker <span>LGT</span></p>
-        <p>Type <span>PSDAO</span></p>
-      </div>
-    </a>
+    {#await supportedTokens}
+      <Loading style="position: absolute; left: 50%;" />
+    {:then loadedTokens} 
+      {#each loadedTokens as token}
+        <a href="https://viewblock.io/arweave/tx/{token.id}" class="token">
+          <h1>{token.name}</h1>
+          <div class="token-info">
+            <p>Ticker <span>{token.ticker}</span></p>
+            <p>ID <span>{token.id}</span></p>
+          </div>
+        </a>
+      {/each}
+    {/await}
   </div>
 </div>
 <Footer />
@@ -111,7 +140,7 @@
           font-weight: 400
           margin: 0 0 .65em 0
 
-        .post-info
+        .token-info
           display: flex
           justify-content: space-between
 
