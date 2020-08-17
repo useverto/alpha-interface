@@ -14,6 +14,7 @@ export const address = createCustomStore("address");
 function createCustomStore (storeName) {
   const { subscribe, set } = writable("");
 
+  // @ts-ignore
   if(process.browser && (localStorage.getItem(storeName) !== null && localStorage.getItem(storeName) !== "" && localStorage.getItem(storeName) !== "null" && localStorage.getItem(storeName) !== undefined)) { // is logged in according to the browser
     set(localStorage.getItem(storeName))
   }
@@ -35,8 +36,10 @@ function createCustomStore (storeName) {
 export const balance = derived(
   address,
   ($address, set) => {
+    // @ts-ignore
     if(!process.browser) return;
     const 
+      // @ts-ignore
       client = new Arweave({
         host: "arweave.net",
         port: 443,

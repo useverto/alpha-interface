@@ -3,7 +3,7 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
-  import { loggedIn, address, balance } from "../stores/keyfileStore.js";
+  import { loggedIn, address, balance } from "../stores/keyfileStore.ts";
   import moment from "moment";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";

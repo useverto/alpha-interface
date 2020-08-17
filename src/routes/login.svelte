@@ -4,7 +4,7 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile, loggedIn, address } from "../stores/keyfileStore.js";
+  import { keyfile, loggedIn, address } from "../stores/keyfileStore.ts";
 
   let isDragOver = false;
   let files: FileList = [];

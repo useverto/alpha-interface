@@ -2,7 +2,7 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import { balance } from "../stores/keyfileStore.js";
+  import { balance } from "../stores/keyfileStore.ts";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";

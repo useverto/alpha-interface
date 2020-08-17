@@ -20,7 +20,7 @@ const
 
 export default {
 	client: {
-		input: config.client.input(),
+		input: config.client.input().replace(/\.js$/, '.ts'),
 		output: config.client.output(),
 		plugins: [
 			replace({
@@ -37,7 +37,6 @@ export default {
           typescriptprocess({ tsconfigFile })
         ]
       }),
-      typescript(),
 			resolve({
 				browser: true,
 				dedupe: ["svelte"]
@@ -45,6 +44,7 @@ export default {
       commonjs(),
       image(),
       url(),
+      typescript(),
 
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
@@ -73,7 +73,7 @@ export default {
 	},
 
 	server: {
-		input: config.server.input(),
+		input: ((typeof config.server.input() === 'string') ? config.server.input() : config.server.input().server).replace(/\.js$/, '.ts'),
 		output: config.server.output(),
 		plugins: [
 			replace({
@@ -88,13 +88,13 @@ export default {
           typescriptprocess({ tsconfigFile })
         ]
       }),
-      typescript(),
 			resolve({
 				dedupe: ["svelte"]
       }),
       commonjs(),
       image(),
       url(),
+      typescript(),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 
