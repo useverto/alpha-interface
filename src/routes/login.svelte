@@ -5,7 +5,7 @@
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
   import { keyfile, loggedIn, address } from "../stores/keyfileStore.js";
-  import Arweave from "arweave-js";
+  import Arweave from "arweave";
 
   let isDragOver = false;
   let files: FileList = [];
