@@ -4,7 +4,7 @@
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
   import { and, equals } from "arql-ops";
-  import { ITrade } from "../../types/types.ts";
+  import { ITrade } from "../../types.ts";
   import Loading from "../Loading.svelte";
 
   let element, y, windowHeight, shown = false;

@@ -3,7 +3,7 @@
   import { address } from "../../stores/keyfileStore.js";
   import moment from "moment";
   import Loading from "../Loading.svelte";
-  import { ITransaction } from "../../types/types.ts";
+  import { ITransaction } from "../../types.ts";
   import { equals, or } from "arql-ops";
 
   let client;

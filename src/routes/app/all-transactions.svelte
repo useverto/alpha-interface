@@ -4,7 +4,7 @@
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import Loading from "../../components/Loading.svelte";
-  import { ITransaction } from "../../types/types.ts";
+  import { ITransaction } from "../../types.ts";
   import { address } from "../../stores/keyfileStore.ts";
   import { loggedIn } from "../../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
