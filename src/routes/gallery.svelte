@@ -53,7 +53,6 @@
           }
         }
       `)).data.transactions.edges;
-
     for (const post of _posts) {
       let node = post.node;
       const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));

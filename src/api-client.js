@@ -1,3 +1,4 @@
+// Simple arweave graphql API client
 export async function query(query) {
     var graphql = JSON.stringify({
         query,
@@ -5,10 +6,11 @@ export async function query(query) {
     });
     var requestOptions = {
         method: "POST",
-        headers: myHeaders,
+        headers: {
+            "content-type": "application/json"
+        },
         body: graphql,
     };
     let res = await fetch("https://arweave.dev/graphql", requestOptions);
-    console.log(await res.clone().text())
     return await res.clone().json();
 }
