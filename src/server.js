@@ -5,7 +5,7 @@ import sirv from "sirv";
 import polka from "polka";
 import compression from "compression";
 import * as sapper from "@sapper/server";
-import Arweave from "arweave"
+import Arweave from "arweave";
 
 const client = new Arweave({
   host: "arweave.net",
