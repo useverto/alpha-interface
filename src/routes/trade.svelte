@@ -8,11 +8,45 @@
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
+  import { query } from "../api-client";
+
   let selectedPost;
   let sendAmount: number = 1;
   let sendCurrency: string;
   let recieveCurrency: string;
   let confirmModalOpened: boolean = false;
+
+  let posts = getTradingPosts();
+
+  async function getTradingPosts (): Promise<string[]> {
+    let posts: string[] = [];
+
+    const _posts = (await query(`
+      query {
+        transactions(
+          # recipients: ["EXCHANGE_WALLET_ADDR"]
+          tags: [
+            { name: "App-Name", values: "Verto" }
+            { name: "Trading-Post-Genesis", values: "G" }
+          ]
+        ) {
+          edges {
+            node {
+              owner {
+                address
+              }
+            }
+          }
+        }
+      }
+    `)).data.transactions.edges;
+
+    _posts.map(({ node }) => {
+      posts.push(node.owner.address);
+    });
+
+    return posts;
+  }
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -31,7 +65,7 @@
   }
 
   function cancelTrade () {
-    console.log("Cancelled trage");
+    console.log("Cancelled trade");
   }
 
 </script>
@@ -55,7 +89,16 @@
     <div class="recommended-post">
       <p>Recommended trading post</p>
       <select bind:value={selectedPost}>
-        <option value="5483fchfe485FHJEndheUv7443434435uhjf49f">5483fchfe485FHJEndheUv7443434435uhjf49f</option>
+        {#await posts}
+          <option>Loading</option>
+        {:then loadedPosts}
+          {#if loadedPosts.length === 0}
+            <option>No posts found</option>
+          {/if}
+          {#each loadedPosts as post}
+            <option value={post}>{post}</option>
+          {/each}
+        {/await}
       </select>
     </div>
   </div>
