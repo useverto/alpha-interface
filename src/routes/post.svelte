@@ -6,7 +6,7 @@
   import { loggedIn, address, balance } from "../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
-  import SkeletonLoading from "../../components/SkeletonLoading.svelte";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   let activeMenu: string = "transactions";
   let addr: string = "";
