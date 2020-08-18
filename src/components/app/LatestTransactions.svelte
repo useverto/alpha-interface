@@ -5,7 +5,7 @@
   import Loading from "../Loading.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { fade } from "svelte/transition";
-
+  import latestTransactionsQuery from "../../queries/latestTransactions.gql";
   import { query } from "../../api-client";
   import Arweave from "arweave";
 
@@ -29,44 +29,21 @@
       timeout: 20000,
     });
 
-    const outTxs = (await query(`
-      query {
-        transactions(
-          owners: ["${$address}"]
-        ) {
-          edges {
-            node {
-              id
-              block {
-                timestamp
-              }
-              quantity {
-                ar
-              }
-            }
-          }
+    const
+      outTxs = (await query({
+        query: latestTransactionsQuery,
+        variables: {
+          recipients: null,
+          owners: [$address]
         }
-      }
-    `)).data.transactions.edges;
-    const inTxs = (await query(`
-      query {
-        transactions(
-          recipients: ["${$address}"]
-        ) {
-          edges {
-            node {
-              id
-              block {
-                timestamp
-              }
-              quantity {
-                ar
-              }
-            }
-          }
+      })).data.transactions.edges,
+      inTxs = (await query({
+        query: latestTransactionsQuery,
+        variables: {
+          recipients: [$address],
+          owners: null
         }
-      }
-    `)).data.transactions.edges;
+      })).data.transactions.edges;
 
     outTxs.map(({ node }) => {
       txs.push({
