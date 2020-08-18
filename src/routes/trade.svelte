@@ -6,6 +6,7 @@
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -43,8 +44,13 @@
 <div class="trade" in:fade={{ duration: 300 }}>
   <div class="trade-head">
     <div class="balance">
-      <p>Total balance</p>
-      <h1>{roundCurrency($balance)}<span>AR</span></h1>
+      {#if $balance === 0}
+        <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
+        <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
+      {:else}
+        <p in:fade={{ duration: 150 }}>Total balance</p>
+        <h1 in:fade={{ duration: 150 }}>{roundCurrency($balance)}<span>AR</span></h1>
+      {/if}
     </div>
     <div class="recommended-post">
       <p>Recommended trading post</p>

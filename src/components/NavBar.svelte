@@ -88,7 +88,7 @@
 
         &::before
           content: "/"
-          color: #9300B8
+          color: #B075CD
           margin-right: $sideMargin * 2
 
         &::after

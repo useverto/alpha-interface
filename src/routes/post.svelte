@@ -6,6 +6,7 @@
   import { loggedIn, address, balance } from "../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   let activeMenu: string = "transactions";
   let addr: string = "";
@@ -44,8 +45,13 @@
   </div>
   <div class="post-info big">
     <div class="long-cell">
-      <p>total balance</p>
-      <h1>{roundCurrency($balance)}<span class="currency">AR</span><span style="vertical-align: super; color: #00D46E; font-size: .5em">(+0.75%)</span></h1>
+      {#if $balance === 0}
+        <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
+        <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
+      {:else}
+        <p in:fade={{ duration: 150 }}>total balance</p>
+        <h1 in:fade={{ duration: 150 }}>{roundCurrency($balance)}<span class="currency">AR</span><span style="vertical-align: super; color: #00D46E; font-size: .5em">(+0.75%)</span></h1>
+      {/if}
     </div>
     <div class="short-cell">
       <p>total stake</p>
@@ -96,7 +102,8 @@
           </tr>
         </table>
       {:else}
-        <table>
+        <!-- the last 5 transactions for this trading post -->
+        <table in:fade={{ duration: 400 }}>
           <tr>
             <th style="text-transform: none">TxID</th>
             <th>Amount</th>
@@ -128,7 +135,6 @@
             <td style="text-transform: uppercase">lum</td>
           </tr>
         </table>
-        <a href="/app/all-transactions" class="view-all">View all {"->"}</a>
       {/if}
     </div>
   </div>

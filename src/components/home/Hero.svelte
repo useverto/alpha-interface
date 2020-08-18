@@ -65,7 +65,7 @@
           font-size: 3em
 
         span
-          background: -webkit-linear-gradient(#9300B8, #C54DFD, #E1A1FF)
+          background: linear-gradient(138.37deg, #E698E8 14.46%, #8D5FBC 85.54%)
           -webkit-background-clip: text
           -webkit-text-fill-color: transparent
 
@@ -87,7 +87,7 @@
 
         &:hover
           transition: color linear 0.1s
-          color: #C54DFD
+          color: #B075CD
 
     .blobs
       position: absolute

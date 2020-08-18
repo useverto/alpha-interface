@@ -3,9 +3,9 @@
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
-  import { and, equals } from "arql-ops";
-  import Loading from "../Loading.svelte";
-  import Arweave from "arweave";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+
+  import { query } from "../../api-client";
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
@@ -21,32 +21,37 @@
   async function getLatestTrades (): Promise<{ id: string, amount: number, pst: string }[]> {
     if(!process.browser) return [];
 
-    const client = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
+    let txs: { id: string, amount: number, pst: string }[] = [];
 
-    let 
-      query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
-      _txs: { id: string, amount: number, pst: string }[] = [],
-      allTxs = await client.arql(query);
-
-    for(let i = 0; i < 5; i++) {
-      try {
-        let res = await client.transactions.get(allTxs[i]);
-        _txs.push({
-          id: allTxs[i],
-          amount: client.ar.winstonToAr(res.quantity),
-          pst: "AR"
-        });
-      } catch (error) {
-        console.log(error);
+    const _txs = (await query(`
+      query {
+        transactions(
+          tags: [
+            {name: "App-Name", values: "Verto"}
+          ]
+          first: 5
+        ) {
+          edges {
+            node {
+              id
+              quantity {
+                ar
+              }
+            }
+          }
+        }
       }
-    }
+    `)).data.transactions.edges;
 
-    return _txs;
+    _txs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        pst: "AR"
+      })
+    })
+
+    return txs;
   }
 
 </script>
@@ -63,7 +68,31 @@
           <th>PST</th>
         </tr>
         {#await txs}
-          <Loading style="position: absolute; left: 50%;" />
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
+          <tr>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+          </tr>
         {:then loadedTxs}
           {#each loadedTxs as tx}
             <tr in:fade={{ duration: 185 }}>
