@@ -80,117 +80,113 @@
 </svelte:head>
 
 <NavBar />
-<div class="gallery" in:fade={{ duration: 300 }}>
-  <div class="gallery-head">
+<div class="tokens">
+  <div class="tokens-head">
     <h1 class="title">Supported Tokens</h1>
-    <Button style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Add token</Button>
   </div>
-  <div class="gallery-content">
-    {#await supportedTokens}
-      <Loading style="position: absolute; left: 50%;" />
-    {:then loadedTokens} 
-      {#each loadedTokens as token}
-        <a href="https://viewblock.io/arweave/tx/{token.id}" class="token">
-          <h1>{token.name}</h1>
-          <div class="token-info">
-            <p>Ticker <span>{token.ticker}</span></p>
-            <p>ID <span>{token.id}</span></p>
-          </div>
-        </a>
-      {/each}
-    {/await}
+  <div class="tokens-content">
+    <a class="token" href="/">
+      <h1 class="short">Dno</h1>
+      <div class="info">
+        <h1><span>[PST]</span>Deno Development Fund</h1>
+        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
+      </div>
+      <h1 class="val">34.06959<span>Ar</span></h1>
+    </a>
+    <a class="token" href="/">
+      <h1 class="short">Dno</h1>
+      <div class="info">
+        <h1><span>[PST]</span>Deno Development Fund</h1>
+        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
+      </div>
+      <h1 class="val">34.06959<span>Ar</span></h1>
+    </a>
+    <a class="token" href="/">
+      <h1 class="short">Dno</h1>
+      <div class="info">
+        <h1><span>[PST]</span>Deno Development Fund</h1>
+        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
+      </div>
+      <h1 class="val">34.06959<span>Ar</span></h1>
+    </a>
+    <a class="token" href="/">
+      <h1 class="short">Dno</h1>
+      <div class="info">
+        <h1><span>[PST]</span>Deno Development Fund</h1>
+        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
+      </div>
+      <h1 class="val">34.06959<span>Ar</span></h1>
+    </a>
   </div>
 </div>
 <Footer />
 
 <style lang="sass">
 
-  @import "../styles/tables.sass"
-
-  .gallery
+  .tokens
     padding: 4.4em 15vw 3em
 
-    .gallery-head
+    .tokens-head
       display: flex
       justify-content: space-between
-      margin-bottom: .6em
+      margin-bottom: 2em
 
       h1.title
-          margin: 0
+        margin: 0
 
-      .sorting
-        display: flex
-        align-items: center
-
-        p
-          font-size: 1.2em
-          color: rgba(#000, .3)
-          font-weight: 600
-          margin: 0
-          text-transform: uppercase
-
-        select
-          position: relative
-          border: none
-          outline: none
-          background-color: transparent
-          cursor: pointer
-          font-size: 1em
-          color: rgba(#000, .8)
-          margin: 0
-          font-weight: 600
-          text-transform: uppercase
-          
-          option
-            text-transform: normal
-            font-size: .8em
-            color: #000
-
-    .gallery-content
-      @media screen and (max-width: 720px)
-        overflow-x: hidden
-
+    .tokens-content
       a.token
+        $sidePadding: 2.3em
         display: block
-        margin: 2em 0
+        padding: 1em $sidePadding
+        background-color: #121212
         text-decoration: none
+        color: #fff
+        display: flex
+        justify-content: space-between
+        align-items: center
+        border-radius: 5px
+        margin-bottom: 2.8em
         transition: all .3s
 
+        &::last-child
+          margin-bottom: 0
+
         &:hover
-          opacity: .63
+          opacity: .8
 
         h1
-          font-size: 1.7em
-          color: #000
-          font-weight: 400
-          margin: 0 0 .65em 0
-
-        .token-info
-          display: flex
-          justify-content: space-between
-
-          @media screen and (max-width: 720px)
-            display: block
-            margin: 1.5em 0 2.3em
-
-          p
-            font-size: 1.1em
-            font-weight: 600
-            color: rgba(#000, .4)
-            margin: 0
+          margin: 0
+          
+          &.short
+            font-size: 3.1em
+            color: #fff
+            font-weight: 500
             text-transform: uppercase
+            display: inline-block
+            margin-right: $sidePadding
 
-            @media screen and (max-width: 720px)
-              margin-bottom: 1em
+          &.val
+            font-size: 1.9em
+            font-weight: 400
 
             span
-              color: #000
+              text-transform: uppercase
+              font-size: .43em
 
-              &.reputation
-                text-decoration: underline
+        .info
+          h1
+            font-size: 1.5em
+            margin-bottom: .3em
+            font-weight: 400
 
-    .pagination
-      margin-top: 1em
-      @include pagination
+          p
+            margin: 0
+            font-size: 1.05em
+            color: #fff
 
+          span
+            text-transform: uppercase
+            color: #828282
+            margin-right: .5em
 </style>
