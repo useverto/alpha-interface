@@ -5,6 +5,7 @@
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
   import { keyfile, loggedIn, address } from "../stores/keyfileStore.js";
+  import Arweave from "arweave";
 
   let isDragOver = false;
   let files: FileList = [];
@@ -14,7 +15,6 @@
 
   // let's create a new client
   if(process.browser) {
-    // @ts-ignore
     client = new Arweave({
       host: "arweave.net",
       port: 443,

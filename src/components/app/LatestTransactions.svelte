@@ -8,6 +8,7 @@
 
   import ApolloClient from 'apollo-boost';
   import gql from 'graphql-tag';
+  import Arweave from "arweave";
 
   let transactions = getLatestTransactions();
 
@@ -22,7 +23,6 @@
 
     let txs: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
 
-    // @ts-ignore
     const client = new Arweave({
       host: "arweave.net",
       port: 443,

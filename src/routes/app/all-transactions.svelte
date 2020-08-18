@@ -11,7 +11,8 @@
   import { onMount } from "svelte";
   import ApolloClient from 'apollo-boost';
   import gql from 'graphql-tag';
-
+  import Arweave from "arweave";
+  
   if(process.browser && !$loggedIn) goto("/");
 
   let client, element;
@@ -33,7 +34,6 @@
 
     loading = true;
 
-    // @ts-ignore
     const 
       client = new Arweave({
         host: "arweave.net",

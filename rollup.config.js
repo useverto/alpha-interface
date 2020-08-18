@@ -1,4 +1,5 @@
 import resolve from "@rollup/plugin-node-resolve";
+import builtins from "rollup-plugin-node-builtins";
 import replace from "@rollup/plugin-replace";
 import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
@@ -32,20 +33,21 @@ export default {
 			svelte({
 				dev,
 				hydratable: true,
-        emitCss: true,
-        css: css => css.write("public/build/bundle.css"),
-        preprocess: sveltePreprocess()
+				emitCss: true,
+				css: css => css.write("public/build/bundle.css"),
+				preprocess: sveltePreprocess()
 			}),
 			resolve({
 				browser: true,
-				dedupe: ["svelte"]
+				dedupe: ["svelte"],
+				preferBuiltins: false,
 			}),
-      commonjs(),
-      sass(),
-      image(),
-	  url(),
-	  json(),
-
+			commonjs(),
+			sass(),
+			image(),
+			url(),
+			json(),
+			builtins(),
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
 				babelHelpers: "runtime",
@@ -82,17 +84,19 @@ export default {
 			}),
 			svelte({
 				generate: "ssr",
-        dev,
-        preprocess: sveltePreprocess()
+				dev,
+				preprocess: sveltePreprocess()
 			}),
 			resolve({
-				dedupe: ["svelte"]
+				dedupe: ["svelte"],
+				preferBuiltins: false,
 			}),
-      commonjs(),
-      sass(),
-      image(),
-      url(),
-      json(),
+			commonjs(),
+			sass(),
+			image(),
+			url(),
+			json(),
+			builtins(),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 
