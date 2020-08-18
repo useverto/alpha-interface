@@ -38,9 +38,10 @@
     const _posts = (await query(`
       query {
         transactions(
+          # recipients: ["EXCHANGE_WALLET_ADDR"]
           tags: [
-            {name: "App-Name", values: "Verto"}
-            {name: "Trading-Post-Genesis", values: "G"}
+            { name: "App-Name", values: "Verto" }
+            { name: "Trading-Post-Genesis", values: "G" }
           ]
         ) {
           edges {
