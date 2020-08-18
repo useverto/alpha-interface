@@ -16,13 +16,23 @@
   async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
     if(!process.browser) return [];
 
-    const _posts = (await query(`
+    let psts: { id: string, name: string, ticker: string }[] = [];
+
+    // @ts-ignore
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    const txIds = (await query(`
       query {
         transactions(
+          owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
           tags: [
             {name: "App-Name", values: "Verto"}
             {name: "Support", values: "PST"}
-            {name: "from", values: "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"}
           ]
         ) {
           edges {
@@ -34,9 +44,26 @@
       }
     `)).data.transactions.edges;
 
-    // TODO(@t8, @johnletey): Parse transactions
+    txIds.map(({ node }) => {
+      psts.push({
+        id: node.id,
+        name: "",
+        ticker: "",
+      });
+    })
 
-    return [];
+    for (let i = 0; i < psts.length; i++) {
+      const contractData = JSON.parse(
+        await client.transactions.getData(
+          psts[i].id,
+          {decode: true, string: true},
+        )
+      );
+      psts[i].name = contractData["name"];
+      psts[i].ticker = contractData["ticker"];
+    }
+
+    return psts;
   }
 
 </script>
