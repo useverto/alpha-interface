@@ -85,38 +85,20 @@
     <h1 class="title">Supported Tokens</h1>
   </div>
   <div class="tokens-content">
-    <a class="token" href="/">
-      <h1 class="short">Dno</h1>
-      <div class="info">
-        <h1><span>[PST]</span>Deno Development Fund</h1>
-        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
-      </div>
-      <h1 class="val">34.06959<span>Ar</span></h1>
-    </a>
-    <a class="token" href="/">
-      <h1 class="short">Dno</h1>
-      <div class="info">
-        <h1><span>[PST]</span>Deno Development Fund</h1>
-        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
-      </div>
-      <h1 class="val">34.06959<span>Ar</span></h1>
-    </a>
-    <a class="token" href="/">
-      <h1 class="short">Dno</h1>
-      <div class="info">
-        <h1><span>[PST]</span>Deno Development Fund</h1>
-        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
-      </div>
-      <h1 class="val">34.06959<span>Ar</span></h1>
-    </a>
-    <a class="token" href="/">
-      <h1 class="short">Dno</h1>
-      <div class="info">
-        <h1><span>[PST]</span>Deno Development Fund</h1>
-        <p><span>ID:</span>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</p>
-      </div>
-      <h1 class="val">34.06959<span>Ar</span></h1>
-    </a>
+    {#await supportedTokens}
+      <Loading />
+    {:then loadedPSTs} 
+      {#each loadedPSTs as pst}
+        <a class="token" href="https://viewblock.io/arweave/tx/{pst.id}">
+          <h1 class="short">{pst.ticker}</h1>
+          <div class="info">
+            <h1><span>[PST]</span>{pst.name}</h1>
+            <p><span>ID</span>{pst.id}</p>
+          </div>
+          <h1 class="val">34.06959<span>Ar</span></h1>
+        </a>
+      {/each}
+    {/await}
   </div>
 </div>
 <Footer />
