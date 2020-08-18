@@ -10,7 +10,8 @@ import pkg from "./package.json";
 import sveltePreprocess, { sass } from "svelte-preprocess";
 import image from "@rollup/plugin-image";
 import url from "@rollup/plugin-url";
-import json from '@rollup/plugin-json';
+import json from "@rollup/plugin-json";
+import { string } from "rollup-plugin-string";
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
@@ -47,7 +48,8 @@ export default {
 			image(),
 			url(),
 			json(),
-			builtins(),
+      builtins(),
+      string({ include: "**/*.graphql" }),
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
 				babelHelpers: "runtime",
@@ -96,7 +98,8 @@ export default {
 			image(),
 			url(),
 			json(),
-			builtins(),
+      builtins(),
+      string({ include: "**/*.graphql" }),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 

@@ -7,6 +7,7 @@
   import { fade } from "svelte/transition";
   import { query } from "../api-client.js";
   import Arweave from "arweave";
+  import galleryQuery from "../queries/gallery.graphql";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -35,24 +36,7 @@
       timeout: 20000,
     });
 
-    const _posts = (await query(`
-      query {
-        transactions(
-          tags: [
-            {name: "App-Name", values: "Verto"}
-            {name: "Trading-Post-Genesis", values: "G"}
-          ]
-        ) {
-          edges {
-            node {
-              owner {
-                address
-              }
-            }
-          }
-        }
-      }
-    `)).data.transactions.edges;
+    const _posts = (await query(galleryQuery)).data.transactions.edges;
 
     for (const post of _posts) {
       let node = post.node;
