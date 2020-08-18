@@ -9,8 +9,7 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import ApolloClient from 'apollo-boost';
-  import gql from 'graphql-tag';
+  import { query } from "../../api-client";
   import Arweave from "arweave";
   
   if(process.browser && !$loggedIn) goto("/");
@@ -34,70 +33,62 @@
 
     loading = true;
 
-    const 
-      client = new Arweave({
-        host: "arweave.net",
-        port: 443,
-        protocol: "https",
-        timeout: 20000,
-      }),
-      gqlClient = new ApolloClient({
-        uri: "https://arweave.dev/graphql"
-      });
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
 
     const 
-      outQuery = hasNextOut ? (await gqlClient.query({
-        query: gql`
-          query {
-            transactions(
-              owners: ["${ $address }"]
-              after: "${ lastCursorOut }"
-            ) {
-              pageInfo {
-                hasNextPage
-              }
-              edges {
-                cursor
-                node {
-                  id
-                  block {
-                    timestamp
-                  }
-                  quantity {
-                    ar
-                  }
+      outQuery = hasNextOut ? (await query(`
+        query {
+          transactions(
+            owners: ["${ $address }"]
+            after: "${ lastCursorOut }"
+          ) {
+            pageInfo {
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
                 }
               }
             }
           }
-        `
-      })).data : null,
-      inQuery = hasNextIn ? (await gqlClient.query({
-        query: gql`
-          query {
-            transactions(
-              recipients: ["${ $address }"]
-              after: "${ lastCursorIn }"
-            ) {
-              pageInfo {
-                hasNextPage
-              }
-              edges {
-                cursor
-                node {
-                  id
-                  block {
-                    timestamp
-                  }
-                  quantity {
-                    ar
-                  }
+        }
+      `)).data : null,
+      inQuery = hasNextIn ? (await query(`
+        query {
+          transactions(
+            recipients: ["${ $address }"]
+            after: "${ lastCursorIn }"
+          ) {
+            pageInfo {
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
                 }
               }
             }
           }
-        `
-      })).data : null;
+        }
+      `)).data : null;
 
     const 
       outTxs = hasNextOut ? outQuery.transactions.edges : null,

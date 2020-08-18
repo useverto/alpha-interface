@@ -5,8 +5,7 @@
   import { onMount } from "svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
 
-  import ApolloClient from 'apollo-boost';
-  import gql from 'graphql-tag';
+  import { query } from "../../api-client";
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
@@ -24,30 +23,25 @@
 
     let txs: { id: string, amount: number, pst: string }[] = [];
 
-    const client = new ApolloClient({
-      uri: "https://arweave.dev/graphql"
-    });
-    const _txs = (await client.query({
-      query: gql`
-        query {
-          transactions(
-            tags: [
-              {name: "App-Name", values: "Verto"}
-            ]
-            first: 5
-          ) {
-            edges {
-              node {
-                id
-                quantity {
-                  ar
-                }
+    const _txs = (await query(`
+      query {
+        transactions(
+          tags: [
+            {name: "App-Name", values: "Verto"}
+          ]
+          first: 5
+        ) {
+          edges {
+            node {
+              id
+              quantity {
+                ar
               }
             }
           }
         }
-      `
-    })).data.transactions.edges;
+      }
+    `)).data.transactions.edges;
 
     _txs.map(({ node }) => {
       txs.push({

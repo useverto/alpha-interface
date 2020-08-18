@@ -6,8 +6,7 @@
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { fade } from "svelte/transition";
 
-  import ApolloClient from 'apollo-boost';
-  import gql from 'graphql-tag';
+  import { query } from "../../api-client";
   import Arweave from "arweave";
 
   let transactions = getLatestTransactions();
@@ -30,51 +29,44 @@
       timeout: 20000,
     });
 
-    const gqlClient = new ApolloClient({
-      uri: "https://arweave.dev/graphql"
-    });
-    const outTxs = (await gqlClient.query({
-      query: gql`
-        query {
-          transactions(
-            owners: ["${$address}"]
-          ) {
-            edges {
-              node {
-                id
-                block {
-                  timestamp
-                }
-                quantity {
-                  ar
-                }
+    const outTxs = (await query(`
+      query {
+        transactions(
+          owners: ["${$address}"]
+        ) {
+          edges {
+            node {
+              id
+              block {
+                timestamp
+              }
+              quantity {
+                ar
               }
             }
           }
         }
-      `
-    })).data.transactions.edges;
-    const inTxs = (await gqlClient.query({
-      query: gql`
-        query {
-          transactions(
-            recipients: ["${$address}"]
-          ) {
-            edges {
-              node {
-                id
-                block {
-                  timestamp
-                }
-                quantity {
-                  ar
-                }
+      }
+    `)).data.transactions.edges;
+    const inTxs = (await query(`
+      query {
+        transactions(
+          recipients: ["${$address}"]
+        ) {
+          edges {
+            node {
+              id
+              block {
+                timestamp
+              }
+              quantity {
+                ar
               }
             }
           }
         }
-      `
-    })).data.transactions.edges;
+      }
+    `)).data.transactions.edges;
 
     outTxs.map(({ node }) => {
       txs.push({
