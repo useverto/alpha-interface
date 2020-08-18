@@ -22,6 +22,7 @@
           tags: [
             {name: "App-Name", values: "Verto"}
             {name: "Support", values: "PST"}
+            {name: "from", values: "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"}
           ]
         ) {
           edges {
