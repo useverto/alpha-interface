@@ -50,15 +50,15 @@
 
     for (const id of txIds) {
       try {
-        const contractId = await client.transactions.getData(
+        const contractId = (await client.transactions.getData(
           id,
           {decode: true, string: true},
-        );
+        )).toString();
         const contractData = JSON.parse(
-          await client.transactions.getData(
+          (await client.transactions.getData(
             contractId,
             {decode: true, string: true},
-          )
+          )).toString()
         );
         psts.push({
           id: contractId,
