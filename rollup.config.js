@@ -9,6 +9,7 @@ import pkg from "./package.json";
 import sveltePreprocess, { sass } from "svelte-preprocess";
 import image from "@rollup/plugin-image";
 import url from "@rollup/plugin-url";
+import json from '@rollup/plugin-json';
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
@@ -42,7 +43,8 @@ export default {
       commonjs(),
       sass(),
       image(),
-      url(),
+	  url(),
+	  json(),
 
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
@@ -90,6 +92,7 @@ export default {
       sass(),
       image(),
       url(),
+      json(),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 

@@ -1,22 +1,22 @@
 <script lang="typescript">
 
-  import NavBar from "../../components/NavBar.svelte";
-  import Footer from "../../components/Footer.svelte";
-  import Button from "../../components/Button.svelte";
-  import { loggedIn, address, balance } from "../../stores/keyfileStore.js";
+  import NavBar from "../components/NavBar.svelte";
+  import Footer from "../components/Footer.svelte";
+  import Button from "../components/Button.svelte";
+  import { loggedIn, address, balance } from "../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
 
   let activeMenu: string = "transactions";
-  let id: string = "";
+  let addr: string = "";
 
   if(process.browser && !$loggedIn) goto("/");
 
   if(process.browser) {
     const params = new URLSearchParams(window.location.search);
-    if(params.get("id") === null) goto("/gallery");
-    id = params.get("id");
+    if(params.get("addr") === null) goto("/gallery");
+    addr = params.get("addr");
   }
 
   function roundCurrency (val: number | string): string {
@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-  <title>Post</title>
+  <title>Verto — Trading Post</title>
 </svelte:head>
 
 <NavBar />
@@ -36,7 +36,7 @@
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
-      <h1>{id}</h1>
+      <h1>{addr}</h1>
     </div>
     <div class="short-cell">
       <p>reputation</p>
@@ -143,7 +143,7 @@
 
 <style lang="sass">
 
-  @import "../../styles/tables.sass"
+  @import "../styles/tables.sass"
 
   .post
     padding: 4.4em 15vw 3em
