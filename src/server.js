@@ -5,14 +5,7 @@ import sirv from "sirv";
 import polka from "polka";
 import compression from "compression";
 import * as sapper from "@sapper/server";
-import Arweave from "arweave"
 
-const client = new Arweave({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-  timeout: 20000,
-});
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === "development";
 
