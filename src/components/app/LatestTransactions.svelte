@@ -115,26 +115,12 @@
       <th>Amount</th>
     </tr>
     {#await transactions}
+      {#each Array(5) as _}
       <tr>
         <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
         <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
       </tr>
-      <tr>
-        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-      </tr>
-      <tr>
-        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-      </tr>
-      <tr>
-        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-      </tr>
-      <tr>
-        <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-        <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-      </tr>
+      {/each}
     {:then loadedTxs}
       {#if loadedTxs.length === 0}
         <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
