@@ -22,8 +22,7 @@
 
   // open confirmation modal
   function exchange () {
-    if(sendCurrency.toLowerCase() === "ar" && recieveCurrency.toLowerCase() === "ar") return; // don't allow transactions with only ar values
-    if(sendCurrency.toLowerCase() === "ar" || recieveCurrency.toLowerCase() === "ar") confirmModalOpened = true;
+    confirmModalOpened = true;
   }
 
   // todo exchange logic
@@ -33,14 +32,6 @@
 
   function cancelTrade () {
     console.log("Cancelled trage");
-  }
-
-  // only allow exchange if one of the currencies is AR
-  function checkIfArIsPresent (sendOrRecieve: string) {
-    if(sendCurrency.toLowerCase() !== "ar" && recieveCurrency.toLowerCase() !== "ar") {
-      if(sendOrRecieve === "send") recieveCurrency = "ar";
-      else sendCurrency = "ar";
-    }
   }
 
 </script>
@@ -95,16 +86,14 @@
       <p>You send</p>
       <div class="input">
         <input type="number" bind:value={sendAmount} min={0} />
-        <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
-          <option value="ar">AR</option>
+        <select bind:value={sendCurrency}>
           <option value="egg">EGG</option>
         </select>
       </div>
       <p>You recieve</p>
       <div class="input">
         <input type="number" value={sendAmount * 3} disabled /><!-- logic here (calculate the exchange receive amount) -->
-        <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
-          <option value="ar">AR</option>
+        <select bind:value={recieveCurrency}>
           <option value="lum">LUM</option>
         </select>
       </div>
