@@ -8,10 +8,10 @@ body {
   overflow-x: hidden;
 }
 ::selection {
-  background-color: #9300B8;
+  background-color: #B075CD;
 }
 ::-moz-selection {
-  background-color: #9300B8;
+  background-color: #B075CD;
 }
 button, input, textarea, select {
   font-family: "JetBrainsMono", monospace;
@@ -28,6 +28,6 @@ h1.title {
   }
 }
 a {
-  color: #9300B8;
+  color: #B075CD;
   text-decoration: underline;
 }

@@ -8,22 +8,17 @@
   import { loggedIn } from "../../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { equals, or } from "arql-ops";
+  import { onMount } from "svelte";
+  import { query } from "../../api-client";
   import Arweave from "arweave";
   
   if(process.browser && !$loggedIn) goto("/");
 
-  let currentPage = 1, lastPage = 1;
-  let client;
-  let transactions = getAllTransactions();
-
-  // set current page
-  // redirect to first page if the current page is greater than the last page
-  if(process.browser) {
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
-    if(currentPage > lastPage) goto("/app/all-transactions");
-  }
+  let client, element;
+  let transactions: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
+  let lastCursorOut = "", lastCursorIn = "";
+  let hasNextOut = true, hasNextIn = true, loadedTransactions = false, loading = false;
+  let y: number, windowHeight: number;
 
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
@@ -31,8 +26,12 @@
     return val.toFixed(7);
   }
 
-  async function getAllTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
+  onMount(() => loadMoreTransactions());
+
+  async function loadMoreTransactions () {
     if(!process.browser) return [];
+
+    loading = true;
 
     const client = new Arweave({
       host: "arweave.net",
@@ -41,38 +40,113 @@
       timeout: 20000,
     });
 
-    let 
-      query = or(
-        equals("from", $address),
-        equals("to", $address),
-      ),
-      _txs: { id: string, amount: number, status: string }[] = [],
-      allTxs = await client.arql(query);
+    const 
+      outQuery = hasNextOut ? (await query(`
+        query {
+          transactions(
+            owners: ["${ $address }"]
+            after: "${ lastCursorOut }"
+          ) {
+            pageInfo {
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
+                }
+              }
+            }
+          }
+        }
+      `)).data : null,
+      inQuery = hasNextIn ? (await query(`
+        query {
+          transactions(
+            recipients: ["${ $address }"]
+            after: "${ lastCursorIn }"
+          ) {
+            pageInfo {
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                id
+                block {
+                  timestamp
+                }
+                quantity {
+                  ar
+                }
+              }
+            }
+          }
+        }
+      `)).data : null;
 
-    for(let i = 0; i < allTxs.length; i++) {
-      try {
-        let res = await client.transactions.get(allTxs[i]);
-        _txs.push({
-          id: allTxs[i],
-          amount: client.ar.winstonToAr(res.quantity),
-          status: ""
+    const 
+      outTxs = hasNextOut ? outQuery.transactions.edges : null,
+      inTxs = hasNextIn ? inQuery.transactions.edges : null;
+
+    hasNextOut = hasNextOut ? outQuery.transactions.pageInfo.hasNextPage : false;
+    hasNextIn = hasNextIn ? inQuery.transactions.pageInfo.hasNextPage : false;
+
+    let _transactions: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
+
+    if(outTxs !== null)
+      outTxs.map(({ node, cursor }) => {
+        lastCursorOut = cursor;
+        _transactions.push({
+          id: node.id,
+          amount: node.quantity.ar,
+          type: "out",
+          status: "",
+          timestamp: node.block.timestamp,
         });
-      } catch (error) {
-        console.log(error);
-      }
+      });
+    
+    if(inTxs !== null)
+      inTxs.map(({ node, cursor }) => {
+        lastCursorIn = cursor;
+        _transactions.push({
+          id: node.id,
+          amount: node.quantity.ar,
+          type: "in",
+          status: "",
+          timestamp: node.block.timestamp,
+        });
+      });
 
+    if(_transactions.length > 0) _transactions.sort((a, b) => b.timestamp - a.timestamp);
+
+    for (let i = 0; i < _transactions.length; i++) {
       try {
-        let res = await client.transactions.getStatus(allTxs[i]);
+        let res = await client.transactions.getStatus(_transactions[i].id);
         if (res.status === 200)
-          _txs[i].status = "success";
+          _transactions[i].status = "success";
         else
-          _txs[i].status = "pending";
+          _transactions[i].status = "pending";
       } catch (error) {
         console.log(error);
       }
     }
 
-    return _txs;
+    transactions = transactions.concat(_transactions);
+    loadedTransactions = true;
+    setTimeout(() => loading = false, 400) // wait for animation and latency to complete (needed for the scroll)
+  }
+
+  $: {
+    if(element !== undefined) {
+      let componentY = element.offsetTop + element.offsetHeight;
+      if(componentY <= (y + windowHeight + 120) && loadedTransactions && !loading && (hasNextOut || hasNextIn)) loadMoreTransactions();
+    }
   }
 
 </script>
@@ -81,6 +155,7 @@
   <title>Transactions overview</title>
 </svelte:head>
 
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
 <div class="all-transactions" in:fade={{ duration: 300 }}>
   <h1 class="title">All Transactions</h1>
@@ -89,34 +164,34 @@
       <th style="text-transform: none">TxID</th>
       <th>Amount</th>
     </tr>
-    {#await transactions}
+    {#if !loadedTransactions}
       <Loading style="position: absolute; left: 50%;" />
       <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-    {:then loadedTxs}
-      {#if loadedTxs.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
-        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-      {/if}
-      {#each loadedTxs as tx}
-        <tr>
+    {:else if transactions.length === 0}
+      <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
+      <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+    {:else}
+      {#each transactions as tx}
+        <tr in:fade={{ duration: 150 }}>
           <td style="width: 70%">
             <a href="https://viewblock.io/arweave/tx/{tx.id}">
-              {tx.id} 
-              <span class="status {tx.status}"></span>
+              <span class="direction">{tx.type}</span>
+              {tx.id}
             </a>
+            <span class="status {tx.status}"></span>
           </td>
           <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
         </tr>
       {/each}
-    {/await}
+      {#if loading} <!-- if the site is loading, but there are transactions already loaded  -->
+        <Loading style="position: absolute; left: 50%;" />
+        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+      {/if}
+    {/if}
   </table>
-  <div class="pagination">
-    <a href="/app/all-transactions{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
-    <span class="current">{currentPage}</span>
-    <a href="/app/all-transactions{lastPage >= currentPage ? "" : ("?page=" + (currentPage + 1))}" class="next">{"->"}</a>
-  </div>
 </div>
 <Footer />
+<span style="width: 100%; height: 1px" bind:this={element}></span>
 
 <style lang="sass">
 

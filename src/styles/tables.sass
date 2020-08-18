@@ -3,6 +3,11 @@
     width: 100%
 
     tr
+      transition: opacity .3s
+
+      &:not(:first-child):hover
+        opacity: .75
+
       th, td
         text-align: left
 
@@ -25,6 +30,18 @@
         .currency
           text-transform: uppercase
 
+        .direction
+          display: inline-block
+          padding: 2px 0 1px
+          vertical-align: middle
+          width: 40px
+          color: #fff
+          font-size: 14px
+          text-align: center
+          background-color: #000
+          text-transform: uppercase
+          border-radius: 2px
+
         .status
           display: inline-block
           width: 8px
@@ -33,6 +50,7 @@
           background-color: #000
           border-radius: 100%
           position: relative
+          cursor: pointer
 
           &::after
             content: ""

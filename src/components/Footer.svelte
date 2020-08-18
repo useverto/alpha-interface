@@ -61,6 +61,6 @@
         
           &:hover
             transition: color linear 0.1s
-            color: #C54DFD
+            color: #B075CD
 
 </style>
