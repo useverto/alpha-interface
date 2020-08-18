@@ -7,7 +7,7 @@
   import { fade } from "svelte/transition";
   import { query } from "../api-client.js";
   import Arweave from "arweave";
-  import galleryQuery from "../queries/gallery.graphql";
+  import galleryQuery from "../queries/gallery.gql";
 
   if(process.browser && !$loggedIn) goto("/");
 

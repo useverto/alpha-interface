@@ -49,7 +49,7 @@ export default {
 			url(),
 			json(),
       builtins(),
-      string({ include: "**/*.graphql" }),
+      string({ include: ["**/*.graphql", "**/*.gql"] }),
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
 				babelHelpers: "runtime",
@@ -99,7 +99,7 @@ export default {
 			url(),
 			json(),
       builtins(),
-      string({ include: "**/*.graphql" }),
+      string({ include: ["**/*.graphql", "**/*.gql"] }),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 
