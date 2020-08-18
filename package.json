@@ -17,6 +17,7 @@
     "compression": "^1.7.1",
     "moment": "^2.27.0",
     "polka": "next",
+    "rollup-plugin-node-builtins": "^2.1.2",
     "sirv": "^0.4.0"
   },
   "devDependencies": {

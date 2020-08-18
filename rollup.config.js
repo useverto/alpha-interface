@@ -1,4 +1,5 @@
 import resolve from "@rollup/plugin-node-resolve";
+import builtins from "rollup-plugin-node-builtins";
 import replace from "@rollup/plugin-replace";
 import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
@@ -43,7 +44,7 @@ export default {
 			image(),
 			url(),
 			json(),
-
+			builtins(),
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
 				babelHelpers: "runtime",
@@ -92,6 +93,7 @@ export default {
 			image(),
 			url(),
 			json(),
+			builtins(),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 
