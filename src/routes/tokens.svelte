@@ -8,6 +8,7 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { query } from "../api-client.js";
+  import Arweave from "arweave";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -18,7 +19,6 @@
 
     let psts: { id: string, name: string, ticker: string }[] = [];
 
-    // @ts-ignore
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
