@@ -4,6 +4,7 @@
   import moment from "moment";
   import Loading from "../Loading.svelte";
   import { equals, or } from "arql-ops";
+  import Arweave from "arweave";
 
   let client;
   let transactions = getLatestTransactions();
@@ -17,7 +18,6 @@
   async function getLatestTransactions (): Promise<{ id: string, amount: number, status: string }[]> {
     if(!process.browser) return [];
 
-    // @ts-ignore
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
