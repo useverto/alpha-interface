@@ -26,7 +26,8 @@
       timeout: 20000,
     });
 
-    const txIds = (await query(`
+    let txIds = [];
+    const _txIds = (await query(`
       query {
         transactions(
           owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
@@ -43,24 +44,30 @@
         }
       }
     `)).data.transactions.edges;
-
-    txIds.map(({ node }) => {
-      psts.push({
-        id: node.id,
-        name: "",
-        ticker: "",
-      });
+    _txIds.map(({ node }) => {
+      txIds.push(node.id);
     })
 
-    for (let i = 0; i < psts.length; i++) {
-      const contractData = JSON.parse(
-        await client.transactions.getData(
-          psts[i].id,
+    for (const id of txIds) {
+      try {
+        const contractId = await client.transactions.getData(
+          id,
           {decode: true, string: true},
-        )
-      );
-      psts[i].name = contractData["name"];
-      psts[i].ticker = contractData["ticker"];
+        );
+        const contractData = JSON.parse(
+          await client.transactions.getData(
+            contractId,
+            {decode: true, string: true},
+          )
+        );
+        psts.push({
+          id: contractId,
+          name: contractData["name"],
+          ticker: contractData["ticker"],
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     return psts;
