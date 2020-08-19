@@ -142,7 +142,7 @@
     .gallery-head
       display: flex
       justify-content: space-between
-      margin-bottom: .6em
+      margin-bottom: 2em
 
       h1.title
         margin: 0
