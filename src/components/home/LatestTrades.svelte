@@ -68,31 +68,13 @@
           <th>PST</th>
         </tr>
         {#await txs}
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+              <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+              <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+            </tr>
+          {/each}
         {:then loadedTxs}
           {#each loadedTxs as tx}
             <tr in:fade={{ duration: 185 }}>
