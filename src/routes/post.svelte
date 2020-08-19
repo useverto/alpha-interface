@@ -3,7 +3,7 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Button from "../components/Button.svelte";
-  import { loggedIn, address, balance } from "../stores/keyfileStore.js";
+  import { loggedIn, address } from "../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
@@ -122,6 +122,8 @@
   let stake = getPostStake();
 
   async function getPostStake (): Promise<number> {
+    if(!process.browser) return 0;
+
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
@@ -132,6 +134,21 @@
     let community = new Community(client);
     await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
     return await community.getVaultBalance(addr);
+  }
+
+  let balance = getPostBalance();
+
+  async function getPostBalance (): Promise<string> {
+    if(!process.browser) return "";
+
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    return client.ar.winstonToAr(await client.wallets.getBalance(addr));
   }
 
 </script>
@@ -154,13 +171,13 @@
   </div>
   <div class="post-info big">
     <div class="long-cell">
-      {#if $balance === 0}
+      {#await balance}
         <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
         <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
-      {:else}
+      {:then loadedBalance}
         <p in:fade={{ duration: 150 }}>total balance</p>
-        <h1 in:fade={{ duration: 150 }}>{roundCurrency($balance)}<span class="currency">AR</span><span style="vertical-align: super; color: #00D46E; font-size: .5em">(+0.75%)</span></h1>
-      {/if}
+        <h1 in:fade={{ duration: 150 }}>{roundCurrency(loadedBalance)}<span class="currency">AR</span><span style="vertical-align: super; color: #00D46E; font-size: .5em">(+0.75%)</span></h1>
+      {/await}
     </div>
     <div class="short-cell">
       {#await stake}
