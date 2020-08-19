@@ -96,6 +96,16 @@
         </a>
       {/each}
     {/await}
+    <a class="post" href="/post?addr=test">
+      <div class="post-info">
+        <h1>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</h1>
+        <div class="other-info">
+          <p><span>Balance</span>34.06959<span class="ar">ar</span></p>
+          <p><span>Stake</span>80.23102<span class="ar">ar</span></p>
+        </div>
+      </div>
+      <h1 class="reputation">51.73</h1>
+    </a>
   </div>
 </div>
 <Footer />
@@ -149,45 +159,59 @@
 
       a.post
         display: block
-        margin: 2em 0
+        padding: .65em 1.5em
+        background-color: #121212
         text-decoration: none
+        color: #fff
+        display: flex
+        justify-content: space-between
+        align-items: center
+        border-radius: 5px
+        margin-bottom: 2.8em
         transition: all .3s
 
-        &:hover
-          opacity: .63
+        &:last-child
+          margin-bottom: 0
 
-        h1
-          font-size: 1.7em
-          color: #000
-          font-weight: 400
-          margin: 0 0 .65em 0
+        &:hover
+          opacity: .8
+
+        h1.reputation
+          font-size: 2.85em
+          color: #fff
+          font-weight: 500
+          text-transform: uppercase
+          display: inline-block
+          margin: 0
 
         .post-info
-          display: flex
-          justify-content: space-between
-
-          @media screen and (max-width: 720px)
-            display: block
-            margin: 1.5em 0 2.3em
-
-          p
-            font-size: 1.1em
-            font-weight: 600
-            color: rgba(#000, .4)
+          h1
+            font-size: 1.5em
             margin: 0
-            text-transform: uppercase
+              bottom: .3em
+            font-weight: 400
+            color: #fff
 
-            @media screen and (max-width: 720px)
-              margin-bottom: 1em
+          .other-info
+            display: flex
+            align-items: center
 
-            span
-              color: #000
+            p
+              margin: 0
+              font-size: 1.05em
+              color: #fff
 
-              &.reputation
-                text-decoration: underline
+              &:first-child
+                margin-right: 2.5em
 
-    .pagination
-      margin-top: 1em
-      @include pagination
+              span
+                color: #828282
+                text-transform: uppercase
+                margin-right: .5em
+
+                &.ar
+                  color: #fff
+                  margin-right: 0
+                  font-size: .75em
 
 </style>
