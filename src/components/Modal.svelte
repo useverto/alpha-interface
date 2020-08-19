@@ -40,6 +40,8 @@
     bottom: 0
     z-index: 1000000
     background-color: rgba(#000, .4)
+    backdrop-filter: blur(7px)
+    -webkit-backdrop-filter: blur(7px)
 
   .Modal
     $padding: 50px
