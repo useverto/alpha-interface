@@ -36,3 +36,13 @@
   <p class="about-description">Verto is a completely decentralized network of trading posts built on top of the blockweave. Anyone can host their own trading post and power the exchange, while also being incentivized to do so. With Verto, you can pick the trading post you'd like to use and exchange your PSTs freely!<br><br>Decisions for Verto are made by our very own PST DAO, which means that anyone can have a say in the direction of our platform.</p>
 </About>
 <Footer />
+<div>
+  <a href="/app">app</a>
+  <a href="/404">404</a>
+  <a href="/gallery">gallery</a>
+  <a href="/login">login</a>
+  <a href="/post">post</a>
+  <a href="/trade">trade</a>
+  <a href="/app/all-exchanges">all-exchanges</a>
+  <a href="/app/all-transactions">all-transactions</a>
+</div>
