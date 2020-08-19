@@ -131,7 +131,7 @@
 </div>
 <Modal bind:opened={addTokenModalOpened} confirmation={true} onConfirm={confirmAdd} onCancel={cancelAdd}>
   <h3 style="text-align: center;">Token Contract ID</h3>
-  <input type="text" bind:value={newContractID} class="light contract-id">
+  <input type="text" bind:value={newContractID} class="light contract-id" placeholder="Contract ID">
 </Modal>
 <Footer />
 
