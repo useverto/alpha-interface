@@ -5,7 +5,7 @@
   export let clear: boolean = false;
   export let target: string = undefined;
   export let click: Function = () => {}; // click event
-  export let style: string = undefined; //TODO STYLE BINDING FOR FULL WIDTH BTN ON TRADE
+  export let style: string = undefined;
 
   // don't let malicious links override the content of the site
   // https://web.dev/external-anchors-use-rel-noopener/

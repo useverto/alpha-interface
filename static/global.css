@@ -31,3 +31,23 @@ a {
   color: #B075CD;
   text-decoration: underline;
 }
+input {
+  background-color: transparent;
+  outline: none;
+  border: 1px solid #000;
+  border-radius: 4px;
+  color: #000;
+  font-size: 1.4em;
+  padding: .18em .6em;
+  transition: all .3s;
+}
+input:focus {
+  border-color: #2b2b2b;
+}
+input.light {
+  border-color: #fff;
+  color: #fff;
+}
+input.light:focus {
+  border-color: #c5c5c5;
+}
