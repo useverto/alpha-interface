@@ -1,6 +1,9 @@
 query {
   transactions(
-    tags: [{ name: "App-Name", values: "Verto" }]
+    tags: [{ 
+      name: "App-Name", 
+      values: "Verto" 
+    }]
     first: 5
   ) {
     edges {

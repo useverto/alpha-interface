@@ -1,8 +1,14 @@
 query {
   transactions(
     tags: [
-      { name: "App-Name", values: "Verto" }
-      { name: "Trading-Post-Genesis", values: "G" }
+      { 
+        name: "App-Name", 
+        values: "Verto" 
+      }
+      { 
+        name: "Trading-Post-Genesis", 
+        values: "G" 
+      }
     ]
   ) {
     edges {
