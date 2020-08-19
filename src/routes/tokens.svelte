@@ -178,7 +178,6 @@
             font-weight: 500
             text-transform: uppercase
             display: inline-block
-            margin-right: $sidePadding
 
             @media screen and (max-width: 1500px)
               font-size: 2.87em
