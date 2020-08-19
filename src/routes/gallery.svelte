@@ -7,6 +7,7 @@
   import { fade } from "svelte/transition";
   import { query } from "../api-client.js";
   import Arweave from "arweave";
+  import Loading from "../components/Loading.svelte";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -80,39 +81,29 @@
   </div>
   <div class="gallery-content">
     {#await tradingPosts}
-      <p>Loading</p>
+      <Loading />
     {:then loadedPosts}
       {#if loadedPosts.length === 0}
         <p>No posts found</p>
       {/if}
       {#each loadedPosts as post}
         <a class="post" href="/post?addr={post.addr}">
-          <h1>{post.addr}</h1>
           <div class="post-info">
-            <p>Reputation <span class="reputation">{post.reputation}</span></p>
-            <p>Balance <span>{post.balance}AR</span></p>
-            <p>Stake <span>{post.stake}AR</span></p>
+            <h1>{post.addr}</h1>
+            <div class="other-info">
+              <p><span>Balance</span>{post.balance}<span class="ar">ar</span></p>
+              <p><span>Stake</span>{post.stake}<span class="ar">ar</span></p>
+            </div>
           </div>
+          <h1 class="reputation">{post.reputation}</h1>
         </a>
       {/each}
     {/await}
-    <a class="post" href="/post?addr=test">
-      <div class="post-info">
-        <h1>FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck</h1>
-        <div class="other-info">
-          <p><span>Balance</span>34.06959<span class="ar">ar</span></p>
-          <p><span>Stake</span>80.23102<span class="ar">ar</span></p>
-        </div>
-      </div>
-      <h1 class="reputation">51.73</h1>
-    </a>
   </div>
 </div>
 <Footer />
 
 <style lang="sass">
-
-  @import "../styles/tables.sass"
 
   .gallery
     padding: 4.4em 15vw 3em
