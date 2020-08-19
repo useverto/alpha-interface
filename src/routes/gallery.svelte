@@ -11,16 +11,6 @@
   if(process.browser && !$loggedIn) goto("/");
 
   let sortingType: string;
-  let currentPage = 1, lastPage = 1;
-
-  // set current page
-  // redirect to first page if the current page is greater than the last page
-  if(process.browser) {
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
-    if(currentPage > lastPage) goto("/gallery");
-  }
-
   let tradingPosts = getTradingPosts();
 
   async function getTradingPosts (): Promise<{ addr: string, reputation: string, balance: string, stake: string }[]> {
@@ -106,11 +96,6 @@
         </a>
       {/each}
     {/await}
-    <div class="pagination">
-      <a href="/gallery{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
-      <span class="current">{currentPage}</span>
-      <a href="/gallery{lastPage >= currentPage ? "" : ("?page=" + (currentPage + 1))}" class="next">{"->"}</a>
-    </div>
   </div>
 </div>
 <Footer />
@@ -128,7 +113,7 @@
       margin-bottom: .6em
 
       h1.title
-          margin: 0
+        margin: 0
 
       .sorting
         display: flex
