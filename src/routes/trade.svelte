@@ -13,6 +13,7 @@
 
   let selectedPost;
   let sendAmount: number = 1;
+  let recieveAmount: number = 1;
   let sendCurrency: string;
   let recieveCurrency: string;
   let confirmModalOpened: boolean = false;
@@ -228,7 +229,7 @@
       </div>
       <p>You recieve</p>
       <div class="input">
-        <input type="number" value={sendAmount * 3} disabled /><!-- logic here (calculate the exchange receive amount) -->
+        <input type="number" bind:value={recieveAmount} min={0} />
         <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
           <option value="ar">ar</option>
           {#await psts}
@@ -242,7 +243,7 @@
           {/await}
         </select>
       </div>
-      <p class="info">1 {sendCurrency} ~= 0.3255 {recieveCurrency}</p>
+      <p class="info">1 {sendCurrency} ~= {recieveAmount / sendAmount} {recieveCurrency}</p>
       <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0; font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
     </div>
   </div>
