@@ -8,6 +8,9 @@
   import { goto } from "@sapper/app";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
+  import { query } from "../api-client";
+  import Arweave from "arweave";
+
   let activeMenu: string = "transactions";
   let addr: string = "";
 
@@ -23,6 +26,96 @@
     if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
+  }
+
+  let transactions = getLatestTransactions();
+
+  async function getLatestTransactions (): Promise<{ id: string, amount: number, type: string, status: string, timestamp: number }[]> {
+    if(!process.browser) return [];
+
+    let txs: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
+
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    const outTxs = (await query(`
+      query {
+        transactions(
+          owners: ["${addr}"]
+        ) {
+          edges {
+            node {
+              id
+              block {
+                timestamp
+              }
+              quantity {
+                ar
+              }
+            }
+          }
+        }
+      }
+    `)).data.transactions.edges;
+    const inTxs = (await query(`
+      query {
+        transactions(
+          recipients: ["${addr}"]
+        ) {
+          edges {
+            node {
+              id
+              block {
+                timestamp
+              }
+              quantity {
+                ar
+              }
+            }
+          }
+        }
+      }
+    `)).data.transactions.edges;
+
+    outTxs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        type: "out",
+        status: "",
+        timestamp: node.block.timestamp,
+      })
+    })
+    inTxs.map(({ node }) => {
+      txs.push({
+        id: node.id,
+        amount: node.quantity.ar,
+        type: "in",
+        status: "",
+        timestamp: node.block.timestamp,
+      })
+    })
+
+    txs.sort((a, b) => b.timestamp - a.timestamp)
+    txs = txs.slice(0, 5)
+
+    for (let i = 0; i < txs.length; i++) {
+      try {
+        let res = await client.transactions.getStatus(txs[i].id);
+        if (res.status === 200)
+          txs[i].status = "success";
+        else
+          txs[i].status = "pending";
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    return txs;
   }
 
 </script>
