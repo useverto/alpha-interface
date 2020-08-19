@@ -5,14 +5,16 @@
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
-  import { loggedIn } from "../stores/keyfileStore.js";
+  import { loggedIn, address, keyfile, balance } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { query } from "../api-client.js";
   import Arweave from "arweave";
+  import Community from "community-js";
 
   if(process.browser && !$loggedIn) goto("/");
 
+  const pstContract = "d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8";
   let supportedTokens = getSupportedPSTs();
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
@@ -80,11 +82,40 @@
     addTokenModalOpened = true;
   }
 
-  function confirmAdd(cancelClose: Function) {
+  async function confirmAdd(cancelClose: Function) {
     if(newContractID === "" || newContractID === undefined) cancelClose();
     else {
-      // TODO: logic here
-      console.log(newContractID);
+      const client = new Arweave({
+        host: "arweave.net",
+        port: 443,
+        protocol: "https",
+        timeout: 20000,
+      });
+      let community = new Community(client, JSON.parse($keyfile));
+      await community.setCommunityTx(pstContract);
+      
+      // Make sure user has balance of our PST
+      try {
+        let balance = await community.get({
+          function: "unlockedBalance"
+        });
+
+        if (balance.balance > 0) {
+          console.log("YOUR BAL IS GREATER THAN 0")
+        } else {
+          // Show an error because they need to have a balance
+
+          addTokenModalOpened = false;
+        }
+      } catch(err) {
+        console.log(err);
+      }
+
+      // Propose a vote to the DAO
+      await community.proposeVote({
+        type: "indicative",
+        note: newContractID
+      });
       newContractID = "";
     }
   }
