@@ -10,6 +10,7 @@
 
   import { query } from "../api-client";
   import Arweave from "arweave";
+  import Community from "community-js";
 
   let activeMenu: string = "transactions";
   let addr: string = "";
@@ -118,6 +119,21 @@
     return txs;
   }
 
+  let stake = getPostStake();
+
+  async function getPostStake (): Promise<number> {
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let community = new Community(client);
+    await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
+    return await community.getVaultBalance(addr);
+  }
+
 </script>
 
 <svelte:head>
@@ -147,8 +163,13 @@
       {/if}
     </div>
     <div class="short-cell">
-      <p>total stake</p>
-      <h1>{roundCurrency("80.0234")}<span class="currency">AR</span></h1>
+      {#await stake}
+        <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
+        <h1><SkeletonLoading style="height: 1em; width: 180px" /></h1>
+      {:then loadedStake}
+        <p>total stake</p>
+        <h1>{roundCurrency(loadedStake.toString())}<span class="currency">AR</span></h1>
+      {/await}
     </div>
   </div>
   <br>
