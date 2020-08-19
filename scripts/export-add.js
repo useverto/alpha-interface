@@ -9,16 +9,16 @@ const
   fs = require("fs")
   path = require("path");
 
-let 
-  routesElement = `<div id="ROUTES" style="position: fixed; left: -100000vw;">\n`,
-  routes = [];
+let routesElement = `<div id="ROUTES" style="position: fixed; left: -100000vw;">\n`;
 
 mapRoutes("../src/routes")
 function mapRoutes (dir) {
   for(const element of fs.readdirSync(path.join(__dirname, dir))) {
-    if(element.match(/.svelte$/)) routes.push(dir.replace("../src/routes", "") + "/" + element.replace(".svelte", ""))
-    else mapRoutes(dir + "/" + element)
+    if(element.match(/.svelte$/)) routesElement += `  <a href="${ dir.replace("../src/routes", "") + "/" + element.replace(".svelte", "") }">${ dir.replace("../src/routes", "") + "/" + element.replace(".svelte", "") }</a>\n`;
+    else if(fs.lstatSync(path.join(__dirname, dir + "/" + element)).isDirectory()) mapRoutes(dir + "/" + element);
   }
 }
 
-console.log(routes)
+routesElement += "</div>";
+
+console.log(routesElement)
