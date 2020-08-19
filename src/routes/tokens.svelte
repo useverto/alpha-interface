@@ -188,7 +188,7 @@
         text-decoration: none
         color: #fff
         display: flex
-        justify-content: space-between
+        // justify-content: space-between
         align-items: center
         border-radius: 5px
         margin-bottom: 2.8em
@@ -214,6 +214,7 @@
               font-size: 2.87em
 
           &.val
+            margin-left: auto;
             font-size: 1.9em
             font-weight: 400
 
@@ -225,6 +226,7 @@
               font-size: .43em
 
         .info
+          margin-left: 2em
           h1
             font-size: 1.5em
             margin-bottom: .3em
