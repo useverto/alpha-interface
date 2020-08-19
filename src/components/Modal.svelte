@@ -5,26 +5,32 @@
   export let confirmation: boolean = false; // show confirmation button
   export let onConfirm: Function = () => {}; // on confirmation click
   export let onCancel: Function = () => {}; // on cancel button click
+  export let onClose: Function = () => {}; // on OK button click (this will not work with confirmation = true)
   export let opened: boolean = false; // exported so it can be controlled outside of this component
 
-  function close () {
-    opened = false;
+  let canceledClose = false; // if closing the modal was cancelled. This adds the "cancelled" class to the modal
+
+  async function close (execute: Function) {
+    canceledClose = false;
+    let cancelClose = () => canceledClose = true;
+    await execute(cancelClose);
+    if(!canceledClose) opened = false;
   }
 
 </script>
 
 {#if opened}
-  <div class="modal-overlay" in:fade={{ duration: 150 }} out:fade={{ duration: 100 }} on:click={() => { if(!confirmation) close(); }}></div>
-  <div class="Modal" in:fade={{ duration: 240 }} out:fade={{ duration: 180 }}>
+  <div class="modal-overlay" in:fade={{ duration: 150 }} out:fade={{ duration: 100 }} on:click={() => { if(!confirmation) close(onClose); }}></div>
+  <div class="Modal" in:fade={{ duration: 240 }} out:fade={{ duration: 180 }} class:cancelled={canceledClose}>
     <div class="content">
       <slot></slot>
     </div>
     <div class="confirmation">
       {#if confirmation}
-        <button class="confirm" on:click={() => { close(); onConfirm(); }}>[Confirm]</button>
-        <button class="cancel" on:click={() => { close(); onCancel(); }}>[Cancel]</button>
+        <button class="confirm" on:click={() => { close(onConfirm); }}>[Confirm]</button>
+        <button class="cancel" on:click={() => { close(onCancel); }}>[Cancel]</button>
       {:else}
-        <button on:click={close}>[Ok]</button>
+        <button on:click={() => { close(onClose); }}>[Ok]</button>
       {/if}
     </div>
   </div>
@@ -40,6 +46,8 @@
     bottom: 0
     z-index: 1000000
     background-color: rgba(#000, .4)
+    backdrop-filter: blur(7px)
+    -webkit-backdrop-filter: blur(7px)
 
   .Modal
     $padding: 50px
