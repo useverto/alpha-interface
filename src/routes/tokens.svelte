@@ -4,6 +4,7 @@
   import Footer from "../components/Footer.svelte";
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
+  import Modal from "../components/Modal.svelte";
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
@@ -13,6 +14,8 @@
   if(process.browser && !$loggedIn) goto("/");
 
   let supportedTokens = getSupportedPSTs();
+  let addTokenModalOpened: boolean = false;
+  let newContractID: string;
 
   async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
     if(!process.browser) return [];
@@ -73,6 +76,19 @@
     return psts;
   }
 
+  async function addToken() {
+    addTokenModalOpened = true;
+  }
+
+  function confirmAdd() {
+    console.log(newContractID);
+  }
+
+  function cancelAdd() {
+    addTokenModalOpened = false;
+    newContractID = "";
+  }
+
 </script>
 
 <svelte:head>
@@ -83,6 +99,7 @@
 <div class="tokens">
   <div class="tokens-head">
     <h1 class="title">Supported Tokens</h1>
+    <Button click={addToken}>Add Token</Button>
   </div>
   <div class="tokens-content">
     {#await supportedTokens}
@@ -101,6 +118,10 @@
     {/await}
   </div>
 </div>
+<Modal bind:opened={addTokenModalOpened} confirmation={true} onConfirm={confirmAdd} onCancel={cancelAdd}>
+  <h3 style="text-align: center;">Token Contract ID</h3>
+  <input type="text" bind:value="{newContractID}">
+</Modal>
 <Footer />
 
 <style lang="sass">
