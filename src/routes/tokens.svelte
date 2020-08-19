@@ -89,6 +89,12 @@
     newContractID = "";
   }
 
+  function roundCurrency (val: number | string): string {
+    if(val === "?") return val;
+    if(typeof val === "string") val = parseFloat(val);
+    return val.toFixed(7);
+  }
+
 </script>
 
 <svelte:head>
@@ -99,7 +105,7 @@
 <div class="tokens">
   <div class="tokens-head">
     <h1 class="title">Supported Tokens</h1>
-    <Button click={addToken}>Add Token</Button>
+    <Button click={addToken} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Add Token</Button>
   </div>
   <div class="tokens-content">
     {#await supportedTokens}
@@ -112,7 +118,7 @@
             <h1><span>[PST]</span>{pst.name}</h1>
             <p><span>ID</span>{pst.id}</p>
           </div>
-          <h1 class="val">0<span>Ar</span></h1>
+          <h1 class="val">{roundCurrency(0)}<span>Ar</span></h1>
         </a>
       {/each}
     {/await}
