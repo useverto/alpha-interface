@@ -1,5 +1,5 @@
 // Simple arweave graphql API client
-export async function query({ query, variables }) {
+export async function query({ query, variables = null }) {
   var graphql = JSON.stringify({
     query,
     variables

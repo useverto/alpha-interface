@@ -36,7 +36,9 @@
       timeout: 20000,
     });
 
-    const _posts = (await query(galleryQuery)).data.transactions.edges;
+    const _posts = (await query({
+      query: galleryQuery
+    })).data.transactions.edges;
 
     for (const post of _posts) {
       let node = post.node;
