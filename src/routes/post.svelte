@@ -216,39 +216,47 @@
           </tr>
         </table>
       {:else}
-        <!-- the last 5 transactions for this trading post -->
-        <table in:fade={{ duration: 400 }}>
+        {#await transactions}
           <tr>
-            <th style="text-transform: none">TxID</th>
-            <th>Amount</th>
-            <th>Pst</th>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
           </tr>
           <tr>
-            <td style="width: 70%">jYKHLCGQuhQyt9uyZNXA6852CzYTu3qVYRKC6pnxIbkzDThbAgip <span class="status success"></span></td>
-            <td style="width: 20%">0.00007337</td>
-            <td style="text-transform: uppercase">egg</td>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
           </tr>
           <tr>
-            <td style="width: 70%">cHZG6U7TzXYykn8m5g6s7vpYpbRvVpthUUpgCI4r9n8AXJKD5Gs1 <span class="status pending"></span></td>
-            <td style="width: 20%">0.00003450</td>
-            <td style="text-transform: uppercase">wav</td>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
           </tr>
           <tr>
-            <td style="width: 70%">v5ty9DKrcb9Lnk3yJAdkSA9Eg5Lb6tSwr8rjJNS7Mou5eyGxRbnD <span class="status failure"></span></td>
-            <td style="width: 20%">0.00000043</td>
-            <td style="text-transform: uppercase">arc</td>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
           </tr>
           <tr>
-            <td style="width: 70%">DHy8qyXUJYA3Ygb9y7jujuvwP8eVr9MTpK8Kbl45zYIj3g5KdzgK <span class="status failure"></span></td>
-            <td style="width: 20%">0.02300443</td>
-            <td style="text-transform: uppercase">egg</td>
+            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
           </tr>
-          <tr>
-            <td style="width: 70%">vWwPCJWLbFhJ253u25zb3rvtJCB7TvPQ9cxvmQk0qICHLYKfnPgd <span class="status success"></span></td>
-            <td style="width: 20%">0.00000242</td>
-            <td style="text-transform: uppercase">lum</td>
+        {:then loadedTxs}
+          {#if loadedTxs.length === 0}
+            <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
+            <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+          {/if}
+          {#each loadedTxs as tx}
+            <tr in:fade={{ duration: 300 }}>
+              <td style="width: 70%">
+                <a href="https://viewblock.io/arweave/tx/{tx.id}" class="transaction">
+                  <span class="direction">{tx.type}</span>
+                  {tx.id}
+                </a>
+                <span class="status {tx.status}"></span>
+              </td>
+              <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+            </tr>
+            <tr>
           </tr>
-        </table>
+          {/each}
+        {/await}
       {/if}
     </div>
   </div>
