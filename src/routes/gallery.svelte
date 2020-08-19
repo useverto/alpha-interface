@@ -113,6 +113,9 @@
     {:else if tradingPosts.length === 0}
       <p in:fade={{ duration: 150 }}>No posts found</p>
     {:else}
+      <div class="reputation-title">
+        <p>Reputation</p>
+      </div>
       {#each tradingPosts as post}
         <a class="post" href="/post?addr={post.addr}">
           <div class="post-info">
@@ -178,6 +181,19 @@
     .gallery-content
       @media screen and (max-width: 720px)
         overflow-x: hidden
+
+      .reputation-title
+        display: block
+        width: 100%
+        text-align: right
+        margin-bottom: 15px;
+
+        p
+          font-size: 1.2em
+          color: rgba(#000, .3)
+          font-weight: 600
+          margin: 0
+          text-transform: uppercase
 
       a.post
         display: block
