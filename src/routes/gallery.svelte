@@ -6,17 +6,25 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { query } from "../api-client.js";
+  import { onMount } from "svelte";
   import Arweave from "arweave";
   import Loading from "../components/Loading.svelte";
 
   if(process.browser && !$loggedIn) goto("/");
 
   let sortingType: string;
-  let tradingPosts = getTradingPosts();
+  let tradingPosts: { addr: string, reputation: string, balance: string, stake: string }[] = []
+  let lastCursor = "", hasNext = true, loadedFirstPosts = false, loading = false;
+  let y: number, windowHeight: number;
+  let element;
 
-  async function getTradingPosts (): Promise<{ addr: string, reputation: string, balance: string, stake: string }[]> {
-    if(!process.browser) return [];
+  onMount(() => loadMoreTradingPosts());
 
+  async function loadMoreTradingPosts () {
+    if(!process.browser) return;
+    if(!hasNext) return;
+
+    loading = true;
     let posts: { addr: string, reputation: string, balance: string, stake: string }[] = [];
 
     const client = new Arweave({
@@ -26,28 +34,37 @@
       timeout: 20000,
     });
 
-    const _posts = (await query(`
-      query {
-        transactions(
-          tags: [
-            {name: "App-Name", values: "Verto"}
-            {name: "Trading-Post-Genesis", values: "G"}
-          ]
-        ) {
-          edges {
-            node {
-              owner {
-                address
+    const 
+      postsQuery = (await query(`
+        query {
+          transactions(
+            tags: [
+              {name: "App-Name", values: "Verto"}
+              {name: "Trading-Post-Genesis", values: "G"}
+            ]
+          ) {
+            pageInfo {
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                owner {
+                  address
+                }
               }
             }
           }
         }
-      }
-    `)).data.transactions.edges;
+      `)).data,
+      _posts = postsQuery.transactions.edges;
+
+    hasNext = postsQuery.transactions.pageInfo.hasNextPage;
 
     for (const post of _posts) {
       let node = post.node;
       const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));
+      lastCursor = post.cursor;
       posts.push({
         addr: node.owner.address,
         "reputation": "",
@@ -56,7 +73,16 @@
       });
     }
 
-    return posts;
+    tradingPosts = tradingPosts.concat(posts);
+    loadedFirstPosts = true;
+    setTimeout(() => loading = false, 400) // wait for animation and latency to complete (needed for the scroll)
+  }
+
+  $: {
+    if(element !== undefined) {
+      let componentY = element.offsetTop + element.offsetHeight;
+      if(componentY <= (y + windowHeight + 120) && loadedFirstPosts && !loading && hasNext) loadMoreTradingPosts();
+    }
   }
 
 </script>
@@ -65,6 +91,7 @@
   <title>Verto — Gallery</title>
 </svelte:head>
 
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
 <div class="gallery" in:fade={{ duration: 300 }}>
   <div class="gallery-head">
@@ -80,13 +107,12 @@
     </div>
   </div>
   <div class="gallery-content">
-    {#await tradingPosts}
+    {#if !loadedFirstPosts}
       <Loading />
-    {:then loadedPosts}
-      {#if loadedPosts.length === 0}
-        <p>No posts found</p>
-      {/if}
-      {#each loadedPosts as post}
+    {:else if tradingPosts.length === 0}
+      <p in:fade={{ duration: 150 }}>No posts found</p>
+    {:else}
+      {#each tradingPosts as post}
         <a class="post" href="/post?addr={post.addr}">
           <div class="post-info">
             <h1>{post.addr}</h1>
@@ -98,10 +124,14 @@
           <h1 class="reputation">{post.reputation}</h1>
         </a>
       {/each}
-    {/await}
+      {#if loading} <!-- if the site is loading, but there are posts already loaded  -->
+        <Loading />
+      {/if}
+    {/if}
   </div>
 </div>
 <Footer />
+<span style="width: 100%; height: 1px" bind:this={element}></span>
 
 <style lang="sass">
 
