@@ -2,7 +2,7 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import { balance } from "../stores/keyfileStore.js";
+  import { balance, address, keyfile } from "../stores/keyfileStore.js";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
@@ -10,6 +10,7 @@
 
   import { query } from "../api-client";
   import Arweave from "arweave";
+  import { interactRead } from "smartweave";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -24,6 +25,8 @@
   }
 
   let posts = getTradingPosts();
+  let psts = getSupportedPSTs();
+  let balances = getTokenBalances();
 
   async function getTradingPosts (): Promise<string[]> {
     let posts: string[] = [];
@@ -56,8 +59,6 @@
 
     return posts;
   }
-
-  let psts = getSupportedPSTs();
 
   async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
     if(!process.browser) return [];
@@ -118,6 +119,32 @@
     return psts;
   }
 
+  async function getTokenBalances() {
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+    const supportedPSTs = await getSupportedPSTs();
+    let tokenBalances = [];
+
+    for (let i = 0; i < supportedPSTs.length; i++) {
+      let pstContract = await interactRead(client, JSON.parse($keyfile), supportedPSTs[i].id, {
+        function: "unlockedBalance"
+      });
+      if (pstContract.balance > 0) {
+        tokenBalances.push({
+          token: supportedPSTs[i].name,
+          ticker: supportedPSTs[i].ticker,
+          balance: pstContract.balance
+        });
+      }
+    }
+
+    return tokenBalances;
+  }
+
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
@@ -172,7 +199,7 @@
       {/if}
     </div>
     <div class="recommended-post">
-      <p>Recommended trading post</p>
+      <p>Trading post</p>
       <select bind:value={selectedPost}>
         {#await posts}
           <option disabled>Loading...</option>
@@ -193,22 +220,36 @@
         <th>Token</th>
         <th>Amount</th>
       </tr>
-      <tr>
-        <td>nest.land token</td>
-        <td>0.00696969 <span class="currency">egg</span></td>
-      </tr>
-      <tr>
-        <td>Light Bulb Coin</td>
-        <td>0.00413056 <span class="currency">lum</span></td>
-      </tr>
-      <tr>
-        <td>SoundWave Inc.</td>
-        <td>0.00505455 <span class="currency">wav</span></td>
-      </tr>
-      <tr>
-        <td>Reddit Coin</td>
-        <td>0.00240055 <span class="currency">red</span></td>
-      </tr>
+      {#await balances}
+        <tr>
+          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading /></td>
+        </tr>
+        <tr>
+          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading /></td>
+        </tr>
+        <tr>
+          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading /></td>
+        </tr>
+        <tr>
+          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading /></td>
+        </tr>
+      {:then loadedBalances} 
+        {#if loadedBalances.length === 0}
+          <tr>
+            <td>You don't have any balances!</td>
+          </tr>
+        {/if}
+        {#each loadedBalances as balance}
+          <tr>
+            <td>{balance.token}</td>
+            <td>{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
+          </tr>
+        {/each}
+      {/await}
     </table>
     <div class="exchange">
       <p>You send</p>
