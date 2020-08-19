@@ -16,6 +16,11 @@
   let recieveCurrency: string;
   let confirmModalOpened: boolean = false;
 
+  if(process.browser) {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("post")) selectedPost = params.get("post");
+  }
+
   let posts = getTradingPosts();
 
   async function getTradingPosts (): Promise<string[]> {
@@ -44,6 +49,8 @@
     _posts.map(({ node }) => {
       posts.push(node.owner.address);
     });
+
+    posts = [...new Set(posts)]; // remove duplicates
 
     return posts;
   }
