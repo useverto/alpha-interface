@@ -96,7 +96,8 @@
 <div class="gallery" in:fade={{ duration: 300 }}>
   <div class="gallery-head">
     <h1 class="title">Trading Posts</h1>
-    <div class="sorting">
+    <!-- TODO: MPV2 -->
+    <!--<div class="sorting">
       <p>Sort by
         <select bind:value={sortingType}>
           <option value="reputation">Reputation</option>
@@ -104,7 +105,7 @@
           <option value="stake">Stake</option>
         </select>
       </p>
-    </div>
+    </div>-->
   </div>
   <div class="gallery-content">
     {#if !loadedFirstPosts}
