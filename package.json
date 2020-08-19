@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
-    "export": "sapper export --legacy",
+    "export": "node scripts/export-add.js && sapper export --legacy && node scripts/export-remove.js",
     "validate": "svelte-check",
     "start": "node __sapper__/build",
     "cy:run": "cypress run",

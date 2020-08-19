@@ -9,7 +9,9 @@ const
   fs = require("fs")
   path = require("path");
 
-let routesElement = `<div id="ROUTES" style="position: fixed; left: -100000vw;">\n`;
+let routesElement = `\n<div id="ROUTES" style="position: fixed; left: -100000vw;">\n`;
+
+console.log("[Verto] Adding route declarations...");
 
 mapRoutes("../src/routes")
 function mapRoutes (dir) {
@@ -21,4 +23,5 @@ function mapRoutes (dir) {
 
 routesElement += "</div>";
 
-console.log(routesElement)
+fs.appendFileSync(path.join(__dirname, "../src/routes/index.svelte"), routesElement);
+console.log("[Verto] Added route declarations...")
