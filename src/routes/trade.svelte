@@ -9,6 +9,7 @@
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   import { query } from "../api-client";
+  import Arweave from "arweave";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -55,6 +56,67 @@
     return posts;
   }
 
+  let psts = getSupportedPSTs();
+
+  async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
+    if(!process.browser) return [];
+
+    let psts: { id: string, name: string, ticker: string }[] = [];
+
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let txIds = [];
+    const _txIds = (await query(`
+      query {
+        transactions(
+          owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
+          tags: [
+            {name: "App-Name", values: "Verto"}
+            {name: "Support", values: "PST"}
+          ]
+        ) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    `)).data.transactions.edges;
+    _txIds.map(({ node }) => {
+      txIds.push(node.id);
+    })
+
+    for (const id of txIds) {
+      try {
+        const contractId = (await client.transactions.getData(
+          id,
+          {decode: true, string: true},
+        )).toString();
+        const contractData = JSON.parse(
+          (await client.transactions.getData(
+            contractId,
+            {decode: true, string: true},
+          )).toString()
+        );
+        psts.push({
+          id: contractId,
+          name: contractData["name"],
+          ticker: contractData["ticker"],
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    return psts;
+  }
+
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);
@@ -99,7 +161,7 @@
         <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
         <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
       {:else}
-        <p in:fade={{ duration: 150 }}>Total balance</p>
+        <p in:fade={{ duration: 150 }}>Your balance</p>
         <h1 in:fade={{ duration: 150 }}>{roundCurrency($balance)}<span>AR</span></h1>
       {/if}
     </div>
@@ -148,7 +210,14 @@
         <input type="number" bind:value={sendAmount} min={0} />
         <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
           <option value="ar">ar</option>
-          <option value="egg">EGG</option>
+          {#await psts}
+          {:then loadedPsts}
+            {#if loadedPsts.length === 0}
+            {/if}
+            {#each loadedPsts as pst}
+              <option value={pst.ticker}>{pst.ticker}</option>
+            {/each}
+          {/await}
         </select>
       </div>
       <p>You recieve</p>
@@ -156,7 +225,14 @@
         <input type="number" value={sendAmount * 3} disabled /><!-- logic here (calculate the exchange receive amount) -->
         <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
           <option value="ar">ar</option>
-          <option value="lum">LUM</option>
+          {#await psts}
+          {:then loadedPsts}
+            {#if loadedPsts.length === 0}
+            {/if}
+            {#each loadedPsts as pst}
+              <option value={pst.ticker}>{pst.ticker}</option>
+            {/each}
+          {/await}
         </select>
       </div>
       <p class="info">1 {sendCurrency} ~= 0.3255 {recieveCurrency}</p>
