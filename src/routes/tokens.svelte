@@ -152,7 +152,7 @@
         margin-bottom: 2.8em
         transition: all .3s
 
-        &::last-child
+        &:last-child
           margin-bottom: 0
 
         &:hover
