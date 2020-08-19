@@ -180,9 +180,15 @@
             display: inline-block
             margin-right: $sidePadding
 
+            @media screen and (max-width: 1500px)
+              font-size: 2.87em
+
           &.val
             font-size: 1.9em
             font-weight: 400
+
+            @media screen and (max-width: 1500px)
+              font-size: 1.67em
 
             span
               text-transform: uppercase
@@ -194,10 +200,16 @@
             margin-bottom: .3em
             font-weight: 400
 
+            @media screen and (max-width: 1500px)
+              font-size: 1.27em
+
           p
             margin: 0
             font-size: 1.05em
             color: #fff
+
+            @media screen and (max-width: 1500px)
+              font-size: .82em
 
           span
             text-transform: uppercase
