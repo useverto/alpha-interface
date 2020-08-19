@@ -198,7 +198,7 @@
           margin-bottom: 0
 
         &:hover
-          opacity: .8
+          background-color: #000000
 
         h1
           margin: 0
