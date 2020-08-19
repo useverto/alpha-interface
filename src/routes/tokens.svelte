@@ -184,7 +184,7 @@
         $sidePadding: 2.3em
         display: block
         padding: 1em $sidePadding
-        background-color: #121212
+        background-color: #161616
         text-decoration: none
         color: #fff
         display: flex
