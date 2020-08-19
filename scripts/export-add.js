@@ -16,6 +16,7 @@ console.log("[Verto] Adding route declarations...");
 mapRoutes("../src/routes")
 function mapRoutes (dir) {
   for(const element of fs.readdirSync(path.join(__dirname, dir))) {
+    if(dir.replace("../src/routes", "") + "/" + element.replace(".svelte", "") === "/index") continue;
     if(element.match(/.svelte$/)) routesElement += `  <a href="${ dir.replace("../src/routes", "") + "/" + element.replace(".svelte", "") }">${ dir.replace("../src/routes", "") + "/" + element.replace(".svelte", "") }</a>\n`;
     else if(fs.lstatSync(path.join(__dirname, dir + "/" + element)).isDirectory()) mapRoutes(dir + "/" + element);
   }
