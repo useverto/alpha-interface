@@ -80,8 +80,13 @@
     addTokenModalOpened = true;
   }
 
-  function confirmAdd() {
-    console.log(newContractID);
+  function confirmAdd(cancelClose: Function) {
+    if(newContractID === "" || newContractID === undefined) cancelClose();
+    else {
+      // TODO: logic here
+      console.log(newContractID);
+      newContractID = "";
+    }
   }
 
   function cancelAdd() {
@@ -116,7 +121,7 @@
           <h1 class="short">{pst.ticker}</h1>
           <div class="info">
             <h1><span>[PST]</span>{pst.name}</h1>
-            <p><span>ID</span>{pst.id}</p>
+            <p><span>ID:</span>{pst.id}</p>
           </div>
           <h1 class="val">{roundCurrency(0)}<span>Ar</span></h1>
         </a>
@@ -126,7 +131,7 @@
 </div>
 <Modal bind:opened={addTokenModalOpened} confirmation={true} onConfirm={confirmAdd} onCancel={cancelAdd}>
   <h3 style="text-align: center;">Token Contract ID</h3>
-  <input type="text" bind:value="{newContractID}">
+  <input type="text" bind:value={newContractID} class="light contract-id">
 </Modal>
 <Footer />
 
@@ -198,4 +203,24 @@
             text-transform: uppercase
             color: #828282
             margin-right: .5em
+
+  \:global(.Modal.cancelled input.contract-id) // opt out from scoped style
+    border-color: #ff0000 // on modal close cancelled, show that the contract-id field was wrong
+    animation: inputError .6s cubic-bezier(.36, .07, .19, .97) both
+    transform: translate3d(0, 0, 0)
+    backface-visibility: hidden
+
+    @keyframes inputError
+      10%, 90%
+        transform: translate3d(-1px, 0, 0)
+      
+      20%, 80%
+        transform: translate3d(2px, 0, 0)
+
+      30%, 50%, 70%
+        transform: translate3d(-4px, 0, 0)
+
+      40%, 60%
+        transform: translate3d(4px, 0, 0)
+
 </style>
