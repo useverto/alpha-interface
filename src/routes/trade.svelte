@@ -139,12 +139,17 @@
   }
 
   // only allow exchange if one of the currencies is AR
-  function checkIfArIsPresent (sendOrRecieve: string) {
+  async function checkIfArIsPresent (sendOrRecieve: string) {
     if(sendCurrency.toLowerCase() !== "ar" && recieveCurrency.toLowerCase() !== "ar") {
       if(sendOrRecieve === "send") recieveCurrency = "ar";
       else sendCurrency = "ar";
     }
-    // TODO only allow one of the receive/send currencies to be AR
+    // only allow one of the receive/send currencies to be AR
+    if(sendCurrency.toLowerCase() === "ar" && recieveCurrency.toLowerCase() === "ar") {
+      let currencies = (await psts).filter(pst => pst.ticker.toLowerCase() !== "ar");
+      if(sendOrRecieve === "send") recieveCurrency = currencies[0].ticker;
+      else sendCurrency = currencies[0].ticker;
+    }
   }
 
 </script>
@@ -169,7 +174,7 @@
       <p>Recommended trading post</p>
       <select bind:value={selectedPost}>
         {#await posts}
-          <option>Loading</option>
+          <option disabled>Loading...</option>
         {:then loadedPosts}
           {#if loadedPosts.length === 0}
             <option>No posts found</option>
@@ -211,6 +216,7 @@
         <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
           <option value="ar">ar</option>
           {#await psts}
+            <option disabled>Loading...</option>
           {:then loadedPsts}
             {#if loadedPsts.length === 0}
             {/if}
@@ -226,6 +232,7 @@
         <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
           <option value="ar">ar</option>
           {#await psts}
+            <option disabled>Loading...</option>
           {:then loadedPsts}
             {#if loadedPsts.length === 0}
             {/if}
