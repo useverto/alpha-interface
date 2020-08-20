@@ -2,8 +2,9 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import LatestTransactions from "../components/app/LatestTransactions.svelte";
+  import Assets from "../components/app/Assets.svelte";
   import LatestExchanges from "../components/app/LatestExchanges.svelte";
+  import LatestTransactions from "../components/app/LatestTransactions.svelte";
   import { loggedIn, address, balance } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
@@ -39,41 +40,7 @@
       <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
     {/if}
   </div>
-  <div class="section">
-    <h1 class="title">Assets</h1>
-    <table>
-      <tr>
-        <th>Token</th>
-        <th>Dist.</th>
-        <th>Amount</th>
-        <th>Value (AR)</th>
-      </tr>
-      <tr>
-        <td style="width: 45%;">nest.land token</td>
-        <td>49.43%</td>
-        <td>0.00696969 <span class="currency">egg</span></td>
-        <td>1.52317899</td>
-      </tr>
-      <tr>
-        <td style="width: 45%;">Light Bulb Coin</td>
-        <td>26.86%</td>
-        <td>0.00413056 <span class="currency">lum</span></td>
-        <td>0.82853913</td>
-      </tr>
-      <tr>
-        <td style="width: 45%;">SoundWave Inc.</td>
-        <td>16.58%</td>
-        <td>0.00505455 <span class="currency">wav</span></td>
-        <td>0.51124595</td>
-      </tr>
-      <tr>
-        <td style="width: 45%;">Reddit Coin</td>
-        <td>07.12%</td>
-        <td>0.00240055 <span class="currency">red</span></td>
-        <td>0.21954591</td>
-      </tr>
-    </table>
-  </div>
+  <Assets />
   <LatestExchanges />
   <LatestTransactions />
 </div>
@@ -81,25 +48,11 @@
 
 <style lang="sass">
 
-  @import "../styles/tables.sass"
-
   .dashboard
     padding: 1em 15vw 3em
-    @include table
 
     .section
       padding-bottom: 2.5em
-
-      a.view-all
-        display: block
-        text-align: center
-        color: rgba(#000, .5)
-        font-weight: 500
-        padding: .8em 0
-        transition: all .3s
-
-        &:hover
-          opacity: .7
 
       &:first-child
         padding-top: 3.5em
