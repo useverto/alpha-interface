@@ -37,11 +37,11 @@
 
     const _posts = (await query({
       query: galleryQuery
-    })).data.transactions.edges;
-    
-    hasNext = postsQuery.transactions.pageInfo.hasNextPage;
+    })).data.transactions;
 
-    for (const post of _posts) {
+    hasNext = _posts.pageInfo.hasNextPage;
+
+    for (const post of _posts.edges) {
       let node = post.node;
       const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));
       lastCursor = post.cursor;

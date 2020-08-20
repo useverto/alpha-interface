@@ -11,7 +11,11 @@ query {
       }
     ]
   ) {
+    pageInfo {
+      hasNextPage
+    }
     edges {
+      cursor
       node {
         owner {
           address
