@@ -169,8 +169,8 @@
   // only allow exchange if one of the currencies is AR
   async function checkIfArIsPresent (sendOrRecieve: string) {
     if(sendCurrency.toLowerCase() !== "ar" && recieveCurrency.toLowerCase() !== "ar") {
-      if(sendOrRecieve === "send") recieveCurrency = "ar";
-      else sendCurrency = "ar";
+      if(sendOrRecieve === "send") recieveCurrency = "AR";
+      else sendCurrency = "AR";
     }
     // only allow one of the receive/send currencies to be AR
     if(sendCurrency.toLowerCase() === "ar" && recieveCurrency.toLowerCase() === "ar") {
@@ -254,7 +254,7 @@
       <div class="input">
         <input type="number" bind:value={sendAmount} min={0} />
         <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
-          <option value="ar">ar</option>
+          <option value="AR">AR</option>
           {#await psts}
             <option disabled>Loading...</option>
           {:then loadedPsts}
@@ -270,7 +270,7 @@
       <div class="input">
         <input type="number" bind:value={recieveAmount} min={0} />
         <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
-          <option value="ar">ar</option>
+          <option value="AR">AR</option>
           {#await psts}
             <option disabled>Loading...</option>
           {:then loadedPsts}
@@ -288,7 +288,7 @@
   </div>
 </div>
 <Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={confirmTrade} onCancel={cancelTrade}>
-  <p style="text-align: center;">Exchange {sendAmount} {sendCurrency} to {recieveCurrency}</p>
+  <p style="text-align: center;">Exchange {sendAmount} {sendCurrency} for {recieveAmount} {recieveCurrency}</p>
 </Modal>
 <Footer />
 
