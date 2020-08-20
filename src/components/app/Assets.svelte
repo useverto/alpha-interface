@@ -4,6 +4,7 @@
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
 
   import { query } from "../../api-client";
+  import tokensQuery from "../../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
 
@@ -22,23 +23,9 @@
     });
     
     let txIds = [];
-    const _txIds = (await query(`
-      query {
-        transactions(
-          owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
-          tags: [
-            {name: "App-Name", values: "Verto"}
-            {name: "Support", values: "PST"}
-          ]
-        ) {
-          edges {
-            node {
-              id
-            }
-          }
-        }
-      }
-    `)).data.transactions.edges;
+    const _txIds = (await query({
+      query: tokensQuery
+    })).data.transactions.edges;
     _txIds.map(({ node }) => {
       txIds.push(node.id);
     })

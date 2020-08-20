@@ -1,0 +1,22 @@
+# TODO(@johnletey): Figure out the other query tags
+query (
+  $num: Int
+) {
+  transactions(
+    tags: [
+      {
+        name: "App-Name",
+        values: "Verto"
+      }
+    ]
+    first: $num
+  ) {
+    edges {
+      node {
+        block {
+          timestamp
+        }
+      }
+    }
+  }
+}

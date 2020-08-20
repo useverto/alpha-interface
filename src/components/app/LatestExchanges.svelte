@@ -3,6 +3,7 @@
   import { fade } from "svelte/transition";
 
   import { query } from "../../api-client";
+  import exchangesQuery from "../../queries/exchanges.gql";
   import moment from "moment";
 
   let exchanges = getLatestExchanges();
@@ -12,28 +13,12 @@
     
     let exchanges: { timestamp: string, status: string }[] = [];
     
-    // TODO(@johnletey): Figure out the other query tags
-    const txs = (await query(`
-      query {
-        transactions(
-          tags: [
-            {
-              name: "App-Name",
-              values: "Verto"
-            }
-          ]
-          first: 5
-        ) {
-          edges {
-            node {
-              block {
-                timestamp
-              }
-            }
-          }
-        }
+    const txs = (await query({
+      query: exchangesQuery,
+      variables: {
+        num: 5
       }
-    `)).data.transactions.edges;
+    })).data.transactions.edges;
     
     txs.map(({ node }) => {
       exchanges.push({
