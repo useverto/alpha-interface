@@ -32,7 +32,7 @@
       <h1 class="total-balance"><SkeletonLoading style="height: 1em; width: 300px" /></h1>
       <p class="wallet"><SkeletonLoading style="height: 1em; width: 400px" /></p>
     {:else}
-      <p in:fade={{ duration: 150 }}>Total balance</p>
+      <p in:fade={{ duration: 150 }}>Your balance</p>
       <h1 class="total-balance" in:fade={{ duration: 150 }}>
         {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
       </h1>
