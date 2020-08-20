@@ -9,20 +9,10 @@
 
   if(process.browser && !$loggedIn) goto("/");
 
-  let currentPage = 1, lastPage = 1;
-
-  // set current page
-  // redirect to first page if the current page is greater than the last page
-  if(process.browser) {
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("page") !== null) currentPage = parseInt(params.get("page"));
-    if(currentPage > lastPage) goto("/app/all-exchanges");
-  }
-
 </script>
 
 <svelte:head>
-  <title>Exchanges overview</title>
+  <title>Verto — All Exchanges</title>
 </svelte:head>
 
 <NavBar />
@@ -95,11 +85,6 @@
       <td style="text-transform: uppercase">4hrs 20min</td>
     </tr>
   </table>
-  <div class="pagination">
-    <a href="/app/all-exchanges{currentPage <= 1 ? "" : ("?page=" + (currentPage - 1))}" class="prev">{"<-"}</a>
-    <span class="current">{currentPage}</span>
-    <a href="/app/all-exchanges{lastPage >= currentPage ? "" : ("?page=" + (currentPage + 1))}" class="next">{"->"}</a>
-  </div>
 </div>
 <Footer />
 
@@ -110,9 +95,5 @@
   .all-exchanges
     padding: 3em 15vw
     @include table 
-
-    .pagination
-      margin-top: 1.3em
-      @include pagination
 
 </style>
