@@ -4,7 +4,7 @@
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
-
+  import latestTradesQuery from "../../queries/latestTrades.gql";
   import { query } from "../../api-client";
 
   let element, y, windowHeight, shown = false;
@@ -23,25 +23,10 @@
 
     let txs: { id: string, amount: number, pst: string }[] = [];
 
-    const _txs = (await query(`
-      query {
-        transactions(
-          tags: [
-            {name: "App-Name", values: "Verto"}
-          ]
-          first: 5
-        ) {
-          edges {
-            node {
-              id
-              quantity {
-                ar
-              }
-            }
-          }
-        }
-      }
-    `)).data.transactions.edges;
+    const _txs = (await query({ 
+      query: latestTradesQuery, 
+      variables: null
+    })).data.transactions.edges;
 
     _txs.map(({ node }) => {
       txs.push({
@@ -68,31 +53,13 @@
           <th>PST</th>
         </tr>
         {#await txs}
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
-          <tr>
-            <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
-            <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
-          </tr>
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+              <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+              <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+            </tr>
+          {/each}
         {:then loadedTxs}
           {#each loadedTxs as tx}
             <tr in:fade={{ duration: 185 }}>
