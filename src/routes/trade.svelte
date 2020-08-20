@@ -222,26 +222,24 @@
       </tr>
       {#await balances}
         <tr>
-          <td><SkeletonLoading /></td>
-          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
         </tr>
         <tr>
-          <td><SkeletonLoading /></td>
-          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
         </tr>
         <tr>
-          <td><SkeletonLoading /></td>
-          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
         </tr>
         <tr>
-          <td><SkeletonLoading /></td>
-          <td><SkeletonLoading /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
+          <td><SkeletonLoading style="width: 200px" /></td>
         </tr>
       {:then loadedBalances} 
         {#if loadedBalances.length === 0}
-          <tr>
-            <td>You don't have any balances!</td>
-          </tr>
+          <p>You don't have any tokens!</p>
         {/if}
         {#each loadedBalances as balance}
           <tr>
