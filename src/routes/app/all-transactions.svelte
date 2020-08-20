@@ -12,6 +12,7 @@
   import { onMount } from "svelte";
   import { query } from "../../api-client";
   import Arweave from "arweave";
+  import allTransactionsQuery from "../../queries/allTransactions.gql";
   
   if(process.browser && !$loggedIn) goto("/");
 
@@ -42,54 +43,22 @@
     });
 
     const 
-      outQuery = hasNextOut ? (await query(`
-        query {
-          transactions(
-            owners: ["${ $address }"]
-            after: "${ lastCursorOut }"
-          ) {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                id
-                block {
-                  timestamp
-                }
-                quantity {
-                  ar
-                }
-              }
-            }
-          }
+      outQuery = hasNextOut ? (await query({
+        query: allTransactionsQuery,
+        variables: {
+          owners: [$address],
+          recipients: null,
+          after: lastCursorOut
         }
-      `)).data : null,
-      inQuery = hasNextIn ? (await query(`
-        query {
-          transactions(
-            recipients: ["${ $address }"]
-            after: "${ lastCursorIn }"
-          ) {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                id
-                block {
-                  timestamp
-                }
-                quantity {
-                  ar
-                }
-              }
-            }
-          }
+      })).data : null,
+      inQuery = hasNextIn ? (await query({
+        query: allTransactionsQuery,
+        variables: {
+          recipients: [$address],
+          owners: null,
+          after: lastCursorIn
         }
-      `)).data : null;
+      })).data : null;
 
     const 
       outTxs = hasNextOut ? outQuery.transactions.edges : null,

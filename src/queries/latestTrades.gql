@@ -1,0 +1,18 @@
+query {
+  transactions(
+    tags: [{ 
+      name: "App-Name", 
+      values: "Verto" 
+    }]
+    first: 5
+  ) {
+    edges {
+      node {
+        id
+        quantity {
+          ar
+        }
+      }
+    }
+  }
+}
