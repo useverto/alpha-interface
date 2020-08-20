@@ -9,6 +9,8 @@
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   import { query } from "../api-client";
+  import galleryQuery from "../queries/gallery.gql";
+  import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
 
@@ -29,27 +31,13 @@
   let balances = getTokenBalances();
 
   async function getTradingPosts (): Promise<string[]> {
+    if(!process.browser) return [];
+    
     let posts: string[] = [];
 
-    const _posts = (await query(`
-      query {
-        transactions(
-          # recipients: ["EXCHANGE_WALLET_ADDR"]
-          tags: [
-            { name: "App-Name", values: "Verto" }
-            { name: "Trading-Post-Genesis", values: "G" }
-          ]
-        ) {
-          edges {
-            node {
-              owner {
-                address
-              }
-            }
-          }
-        }
-      }
-    `)).data.transactions.edges;
+    const _posts = (await query({
+      query: galleryQuery
+    })).data.transactions.edges;
 
     _posts.map(({ node }) => {
       posts.push(node.owner.address);
@@ -73,23 +61,9 @@
     });
 
     let txIds = [];
-    const _txIds = (await query(`
-      query {
-        transactions(
-          owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
-          tags: [
-            {name: "App-Name", values: "Verto"}
-            {name: "Support", values: "PST"}
-          ]
-        ) {
-          edges {
-            node {
-              id
-            }
-          }
-        }
-      }
-    `)).data.transactions.edges;
+    const _txIds = (await query({
+      query: tokensQuery
+    })).data.transactions.edges;
     _txIds.map(({ node }) => {
       txIds.push(node.id);
     })
