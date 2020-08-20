@@ -208,7 +208,7 @@
             <option>No posts found</option>
           {/if}
           {#each loadedPosts as post}
-            <option value={post}>{post}</option>
+            <option value={post} selected={post === selectedPost}>{post}</option>
           {/each}
         {/await}
       </select>
