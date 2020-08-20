@@ -2,13 +2,14 @@
 
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
+  import Loading from "../components/Loading.svelte";
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { query } from "../api-client.js";
   import { onMount } from "svelte";
   import Arweave from "arweave";
-  import Loading from "../components/Loading.svelte";
+  import galleryQuery from "../queries/gallery.gql";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -34,34 +35,13 @@
       timeout: 20000,
     });
 
-    const 
-      postsQuery = (await query(`
-        query {
-          transactions(
-            tags: [
-              {name: "App-Name", values: "Verto"}
-              {name: "Trading-Post-Genesis", values: "G"}
-            ]
-          ) {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                owner {
-                  address
-                }
-              }
-            }
-          }
-        }
-      `)).data,
-      _posts = postsQuery.transactions.edges;
+    const _posts = (await query({
+      query: galleryQuery
+    })).data.transactions;
 
-    hasNext = postsQuery.transactions.pageInfo.hasNextPage;
+    hasNext = _posts.pageInfo.hasNextPage;
 
-    for (const post of _posts) {
+    for (const post of _posts.edges) {
       let node = post.node;
       const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));
       lastCursor = post.cursor;

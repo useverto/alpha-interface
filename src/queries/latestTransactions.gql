@@ -1,0 +1,21 @@
+query (
+  $recipients: [String!]
+  $owners: [String!]
+) {
+  transactions(
+    recipients: $recipients
+    owners: $owners
+  ) {
+    edges {
+      node {
+        id
+        block {
+          timestamp
+        }
+        quantity {
+          ar
+        }
+      }
+    }
+  }
+}

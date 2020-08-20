@@ -1,0 +1,26 @@
+query {
+  transactions(
+    tags: [
+      { 
+        name: "App-Name", 
+        values: "Verto" 
+      }
+      { 
+        name: "Trading-Post-Genesis", 
+        values: "G" 
+      }
+    ]
+  ) {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        owner {
+          address
+        }
+      }
+    }
+  }
+}
