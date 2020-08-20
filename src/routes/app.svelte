@@ -3,8 +3,8 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
+  import LatestExchanges from "../components/app/LatestExchanges.svelte";
   import { loggedIn, address, balance } from "../stores/keyfileStore.js";
-  import moment from "moment";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
@@ -74,37 +74,7 @@
       </tr>
     </table>
   </div>
-  <div class="section">
-    <h1 class="title">Exchanges</h1>
-    <table>
-      <tr>
-        <th>Timestamp</th>
-        <th>Exchange</th>
-        <th>Duration</th>
-      </tr>
-      <tr>
-        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
-        <td style="text-transform: uppercase">4hrs 20min</td>
-      </tr>
-      <tr>
-        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status success"></span></td>
-        <td style="text-transform: uppercase">4hrs 20min</td>
-      </tr>
-      <tr>
-        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status failure"></span></td>
-        <td style="text-transform: uppercase">4hrs 20min</td>
-      </tr>
-      <tr>
-        <td style="width: 30%">{moment().format("YYYY-MM-DD hh:mm:ss")}</td>
-        <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status pending"></span></td>
-        <td style="text-transform: uppercase">4hrs 20min</td>
-      </tr>
-    </table>
-    <a href="/app/all-exchanges" class="view-all">View all {"->"}</a>
-  </div>
+  <LatestExchanges />
   <LatestTransactions />
 </div>
 <Footer />
