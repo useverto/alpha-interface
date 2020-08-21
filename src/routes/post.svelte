@@ -112,11 +112,7 @@
     let community = new Community(client);
     await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
 
-    // WARNING: Hack until `getVaultBalance` is working!
-    let vault = (await community.getState()).vault;
-    return vault[addr]
-      ? vault[addr].map((a) => a.balance).reduce((a, b) => a + b, 0)
-      : 0;
+    return await community.getVaultBalance(addr);
   }
 
   let timeStaked = getTimeStaked();
@@ -161,8 +157,6 @@
       stakeWeighted = await stake * 1/2,
       timeStakedWeighted = await timeStaked * 1/3,
       balanceWeighted = parseFloat(await balance) * 1/6;
-    
-    console.log(reputation);
     
     return parseFloat((stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3));
   }
