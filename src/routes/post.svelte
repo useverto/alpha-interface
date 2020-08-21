@@ -110,15 +110,13 @@
     });
 
     let community = new Community(client);
-    let vaultBalance = undefined;
     await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
 
-    try {
-      vaultBalance = await community.getVaultBalance("pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls");
-    } catch (err) {
-      console.log(err);
-    }
-    return vaultBalance;
+    // WARNING: Hack until `getVaultBalance` is working!
+    let vault = (await community.getState()).vault;
+    return vault[addr]
+      ? vault[addr].map((a) => a.balance).reduce((a, b) => a + b, 0)
+      : 0;
   }
 
   let timeStaked = getTimeStaked();
