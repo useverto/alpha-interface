@@ -8,14 +8,15 @@
   import { loggedIn, address, keyfile } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
+
   import { query } from "../api-client.js";
+  import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import Community from "community-js";
-  import tokensQuery from "../queries/tokens.gql";
+  import { pstContract } from "../utils/constants";
 
   if(process.browser && !$loggedIn) goto("/");
 
-  const pstContract = "d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8";
   let supportedTokens = getSupportedPSTs();
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
