@@ -184,8 +184,8 @@
     </div>
     <div class="short-cell">
       {#await reputation}
-        <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
-        <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
+        <p><SkeletonLoading style="height: 1em; width: 100px" /></p>
+        <h1><SkeletonLoading style="height: 1em; width: 100px" /></h1>
       {:then loadedReputation} 
         <p>reputation</p>
         <h1>{loadedReputation}</h1>
