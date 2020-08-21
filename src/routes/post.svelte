@@ -218,7 +218,7 @@
       <button class:active={activeMenu === "transactions"} on:click={() => activeMenu = "transactions"}>Transactions</button>
       <button class:active={activeMenu === "assets"} on:click={() => activeMenu = "assets"}>Assets</button>
       <div class="trade">
-        <Button href="/trade" style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Trade now</Button>
+        <Button href="/trade?post={addr}" style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Trade now</Button>
       </div>
     </div>
     <div class="content">
