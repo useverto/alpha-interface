@@ -100,7 +100,7 @@
       protocol: "https",
       timeout: 200000,
     });
-    const supportedPSTs = await getSupportedPSTs();
+    const supportedPSTs = await psts;
     let tokenBalances = [];
 
     for (let i = 0; i < supportedPSTs.length; i++) {
