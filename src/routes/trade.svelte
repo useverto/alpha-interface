@@ -190,28 +190,32 @@
   </div>
   <div class="trade-container">
     <table>
-      <tr>
-        <th>Token</th>
-        <th>Amount</th>
-      </tr>
       {#await balances}
         <tr>
-          <td><SkeletonLoading style="width: 200px" /></td>
-          <td><SkeletonLoading style="width: 200px" /></td>
+          <th><SkeletonLoading style="width: 75px" /></th>
+          <th><SkeletonLoading style="width: 75px" /></th>
         </tr>
         <tr>
-          <td><SkeletonLoading style="width: 200px" /></td>
-          <td><SkeletonLoading style="width: 200px" /></td>
+          <td><SkeletonLoading style="width: 100px" /></td>
+          <td><SkeletonLoading style="width: 100px" /></td>
         </tr>
         <tr>
-          <td><SkeletonLoading style="width: 200px" /></td>
-          <td><SkeletonLoading style="width: 200px" /></td>
+          <td><SkeletonLoading style="width: 100px" /></td>
+          <td><SkeletonLoading style="width: 100px" /></td>
         </tr>
         <tr>
-          <td><SkeletonLoading style="width: 200px" /></td>
-          <td><SkeletonLoading style="width: 200px" /></td>
+          <td><SkeletonLoading style="width: 100px" /></td>
+          <td><SkeletonLoading style="width: 100px" /></td>
+        </tr>
+        <tr>
+          <td><SkeletonLoading style="width: 100px" /></td>
+          <td><SkeletonLoading style="width: 100px" /></td>
         </tr>
       {:then loadedBalances} 
+        <tr>
+          <th>Token</th>
+          <th>Amount</th>
+        </tr>
         {#if loadedBalances.length === 0}
           <p>You don't have any tokens!</p>
         {/if}
@@ -232,8 +236,6 @@
           {#await psts}
             <option disabled>Loading...</option>
           {:then loadedPsts}
-            {#if loadedPsts.length === 0}
-            {/if}
             {#each loadedPsts as pst}
               <option value={pst.ticker}>{pst.ticker}</option>
             {/each}
