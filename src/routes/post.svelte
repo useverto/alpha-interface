@@ -3,7 +3,7 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Button from "../components/Button.svelte";
-  import { loggedIn, address } from "../stores/keyfileStore.js";
+  import { loggedIn, address, keyfile } from "../stores/keyfileStore.js";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
@@ -15,7 +15,7 @@
 
   let activeMenu: string = "transactions";
   let addr: string = "";
-
+  
   if(process.browser && !$loggedIn) goto("/");
 
   if(process.browser) {
@@ -110,8 +110,32 @@
     });
 
     let community = new Community(client);
+    let vaultBalance = undefined;
     await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
-    return await community.getVaultBalance(addr);
+
+    try {
+      vaultBalance = await community.getVaultBalance("pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls");
+    } catch (err) {
+      console.log(err);
+    }
+    return vaultBalance;
+  }
+
+  let timeStaked = getTimeStaked();
+
+  async function getTimeStaked (): Promise<number> {
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let community = new Community(client);
+    await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
+
+    // TODO: (@t8) Get time staked and return here
+    return 100
   }
 
   let balance = getPostBalance();
@@ -129,6 +153,22 @@
     return client.ar.winstonToAr(await client.wallets.getBalance(addr));
   }
 
+  let reputation = getReputation();
+
+  async function getReputation (): Promise<number> {
+    // Reputation determined from this diagram:
+    // https://github.com/useverto/trading-post/blob/master/diagrams/reputation_calculation/reputation_calculation.png
+
+    let
+      stakeWeighted = await stake * 1/2,
+      timeStakedWeighted = await timeStaked * 1/3,
+      balanceWeighted = parseFloat(await balance) * 1/6;
+    
+    console.log(reputation);
+    
+    return parseFloat((stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3));
+  }
+
 </script>
 
 <svelte:head>
@@ -143,8 +183,13 @@
       <h1>{addr}</h1>
     </div>
     <div class="short-cell">
-      <p>reputation</p>
-      <h1>51.7329</h1>
+      {#await reputation}
+        <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
+        <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
+      {:then loadedReputation} 
+        <p>reputation</p>
+        <h1>{loadedReputation}</h1>
+      {/await}
     </div>
   </div>
   <div class="post-info big">
@@ -154,7 +199,7 @@
         <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
       {:then loadedBalance}
         <p in:fade={{ duration: 150 }}>total balance</p>
-        <h1 in:fade={{ duration: 150 }}>{roundCurrency(loadedBalance)}<span class="currency">AR</span><span style="vertical-align: super; color: #00D46E; font-size: .5em">(+0.75%)</span></h1>
+        <h1 in:fade={{ duration: 150 }}>{roundCurrency(loadedBalance)}<span class="currency">AR</span></h1>
       {/await}
     </div>
     <div class="short-cell">
@@ -163,7 +208,7 @@
         <h1><SkeletonLoading style="height: 1em; width: 180px" /></h1>
       {:then loadedStake}
         <p>total stake</p>
-        <h1>{roundCurrency(loadedStake.toString())}<span class="currency">AR</span></h1>
+        <h1>{roundCurrency(loadedStake.toString())}<span class="currency">VRT</span></h1>
       {/await}
     </div>
   </div>
