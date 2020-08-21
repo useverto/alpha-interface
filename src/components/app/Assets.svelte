@@ -99,26 +99,12 @@
       <th>Amount</th>
     </tr>
     {#await balances}
-      <tr>
-        <td><SkeletonLoading style="width: 200px" /></td>
-        <td><SkeletonLoading style="width: 200px" /></td>
-      </tr>
-      <tr>
-        <td><SkeletonLoading style="width: 200px" /></td>
-        <td><SkeletonLoading style="width: 200px" /></td>
-      </tr>
-      <tr>
-        <td><SkeletonLoading style="width: 200px" /></td>
-        <td><SkeletonLoading style="width: 200px" /></td>
-      </tr>
-      <tr>
-        <td><SkeletonLoading style="width: 200px" /></td>
-        <td><SkeletonLoading style="width: 200px" /></td>
-      </tr>
-      <tr>
-        <td><SkeletonLoading style="width: 200px" /></td>
-        <td><SkeletonLoading style="width: 200px" /></td>
-      </tr>
+      {#each Array(4) as _}
+        <tr>
+          <td style="width: 80%"><SkeletonLoading style="width: 100%;" /></td>
+          <td style="width: 20%"><SkeletonLoading style="width: 100%;" /></td>
+        </tr>
+      {/each}
     {:then loadedBalances} 
       {#if loadedBalances.length === 0}
         <p>You don't have any tokens!</p>

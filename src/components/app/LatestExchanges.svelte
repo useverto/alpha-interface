@@ -5,6 +5,7 @@
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
   import moment from "moment";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
 
   let exchanges = getLatestExchanges();
 
@@ -43,8 +44,9 @@
     {#await exchanges}
       {#each Array(5) as _}
         <tr>
-          <!-- <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td> -->
-          <!-- <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td> -->
+          <td style="width: 30%"><SkeletonLoading style={"width: 100%"} /></td>
+          <td style="width: 60%"><SkeletonLoading style={"width: 100%"} /></td>
+          <td style="width: 15%"><SkeletonLoading style={"width: 100%"} /></td>
         </tr>
       {/each}
     {:then loadedExchanges}
