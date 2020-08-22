@@ -12,6 +12,7 @@
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
   import Community from "community-js";
+  import { pstContract } from "../utils/constants";
 
   let activeMenu: string = "transactions";
   let addr: string = "";
@@ -110,7 +111,7 @@
     });
 
     let community = new Community(client);
-    await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
+    await community.setCommunityTx(pstContract);
 
     return await community.getVaultBalance(addr);
   }
@@ -126,7 +127,7 @@
     });
 
     let community = new Community(client);
-    await community.setCommunityTx("d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8");
+    await community.setCommunityTx(pstContract);
 
     // TODO: (@t8) Get time staked and return here
     return 100

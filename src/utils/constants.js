@@ -1,1 +1,1 @@
-export const pstContract = "d3D9G1sR_cuZFhHJGCzIRF_emQArv3efegnsvJc_0E8";
+export const pstContract = "dkVJmNCHFoChVBOrgYIv-XcCWTqg6q5HpkVk5zyyNdo";
