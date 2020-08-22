@@ -1,9 +1,8 @@
 <script lang="ts">
 
   import { keyfile } from "../../stores/keyfileStore.js";
-  import SkeletonLoading from "../../components/SkeletonLoading.svelte";
   import Loading from "../../components/Loading.svelte";
-
+  import SkeletonLoading from "../../components/SkeletonLoading.svelte";
   import { query } from "../../api-client";
   import tokensQuery from "../../queries/tokens.gql";
   import Arweave from "arweave";
@@ -159,38 +158,40 @@
 </script>
 
 <div class="section">
-  <h1 class="title">Assets</h1>
-  <table>
-    <tr style="width: 100%">
-      <th>Token</th>
-      <th>Amount</th>
-    </tr>
-    {#await balances}
-      {#each Array(4) as _}
-        <tr>
-          <td style="width: 80%"><SkeletonLoading style="width: 100%;" /></td>
-          <td style="width: 20%"><SkeletonLoading style="width: 100%;" /></td>
-        </tr>
-      {/each}
-    {:then loadedBalances} 
-      {#if loadedBalances.length === 0}
-        <p>You don't have any tokens!</p>
-      {/if}
-      {#each loadedBalances as balance}
-        <tr>
-          <td>{balance.token}</td>
-          <td>{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
-        </tr>
-      {/each}
+  <div class="assets-table">
+    <h1 class="title">Assets</h1>
+    <table>
+      <tr style="width: 100%">
+        <th>Token</th>
+        <th>Amount</th>
+      </tr>
+      {#await balances}
+        {#each Array(4) as _}
+          <tr>
+            <td style="width: 80%"><SkeletonLoading style="width: 100%;" /></td>
+            <td style="width: 20%"><SkeletonLoading style="width: 100%;" /></td>
+          </tr>
+        {/each}
+      {:then loadedBalances}
+        {#if loadedBalances.length === 0}
+          <p>You don't have any tokens!</p>
+        {/if}
+        {#each loadedBalances as balance}
+          <tr>
+            <td>{balance.token}</td>
+            <td>{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
+          </tr>
+        {/each}
+      {/await}
+    </table>
+  </div>
+  <div class="assets-chart">
+    {#await balanceChart}
+      <Loading style="margin: 100px auto;" />
+    {:then data}
+      <Pie {data} {options} />
     {/await}
-  </table>
-</div>
-<div style="width: 49%; float: right">
-  {#await balanceChart}
-    <Loading style="margin: 100px auto;" />
-  {:then data} 
-    <Pie {data} {options} />
-  {/await}
+  </div>
 </div>
 
 <style lang="sass">
@@ -200,25 +201,29 @@
   .section
     @include table
     padding-bottom: 2.5em
-    width: 50%
-    display: inline-block
+    display: flex
+    justify-content: space-between
+    align-items: center
 
-    a.view-all
-      display: block
-      text-align: center
-      color: rgba(#000, .5)
-      font-weight: 500
-      padding: .8em 0
-      transition: all .3s
+    .assets-table
+      width: 50%
 
-      &:hover
-        opacity: .7
+      a.view-all
+        display: block
+        text-align: center
+        color: rgba(#000, .5)
+        font-weight: 500
+        padding: .8em 0
+        transition: all .3s
 
-    &:first-child
-      padding-top: 3.5em
+        &:hover
+          opacity: .7
 
-    a.transaction
-      text-decoration: none
-      color: black
+      a.transaction
+        text-decoration: none
+        color: black
+
+    .assets-chart
+      width: 50%
 
 </style>
