@@ -2,6 +2,7 @@
 
   import { keyfile } from "../../stores/keyfileStore.js";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
+  import Loading from "../../components/Loading.svelte";
 
   import { query } from "../../api-client";
   import tokensQuery from "../../queries/tokens.gql";
@@ -159,7 +160,7 @@
 
 <div class="section">
   <h1 class="title">Assets</h1>
-  <table style="width: 50%; display: inline-block">
+  <table>
     <tr style="width: 100%">
       <th>Token</th>
       <th>Amount</th>
@@ -183,13 +184,13 @@
       {/each}
     {/await}
   </table>
-  <div style="width: 49%; float: right">
-    {#await balanceChart}
-      <SkeletonLoading style="width: 80%; height: 200px;" />
-    {:then data} 
-      <Pie {data} {options} />
-    {/await}
-  </div>
+</div>
+<div style="width: 49%; float: right">
+  {#await balanceChart}
+    <Loading style="margin: 100px auto;" />
+  {:then data} 
+    <Pie {data} {options} />
+  {/await}
 </div>
 
 <style lang="sass">
@@ -199,6 +200,8 @@
   .section
     @include table
     padding-bottom: 2.5em
+    width: 50%
+    display: inline-block
 
     a.view-all
       display: block
