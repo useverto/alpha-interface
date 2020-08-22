@@ -13,8 +13,9 @@
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
-  import { findRootNode, createNode } from "trackweave";
+  import { findRootNode, createNode, RDTBranchNode } from "trackweave";
   import { getLatestNode } from "../utils/get_latest_node";
+import Transaction from "arweave/node/lib/transaction";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -159,7 +160,7 @@
       "Trade-Ratio": (recieveAmount / sendAmount).toFixed(7),
       "Trade-Opcode": sendCurrency === "AR" ? "buy" : "sell",
     };
-    // TODO(@johnletey): Send tx and redirect to dashboard
+
     console.log("Confirmed trade");
   }
 
@@ -179,6 +180,29 @@
       if(sendOrRecieve === "send") recieveCurrency = currencies[0].ticker;
       else sendCurrency = currencies[0].ticker;
     }
+  }
+
+  async function getFee(tx: Transaction | RDTBranchNode): Promise <number> {
+    let fee, txSize, recipient;
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    if (tx instanceof Transaction) {
+      // AR Transaction
+      txSize = parseFloat(tx.data_size);
+      recipient = tx.target;
+      fee = await client.transactions.getPrice(txSize, recipient);
+    } else {
+      // TrackWeave PST Transaction
+      //TODO (@t8, @zorbyte): Figure out how to get the fee
+      fee = 1000;
+    }
+
+    return parseFloat(client.ar.winstonToAr(fee));
   }
 
 </script>
@@ -291,7 +315,16 @@
   </div>
 </div>
 <Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={confirmTrade} onCancel={cancelTrade}>
-  <p style="text-align: center;">Exchange {sendAmount} {sendCurrency} for {recieveAmount} {recieveCurrency}</p>
+  <p style="text-align: center;">
+    Exchanging {sendAmount} {sendCurrency} for {recieveAmount} {recieveCurrency}
+  </p>
+  <p style="text-align: center">
+    {#if sendCurrency === "AR"}
+      This action will cost {sendAmount + (sendAmount * 0.0025)} AR
+    {:else}
+      This action will cost {sendAmount} {sendCurrency} + {0.0002} AR
+    {/if}
+  </p>
 </Modal>
 <Footer />
 
