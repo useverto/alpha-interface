@@ -3,7 +3,7 @@ query {
     owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
     tags: [
       {
-        name: "App-Name",
+        name: "Exchange",
         values: "Verto"
       }
       {
