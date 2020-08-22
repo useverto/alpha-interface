@@ -133,7 +133,7 @@
     if(sendCurrency.toLowerCase() === "ar" || recieveCurrency.toLowerCase() === "ar") confirmModalOpened = true;
   }
 
-  function confirmTrade () {
+  async function confirmTrade () {
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
@@ -144,11 +144,20 @@
     const latestNode = getLatestNode(client, selectedPost);
     // @ts-ignore
     const node = createNode(latestNode, false);
+
+    const ticker = sendCurrency === "AR" ? recieveCurrency : sendCurrency;
+    const supportedPSTs = await psts;
+    let pstTxId;
+    for (const pst of supportedPSTs) {
+      if (pst.ticker === ticker) {
+        pstTxId = pst.id;
+      }
+    }
+
     node.otherTags = {
-      // TODO(@johnletey): Grab token info
-      "Target-Token": "",
+      "Target-Token": ticker + " " + pstTxId,
       "Trade-Ratio": (recieveAmount / sendAmount).toFixed(7),
-      "Trade-Opcode": sendCurrency === "ar" ? "buy" : "sell",
+      "Trade-Opcode": sendCurrency === "AR" ? "buy" : "sell",
     };
     // TODO(@johnletey): Send tx and redirect to dashboard
     console.log("Confirmed trade");
