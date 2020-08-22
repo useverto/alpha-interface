@@ -1180,12 +1180,17 @@ argparse@^1.0.7:
   dependencies:
     sprintf-js "~1.0.2"
 
+arql-ops@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/arql-ops/-/arql-ops-1.0.0.tgz#0eeb7ee7ae71e0c8937c8c82c6bb79a25235dae3"
+  integrity sha512-7nj1QWj8uNP4LipeF6Wkbn3We/2ZVDAaEJWxMk6NNBM5bZBAKsAAn1ime34+2nyuaaA/yBALaanuhF674JjBRw==
+
 array-find-index@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/array-find-index/-/array-find-index-1.0.2.tgz#df010aa1287e164bbda6f9723b0a96a1ec4187a1"
   integrity sha1-3wEKoSh+Fku9pvlyOwqWoexBh6E=
 
-arweave@^1.7.1, arweave@^1.9.1:
+arweave@^1.7.1, arweave@^1.8.0, arweave@^1.9.1:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.9.1.tgz#9b3754eeb38a244ed9abf1024ab0df6bfb76a990"
   integrity sha512-S0oLpxTKV0r6TPQ3l7ZZu8c6tE4F2xtnw+vQKR2+232k/rHbXqeuOijZZMEgHLoTi7c/MasXgyj4QLALh7hrXA==
@@ -3064,6 +3069,11 @@ nan@^2.13.2:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.1.tgz#d7be34dfa3105b91494c3147089315eff8874b01"
   integrity sha512-isWHgVjnFjh2x2yuJ/tj3JbwoHu3UC2dX5G/88Cm24yB6YopVgxvBObDY7n5xW6ExmFhJpSEQqFPvq9zaXc8Jw==
 
+nanoid@^3.1.12:
+  version "3.1.12"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.12.tgz#6f7736c62e8d39421601e4a0c77623a97ea69654"
+  integrity sha512-1qstj9z5+x491jfiC4Nelk+f8XBad7LN20PmyWINJEMRSf3wcAjAWysw1qaA8z6NSKe2sjq1hRSDpBH5paCb6A==
+
 natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
@@ -4420,6 +4430,15 @@ tough-cookie@~2.5.0:
   dependencies:
     psl "^1.1.28"
     punycode "^2.1.1"
+
+trackweave@^0.1.17:
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/trackweave/-/trackweave-0.1.17.tgz#6f367c7c17162e41d3a557eaa2bebe7472410a0c"
+  integrity sha512-PM0FkvWKsPs50i0a7z4yzGDkApqmud9Wc1t4wHhBfgIrLWfZ4XZPdkdtRBN46gh+oA822i/85IKTRANanIFdzg==
+  dependencies:
+    arql-ops "^1.0.0"
+    arweave "^1.8.0"
+    nanoid "^3.1.12"
 
 trim-newlines@^1.0.0:
   version "1.0.0"

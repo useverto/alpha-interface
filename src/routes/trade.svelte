@@ -13,6 +13,8 @@
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
+  import { findRootNode, createNode } from "trackweave";
+  import { getLatestNode } from "../utils/get_latest_node";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -131,8 +133,24 @@
     if(sendCurrency.toLowerCase() === "ar" || recieveCurrency.toLowerCase() === "ar") confirmModalOpened = true;
   }
 
-  // todo exchange logic
   function confirmTrade () {
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const latestNode = getLatestNode(client, selectedPost);
+    // @ts-ignore
+    const node = createNode(latestNode, false);
+    node.otherTags = {
+      // TODO(@johnletey): Grab token info
+      "Target-Token": "",
+      "Trade-Ratio": (recieveAmount / sendAmount).toFixed(7),
+      "Trade-Opcode": sendCurrency === "ar" ? "buy" : "sell",
+    };
+    // TODO(@johnletey): Send tx and redirect to dashboard
     console.log("Confirmed trade");
   }
 
@@ -176,10 +194,10 @@
       <p>Trading post</p>
       <select bind:value={selectedPost}>
         {#await posts}
-          <option disabled>Loading...</option>
+          <option value="" disabled>Loading...</option>
         {:then loadedPosts}
           {#if loadedPosts.length === 0}
-            <option>No posts found</option>
+            <option value="" disabled>No posts found</option>
           {/if}
           {#each loadedPosts as post}
             <option value={post} selected={post === selectedPost}>{post}</option>
@@ -258,7 +276,7 @@
           {/await}
         </select>
       </div>
-      <p class="info">1 {sendCurrency} ~= {recieveAmount / sendAmount} {recieveCurrency}</p>
+      <p class="info">1 {sendCurrency} ~= {(recieveAmount / sendAmount).toFixed(7)} {recieveCurrency}</p>
       <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0; font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
     </div>
   </div>
