@@ -8,7 +8,39 @@
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
 
+  import Pie from "svelte-chartjs/src/Pie.svelte";
+  
   let balances = getTokenBalances();
+
+  let dummyData = {
+    labels: ["Red", "Green", "Yellow", "Grey", "Dark Grey"],
+    datasets: [
+      {
+        data: [300, 50, 100, 40, 120],
+        backgroundColor: [
+          "#F7464A",
+          "#46BFBD",
+          "#FDB45C",
+          "#949FB1",
+          "#4D5360",
+          "#AC64AD"
+        ],
+        hoverBackgroundColor: [
+          "#FF5A5E",
+          "#5AD3D1",
+          "#FFC870",
+          "#A8B3C5",
+          "#616774",
+          "#DA92DB"
+        ]
+      }
+    ]
+  };
+  let options = {
+    responsive: true
+  };
+
+  let balanceChart = populateChart();
 
   async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
     if(!process.browser) return [];
@@ -83,6 +115,40 @@
     return tokenBalances;
   }
 
+  async function populateChart() {
+    let data = await balances;
+    let chart = {
+      labels: [],
+      datasets: [
+        {
+          data: [],
+          backgroundColor: [
+            "#F7464A",
+            "#46BFBD",
+            "#FDB45C",
+            "#949FB1",
+            "#4D5360",
+            "#AC64AD"
+          ],
+          hoverBackgroundColor: [
+            "#FF5A5E",
+            "#5AD3D1",
+            "#FFC870",
+            "#A8B3C5",
+            "#616774",
+            "#DA92DB"
+          ]
+        }
+      ]
+    };
+    for (let i = 0; i < data.length; i++) {
+      chart.labels.push(data[i].ticker);
+      chart.datasets[0].data.push(data[i].balance);
+    }
+
+    return chart;
+  }
+
   function roundCurrency (val: number | string): string {
      if(val === "?") return val;
      if(typeof val === "string") val = parseFloat(val);
@@ -93,8 +159,8 @@
 
 <div class="section">
   <h1 class="title">Assets</h1>
-  <table>
-    <tr>
+  <table style="width: 50%; display: inline-block">
+    <tr style="width: 100%">
       <th>Token</th>
       <th>Amount</th>
     </tr>
@@ -117,6 +183,13 @@
       {/each}
     {/await}
   </table>
+  <div style="width: 49%; float: right">
+    {#await balanceChart}
+      <SkeletonLoading style="width: 80%; height: 200px;" />
+    {:then data} 
+      <Pie {data} {options} />
+    {/await}
+  </div>
 </div>
 
 <style lang="sass">
