@@ -3,7 +3,7 @@ query {
     # recipients: ["EXCHANGE_WALLET_ADDR"]
     tags: [
       { 
-        name: "App-Name", 
+        name: "Exchange", 
         values: "Verto" 
       }
       { 
