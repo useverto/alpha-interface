@@ -11,35 +11,10 @@
   import Pie from "svelte-chartjs/src/Pie.svelte";
   
   let balances = getTokenBalances();
-
-  let dummyData = {
-    labels: ["Red", "Green", "Yellow", "Grey", "Dark Grey"],
-    datasets: [
-      {
-        data: [300, 50, 100, 40, 120],
-        backgroundColor: [
-          "#F7464A",
-          "#46BFBD",
-          "#FDB45C",
-          "#949FB1",
-          "#4D5360",
-          "#AC64AD"
-        ],
-        hoverBackgroundColor: [
-          "#FF5A5E",
-          "#5AD3D1",
-          "#FFC870",
-          "#A8B3C5",
-          "#616774",
-          "#DA92DB"
-        ]
-      }
-    ]
-  };
   let options = {
     responsive: true
   };
-
+  let noelements = false;
   let balanceChart = populateChart();
 
   async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
@@ -112,6 +87,7 @@
       }
     }
 
+    if(tokenBalances.length === 0) noelements = true;
     return tokenBalances;
   }
 
@@ -123,20 +99,20 @@
         {
           data: [],
           backgroundColor: [
-            "#F7464A",
-            "#46BFBD",
-            "#FDB45C",
-            "#949FB1",
-            "#4D5360",
-            "#AC64AD"
+            "#8548a3",
+            "#161616",
+            "#00D46E",
+            "#FFD336",
+            "#ff0000",
+            "#00d4b8"
           ],
           hoverBackgroundColor: [
-            "#FF5A5E",
-            "#5AD3D1",
-            "#FFC870",
-            "#A8B3C5",
-            "#616774",
-            "#DA92DB"
+            "rgba(133,72,163,0.75)",
+            "rgba(22,22,22,0.75)",
+            "rgba(0,212,110,0.75)",
+            "rgba(255,211,54,0.75)",
+            "rgba(255,0,0,0.75)",
+            "rgba(0,212,184,0.75)"
           ]
         }
       ]
@@ -158,9 +134,9 @@
 </script>
 
 <div class="section">
-  <div class="assets-table">
+  <div class="assets-table" class:noelements>
     <h1 class="title">Assets</h1>
-    <table>
+    <table style={noelements ? "position: relative" : ""}>
       <tr style="width: 100%">
         <th>Token</th>
         <th>Amount</th>
@@ -174,7 +150,7 @@
         {/each}
       {:then loadedBalances}
         {#if loadedBalances.length === 0}
-          <p>You don't have any tokens!</p>
+          <p style="position: absolute; top: 1.8em; left: 0; right: 0; text-align: center;">You don't have any tokens!</p>
         {/if}
         {#each loadedBalances as balance}
           <tr>
@@ -185,7 +161,7 @@
       {/await}
     </table>
   </div>
-  <div class="assets-chart">
+  <div class="assets-chart" class:noelements>
     {#await balanceChart}
       <Loading style="margin: 100px auto;" />
     {:then data}
@@ -207,6 +183,10 @@
 
     .assets-table
       width: 50%
+      transition: all .3s
+
+      &.noelements
+        width: 100%
 
       a.view-all
         display: block
@@ -225,5 +205,9 @@
 
     .assets-chart
       width: 50%
+      transition: all .3s
+
+      &.noelements
+        width: 0%
 
 </style>
