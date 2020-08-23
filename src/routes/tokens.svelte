@@ -13,7 +13,7 @@
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import Community from "community-js";
-  import { pstContract } from "../utils/constants";
+  import { pstContract, exchangeWallet } from "../utils/constants";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -35,7 +35,10 @@
 
     let txIds = [];
     const _txIds = (await query({
-      query: tokensQuery
+      query: tokensQuery,
+        variables: {
+          owners: [exchangeWallet]
+        }
     })).data.transactions.edges;
     _txIds.map(({ node }) => {
       txIds.push(node.id);

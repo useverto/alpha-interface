@@ -1,6 +1,8 @@
-query {
+query (
+  $owners: [String!]
+) {
   transactions(
-    owners: ["pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"]
+    owners: $owners
     tags: [
       {
         name: "Exchange",
