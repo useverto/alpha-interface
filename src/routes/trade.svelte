@@ -159,8 +159,6 @@
       }
     }
 
-    console.log((recieveAmount / sendAmount).toFixed(7))
-
     node.otherTags = {
       "Exchange": "Verto",
       "Target-Token": pstTxId,
@@ -172,7 +170,8 @@
 
     const tags = getNodeTags(node);
     const tx = await client.createTransaction({
-      target: selectedPost
+      target: selectedPost,
+      quantity: "1"
     }, JSON.parse($keyfile));
     
     for (const [key, value] of Object.entries(tags)) {
