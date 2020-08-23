@@ -14,6 +14,7 @@
   import Arweave from "arweave";
   import Community from "community-js";
   import { pstContract, exchangeWallet } from "../utils/constants";
+  import { interactRead } from "smartweave";
 
   let activeMenu: string = "transactions";
   let addr: string = "";
@@ -207,6 +208,39 @@
     return tokenList;
   }
 
+  let balances = getTokenBalances();
+
+  async function getTokenBalances() {
+    if(!process.browser) return [];
+
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const tokens = await supportedTokens;
+    
+    let tokenBalances = [];
+    for (let i = 0; i < tokens.length; i++) {
+      let pstContract = await interactRead(client, JSON.parse($keyfile), tokens[i].id, {
+        function: "unlockedBalance",
+        target: addr
+      });
+      console.log(pstContract)
+      if (pstContract.balance > 0) {
+        tokenBalances.push({
+          token: tokens[i].name,
+          ticker: tokens[i].ticker,
+          balance: pstContract.balance
+        });
+      }
+    }
+
+    return tokenBalances;
+  }
+
 </script>
 
 <svelte:head>
@@ -266,28 +300,25 @@
           <tr>
             <th>Token</th>
             <th>Amount</th>
-            <th>ID</th>
           </tr>
-          <tr>
-            <td>nest.land token</td>
-            <td>0.00696969 <span class="currency">egg</span></td>
-            <td>1234567890123456789012345</td>
-          </tr>
-          <tr>
-            <td>Light Bulb Coin</td>
-            <td>0.00413056 <span class="currency">lum</span></td>
-            <td>1234567890123456789012345</td>
-          </tr>
-          <tr>
-            <td>SoundWave Inc.</td>
-            <td>0.00505455 <span class="currency">wav</span></td>
-            <td>1234567890123456789012345</td>
-          </tr>
-          <tr>
-            <td>Reddit Coin</td>
-            <td>0.00240055 <span class="currency">red</span></td>
-            <td>1234567890123456789012345</td>
-          </tr>
+          {#await balances}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 80%"><SkeletonLoading style="width: 100%;" /></td>
+                <td style="width: 20%"><SkeletonLoading style="width: 100%;" /></td>
+              </tr>
+            {/each}
+          {:then loadedBalances}
+            {#if loadedBalances.length === 0}
+              <p>This trading post doesn't have any tokens!</p>
+            {/if}
+            {#each loadedBalances as balance}
+              <tr>
+                <td>{balance.token}</td>
+                <td>{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
+              </tr>
+            {/each}
+          {/await}
         </table>
       {:else if activeMenu === "transactions"}
         <table in:fade={{ duration: 400 }}>

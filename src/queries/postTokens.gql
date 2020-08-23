@@ -12,7 +12,7 @@ query (
       }
       {
         name: "Trading-Post-Genesis", 
-        values: "G" 
+        values: "Genesis" 
       }
     ]
   ) {
