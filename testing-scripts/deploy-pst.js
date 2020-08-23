@@ -14,7 +14,7 @@ async function supportPST(pstContractID) {
   }, key);
 
   pstTransaction.addTag("Content-Type", "text/html");
-  pstTransaction.addTag("App-Name", "Verto");
+  pstTransaction.addTag("Exchange", "Verto");
   pstTransaction.addTag("Support", "PST");
 
   try {
