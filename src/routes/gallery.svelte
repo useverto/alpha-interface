@@ -6,15 +6,18 @@
   import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { query } from "../api-client.js";
   import { onMount } from "svelte";
+  
+  import { query } from "../api-client.js";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
+  import { exchangeWallet, pstContract } from "../utils/constants";
+  import Community from "community-js";
 
   if(process.browser && !$loggedIn) goto("/");
 
   let sortingType: string;
-  let tradingPosts: { addr: string, reputation: string, balance: string, stake: string }[] = []
+  let tradingPosts: { addr: string, reputation: number, balance: string, stake: number }[] = []
   let lastCursor = "", hasNext = true, loadedFirstPosts = false, loading = false;
   let y: number, windowHeight: number;
   let element;
@@ -26,7 +29,7 @@
     if(!hasNext) return;
 
     loading = true;
-    let posts: { addr: string, reputation: string, balance: string, stake: string }[] = [];
+    let posts: { addr: string, reputation: number, balance: string, stake: number }[] = [];
 
     const client = new Arweave({
       host: "arweave.net",
@@ -36,7 +39,10 @@
     });
 
     const _posts = (await query({
-      query: galleryQuery
+      query: galleryQuery,
+      variables: {
+          recipients: [exchangeWallet],
+      }
     })).data.transactions;
 
     hasNext = _posts.pageInfo.hasNextPage;
@@ -44,18 +50,65 @@
     for (const post of _posts.edges) {
       let node = post.node;
       const balance = client.ar.winstonToAr(await client.wallets.getBalance(node.owner.address));
+      const stake = await getPostStake(node.owner.address);
+      const timeStaked = await getTimeStaked(node.owner.address);
+
+      let
+        stakeWeighted = await stake * 1/2,
+        timeStakedWeighted = await timeStaked * 1/3,
+        balanceWeighted = parseFloat(await balance) * 1/6;
+
       lastCursor = post.cursor;
       posts.push({
         addr: node.owner.address,
-        "reputation": "",
+        reputation: parseFloat((stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3)),
         balance,
-        "stake": "",
+        stake,
       });
     }
 
     tradingPosts = tradingPosts.concat(posts);
     loadedFirstPosts = true;
     setTimeout(() => loading = false, 400) // wait for animation and latency to complete (needed for the scroll)
+  }
+
+  async function getPostStake (addr: string): Promise<number> {
+    if(!process.browser) return 0;
+
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let community = new Community(client);
+    await community.setCommunityTx(pstContract);
+
+    return await community.getVaultBalance(addr);
+  }
+
+  async function getTimeStaked (addr: string): Promise<number> {
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let community = new Community(client);
+    await community.setCommunityTx(pstContract);
+
+    let currentHeight = (await client.network.getInfo()).height;
+
+    let vaults = (await community.getState()).vault[addr];
+    for (const vault of vaults) {
+      if (vault.end > currentHeight) {
+        return vault.end - vault.start;
+      }
+    }
+
+    return 0;
   }
 
   $: {

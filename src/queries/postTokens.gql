@@ -1,16 +1,18 @@
 query (
   $owners: [String!]
+  $recipients: [String!]
 ) {
   transactions(
     owners: $owners
+    recipients: $recipients
     tags: [
       {
         name: "Exchange",
         values: "Verto"
       }
       {
-        name: "Support",
-        values: "PST"
+        name: "Trading-Post-Genesis", 
+        values: "Genesis" 
       }
     ]
   ) {
