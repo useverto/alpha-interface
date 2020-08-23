@@ -10,6 +10,7 @@
   import { onMount } from "svelte";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
+  import { exchangeWallet } from "../utils/constants";
 
   if(process.browser && !$loggedIn) goto("/");
 
@@ -36,7 +37,10 @@
     });
 
     const _posts = (await query({
-      query: galleryQuery
+      query: galleryQuery,
+      variables: {
+          recipients: [exchangeWallet],
+      }
     })).data.transactions;
 
     hasNext = _posts.pageInfo.hasNextPage;

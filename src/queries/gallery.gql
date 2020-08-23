@@ -1,5 +1,8 @@
-query {
+query (
+  $recipients: [String!]
+) {
   transactions(
+    recipients: $recipients
     tags: [
       { 
         name: "Exchange", 
