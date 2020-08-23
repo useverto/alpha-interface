@@ -13,9 +13,9 @@
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
-  import { findRootNode, createNode, RDTBranchNode } from "trackweave";
+  import { fetchRootNode, createNode, RDTBranchNode } from "trackweave";
   import { getLatestNode } from "../utils/get_latest_node";
-import Transaction from "arweave/node/lib/transaction";
+  import Transaction from "arweave/node/lib/transaction";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -135,6 +135,8 @@ import Transaction from "arweave/node/lib/transaction";
   }
 
   async function confirmTrade () {
+    console.log(selectedPost);
+
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
@@ -156,9 +158,12 @@ import Transaction from "arweave/node/lib/transaction";
     }
 
     node.otherTags = {
-      "Target-Token": ticker + " " + pstTxId,
+      "Exchange": "Verto",
+      "Target-Token": pstTxId,
       "Trade-Ratio": (recieveAmount / sendAmount).toFixed(7),
-      "Trade-Opcode": sendCurrency === "AR" ? "buy" : "sell",
+      "Trade-Opcode": sendCurrency === "AR" ? "Buy" : "Sell",
+      "Buy-For": sendCurrency === "AR" ? sendAmount.toString() : recieveAmount.toString(),
+      "Sell-Qty": sendCurrency === "AR" ? recieveAmount.toString() : sendAmount.toString(),
     };
 
     console.log("Confirmed trade");
@@ -227,10 +232,10 @@ import Transaction from "arweave/node/lib/transaction";
       <p>Trading post</p>
       <select bind:value={selectedPost}>
         {#await posts}
-          <option value="" disabled>Loading...</option>
+          <option disabled>Loading...</option>
         {:then loadedPosts}
           {#if loadedPosts.length === 0}
-            <option value="" disabled>No posts found</option>
+            <option disabled>No posts found</option>
           {/if}
           {#each loadedPosts as post}
             <option value={post} selected={post === selectedPost}>{post}</option>

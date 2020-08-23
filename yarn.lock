@@ -4431,10 +4431,10 @@ tough-cookie@~2.5.0:
     psl "^1.1.28"
     punycode "^2.1.1"
 
-trackweave@^0.1.17:
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/trackweave/-/trackweave-0.1.17.tgz#6f367c7c17162e41d3a557eaa2bebe7472410a0c"
-  integrity sha512-PM0FkvWKsPs50i0a7z4yzGDkApqmud9Wc1t4wHhBfgIrLWfZ4XZPdkdtRBN46gh+oA822i/85IKTRANanIFdzg==
+trackweave@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/trackweave/-/trackweave-0.2.0.tgz#94b157365b152e2d2ae313749fe6b93480fb3927"
+  integrity sha512-EiyKvCvzgTDdhhPBNSeqF4f1gb8H110wk+HaBNKRWRbgmtV7m1h+9h2Xvzp5AaPfUdpUCnXGjmsUH8V24J7Ipg==
   dependencies:
     arql-ops "^1.0.0"
     arweave "^1.8.0"

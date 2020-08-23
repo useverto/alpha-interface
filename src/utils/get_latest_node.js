@@ -1,11 +1,11 @@
 import {
-  findRootNode,
+  fetchRootNode,
   getNode,
   traverseNodes,
 } from "trackweave";
 
 export async function getLatestNode(client, addr) {
-  const root = findRootNode(client, {
+  const root = fetchRootNode(client, {
     walletAddr: addr
   });
 
