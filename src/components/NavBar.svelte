@@ -19,7 +19,10 @@
 
 <svelte:window bind:scrollY={y} />
 <div class="NavBar" class:scrolled={y > 20} class:hero={hero} in:fade={{ duration: 750 }}>
-  <a href={$loggedIn ? "/app" : "/"} class="title"><img src="/logo_light.svg" alt="v" /></a>
+  <a href={$loggedIn ? "/app" : "/"} class="title">
+    <img src="/logo_light.svg" alt="v" />
+    <span class="beta">alpha</span>
+  </a>
   <div class="menu">
     {#if $loggedIn}
       <a href="/trade">Trade</a>
@@ -60,11 +63,20 @@
       margin: 0
       -webkit-tap-highlight-color: transparent
       display: flex
-      align-items: center
+      align-items: start
       transition: all .3s
 
       img
         height: 1em
+
+      span.beta
+        margin-left: 4px
+        font-size: .3em
+        color: #fff
+        padding: 1px 3px
+        background-color: #000
+        border-radius: 2px
+        text-transform: uppercase
 
     &.hero
       a.title
