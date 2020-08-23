@@ -1,7 +1,7 @@
 query {
   transactions(
     tags: [{ 
-      name: "App-Name", 
+      name: "Exchange", 
       values: "Verto" 
     }]
     first: 5

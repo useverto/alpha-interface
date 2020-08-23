@@ -1,13 +1,16 @@
-query {
+query (
+  $recipients: [String!]
+) {
   transactions(
+    recipients: $recipients
     tags: [
       { 
-        name: "App-Name", 
+        name: "Exchange", 
         values: "Verto" 
       }
       { 
         name: "Trading-Post-Genesis", 
-        values: "G" 
+        values: "Genesis" 
       }
     ]
   ) {
