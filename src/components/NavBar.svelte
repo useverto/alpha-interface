@@ -21,7 +21,7 @@
 <div class="NavBar" class:scrolled={y > 20} class:hero={hero} in:fade={{ duration: 750 }}>
   <a href={$loggedIn ? "/app" : "/"} class="title">
     <img src="/logo_light.svg" alt="v" />
-    <span class="beta">beta</span>
+    <span class="beta">alpha</span>
   </a>
   <div class="menu">
     {#if $loggedIn}
