@@ -145,7 +145,6 @@
             <h1><span>[PST]</span>{pst.name}</h1>
             <p><span>ID:</span>{pst.id}</p>
           </div>
-          <h1 class="val">{roundCurrency(0)}<span>Ar</span></h1>
         </a>
       {/each}
     {/await}
