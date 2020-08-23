@@ -13,7 +13,7 @@
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
-  import { fetchRootNode, createNode, RDTBranchNode } from "trackweave";
+  import { fetchRootNode, createNode, getNodeTags } from "trackweave";
   import { getLatestNode } from "../utils/get_latest_node";
   import Transaction from "arweave/node/lib/transaction";
 
@@ -32,6 +32,7 @@
   let posts = getTradingPosts();
   let psts = getSupportedPSTs();
   let balances = getTokenBalances();
+  let exchangeTX, fees;
 
   async function getTradingPosts (): Promise<string[]> {
     if(!process.browser) return [];
@@ -129,14 +130,15 @@
   }
 
   // open confirmation modal
-  function exchange () {
+  async function exchange () {
     if(sendCurrency.toLowerCase() === "ar" && recieveCurrency.toLowerCase() === "ar") return; // don't allow transactions with only ar values
     if(sendCurrency.toLowerCase() === "ar" || recieveCurrency.toLowerCase() === "ar") confirmModalOpened = true;
+    exchangeTX = await createExchangeTx();
+    fees = await getFee(exchangeTX);
+    console.log(fees)
   }
 
-  async function confirmTrade () {
-    console.log(selectedPost);
-
+  async function createExchangeTx (): Promise<Transaction> {
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
@@ -157,6 +159,8 @@
       }
     }
 
+    console.log((recieveAmount / sendAmount).toFixed(7))
+
     node.otherTags = {
       "Exchange": "Verto",
       "Target-Token": pstTxId,
@@ -165,6 +169,31 @@
       "Buy-For": sendCurrency === "AR" ? sendAmount.toString() : recieveAmount.toString(),
       "Sell-Qty": sendCurrency === "AR" ? recieveAmount.toString() : sendAmount.toString(),
     };
+
+    const tags = getNodeTags(node);
+    const tx = await client.createTransaction({
+      target: selectedPost
+    }, JSON.parse($keyfile));
+    
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value);
+    }
+
+    return tx;
+  }
+  
+  async function confirmTrade () {
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    let tx = await createExchangeTx();
+
+    await client.transactions.sign(tx, JSON.parse($keyfile));
+    await client.transactions.post(tx);
 
     console.log("Confirmed trade");
   }
@@ -187,7 +216,7 @@
     }
   }
 
-  async function getFee(tx: Transaction | RDTBranchNode): Promise <number> {
+  async function getFee(tx: Transaction): Promise<number> {
     let fee, txSize, recipient;
     const client = new Arweave({
       host: "arweave.net",
@@ -195,17 +224,10 @@
       protocol: "https",
       timeout: 200000,
     });
-
-    if (tx instanceof Transaction) {
-      // AR Transaction
-      txSize = parseFloat(tx.data_size);
-      recipient = tx.target;
-      fee = await client.transactions.getPrice(txSize, recipient);
-    } else {
-      // TrackWeave PST Transaction
-      //TODO (@t8, @zorbyte): Figure out how to get the fee
-      fee = 1000;
-    }
+    
+    txSize = parseFloat(tx.data_size);
+    recipient = tx.target;
+    fee = await client.transactions.getPrice(txSize, recipient);
 
     return parseFloat(client.ar.winstonToAr(fee));
   }
@@ -324,11 +346,15 @@
     Exchanging {sendAmount} {sendCurrency} for {recieveAmount} {recieveCurrency}
   </p>
   <p style="text-align: center">
-    {#if sendCurrency === "AR"}
-      This action will cost {sendAmount + (sendAmount * 0.0025)} AR
-    {:else}
-      This action will cost {sendAmount} {sendCurrency} + {0.0002} AR
-    {/if}
+    {#await fees}
+      Loading fees...
+    {:then loadedFees}
+      {#if sendCurrency === "AR"}
+        This action will cost {sendAmount + (sendAmount * 0.0025) + loadedFees} AR
+      {:else}
+        This action will cost {sendAmount} {sendCurrency} + {loadedFees} AR
+      {/if}
+    {/await}
   </p>
 </Modal>
 <Footer />

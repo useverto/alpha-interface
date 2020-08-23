@@ -4030,6 +4030,14 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
+"smartweave@https://arweave.net/AM-u4X2po-3Tx7fma3lRonCfLwrjI42IALwDL_YFXBs":
+  version "0.3.2"
+  resolved "https://arweave.net/AM-u4X2po-3Tx7fma3lRonCfLwrjI42IALwDL_YFXBs#b0dfab671e01f51a0f6fcd60d7672203c79b4c2d"
+  dependencies:
+    arweave "^1.7.1"
+    promises-tho "^1.1.0"
+    yargs "^15.3.1"
+
 "smartweave@https://arweave.net/dvJ-z54lonYNfyz0xoicTax3NhbHvB0LqmS90zLBE8c":
   version "0.3.3"
   resolved "https://arweave.net/dvJ-z54lonYNfyz0xoicTax3NhbHvB0LqmS90zLBE8c#72f255fd97aa3a2702925ca14cd74d5a34253d4b"
