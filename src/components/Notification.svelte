@@ -58,7 +58,7 @@
         bottom: .2em
 
     &.error
-      border-color: #ff0000
+      border-color: #FF375D
 
     &.warning
       border-color: #FFD336
@@ -67,7 +67,7 @@
       border-color: #00D46E
 
     &.log
-      border-color: #8338b8
+      border-color: #B075CD
 
     p
       color: #fff
