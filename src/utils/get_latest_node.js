@@ -5,12 +5,12 @@ import {
 } from "trackweave";
 
 export async function getLatestNode(client, addr) {
-  const root = fetchRootNode(client, {
+  const root = await fetchRootNode(client, {
     walletAddr: addr
   });
 
-  const cache = JSON.parse(localStorage.getItem("cache"));
-  const latestHeadId = cache[addr];
+  let cache = JSON.parse(localStorage.getItem("cache"));
+  const latestHeadId = cache && cache[addr];
 
   const entryNode = (latestHeadId
     ? await getNode(client, { root, head: latestHeadId })
@@ -25,7 +25,13 @@ export async function getLatestNode(client, addr) {
 
   const latest = allNodes[allNodes.length - 1];
 
-  cache[addr] = latest.head;
+  if (cache) {
+    cache[addr] = latest.head;
+  } else {
+    cache = {
+      [addr]: latest.head
+    }
+  }
   localStorage.setItem("cache", JSON.stringify(cache));
 
   return latest;
