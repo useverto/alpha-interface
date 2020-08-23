@@ -31,7 +31,7 @@
     {#if hover}
       <img class="notification-icon" src={closeIcon} alt="close-notification" in:fade={{ duration: 300 }}>
     {:else}
-      <img class="notification-icon" src={notificationClass === "error" ? errorIcon : (notification === "warning" ? notificationClass : (notificationClass === "success" ? successIcon : infoIcon))} alt={notificationClass}  in:fade={{ duration: 300 }}>
+      <img class="notification-icon" src={notificationClass === "error" ? errorIcon : (notificationClass === "warning" ? warningIcon : (notificationClass === "success" ? successIcon : infoIcon))} alt={notificationClass}  in:fade={{ duration: 300 }}>
     {/if}
     <div class="notification-content">
       <h1 class={notificationClass}>[{$notification.title}]</h1>
