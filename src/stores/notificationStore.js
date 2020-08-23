@@ -7,16 +7,18 @@ function createNotificationStore () {
   set(null);
 
   return {
-    notify (title, description, type) {
-      if(typeof type !== "number" || type > 2) return;
-      set({ title, description, type });
+    notify (title, description, type, timeout) {
+      if(typeof type !== "number" || type > 3) return;
+      set({ title, description, type, timeout });
     },
-    subscribe
+    subscribe,
+    remove: () => set(null)
   }
 }
 
 export const NotificationType = {
   error: 0,
   warning: 1,
-  log: 2
+  log: 2,
+  success: 3
 }
