@@ -192,11 +192,8 @@
       }
     })).data.transactions.edges;
 
-    console.log(supported)
-
     // @ts-ignore
     const txData = JSON.parse(await client.transactions.getData(supported[0].node.id, {decode: true, string: true}));
-    console.log("OSCAR!!!", txData);
     for (let x = 0; x < txData.acceptedTokens.length; x++) {
       // @ts-ignore
       let pstInfo = JSON.parse(await client.transactions.getData(txData.acceptedTokens[x], {decode: true, string: true}));
@@ -336,7 +333,7 @@
           {:then loadedTokens} 
             <tr>
               <th>Token</th>
-              <th>Amount</th>
+              <th>Ticker</th>
               <th>ID</th>
             </tr>
             {#if loadedTokens.length === 0}
