@@ -10,9 +10,10 @@
 
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
+  import postTokensQuery from "../queries/postTokens.gql";
   import Arweave from "arweave";
   import Community from "community-js";
-  import { pstContract } from "../utils/constants";
+  import { pstContract, exchangeWallet } from "../utils/constants";
 
   let activeMenu: string = "transactions";
   let addr: string = "";
@@ -129,8 +130,16 @@
     let community = new Community(client);
     await community.setCommunityTx(pstContract);
 
-    // TODO: (@t8) Get time staked and return here
-    return 100
+    let currentHeight = (await client.network.getInfo()).height;
+
+    let vaults = (await community.getState()).vault[addr];
+    for (const vault of vaults) {
+      if (vault.end > currentHeight) {
+        return vault.end - vault.start;
+      }
+    }
+
+    return 0;
   }
 
   let balance = getPostBalance();
@@ -151,15 +160,67 @@
   let reputation = getReputation();
 
   async function getReputation (): Promise<number> {
-    // Reputation determined from this diagram:
-    // https://github.com/useverto/trading-post/blob/master/diagrams/reputation_calculation/reputation_calculation.png
+    // Reputation determined from vote weight
 
-    let
-      stakeWeighted = await stake * 1/2,
-      timeStakedWeighted = await timeStaked * 1/3,
-      balanceWeighted = parseFloat(await balance) * 1/6;
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let community = new Community(client);
+    await community.setCommunityTx(pstContract); 
+
+    return 10;
+    // // Reputation determined from this diagram:
+    // // https://github.com/useverto/trading-post/blob/master/diagrams/reputation_calculation/reputation_calculation.png
+
+    // let
+    //   stakeWeighted = await stake * 1/2,
+    //   timeStakedWeighted = await timeStaked * 1/3,
+    //   balanceWeighted = parseFloat(await balance) * 1/6;
     
-    return parseFloat((stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3));
+    // return parseFloat((stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3));
+  }
+
+  let supportedTokens = getSupportedTokens();
+
+  async function getSupportedTokens(): Promise<{ id: string, name: string, ticker: string }[]> {
+    if(!process.browser) return [];
+
+    let tokenList = [];
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    const supported = (await query({
+      query: postTokensQuery,
+      variables: {
+        owners: [addr],
+        recipients: [exchangeWallet]
+      }
+    })).data.transactions.edges;
+
+    console.log(supported)
+
+    // @ts-ignore
+    const txData = JSON.parse(await client.transactions.getData(supported[0].node.id, {decode: true, string: true}));
+    console.log("OSCAR!!!", txData);
+    for (let x = 0; x < txData.acceptedTokens.length; x++) {
+      // @ts-ignore
+      let pstInfo = JSON.parse(await client.transactions.getData(txData.acceptedTokens[x], {decode: true, string: true}));
+      tokenList.push({
+        id: txData.acceptedTokens[x],
+        name: pstInfo.name,
+        ticker: pstInfo.ticker
+      })
+    }
+    
+    return tokenList;
   }
 
 </script>
@@ -210,6 +271,7 @@
     <div class="menu">
       <button class:active={activeMenu === "transactions"} on:click={() => activeMenu = "transactions"}>Transactions</button>
       <button class:active={activeMenu === "assets"} on:click={() => activeMenu = "assets"}>Assets</button>
+      <button class:active={activeMenu === "supported"} on:click={() => activeMenu = "supported"}>Suppported Assets</button>
       <div class="trade">
         <Button href="/trade?post={addr}" style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Trade now</Button>
       </div>
@@ -219,36 +281,31 @@
         <table in:fade={{ duration: 400 }}>
           <tr>
             <th>Token</th>
-            <th>Dist.</th>
             <th>Amount</th>
-            <th>Value (AR)</th>
+            <th>ID</th>
           </tr>
           <tr>
-            <td style="width: 45%;">nest.land token</td>
-            <td>49.43%</td>
+            <td>nest.land token</td>
             <td>0.00696969 <span class="currency">egg</span></td>
-            <td>1.52317899</td>
+            <td>1234567890123456789012345</td>
           </tr>
           <tr>
-            <td style="width: 45%;">Light Bulb Coin</td>
-            <td>26.86%</td>
+            <td>Light Bulb Coin</td>
             <td>0.00413056 <span class="currency">lum</span></td>
-            <td>0.82853913</td>
+            <td>1234567890123456789012345</td>
           </tr>
           <tr>
-            <td style="width: 45%;">SoundWave Inc.</td>
-            <td>16.58%</td>
+            <td>SoundWave Inc.</td>
             <td>0.00505455 <span class="currency">wav</span></td>
-            <td>0.51124595</td>
+            <td>1234567890123456789012345</td>
           </tr>
           <tr>
-            <td style="width: 45%;">Reddit Coin</td>
-            <td>07.12%</td>
+            <td>Reddit Coin</td>
             <td>0.00240055 <span class="currency">red</span></td>
-            <td>0.21954591</td>
+            <td>1234567890123456789012345</td>
           </tr>
         </table>
-      {:else}
+      {:else if activeMenu === "transactions"}
         <table in:fade={{ duration: 400 }}>
           {#await transactions}
             {#each Array(5) as _}
@@ -275,6 +332,34 @@
                   <span class="status {tx.status}"></span>
                 </td>
                 <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+              </tr>
+            {/each}
+          {/await}
+        </table>
+      {:else if activeMenu === "supported"}
+        <table in:fade={{ duration: 400 }}>
+          {#await supportedTokens}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 30%"><SkeletonLoading style={"width: 100%"} /></td>
+                <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+                <td style="width: 50%"><SkeletonLoading style={"width: 100%"} /></td>
+              </tr>
+            {/each}
+          {:then loadedTokens} 
+            <tr>
+              <th>Token</th>
+              <th>Amount</th>
+              <th>ID</th>
+            </tr>
+            {#if loadedTokens.length === 0}
+              <p style="position: absolute; left: 50%; transform: translateX(-50%);">No transactions found</p>
+            {/if}
+            {#each loadedTokens as token}
+              <tr>
+                <td>{token.name}</td>
+                <td>{token.ticker}</td>
+                <td>{token.id}</td>
               </tr>
             {/each}
           {/await}

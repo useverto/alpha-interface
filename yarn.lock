@@ -1603,10 +1603,10 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-community-js@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.0.7.tgz#d9d70009c802788c6360aa77579b042b5596c9f2"
-  integrity sha512-TiCVZKkp7o/iW2vRZlfOGxyixAJeWFT6ujXbiUyimXBvEs3frMOJ9HOO2YC0xlXPYMjR+gNX5M4kUAEXDMsNmQ==
+community-js@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.0.9.tgz#2b1c75a4fa40488a1e8ba079a59727d178fd688a"
+  integrity sha512-yN6v3o52/yJjG+C9vqOmLptJ9Q+BElRhWT5Pcpheh16YSKXB1TWJHnrJvD9JMjxtFgNkAt4KF8WNV4URSCrSNA==
   dependencies:
     arweave "^1.9.1"
     smartweave "https://arweave.net/dvJ-z54lonYNfyz0xoicTax3NhbHvB0LqmS90zLBE8c"
