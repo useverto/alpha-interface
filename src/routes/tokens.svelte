@@ -171,19 +171,27 @@
       justify-content: space-between
       margin-bottom: 2em
 
+      @media screen and (max-width: 720px)
+        display: block
+
       h1.title
         margin: 0
 
+        @media screen and (max-width: 720px)
+          font-size: 1.35em
+          margin-bottom: .3em
+
     .tokens-content
+      @media screen and (max-width: 720px)
+        width: 100vw - $mobileSidePadding * 2
+
       a.token
         $sidePadding: 2.3em
-        display: block
         padding: 1em $sidePadding
         background-color: #161616
         text-decoration: none
         color: #fff
         display: flex
-        // justify-content: space-between
         align-items: center
         border-radius: 5px
         margin-bottom: 2.8em
