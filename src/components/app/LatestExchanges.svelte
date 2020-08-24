@@ -12,10 +12,10 @@
 
   let exchanges = getLatestExchanges();
 
-  async function getLatestExchanges (): Promise<{ timestamp: string, type: string, ar: string, pst: string, status: string }[]> {
+  async function getLatestExchanges (): Promise<{ id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[]> {
     if(!process.browser) return [];
     
-    let exchanges: { timestamp: string, type: string, ar: string, pst: string, status: string }[] = [];
+    let exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
     
     const txs = (await query({
       query: exchangesQuery,
@@ -36,14 +36,60 @@
         const token = psts.find(pst => pst.id === tokenId)?.ticker;
 
         exchanges.push({
+          id: node.id,
           timestamp: moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss"),
           type: tradeType,
           ar: arVal + " AR",
           pst: pstVal + " " + token,
-          status: "pending"
+          status: "pending",
+          duration: "not completed"
         })
       }
     })
+
+    for (let i = 0; i < exchanges.length; i++) {
+      console.log(exchanges[i].timestamp);
+      const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
+      
+      const match = (await query({
+        query: `
+          query {
+            transactions(
+              tags: [
+                {
+                  name: "Exchange",
+                  values: "Verto"
+                },
+                {
+                  name: "${inverseTradeType}ing-Tx",
+                  values: "${exchanges[i].id}"
+                }
+              ]
+            ) {
+              edges {
+                node {
+                  block {
+                    timestamp
+                  }
+                }
+              }
+            }
+          }
+        `,
+      })).data.transactions.edges;
+      
+      if (match[0]) {
+        exchanges[i].status = "success";
+
+        const start = moment(exchanges[i].timestamp);
+        const end = moment(
+          moment.unix(match[0].node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
+        );
+        const duration = moment.duration(end.diff(start));
+
+        exchanges[i].duration = duration.humanize();
+      }
+    }
 
     return exchanges;
   }
@@ -123,7 +169,7 @@
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
           <td style="width: 45%"><span class="direction">{exchange.type}</span> {exchange.pst} {"->"} {exchange.ar} <span class="status {exchange.status}"></span></td>
-          <td style="text-transform: uppercase">4hrs 20min</td>
+          <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
         <tr>
       </tr>

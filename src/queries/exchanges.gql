@@ -1,4 +1,3 @@
-# TODO(@johnletey): Figure out the other query tags
 query (
   $num: Int
 ) {
@@ -13,6 +12,7 @@ query (
   ) {
     edges {
       node {
+        id
         block {
           timestamp
         }
