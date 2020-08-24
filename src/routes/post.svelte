@@ -252,7 +252,7 @@
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
-      <h1>{addr}</h1>
+      <h1 class="address">{addr}</h1>
     </div>
     <div class="short-cell">
       {#await reputation}
@@ -388,9 +388,13 @@
 <style lang="sass">
 
   @import "../styles/tables.sass"
+  @import "../styles/general.sass"
 
   .post
-    padding: 4.4em 15vw 3em
+    @include page
+
+    @media screen and (max-width: 720px)
+      padding-top: 2em
 
     .post-info
       display: flex
@@ -420,9 +424,37 @@
         font-size: 1.25em
         margin: 0
 
+      &.big
+        h1
+          font-size: 2em
+
+      h1
         span.currency
           font-size: .6em
           text-transform: uppercase
+
+        @media screen and (max-width: 720px)
+          white-space: nowrap
+          overflow: hidden
+          position: relative
+          transition: font-size .3s
+
+          &::after
+            content: ""
+            position: absolute
+            top: 0
+            bottom: 0
+            right: 0
+            width: 1px
+            box-shadow: -3px 0px 20px 20px #fff
+            background-color: #fff
+            transition: opacity .3s
+
+          &:hover
+            font-size: .65em
+
+            &::after
+              opacity: 0
 
       p
         color: rgba(#000, .3)
@@ -431,12 +463,13 @@
         margin: 0 0 .8em 0
         text-transform: uppercase
 
-      &.big
-        h1
-          font-size: 2em
-
     .information
       @include table
+
+      .content
+        @media screen and (max-width: 720px)
+          width: 100vw - $mobileSidePadding
+          overflow-x: auto
 
       a.view-all
         display: block
@@ -473,9 +506,8 @@
           cursor: pointer
 
           @media screen and (max-width: 720px)
-            padding:
-              left: 0
-              right: 0
+            padding: .18em .14em
+            font-size: .75em
 
           &::after
             content: ""

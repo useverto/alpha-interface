@@ -106,9 +106,10 @@
 <style lang="sass">
 
   @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
 
   .all-exchanges
-    padding: 3em 15vw
+    @include page
     @include table 
 
     .pagination

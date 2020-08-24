@@ -351,10 +351,14 @@
 <style lang="sass">
 
   @import "../styles/tables.sass"
+  @import "../styles/general.sass"
 
   .trade
     @include table
-    padding: 4em 15vw 3em
+    @include page
+
+    @media screen and (max-width: 720px)
+      padding-top: 2em
 
     table
       td:last-child, th:last-child
@@ -458,11 +462,17 @@
             padding: 0 .5em
             color: #000
 
+            @media screen and (max-width: 720px)
+              width: 62%
+
           select
             width: 20%
             height: 100%
-            border-radius: 0  
+            border-radius: 0
             text-transform: uppercase
+
+            @media screen and (max-width: 720px)
+              width: 38%
 
     select
       $sidePadding: .65em

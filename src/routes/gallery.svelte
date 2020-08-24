@@ -172,8 +172,13 @@
 
 <style lang="sass">
 
+  @import "../styles/general.sass"
+
   .gallery
-    padding: 4.4em 15vw 3em
+    @include page
+
+    @media screen and (max-width: 720px)
+      padding-top: 2em
 
     .gallery-head
       display: flex
