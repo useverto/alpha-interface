@@ -158,37 +158,48 @@
 
 <style lang="sass">
 
+  @import "../styles/general.sass"
+
   .tokens
-    padding: 4.4em 15vw 3em
+    @include page
 
     @media screen and (max-width: 720px)
-      padding:
-        left: 10vw
-        right: 10vw
-        top: 2em
+      padding-top: 2em
 
     .tokens-head
       display: flex
       justify-content: space-between
       margin-bottom: 2em
 
+      @media screen and (max-width: 720px)
+        display: block
+
       h1.title
         margin: 0
 
+        @media screen and (max-width: 720px)
+          font-size: 1.35em
+          margin-bottom: .3em
+
     .tokens-content
+      @media screen and (max-width: 720px)
+        width: 100vw - $mobileSidePadding * 2
+
       a.token
         $sidePadding: 2.3em
-        display: block
         padding: 1em $sidePadding
         background-color: #161616
         text-decoration: none
         color: #fff
         display: flex
-        // justify-content: space-between
         align-items: center
         border-radius: 5px
         margin-bottom: 2.8em
         transition: all .3s
+
+        @media screen and (max-width: 720px)
+          padding: 1em 1.1em
+          display: block
 
         &:last-child
           margin-bottom: 0
@@ -209,8 +220,11 @@
             @media screen and (max-width: 1500px)
               font-size: 2.87em
 
+            @media screen and (max-width: 720px)
+              font-size: 2.1em
+
           &.val
-            margin-left: auto;
+            margin-left: auto
             font-size: 1.9em
             font-weight: 400
 
@@ -223,6 +237,10 @@
 
         .info
           margin-left: 2em
+
+          @media screen and (max-width: 720px)
+            margin-left: 0
+
           h1
             font-size: 1.5em
             margin-bottom: .3em

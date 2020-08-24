@@ -388,16 +388,13 @@
 <style lang="sass">
 
   @import "../styles/tables.sass"
+  @import "../styles/general.sass"
 
   .post
-    padding: 4.4em 15vw 3em
+    @include page
 
     @media screen and (max-width: 720px)
-      overflow: hidden
-      padding:
-        left: 10vw
-        right: 10vw
-        top: 2em
+      padding-top: 2em
 
     .post-info
       display: flex
@@ -469,6 +466,11 @@
     .information
       @include table
 
+      .content
+        @media screen and (max-width: 720px)
+          width: 100vw - $mobileSidePadding
+          overflow-x: auto
+
       a.view-all
         display: block
         text-align: center
@@ -504,7 +506,7 @@
           cursor: pointer
 
           @media screen and (max-width: 720px)
-            padding: .18em 0
+            padding: .18em .14em
             font-size: .75em
 
           &::after
