@@ -8,7 +8,11 @@ query {
   ) {
     edges {
       node {
-        id
+        id,
+        tags {
+          name,
+          value
+        },
         quantity {
           ar
         }
