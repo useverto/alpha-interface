@@ -12,12 +12,14 @@
   import { query } from "../api-client";
   import galleryQuery from "../queries/gallery.gql";
   import tokensQuery from "../queries/tokens.gql";
+  import postTokensQuery from "../queries/postTokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
   import { fetchRootNode, createNode, getNodeTags } from "trackweave";
   import { getLatestNode } from "../utils/get_latest_node";
   import Transaction from "arweave/node/lib/transaction";
   import { notification, NotificationType } from "../stores/notificationStore.js";
+  import { exchangeWallet } from "../utils/constants";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -32,7 +34,8 @@
   }
 
   let posts = getTradingPosts();
-  let psts = getSupportedPSTs();
+  let psts = getExchangeSupportedTokens();
+  let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
   let exchangeTX, fees;
 
@@ -55,7 +58,7 @@
     return posts;
   }
 
-  async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
+  async function getExchangeSupportedTokens (): Promise<{ id: string, name: string, ticker: string }[]> {
     if(!process.browser) return [];
 
     let psts: { id: string, name: string, ticker: string }[] = [];
@@ -98,6 +101,42 @@
     }
 
     return psts;
+  }
+
+  async function getTradingPostSupportedTokens(): Promise<{ id: string, name: string, ticker: string }[]> {
+    if(!process.browser) return [];
+
+    let tokenList = [];
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    await posts;
+
+    const supported = (await query({
+      query: postTokensQuery,
+      variables: {
+        owners: [selectedPost],
+        recipients: [exchangeWallet]
+      }
+    })).data.transactions.edges;
+
+    // @ts-ignore
+    const txData = JSON.parse(await client.transactions.getData(supported[0].node.id, {decode: true, string: true}));
+    for (let x = 0; x < txData.acceptedTokens.length; x++) {
+      // @ts-ignore
+      let pstInfo = JSON.parse(await client.transactions.getData(txData.acceptedTokens[x], {decode: true, string: true}));
+      tokenList.push({
+        id: txData.acceptedTokens[x],
+        name: pstInfo.name,
+        ticker: pstInfo.ticker
+      })
+    }
+    
+    return tokenList;
   }
 
   async function getTokenBalances() {
@@ -255,7 +294,7 @@
     </div>
     <div class="recommended-post">
       <p>Trading post</p>
-      <select bind:value={selectedPost}>
+      <select bind:value={selectedPost} on:change={() => {supportedPSTs = getTradingPostSupportedTokens()}}>
         {#await posts}
           <option disabled>Loading...</option>
         {:then loadedPosts}
@@ -300,7 +339,7 @@
         <input type="number" bind:value={sendAmount} min={0} />
         <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
           <option value="AR">AR</option>
-          {#await psts}
+          {#await supportedPSTs}
             <option disabled>Loading...</option>
           {:then loadedPsts}
             {#each loadedPsts as pst}
@@ -314,7 +353,7 @@
         <input type="number" bind:value={recieveAmount} min={0} />
         <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
           <option value="AR">AR</option>
-          {#await psts}
+          {#await supportedPSTs}
             <option disabled>Loading...</option>
           {:then loadedPsts}
             {#if loadedPsts.length !== 0}
