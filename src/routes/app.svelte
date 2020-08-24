@@ -112,16 +112,16 @@
 <style lang="sass">
 
   @import "../styles/tables.sass"
+  @import "../styles/general.sass"
 
   .dashboard
-    padding: 1em 15vw 3em
+    @include page
     @include table
 
     @media screen and (max-width: 720px)
-      padding:
-        left: 10vw
-        right: 10vw
-        top: 2em
+      padding-top: 2em
+      width: 100vw - $mobileSidePadding
+      overflow-x: auto
 
     .section
       padding-bottom: 2.5em
@@ -157,6 +157,9 @@
         color: #000
         font-weight: 400
         margin: .14em 0
+
+      @media screen and (max-width: 720px)
+        padding-top: .65em !important
 
     h1.title
       font-size: 2.3em

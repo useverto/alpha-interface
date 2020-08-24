@@ -388,16 +388,14 @@
 <style lang="sass">
 
   @import "../styles/tables.sass"
+  @import "../styles/general.sass"
 
   .post
-    padding: 4.4em 15vw 3em
+    @include page
 
     @media screen and (max-width: 720px)
       overflow: hidden
-      padding:
-        left: 10vw
-        right: 10vw
-        top: 2em
+      padding-top: 2em
 
     .post-info
       display: flex
