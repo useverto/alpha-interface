@@ -1,5 +1,6 @@
 <script lang="typescript">
 
+  import { goto } from "@sapper/app";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import { balance, address, keyfile } from "../stores/keyfileStore.js";
@@ -16,6 +17,7 @@
   import { fetchRootNode, createNode, getNodeTags } from "trackweave";
   import { getLatestNode } from "../utils/get_latest_node";
   import Transaction from "arweave/node/lib/transaction";
+  import { notification, NotificationType } from "../stores/notificationStore.js";
 
   let selectedPost;
   let sendAmount: number = 1;
@@ -195,7 +197,8 @@
     await client.transactions.sign(tx, JSON.parse($keyfile));
     await client.transactions.post(tx);
 
-    console.log("Confirmed trade");
+    notification.notify("Sent", "We're processing you're trade now! This may take a few minutes.", NotificationType.success, 50000);
+    goto("/app");
   }
 
   function cancelTrade () {
