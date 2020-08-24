@@ -40,6 +40,9 @@
     width: 80%
     border-top: 5px solid black
     margin: 0 auto
+
+    @media screen and (max-width: 720px)
+      margin-bottom: 4em
   
     .FooterContent
       margin: 30px auto

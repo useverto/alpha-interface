@@ -51,6 +51,12 @@
   .dashboard
     padding: 1em 15vw 3em
 
+    @media screen and (max-width: 720px)
+      padding:
+        left: 10vw
+        right: 10vw
+        top: 2em
+
     .section
       padding-bottom: 2.5em
 

@@ -175,6 +175,12 @@
   .gallery
     padding: 4.4em 15vw 3em
 
+    @media screen and (max-width: 720px)
+      padding:
+        left: 10vw
+        right: 10vw
+        top: 2em
+
     .gallery-head
       display: flex
       justify-content: space-between
