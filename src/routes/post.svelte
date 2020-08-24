@@ -450,12 +450,13 @@
             width: 1px
             box-shadow: -3px 0px 20px 20px #fff
             background-color: #fff
+            transition: opacity .3s
 
           &:hover
             font-size: .65em
 
             &::after
-              display: none
+              opacity: 0
 
       p
         color: rgba(#000, .3)
@@ -502,9 +503,8 @@
           cursor: pointer
 
           @media screen and (max-width: 720px)
-            padding:
-              left: 0
-              right: 0
+            padding: .18em 0
+            font-size: .75em
 
           &::after
             content: ""
