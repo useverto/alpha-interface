@@ -68,7 +68,7 @@
 <div class="Login">
   <div class="instructions">
     <div class="content">
-      <h1>Sign in to <span><a href="/">Verto</a></span></h1>
+      <h1>Sign in to <span class="verto-name"><a href="/">Verto</a></span><span class="beta">alpha</span></h1>
       <p>To sign in, just drag and drop your Arweave Keyfile on this page. <br><br>If you don’t yet have a keyfile, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave Wallet</a>.</p>
       <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
@@ -161,13 +161,23 @@
           font-size: 2.5em
           margin-bottom: 1.8em
 
-          span
+          span.verto-name
             background: linear-gradient(138.37deg, #E698E8 14.46%, #8D5FBC 85.54%)
             -webkit-background-clip: text
             -webkit-text-fill-color: transparent
 
             a
               text-decoration: none
+
+          span.beta
+            background-color: #fff
+            font-size: .4em
+            text-transform: uppercase
+            padding: .13em .38em
+            border-radius: 4px
+            color: #000
+            vertical-align: top
+            margin-left: .24em
 
         p
           font-size: 1.4em
