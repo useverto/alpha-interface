@@ -197,7 +197,7 @@
     await client.transactions.sign(tx, JSON.parse($keyfile));
     await client.transactions.post(tx);
 
-    notification.notify("Sent", "We're processing you're trade now! This may take a few minutes.", NotificationType.success, 50000);
+    notification.notify("Sent", "We're processing you're trade now! This may take a few minutes.", NotificationType.success, 5000);
     goto("/app");
   }
 
