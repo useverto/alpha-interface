@@ -48,7 +48,6 @@
     })
 
     for (let i = 0; i < exchanges.length; i++) {
-      console.log(exchanges[i].timestamp);
       const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
       
       const match = (await query({
