@@ -2,6 +2,7 @@
 
   import { fade } from "svelte/transition";
   import { loggedIn, logOut } from "../stores/keyfileStore.js";
+  import { notification, NotificationType } from "../stores/notificationStore.js";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";
@@ -19,6 +20,7 @@
     if(e !== undefined && e.preventDefault) e.preventDefault();
     logOut();
     goto("/");
+    notification.notify("Logged out", "You've successfully logged out.", NotificationType.log, 5000);
   }
 
   function mobileLogOut (e: MouseEvent) {

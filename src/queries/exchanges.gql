@@ -1,0 +1,28 @@
+query (
+  $owners: [String!]
+  $num: Int
+) {
+  transactions(
+    owners: $owners
+    tags: [
+      {
+        name: "Exchange",
+        values: "Verto"
+      }
+    ]
+    first: $num
+  ) {
+    edges {
+      node {
+        id
+        block {
+          timestamp
+        }
+        tags {
+          name
+          value
+        }
+      }
+    }
+  }
+}
