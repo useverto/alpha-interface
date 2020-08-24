@@ -255,6 +255,9 @@
           display: inline-block
           margin: 0
 
+          @media screen and (max-width: 1500px)
+            font-size: 2.05em
+
         .post-info
           h1
             font-size: 1.5em
@@ -262,6 +265,9 @@
               bottom: .3em
             font-weight: 400
             color: #fff
+
+            @media screen and (max-width: 1500px)
+              font-size: 1.4em
 
           .other-info
             display: flex
@@ -271,6 +277,9 @@
               margin: 0
               font-size: 1.05em
               color: #fff
+
+              @media screen and (max-width: 1500px)
+                font-size: .95em
 
               &:first-child
                 margin-right: 2.5em
