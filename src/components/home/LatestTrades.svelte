@@ -36,26 +36,29 @@
       variables: null
     })).data.transactions.edges;
 
-    _txs.map(async ({ node }) => {
-      console.log(node);
-      let 
-        amount = node.quantity.ar, 
-        token = "AR";
-      for (let i = 0; i < node.tags.length; i++) {
-        if (node.tags[i].name === "Contract") {
-          let tx = await client.transactions.getData(node.tags[i].value, {decode: true, string: true});
-          // @ts-ignore
-          token = JSON.parse(tx).ticker;
-        } else if (node.tags[i].name === "Input") {
-          amount = JSON.parse(node.tags[i].value).qty;
-        }
-      }
+    _txs.map(({ node }) => {
+      let amountTag = node.tags.find(tag => tag.name === "Input")?.value;
+      let amount = amountTag ? JSON.parse(amountTag).qty : node.quantity.ar;
+      let contract = node.tags.find(tag => tag.name === "Contract")?.value;
+
       txs.push({
         id: node.id,
         amount: amount,
-        pst: token
+        pst: contract || "AR"
       });
     })
+
+    for (let i = 0; i < txs.length; i++) {
+      if (txs[i].pst !== "AR") {
+        const contractData = JSON.parse(
+          (await client.transactions.getData(
+            txs[i].pst,
+            {decode: true, string: true},
+          )).toString()
+        );
+        txs[i].pst = contractData.ticker;
+      }
+    }
 
     return txs;
   }
