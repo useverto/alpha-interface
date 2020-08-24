@@ -109,7 +109,7 @@
 
     transactions = transactions.concat(_transactions);
     loadedTransactions = true;
-    setTimeout(() => loading = false, 400) // wait for animation and latency to complete (needed for the scroll)
+    setTimeout(() => loading = false, 400); // wait for animation and latency to complete (needed for the scroll)
   }
 
   $: {
