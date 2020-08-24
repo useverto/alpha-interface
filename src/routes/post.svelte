@@ -394,7 +394,6 @@
     @include page
 
     @media screen and (max-width: 720px)
-      overflow: hidden
       padding-top: 2em
 
     .post-info
@@ -467,6 +466,11 @@
     .information
       @include table
 
+      .content
+        @media screen and (max-width: 720px)
+          width: 100vw - $mobileSidePadding
+          overflow-x: auto
+
       a.view-all
         display: block
         text-align: center
@@ -502,7 +506,7 @@
           cursor: pointer
 
           @media screen and (max-width: 720px)
-            padding: .18em 0
+            padding: .18em .14em
             font-size: .75em
 
           &::after

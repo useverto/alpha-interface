@@ -197,6 +197,10 @@
         margin-bottom: 2.8em
         transition: all .3s
 
+        @media screen and (max-width: 720px)
+          padding: 1em 1.1em
+          display: block
+
         &:last-child
           margin-bottom: 0
 
@@ -216,8 +220,11 @@
             @media screen and (max-width: 1500px)
               font-size: 2.87em
 
+            @media screen and (max-width: 720px)
+              font-size: 2.1em
+
           &.val
-            margin-left: auto;
+            margin-left: auto
             font-size: 1.9em
             font-weight: 400
 
@@ -230,6 +237,10 @@
 
         .info
           margin-left: 2em
+
+          @media screen and (max-width: 720px)
+            margin-left: 0
+
           h1
             font-size: 1.5em
             margin-bottom: .3em
