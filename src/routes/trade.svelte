@@ -147,7 +147,7 @@
       timeout: 200000,
     });
 
-    const latestNode = getLatestNode(client, selectedPost);
+    const latestNode = await getLatestNode(client, selectedPost);
     // @ts-ignore
     const node = createNode(latestNode, false);
 
