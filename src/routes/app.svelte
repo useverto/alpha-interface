@@ -121,6 +121,7 @@
       padding:
         left: 10vw
         right: 10vw
+        top: 2em
 
     .section
       padding-bottom: 2.5em

@@ -119,6 +119,7 @@
       padding:
         left: 10vw
         right: 10vw
+        top: 2em
 
     table
       td:last-child, th:last-child
@@ -222,10 +223,16 @@
             padding: 0 .5em
             color: #000
 
+            @media screen and (max-width: 720px)
+              width: 62%
+
           select
             width: 20%
             height: 100%
-            border-radius: 0  
+            border-radius: 0
+
+            @media screen and (max-width: 720px)
+              width: 38%
 
     select
       $sidePadding: .65em

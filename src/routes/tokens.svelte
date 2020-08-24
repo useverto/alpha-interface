@@ -165,6 +165,7 @@
       padding:
         left: 10vw
         right: 10vw
+        top: 2em
 
     .tokens-head
       display: flex

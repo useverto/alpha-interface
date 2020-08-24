@@ -397,6 +397,7 @@
       padding:
         left: 10vw
         right: 10vw
+        top: 2em
 
     .post-info
       display: flex
