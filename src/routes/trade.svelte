@@ -271,8 +271,8 @@
       {#await balances}
         {#each Array(5) as _}
           <tr>
-            <th><SkeletonLoading style="width: 75px" /></th>
-            <th><SkeletonLoading style="width: 75px" /></th>
+            <th style="width: 80%"><SkeletonLoading style="width: 100%" /></th>
+            <th style="width: 20%"><SkeletonLoading style="width: 100%" /></th>
           </tr>
         {/each}
       {:then loadedBalances} 
