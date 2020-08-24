@@ -176,10 +176,13 @@
   // open confirmation modal
   async function exchange () {
     if(sendCurrency.toLowerCase() === "ar" && recieveCurrency.toLowerCase() === "ar") return; // don't allow transactions with only ar values
+    if ($address === selectedPost) {
+      notification.notify("Error", "You can not make trades from your own trading post!", NotificationType.error, 5000);
+      return;
+    }
     if(sendCurrency.toLowerCase() === "ar" || recieveCurrency.toLowerCase() === "ar") confirmModalOpened = true;
     exchangeTX = await createExchangeTx();
     fees = await getFee(exchangeTX);
-    console.log(fees)
   }
 
   async function createExchangeTx (): Promise<Transaction> {
@@ -226,7 +229,6 @@
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value);
     }
-
     return tx;
   }
   
