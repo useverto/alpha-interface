@@ -1,6 +1,7 @@
 query (
   $owners: [String!]
   $num: Int
+  $cursor: String
 ) {
   transactions(
     owners: $owners
@@ -11,8 +12,13 @@ query (
       }
     ]
     first: $num
+    after: $cursor
   ) {
+    pageInfo {
+      hasNextPage
+    }
     edges {
+      cursor
       node {
         id
         block {

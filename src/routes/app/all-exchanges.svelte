@@ -4,7 +4,7 @@
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import { fade } from "svelte/transition";
-
+  import { onMount } from "svelte";
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
   import { address } from "../../stores/keyfileStore";
@@ -13,24 +13,38 @@
   import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
+  import Loading from "../../components/Loading.svelte";
 
-  let exchanges = getLatestExchanges();
+  let client, element, windowHeight, y;
+  let exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
+  let lastCursor = "";
+  let hasNext = true, loadedExchanges = false, loading = false;
 
-  async function getLatestExchanges (): Promise<{ id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[]> {
-    if(!process.browser) return [];
+  onMount(() => loadMoreExchanges());
+
+  async function loadMoreExchanges () {
+    if(!process.browser) return;
+    if(!hasNext) return;
     
-    let exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
-    
-    const txs = (await query({
-      query: exchangesQuery,
-      variables: {
-        owners: [$address]
-      }
-    })).data.transactions.edges;
+    let _exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
+    loading = true;
+
+    const
+      txsQuery = (await query({
+        query: exchangesQuery,
+        variables: {
+          owners: [$address],
+          cursor: lastCursor
+        }
+      })).data.transactions,
+      txs = txsQuery.edges;
+
+    hasNext = txsQuery.pageInfo.hasNextPage;
     
     const psts = await getSupportedPSTs();
 
-    txs.map(({ node }) => {
+    txs.map(({ node, cursor }) => {
+      lastCursor = cursor;
       const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
       if (tradeType) {
         const arVal = node.tags.find(tag => tag.name === "Buy-For")?.value;
@@ -39,7 +53,7 @@
         const tokenId = node.tags.find(tag => tag.name === "Target-Token")?.value;
         const token = psts.find(pst => pst.id === tokenId)?.ticker;
 
-        exchanges.push({
+        _exchanges.push({
           id: node.id,
           timestamp: moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss"),
           type: tradeType,
@@ -51,8 +65,8 @@
       }
     })
 
-    for (let i = 0; i < exchanges.length; i++) {
-      const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
+    for (let i = 0; i < _exchanges.length; i++) {
+      const inverseTradeType = _exchanges[i].type === "Buy" ? "Sell" : "Buy";
       
       const match = (await query({
         query: `
@@ -65,7 +79,7 @@
                 },
                 {
                   name: "${inverseTradeType}ing-Tx",
-                  values: "${exchanges[i].id}"
+                  values: "${_exchanges[i].id}"
                 }
               ]
             ) {
@@ -82,19 +96,21 @@
       })).data.transactions.edges;
       
       if (match[0]) {
-        exchanges[i].status = "success";
+        _exchanges[i].status = "success";
 
-        const start = moment(exchanges[i].timestamp);
+        const start = moment(_exchanges[i].timestamp);
         const end = moment(
           moment.unix(match[0].node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
         );
         const duration = moment.duration(end.diff(start));
 
-        exchanges[i].duration = duration.humanize();
+        _exchanges[i].duration = duration.humanize();
       }
     }
 
-    return exchanges;
+    exchanges = exchanges.concat(_exchanges);
+    loadedExchanges = true;
+    setTimeout(() => loading = false, 400); // wait for animation and latency to complete (needed for the scroll)
   }
 
   async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
@@ -145,12 +161,20 @@
     return psts;
   }
 
+  $: {
+    if(element !== undefined) {
+      let componentY = element.offsetTop + element.offsetHeight;
+      if(componentY <= (y + windowHeight + 120) && loadedExchanges && !loading && hasNext) loadMoreExchanges();
+    }
+  }
+
 </script>
 
 <svelte:head>
   <title>Verto — All Exchanges</title>
 </svelte:head>
 
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
 <div class="all-exchanges" in:fade={{ duration: 300 }}>
   <h1 class="title">All Exchanges</h1>
@@ -160,20 +184,19 @@
       <th>Exchange</th>
       <th>Duration</th>
     </tr>
-    {#await exchanges}
-      {#each Array(5) as _}
+    {#if !loadedExchanges}
+      {#each Array(10) as _}
         <tr>
           <td style="width: 30%"><SkeletonLoading style={"width: 100%"} /></td>
           <td style="width: 60%"><SkeletonLoading style={"width: 100%"} /></td>
           <td style="width: 15%"><SkeletonLoading style={"width: 100%"} /></td>
         </tr>
       {/each}
-    {:then loadedExchanges}
-      {#if loadedExchanges.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No exchanges found</p>
-        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-      {/if}
-      {#each loadedExchanges as exchange}
+    {:else if exchanges.length === 0}
+      <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No exchanges found</p>
+      <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+    {:else}
+      {#each exchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
           <td style="width: 45%">
@@ -193,12 +216,17 @@
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
         <tr>
-      </tr>
+        </tr>
       {/each}
-    {/await}
+      {#if loading} <!-- if the site is loading, but there are transactions already loaded  -->
+        <Loading style="position: absolute; left: 50%;" />
+        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+      {/if}
+    {/if}
   </table>
 </div>
 <Footer />
+<span style="width: 100%; height: 1px" bind:this={element}></span>
 
 <style lang="sass">
 
