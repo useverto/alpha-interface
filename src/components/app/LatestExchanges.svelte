@@ -9,6 +9,7 @@
   import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
   import SkeletonLoading from "../SkeletonLoading.svelte";
+  import { address } from "../../stores/keyfileStore";
 
   let exchanges = getLatestExchanges();
 
@@ -20,6 +21,7 @@
     const txs = (await query({
       query: exchangesQuery,
       variables: {
+        owners: [$address],
         num: 5
       }
     })).data.transactions.edges;
@@ -167,7 +169,20 @@
       {#each loadedExchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
-          <td style="width: 45%"><span class="direction">{exchange.type}</span> {exchange.pst} {"->"} {exchange.ar} <span class="status {exchange.status}"></span></td>
+          <td style="width: 45%">
+            {#if exchange.type === "Buy"}
+              {exchange.ar}
+            {:else}
+              {exchange.pst}
+            {/if}
+            {"->"}
+            {#if exchange.type === "Buy"}
+              {exchange.pst}
+            {:else}
+              {exchange.ar}
+            {/if}
+            <span class="status {exchange.status}"></span>
+          </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
         <tr>

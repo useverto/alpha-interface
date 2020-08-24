@@ -7,6 +7,7 @@
 
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
+  import { address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import tokensQuery from "../../queries/tokens.gql";
   import { exchangeWallet } from "../../utils/constants";
@@ -21,7 +22,10 @@
     let exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
     
     const txs = (await query({
-      query: exchangesQuery
+      query: exchangesQuery,
+      variables: {
+        owners: [$address]
+      }
     })).data.transactions.edges;
     
     const psts = await getSupportedPSTs();
@@ -48,7 +52,6 @@
     })
 
     for (let i = 0; i < exchanges.length; i++) {
-      console.log(exchanges[i].timestamp);
       const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
       
       const match = (await query({
@@ -173,7 +176,20 @@
       {#each loadedExchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
-          <td style="width: 45%"><span class="direction">{exchange.type}</span> {exchange.pst} {"->"} {exchange.ar} <span class="status {exchange.status}"></span></td>
+          <td style="width: 45%">
+            {#if exchange.type === "Buy"}
+              {exchange.ar}
+            {:else}
+              {exchange.pst}
+            {/if}
+            {"->"}
+            {#if exchange.type === "Buy"}
+              {exchange.pst}
+            {:else}
+              {exchange.ar}
+            {/if}
+            <span class="status {exchange.status}"></span>
+          </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
         <tr>

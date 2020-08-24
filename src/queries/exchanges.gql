@@ -1,7 +1,9 @@
 query (
+  $owners: [String!]
   $num: Int
 ) {
   transactions(
+    owners: $owners
     tags: [
       {
         name: "Exchange",
