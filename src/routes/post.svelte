@@ -252,7 +252,7 @@
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
-      <h1>{addr}</h1>
+      <h1 class="address">{addr}</h1>
     </div>
     <div class="short-cell">
       {#await reputation}
@@ -392,6 +392,12 @@
   .post
     padding: 4.4em 15vw 3em
 
+    @media screen and (max-width: 720px)
+      overflow: hidden
+      padding:
+        left: 10vw
+        right: 10vw
+
     .post-info
       display: flex
       justify-content: space-between
@@ -420,9 +426,36 @@
         font-size: 1.25em
         margin: 0
 
+      &.big
+        h1
+          font-size: 2em
+
+      h1
         span.currency
           font-size: .6em
           text-transform: uppercase
+
+        @media screen and (max-width: 720px)
+          white-space: nowrap
+          overflow: hidden
+          position: relative
+          transition: font-size .3s
+
+          &::after
+            content: ""
+            position: absolute
+            top: 0
+            bottom: 0
+            right: 0
+            width: 1px
+            box-shadow: -3px 0px 20px 20px #fff
+            background-color: #fff
+
+          &:hover
+            font-size: .65em
+
+            &::after
+              display: none
 
       p
         color: rgba(#000, .3)
@@ -430,10 +463,6 @@
         font-size: .9em
         margin: 0 0 .8em 0
         text-transform: uppercase
-
-      &.big
-        h1
-          font-size: 2em
 
     .information
       @include table
