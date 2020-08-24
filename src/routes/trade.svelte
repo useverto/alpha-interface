@@ -210,9 +210,14 @@
       "Trade-Opcode": sendCurrency === "AR" ? "Buy" : "Sell",
       "Buy-For": sendCurrency === "AR" ? sendAmount.toString() : recieveAmount.toString(),
       "Sell-Qty": sendCurrency === "AR" ? recieveAmount.toString() : sendAmount.toString(),
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      "Contract": pstTxId,
+      "Input": `{ "function": "transfer", "target": "${selectedPost}", "qty": "${sendAmount.toString()}" }`
     };
 
     const tags = getNodeTags(node);
+    console.log(tags)
     const tx = await client.createTransaction({
       target: selectedPost,
       quantity: "1"
