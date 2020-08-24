@@ -173,6 +173,7 @@
 <style lang="sass">
   
   @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
 
   .section
     @include table
@@ -180,6 +181,10 @@
     display: flex
     justify-content: space-between
     align-items: center
+
+    @media screen and (max-width: 720px)
+      width: 100vw - $mobileSidePadding * 2
+      overflow-x: auto
 
     .assets-table
       width: 50%

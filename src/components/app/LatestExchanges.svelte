@@ -182,10 +182,15 @@
 <style lang="sass">
   
   @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
 
   .section
     @include table
     padding-bottom: 2.5em
+
+    @media screen and (max-width: 720px)
+      width: 100vw - $mobileSidePadding * 2
+      overflow-x: auto
 
     a.view-all
       display: block
