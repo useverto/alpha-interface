@@ -4,15 +4,18 @@
 
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
+  import Arweave from "arweave";
+  import tokensQuery from "../../queries/tokens.gql";
+  import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
   import SkeletonLoading from "../SkeletonLoading.svelte";
 
   let exchanges = getLatestExchanges();
 
-  async function getLatestExchanges (): Promise<{ timestamp: string, type: string, status: string }[]> {
+  async function getLatestExchanges (): Promise<{ timestamp: string, type: string, ar: string, pst: string, status: string }[]> {
     if(!process.browser) return [];
     
-    let exchanges: { timestamp: string, type: string, status: string }[] = [];
+    let exchanges: { timestamp: string, type: string, ar: string, pst: string, status: string }[] = [];
     
     const txs = (await query({
       query: exchangesQuery,
@@ -21,18 +24,76 @@
       }
     })).data.transactions.edges;
     
+    const psts = await getSupportedPSTs();
+
     txs.map(({ node }) => {
       const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
       if (tradeType) {
+        const arVal = node.tags.find(tag => tag.name === "Buy-For")?.value;
+        const pstVal = node.tags.find(tag => tag.name === "Sell-Qty")?.value;
+
+        const tokenId = node.tags.find(tag => tag.name === "Target-Token")?.value;
+        const token = psts.find(pst => pst.id === tokenId)?.ticker;
+
         exchanges.push({
           timestamp: moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss"),
           type: tradeType,
+          ar: arVal + " AR",
+          pst: pstVal + " " + token,
           status: "pending"
         })
       }
     })
 
     return exchanges;
+  }
+
+  async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
+    if(!process.browser) return [];
+
+    let psts: { id: string, name: string, ticker: string }[] = [];
+
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    let txIds = [];
+    const _txIds = (await query({
+      query: tokensQuery,
+        variables: {
+          owners: [exchangeWallet]
+        }
+    })).data.transactions.edges;
+    _txIds.map(({ node }) => {
+      txIds.push(node.id);
+    })
+
+    for (const id of txIds) {
+      try {
+        const contractId = (await client.transactions.getData(
+          id,
+          {decode: true, string: true},
+        )).toString();
+        const contractData = JSON.parse(
+          (await client.transactions.getData(
+            contractId,
+            {decode: true, string: true},
+          )).toString()
+        );
+        psts.push({
+          id: contractId,
+          name: contractData["name"],
+          ticker: contractData["ticker"],
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    return psts;
   }
 
 </script>
@@ -61,7 +122,7 @@
       {#each loadedExchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
-          <td style="width: 45%"><span class="direction">{exchange.type}</span> 0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status {exchange.status}"></span></td>
+          <td style="width: 45%"><span class="direction">{exchange.type}</span> {exchange.pst} {"->"} {exchange.ar} <span class="status {exchange.status}"></span></td>
           <td style="text-transform: uppercase">4hrs 20min</td>
         </tr>
         <tr>
