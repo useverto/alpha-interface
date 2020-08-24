@@ -13,6 +13,7 @@
   import galleryQuery from "../queries/gallery.gql";
   import tokensQuery from "../queries/tokens.gql";
   import postTokensQuery from "../queries/postTokens.gql";
+  import exchangesQuery from "../queries/exchanges.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
   import { fetchRootNode, createNode, getNodeTags } from "trackweave";
@@ -38,6 +39,7 @@
   let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
   let exchangeTX, fees;
+  let exchanges = getLatestExchanges();
 
   async function getTradingPosts (): Promise<string[]> {
     if(!process.browser) return [];
@@ -272,6 +274,78 @@
     fee = await client.transactions.getPrice(txSize, recipient);
 
     return parseFloat(client.ar.winstonToAr(fee));
+  }
+
+  async function getLatestExchanges (): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
+    if(!process.browser) return [];
+    
+    let exchanges: { id: string, type: string, ar: string, pst: string, matched: boolean }[] = [];
+    
+    const txs = (await query({
+      query: exchangesQuery,
+      variables: {
+        owners: [$address],
+        recipients: [selectedPost]
+      }
+    })).data.transactions.edges;
+    
+    const psts = await getTradingPostSupportedTokens();
+
+    txs.map(({ node }) => {
+      const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
+      if (tradeType) {
+        const arVal = node.tags.find(tag => tag.name === "Buy-For")?.value;
+        const pstVal = node.tags.find(tag => tag.name === "Sell-Qty")?.value;
+
+        const tokenId = node.tags.find(tag => tag.name === "Target-Token")?.value;
+        const token = psts.find(pst => pst.id === tokenId)?.ticker;
+
+        exchanges.push({
+          id: node.id,
+          type: tradeType,
+          ar: arVal + " AR",
+          pst: pstVal + " " + token,
+          matched: false
+        })
+      }
+    })
+
+    for (let i = 0; i < exchanges.length; i++) {
+      const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
+      
+      const match = (await query({
+        query: `
+          query {
+            transactions(
+              tags: [
+                {
+                  name: "Exchange",
+                  values: "Verto"
+                },
+                {
+                  name: "${inverseTradeType}ing-Tx",
+                  values: "${exchanges[i].id}"
+                }
+              ]
+            ) {
+              edges {
+                node {
+                  block {
+                    timestamp
+                  }
+                }
+              }
+            }
+          }
+        `,
+      })).data.transactions.edges;
+      
+      if (match[0]) {
+        exchanges[i].matched = true;
+      }
+    }
+
+    return exchanges;
   }
 
 </script>

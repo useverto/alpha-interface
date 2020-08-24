@@ -1,9 +1,11 @@
 query (
   $owners: [String!]
   $num: Int
+  $recipients: [String!]
 ) {
   transactions(
     owners: $owners
+    recipients: $recipients
     tags: [
       {
         name: "Exchange",
