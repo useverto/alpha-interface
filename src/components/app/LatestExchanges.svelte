@@ -1,18 +1,15 @@
-<script lang="typescript">
+<script lang="ts">
 
-  import { loggedIn } from "../../stores/keyfileStore.js";
-  import NavBar from "../../components/NavBar.svelte";
-  import Footer from "../../components/Footer.svelte";
   import { fade } from "svelte/transition";
 
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
-  import { address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import tokensQuery from "../../queries/tokens.gql";
   import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
-  import SkeletonLoading from "../../components/SkeletonLoading.svelte";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import { address } from "../../stores/keyfileStore";
 
   let exchanges = getLatestExchanges();
 
@@ -24,7 +21,8 @@
     const txs = (await query({
       query: exchangesQuery,
       variables: {
-        owners: [$address]
+        owners: [$address],
+        num: 5
       }
     })).data.transactions.edges;
     
@@ -147,13 +145,8 @@
 
 </script>
 
-<svelte:head>
-  <title>Verto — All Exchanges</title>
-</svelte:head>
-
-<NavBar />
-<div class="all-exchanges" in:fade={{ duration: 300 }}>
-  <h1 class="title">All Exchanges</h1>
+<div class="section">
+  <h1 class="title">Exchanges</h1>
   <table>
     <tr>
       <th>Timestamp</th>
@@ -197,16 +190,38 @@
       {/each}
     {/await}
   </table>
+  <a href="/app/all-exchanges" class="view-all">View all {"->"}</a>
 </div>
-<Footer />
 
 <style lang="sass">
-
+  
   @import "../../styles/tables.sass"
   @import "../../styles/general.sass"
 
-  .all-exchanges
-    @include page
-    @include table 
+  .section
+    @include table
+    padding-bottom: 2.5em
+
+    @media screen and (max-width: 720px)
+      width: 100vw - $mobileSidePadding * 2
+      overflow-x: auto
+
+    a.view-all
+      display: block
+      text-align: center
+      color: rgba(#000, .5)
+      font-weight: 500
+      padding: .8em 0
+      transition: all .3s
+
+      &:hover
+        opacity: .7
+
+    &:first-child
+      padding-top: 3.5em
+
+    a.transaction
+      text-decoration: none
+      color: black
 
 </style>

@@ -3,6 +3,7 @@
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
+  import Arweave from "arweave";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import latestTradesQuery from "../../queries/latestTrades.gql";
   import { query } from "../../api-client";
@@ -23,18 +24,41 @@
 
     let txs: { id: string, amount: number, pst: string }[] = [];
 
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
     const _txs = (await query({ 
       query: latestTradesQuery, 
       variables: null
     })).data.transactions.edges;
 
     _txs.map(({ node }) => {
+      let amountTag = node.tags.find(tag => tag.name === "Input")?.value;
+      let amount = amountTag ? JSON.parse(amountTag).qty : node.quantity.ar;
+      let contract = node.tags.find(tag => tag.name === "Contract")?.value;
+
       txs.push({
         id: node.id,
-        amount: node.quantity.ar,
-        pst: "AR"
-      })
+        amount: amount,
+        pst: contract || "AR"
+      });
     })
+
+    for (let i = 0; i < txs.length; i++) {
+      if (txs[i].pst !== "AR") {
+        const contractData = JSON.parse(
+          (await client.transactions.getData(
+            txs[i].pst,
+            {decode: true, string: true},
+          )).toString()
+        );
+        txs[i].pst = contractData.ticker;
+      }
+    }
 
     return txs;
   }
@@ -45,7 +69,7 @@
 <div class="LatestTrades" bind:this={element}>
   {#if shown}
     <div in:fade={{ duration: 400, delay: 411, easing: backOut }}>
-      <h1 class="title">Latest Trades</h1>
+      <h1 class="title">Latest Activity</h1>
       <table>
         <tr>
           <th>TxID</th>

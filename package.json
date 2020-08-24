@@ -17,7 +17,9 @@
     "compression": "^1.7.1",
     "moment": "^2.27.0",
     "polka": "next",
-    "sirv": "^0.4.0"
+    "sirv": "^0.4.0",
+    "smartweave": "https://arweave.net/AM-u4X2po-3Tx7fma3lRonCfLwrjI42IALwDL_YFXBs",
+    "svelte-chartjs": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
