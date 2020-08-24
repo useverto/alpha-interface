@@ -5,7 +5,7 @@ query (
   transactions(
     tags: [
       {
-        name: "App-Name",
+        name: "Exchange",
         values: "Verto"
       }
     ]
@@ -15,6 +15,10 @@ query (
       node {
         block {
           timestamp
+        }
+        tags {
+          name
+          value
         }
       }
     }

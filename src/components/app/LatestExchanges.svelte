@@ -9,10 +9,10 @@
 
   let exchanges = getLatestExchanges();
 
-  async function getLatestExchanges (): Promise<{ timestamp: string, status: string }[]> {
+  async function getLatestExchanges (): Promise<{ timestamp: string, type: string, status: string }[]> {
     if(!process.browser) return [];
     
-    let exchanges: { timestamp: string, status: string }[] = [];
+    let exchanges: { timestamp: string, type: string, status: string }[] = [];
     
     const txs = (await query({
       query: exchangesQuery,
@@ -22,10 +22,14 @@
     })).data.transactions.edges;
     
     txs.map(({ node }) => {
-      exchanges.push({
-        timestamp: moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss"),
-        status: "pending"
-      })
+      const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
+      if (tradeType) {
+        exchanges.push({
+          timestamp: moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss"),
+          type: tradeType,
+          status: "pending"
+        })
+      }
     })
 
     return exchanges;
@@ -57,7 +61,7 @@
       {#each loadedExchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
-          <td style="width: 45%">0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status {exchange.status}"></span></td>
+          <td style="width: 45%"><span class="direction">{exchange.type}</span> 0.00075664 <span class="currency">egg</span> {"->"} 0.00063480 <span class="currency">lum</span> <span class="status {exchange.status}"></span></td>
           <td style="text-transform: uppercase">4hrs 20min</td>
         </tr>
         <tr>
