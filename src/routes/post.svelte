@@ -394,10 +394,12 @@
 
     .post-info
       display: flex
+      justify-content: space-between
       margin-bottom: 1.6em
 
       @media screen and (max-width: 720px)
         display: block
+        justify-content: unset
 
       .long-cell
         width: 78%
@@ -407,10 +409,11 @@
           margin-bottom: 2em
 
       .short-cell
-        width: 22%
+        p, h1
+          text-align: right
 
-        @media screen and (max-width: 720px)
-          width: auto
+          @media screen and (max-width: 720px)
+            text-align: left
 
       h1
         color: #000
