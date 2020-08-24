@@ -48,6 +48,7 @@
     });
 
     posts = [...new Set(posts)]; // remove duplicates
+    if(selectedPost === undefined || selectedPost === "Loading...") selectedPost = posts[0]; // set initial post if it is not selected in the URL already
 
     return posts;
   }
@@ -268,26 +269,12 @@
   <div class="trade-container">
     <table>
       {#await balances}
-        <tr>
-          <th><SkeletonLoading style="width: 75px" /></th>
-          <th><SkeletonLoading style="width: 75px" /></th>
-        </tr>
-        <tr>
-          <td><SkeletonLoading style="width: 100px" /></td>
-          <td><SkeletonLoading style="width: 100px" /></td>
-        </tr>
-        <tr>
-          <td><SkeletonLoading style="width: 100px" /></td>
-          <td><SkeletonLoading style="width: 100px" /></td>
-        </tr>
-        <tr>
-          <td><SkeletonLoading style="width: 100px" /></td>
-          <td><SkeletonLoading style="width: 100px" /></td>
-        </tr>
-        <tr>
-          <td><SkeletonLoading style="width: 100px" /></td>
-          <td><SkeletonLoading style="width: 100px" /></td>
-        </tr>
+        {#each Array(5) as _}
+          <tr>
+            <th><SkeletonLoading style="width: 75px" /></th>
+            <th><SkeletonLoading style="width: 75px" /></th>
+          </tr>
+        {/each}
       {:then loadedBalances} 
         <tr>
           <th>Token</th>
@@ -327,11 +314,11 @@
           {#await psts}
             <option disabled>Loading...</option>
           {:then loadedPsts}
-            {#if loadedPsts.length === 0}
+            {#if loadedPsts.length !== 0}
+              {#each loadedPsts as pst}
+                <option value={pst.ticker}>{pst.ticker}</option>
+              {/each}
             {/if}
-            {#each loadedPsts as pst}
-              <option value={pst.ticker}>{pst.ticker}</option>
-            {/each}
           {/await}
         </select>
       </div>
