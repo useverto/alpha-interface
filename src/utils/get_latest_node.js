@@ -12,9 +12,9 @@ export async function getLatestNode(client, addr) {
   let cache = JSON.parse(localStorage.getItem("cache"));
   const latestHeadId = cache && cache[addr];
 
-  const entryNode = (latestHeadId
+  const entryNode = latestHeadId
     ? await getNode(client, { root, head: latestHeadId })
-    : root) ?? root;
+    : root;
 
   // TODO(@zorbyte): Optimise this, it currently has complexity O(n).
   const allNodes = [entryNode];
