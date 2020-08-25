@@ -2,7 +2,7 @@ import {
   fetchRootNode,
   getNode,
   traverseNodes,
-} from "trackweave";
+} from "../trackweave";
 
 export async function getLatestNode(client, addr) {
   const root = await fetchRootNode(client, {
