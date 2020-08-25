@@ -41,7 +41,6 @@
   let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
   let exchangeTX, fees;
-  let exchanges = getLatestExchanges();
 
   async function getTradingPosts (): Promise<string[]> {
     if(!process.browser) return [];
@@ -325,19 +324,15 @@
 
   async function getLatestExchanges (): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
     if(!process.browser) return [];
-    
+    let loadedPsts = await psts;
     let exchanges: { id: string, type: string, ar: string, pst: string, matched: boolean }[] = [];
     
     const txs = (await query({
       query: exchangesQuery,
       variables: {
-        owners: [$address],
         recipients: [selectedPost]
       }
     })).data.transactions.edges;
-    
-    let psts = await supportedPSTs;
-
     txs.map(({ node }) => {
       const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
       if (tradeType) {
@@ -345,7 +340,7 @@
         const pstVal = node.tags.find(tag => tag.name === "Sell-Qty")?.value;
 
         const tokenId = node.tags.find(tag => tag.name === "Target-Token")?.value;
-        const token = psts.find(pst => pst.id === tokenId)?.ticker;
+        const token = loadedPsts.find(pst => pst.id === tokenId)?.ticker;
 
         exchanges.push({
           id: node.id,
@@ -353,7 +348,7 @@
           ar: arVal + " AR",
           pst: pstVal + " " + token,
           matched: false
-        })
+        });
       }
     })
 
@@ -387,33 +382,34 @@
         `,
       })).data.transactions.edges;
       
-      if (match[0]) {
+      if (match && match[0]) {
         exchanges[i].matched = true;
       }
     }
-
+    console.log(exchanges);
     return exchanges;
   }
 
   let openTrades = latestOpenExchanges();
 
-  async function latestOpenExchanges() {
+  async function latestOpenExchanges(): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
     let txs = await latestExchanges;
 
-    let openExchanges;
+    let openExchanges = [];
     for (let i = 0; i < txs.length; i++) {
-      if (txs[i].matched === false) openExchanges.push(txs[i]);
+      if (txs[i].matched === false){
+        openExchanges.push(txs[i]);
+      }
     }
-
     return openExchanges;
   }
 
   let closedTrades = latestClosedExchanges();
 
-  async function latestClosedExchanges() {
+  async function latestClosedExchanges(): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
     let txs = await latestExchanges;
 
-    let closedExchanges;
+    let closedExchanges = [];
     for (let i = 0; i < txs.length; i++) {
       if (txs[i].matched === true) closedExchanges.push(txs[i]);
     }
@@ -534,11 +530,11 @@
           {/each}
         {:then loadedOpenTrades}
           {#if loadedOpenTrades.length === 0}
-            <p>This trading post doesn't have any trades!</p>
+            <p>This trading post doesn't have any pending trades!</p>
           {/if}
           {#each loadedOpenTrades as trade}
             <tr>
-              <td>
+              <td style="text-align: left">
                 {#if trade.type === "Buy"}
                   {trade.ar}
                 {:else}
@@ -565,11 +561,11 @@
           {/each}
         {:then loadedOpenTrades}
           {#if loadedOpenTrades.length === 0}
-            <p>This trading post doesn't have any trades!</p>
+            <p>This trading post doesn't have any completed trades!</p>
           {/if}
           {#each loadedOpenTrades as trade}
             <tr>
-              <td>
+              <td style="text-align: left">
                 {#if trade.type === "Buy"}
                   {trade.ar}
                 {:else}
