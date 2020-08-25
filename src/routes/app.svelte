@@ -61,11 +61,7 @@
     .section
       padding-bottom: 2.5em
 
-      &:first-child
-        padding-top: 3.5em
-
     .balance
-
       p
         color: rgba(#000, .3)
         text-transform: uppercase
