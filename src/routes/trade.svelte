@@ -16,17 +16,19 @@
   import exchangesQuery from "../queries/exchanges.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
+  import Community from "community-js";
   import { fetchRootNode, createNode, getNodeTags } from "trackweave";
   import { getLatestNode } from "../utils/get_latest_node";
   import Transaction from "arweave/node/lib/transaction";
   import { notification, NotificationType } from "../stores/notificationStore.js";
-  import { exchangeWallet } from "../utils/constants";
+  import { exchangeWallet, pstContract } from "../utils/constants";
 
   let selectedPost;
   let sendAmount: number = 1;
   let recieveAmount: number = 1;
   let sendCurrency: string;
   let recieveCurrency: string;
+  let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
 
   if(process.browser) {
@@ -216,20 +218,40 @@
       "App-Name": "SmartWeaveAction",
       "App-Version": "0.3.0",
       "Contract": pstTxId,
-      "Input": `{ "function": "transfer", "target": "${selectedPost}", "qty": "${sendAmount.toString()}" }`
+      "Input": `{ "function": "transfer", "target": "${selectedPost}", "qty": ${sendAmount.toString()} }`
     };
 
     const tags = getNodeTags(node);
-    console.log(tags)
     const tx = await client.createTransaction({
       target: selectedPost,
-      quantity: "1"
+      data: Math.random().toString().slice(-4)
     }, JSON.parse($keyfile));
     
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value);
     }
     return tx;
+  }
+
+  async function createTipTx(): Promise<Transaction> {
+    const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+    let community = new Community(client);
+    await community.setCommunityTx(pstContract);
+
+    let tipReceiver = await community.selectWeightedHolder();
+
+    let tipTx = await client.createTransaction({
+      target: tipReceiver,
+      quantity: sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString()
+    }, JSON.parse($keyfile));
+
+    console.log(sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString());
+    return tipTx;
   }
   
   async function confirmTrade () {
@@ -241,11 +263,24 @@
     });
 
     let tx = await createExchangeTx();
+    let tip = await createTipTx();
 
-    await client.transactions.sign(tx, JSON.parse($keyfile));
-    await client.transactions.post(tx);
+    try {
+      await client.transactions.sign(tip, JSON.parse($keyfile));
+      await client.transactions.post(tip);
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+    try {
+      await client.transactions.sign(tx, JSON.parse($keyfile));
+      await client.transactions.post(tx);
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
 
-    notification.notify("Sent", "We're processing you're trade now! This may take a few minutes.", NotificationType.success, 5000);
+    notification.notify("Sent", "We're processing your trade now! This may take a few minutes.", NotificationType.success, 5000);
     goto("/app");
   }
 
@@ -268,6 +303,9 @@
   }
 
   async function getFee(tx: Transaction): Promise<number> {
+    await selectedPost;
+    await posts;
+
     let fee, txSize, recipient;
     const client = new Arweave({
       host: "arweave.net",
@@ -283,6 +321,8 @@
     return parseFloat(client.ar.winstonToAr(fee));
   }
 
+  let latestExchanges = getLatestExchanges();
+
   async function getLatestExchanges (): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
     if(!process.browser) return [];
     
@@ -296,7 +336,7 @@
       }
     })).data.transactions.edges;
     
-    const psts = await getTradingPostSupportedTokens();
+    let psts = await supportedPSTs;
 
     txs.map(({ node }) => {
       const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
@@ -353,6 +393,32 @@
     }
 
     return exchanges;
+  }
+
+  let openTrades = latestOpenExchanges();
+
+  async function latestOpenExchanges() {
+    let txs = await latestExchanges;
+
+    let openExchanges;
+    for (let i = 0; i < txs.length; i++) {
+      if (txs[i].matched === false) openExchanges.push(txs[i]);
+    }
+
+    return openExchanges;
+  }
+
+  let closedTrades = latestClosedExchanges();
+
+  async function latestClosedExchanges() {
+    let txs = await latestExchanges;
+
+    let closedExchanges;
+    for (let i = 0; i < txs.length; i++) {
+      if (txs[i].matched === true) closedExchanges.push(txs[i]);
+    }
+
+    return closedExchanges;
   }
 
 </script>
@@ -448,6 +514,79 @@
       <p class="info">1 {sendCurrency} ~= {(recieveAmount / sendAmount).toFixed(7)} {recieveCurrency}</p>
       <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0; font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
     </div>
+  </div>
+</div>
+<div class="exchanges-section">
+  <div class="information">
+    <div class="menu">
+      <button class:active={activeMenu === "open"} on:click={() => activeMenu = "open"}>Open Orders</button>
+      <button class:active={activeMenu === "closed"} on:click={() => activeMenu = "closed"}>Closed Orders</button>
+    </div>
+  </div>
+  <div class="content">
+    {#if activeMenu === "open"}
+      <table in:fade={{ duration: 400 }}>
+        {#await openTrades}
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 100%"><SkeletonLoading style="width: 100%;" /></td>
+            </tr>
+          {/each}
+        {:then loadedOpenTrades}
+          {#if loadedOpenTrades.length === 0}
+            <p>This trading post doesn't have any trades!</p>
+          {/if}
+          {#each loadedOpenTrades as trade}
+            <tr>
+              <td>
+                {#if trade.type === "Buy"}
+                  {trade.ar}
+                {:else}
+                  {trade.pst}
+                {/if}
+                {"->"}
+                {#if trade.type === "Buy"}
+                  {trade.pst}
+                {:else}
+                  {trade.ar}
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        {/await}
+      </table>
+    {:else if activeMenu === "closed"}
+      <table in:fade={{ duration: 400 }}>
+        {#await closedTrades}
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 100%"><SkeletonLoading style="width: 100%;" /></td>
+            </tr>
+          {/each}
+        {:then loadedOpenTrades}
+          {#if loadedOpenTrades.length === 0}
+            <p>This trading post doesn't have any trades!</p>
+          {/if}
+          {#each loadedOpenTrades as trade}
+            <tr>
+              <td>
+                {#if trade.type === "Buy"}
+                  {trade.ar}
+                {:else}
+                  {trade.pst}
+                {/if}
+                {"->"}
+                {#if trade.type === "Buy"}
+                  {trade.pst}
+                {:else}
+                  {trade.ar}
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        {/await}
+      </table>
+    {/if}
   </div>
 </div>
 <Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={confirmTrade} onCancel={cancelTrade}>
@@ -615,5 +754,60 @@
 
       &:hover
         opacity: .8
+
+  .exchanges-section
+    @include table
+    @include page
+
+    .menu
+      position: relative
+      display: flex
+      margin-bottom: 1.5em
+
+      @media screen and (max-width: 720px)
+        justify-content: space-between
+        padding-top: 4em
+
+      button
+        position: relative
+        padding: .4em 1.8em
+        font-family: "JetBrainsMono", monospace
+        text-transform: uppercase
+        font-weight: 600
+        color: #000
+        background-color: transparent
+        border: none
+        font-size: 1.15em
+        outline: none
+          text-align: center
+          cursor: pointer
+
+        @media screen and (max-width: 720px)
+          padding: .18em .14em
+          font-size: .75em
+
+        &::after
+          content: ""
+          position: absolute
+          bottom: 0
+          left: 0
+          width: 100%
+          height: 0
+          opacity: 0
+          background-color: #000
+          transition: all .2s
+
+        &.active::after
+          opacity: 1
+          height: 3px
+
+      .trade
+        position: absolute
+        right: 0
+        top: 0
+
+        @media screen and (max-width: 720px)
+          right: unset
+          left: 0
 
 </style>
