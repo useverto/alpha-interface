@@ -17,7 +17,7 @@
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
   import Community from "community-js";
-  import { fetchRootNode, createNode, getNodeTags } from "trackweave";
+  import { fetchRootNode, createNode, getNodeTags } from "../trackweave";
   import { getLatestNode } from "../utils/get_latest_node";
   import Transaction from "arweave/node/lib/transaction";
   import { notification, NotificationType } from "../stores/notificationStore.js";
