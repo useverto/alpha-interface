@@ -50,7 +50,7 @@
     {/if}
   </div>
 </div>
-<div class="NavBarSpacer"></div>
+<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"></div>
 <div class="mobile-nav">
   {#if $loggedIn}
     <a href="/trade"><img src={tradeLogo} alt="trade"></a>
@@ -189,6 +189,9 @@
   .NavBarSpacer
     width: 100%
     height: 30px
+
+    &.logged-out
+      display: none
     
     @media screen and (max-width: 720px)
       &:not(.logged-out)
