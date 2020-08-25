@@ -3,8 +3,10 @@
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
   import { onMount } from "svelte";
-  import { and, equals } from "arql-ops";
-  import Loading from "../Loading.svelte";
+  import Arweave from "arweave";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import latestTradesQuery from "../../queries/latestTrades.gql";
+  import { query } from "../../api-client";
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
@@ -20,7 +22,8 @@
   async function getLatestTrades (): Promise<{ id: string, amount: number, pst: string }[]> {
     if(!process.browser) return [];
 
-    // @ts-ignore
+    let txs: { id: string, amount: number, pst: string }[] = [];
+
     const client = new Arweave({
       host: "arweave.net",
       port: 443,
@@ -28,25 +31,36 @@
       timeout: 20000,
     });
 
-    let 
-      query = equals("from", "pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls"),
-      _txs: { id: string, amount: number, pst: string }[] = [],
-      allTxs = await client.arql(query);
+    const _txs = (await query({ 
+      query: latestTradesQuery, 
+      variables: null
+    })).data.transactions.edges;
 
-    for(let i = 0; i < 5; i++) {
-      try {
-        let res = await client.transactions.get(allTxs[i]);
-        _txs.push({
-          id: allTxs[i],
-          amount: client.ar.winstonToAr(res.quantity),
-          pst: "AR"
-        });
-      } catch (error) {
-        console.log(error);
+    _txs.map(({ node }) => {
+      let amountTag = node.tags.find(tag => tag.name === "Input")?.value;
+      let amount = amountTag ? JSON.parse(amountTag).qty : node.quantity.ar;
+      let contract = node.tags.find(tag => tag.name === "Contract")?.value;
+
+      txs.push({
+        id: node.id,
+        amount: amount,
+        pst: contract || "AR"
+      });
+    })
+
+    for (let i = 0; i < txs.length; i++) {
+      if (txs[i].pst !== "AR") {
+        const contractData = JSON.parse(
+          (await client.transactions.getData(
+            txs[i].pst,
+            {decode: true, string: true},
+          )).toString()
+        );
+        txs[i].pst = contractData.ticker;
       }
     }
 
-    return _txs;
+    return txs;
   }
 
 </script>
@@ -55,7 +69,7 @@
 <div class="LatestTrades" bind:this={element}>
   {#if shown}
     <div in:fade={{ duration: 400, delay: 411, easing: backOut }}>
-      <h1 class="title">Latest Trades</h1>
+      <h1 class="title">Latest Activity</h1>
       <table>
         <tr>
           <th>TxID</th>
@@ -63,7 +77,13 @@
           <th>PST</th>
         </tr>
         {#await txs}
-          <Loading style="position: absolute; left: 50%;" />
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 70%"><SkeletonLoading style={"width: 100%"} /></td>
+              <td style="width: 20%"><SkeletonLoading style={"width: 100%"} /></td>
+              <td style="width: 10%"><SkeletonLoading style={"width: 100%"} /></td>
+            </tr>
+          {/each}
         {:then loadedTxs}
           {#each loadedTxs as tx}
             <tr in:fade={{ duration: 185 }}>

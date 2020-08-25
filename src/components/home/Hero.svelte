@@ -17,10 +17,10 @@
     <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
   </div>
   <div class="content" in:fade={{ duration: 750 }}>
-    <h1 class="welcome">Welcome to <span>Verto</span></h1>
+    <h1 class="welcome">Welcome to <span class="verto-name">Verto</span><span class="beta">alpha</span></h1>
     <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
     <Button reverse={true} clear={true} click={() => animateScroll.scrollTo({element: '#read-more'})}>Read more</Button>
-    <Button reverse={true} href={loggedIn ? '/app' : '/login'}>Exchange now</Button>
+    <Button reverse={true} href={loggedIn ? 'app' : 'login'}>Exchange now</Button>
   </div>
 </div>
 
@@ -65,9 +65,19 @@
           font-size: 3em
 
         span
-          background: -webkit-linear-gradient(#9300B8, #C54DFD, #E1A1FF)
-          -webkit-background-clip: text
-          -webkit-text-fill-color: transparent
+          &.verto-name
+            background: linear-gradient(138.37deg, #E698E8 14.46%, #8D5FBC 85.54%)
+            -webkit-background-clip: text
+            -webkit-text-fill-color: transparent
+
+          &.beta
+            color: #000
+            background-color: #fff
+            font-size: .22em
+            padding: 3px 7px
+            border-radius: 3px
+            text-transform: uppercase
+            vertical-align: top
 
       p
         font-size: 1.4em
@@ -87,7 +97,7 @@
 
         &:hover
           transition: color linear 0.1s
-          color: #C54DFD
+          color: #B075CD
 
     .blobs
       position: absolute

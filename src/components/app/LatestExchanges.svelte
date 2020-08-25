@@ -1,50 +1,34 @@
-<script lang="typescript">
+<script lang="ts">
 
-  import { loggedIn } from "../../stores/keyfileStore.js";
-  import NavBar from "../../components/NavBar.svelte";
-  import Footer from "../../components/Footer.svelte";
   import { fade } from "svelte/transition";
-  import { onMount } from "svelte";
+
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
-  import { address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import tokensQuery from "../../queries/tokens.gql";
   import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
-  import SkeletonLoading from "../../components/SkeletonLoading.svelte";
-  import Loading from "../../components/Loading.svelte";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import { address } from "../../stores/keyfileStore";
 
-  let client, element, windowHeight, y;
-  let exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
-  let lastCursor = "";
-  let hasNext = true, loadedExchanges = false, loading = false;
+  let exchanges = getLatestExchanges();
 
-  onMount(() => loadMoreExchanges());
-
-  async function loadMoreExchanges () {
-    if(!process.browser) return;
-    if(!hasNext) return;
+  async function getLatestExchanges (): Promise<{ id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[]> {
+    if(!process.browser) return [];
     
-    let _exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
-    loading = true;
-
-    const
-      txsQuery = (await query({
-        query: exchangesQuery,
-        variables: {
-          owners: [$address],
-          cursor: lastCursor
-        }
-      })).data.transactions,
-      txs = txsQuery.edges;
-
-    hasNext = txsQuery.pageInfo.hasNextPage;
+    let exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
+    
+    const txs = (await query({
+      query: exchangesQuery,
+      variables: {
+        owners: [$address],
+        num: 5
+      }
+    })).data.transactions.edges;
     
     const psts = await getSupportedPSTs();
 
-    txs.map(({ node, cursor }) => {
-      lastCursor = cursor;
+    txs.map(({ node }) => {
       const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
       if (tradeType) {
         const arVal = node.tags.find(tag => tag.name === "Buy-For")?.value;
@@ -53,7 +37,7 @@
         const tokenId = node.tags.find(tag => tag.name === "Target-Token")?.value;
         const token = psts.find(pst => pst.id === tokenId)?.ticker;
 
-        _exchanges.push({
+        exchanges.push({
           id: node.id,
           timestamp: moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss"),
           type: tradeType,
@@ -65,8 +49,8 @@
       }
     })
 
-    for (let i = 0; i < _exchanges.length; i++) {
-      const inverseTradeType = _exchanges[i].type === "Buy" ? "Sell" : "Buy";
+    for (let i = 0; i < exchanges.length; i++) {
+      const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
       
       const match = (await query({
         query: `
@@ -79,7 +63,7 @@
                 },
                 {
                   name: "${inverseTradeType}ing-Tx",
-                  values: "${_exchanges[i].id}"
+                  values: "${exchanges[i].id}"
                 }
               ]
             ) {
@@ -96,21 +80,19 @@
       })).data.transactions.edges;
       
       if (match[0]) {
-        _exchanges[i].status = "success";
+        exchanges[i].status = "success";
 
-        const start = moment(_exchanges[i].timestamp);
+        const start = moment(exchanges[i].timestamp);
         const end = moment(
           moment.unix(match[0].node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
         );
         const duration = moment.duration(end.diff(start));
 
-        _exchanges[i].duration = duration.humanize();
+        exchanges[i].duration = duration.humanize();
       }
     }
 
-    exchanges = exchanges.concat(_exchanges);
-    loadedExchanges = true;
-    setTimeout(() => loading = false, 400); // wait for animation and latency to complete (needed for the scroll)
+    return exchanges;
   }
 
   async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
@@ -161,42 +143,30 @@
     return psts;
   }
 
-  $: {
-    if(element !== undefined) {
-      let componentY = element.offsetTop + element.offsetHeight;
-      if(componentY <= (y + windowHeight + 120) && loadedExchanges && !loading && hasNext) loadMoreExchanges();
-    }
-  }
-
 </script>
 
-<svelte:head>
-  <title>Verto — All Exchanges</title>
-</svelte:head>
-
-<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
-<NavBar />
-<div class="all-exchanges" in:fade={{ duration: 300 }}>
-  <h1 class="title">All Exchanges</h1>
+<div class="section">
+  <h1 class="title">Exchanges</h1>
   <table>
     <tr>
       <th>Timestamp</th>
       <th>Exchange</th>
       <th>Duration</th>
     </tr>
-    {#if !loadedExchanges}
-      {#each Array(10) as _}
+    {#await exchanges}
+      {#each Array(5) as _}
         <tr>
           <td style="width: 30%"><SkeletonLoading style={"width: 100%"} /></td>
           <td style="width: 60%"><SkeletonLoading style={"width: 100%"} /></td>
           <td style="width: 15%"><SkeletonLoading style={"width: 100%"} /></td>
         </tr>
       {/each}
-    {:else if exchanges.length === 0}
-      <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No exchanges found</p>
-      <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-    {:else}
-      {#each exchanges as exchange}
+    {:then loadedExchanges}
+      {#if loadedExchanges.length === 0}
+        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No exchanges found</p>
+        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+      {/if}
+      {#each loadedExchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
           <td style="width: 45%">
@@ -216,25 +186,42 @@
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
         <tr>
-        </tr>
+      </tr>
       {/each}
-      {#if loading} <!-- if the site is loading, but there are transactions already loaded  -->
-        <Loading style="position: absolute; left: 50%;" />
-        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
-      {/if}
-    {/if}
+    {/await}
   </table>
+  <a href="/app/all-exchanges" class="view-all">View all {"->"}</a>
 </div>
-<Footer />
-<span style="width: 100%; height: 1px" bind:this={element}></span>
 
 <style lang="sass">
-
+  
   @import "../../styles/tables.sass"
   @import "../../styles/general.sass"
 
-  .all-exchanges
-    @include page
-    @include table 
+  .section
+    @include table
+    padding-bottom: 2.5em
+
+    @media screen and (max-width: 720px)
+      width: 100vw - $mobileSidePadding * 2
+      overflow-x: auto
+
+    a.view-all
+      display: block
+      text-align: center
+      color: rgba(#000, .5)
+      font-weight: 500
+      padding: .8em 0
+      transition: all .3s
+
+      &:hover
+        opacity: .7
+
+    &:first-child
+      padding-top: 3.5em
+
+    a.transaction
+      text-decoration: none
+      color: black
 
 </style>

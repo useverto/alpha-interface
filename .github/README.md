@@ -16,6 +16,8 @@ This is the front-end/app for the PST exchange service. It is built in Svelte(Sa
 
 You can access the code for trading posts [here](https://github.com/useverto/trading-post).
 
+> Important Notice: Verto is in its Alpha stage. If you have a suggestion, idea, or find a bug, please report it! The Verto team will not be held accountable for any funds lost.
+
 ## Guide
 
 To build/use the service on localhost, you will have to download Node, and install the yarn package manager (`npm i -g yarn`). When you have these, clone this repository and run `yarn install` to add the required dependencies. 
@@ -29,14 +31,14 @@ We use the arweave-js library with Svelte/Sapper. You can read more about these 
 
 This will start the app with live reload, according to the rollup config
 ```sh
-yarn run dev
+yarn dev
 ```
 
 ### Export
 
 This will export the app to static html/css/js to `__sapper__/export`
 ```sh
-yarn run export
+yarn export
 ```
 
 ## Special Thanks

@@ -1,0 +1,29 @@
+query (
+  $recipients: [String!]
+) {
+  transactions(
+    recipients: $recipients
+    tags: [
+      { 
+        name: "Exchange", 
+        values: "Verto" 
+      }
+      { 
+        name: "Trading-Post-Genesis", 
+        values: "Genesis" 
+      }
+    ]
+  ) {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        owner {
+          address
+        }
+      }
+    }
+  }
+}

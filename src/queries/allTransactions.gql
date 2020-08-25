@@ -1,0 +1,27 @@
+query (
+  $recipients: [String!]
+  $owners: [String!]
+  $after: String
+) {
+  transactions(
+    recipients: $recipients
+    owners: $owners
+    after: $after
+  ) {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        block {
+          timestamp
+        }
+        quantity {
+          ar
+        }
+      }
+    }
+  }
+}

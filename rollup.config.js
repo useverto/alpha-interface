@@ -1,4 +1,5 @@
 import resolve from "@rollup/plugin-node-resolve";
+import builtins from "rollup-plugin-node-builtins";
 import replace from "@rollup/plugin-replace";
 import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
@@ -9,12 +10,23 @@ import pkg from "./package.json";
 import sveltePreprocess, { sass } from "svelte-preprocess";
 import image from "@rollup/plugin-image";
 import url from "@rollup/plugin-url";
+import json from "@rollup/plugin-json";
+import { string } from "rollup-plugin-string";
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
 
-const onwarn = (warning, onwarn) => (warning.code === "CIRCULAR_DEPENDENCY" && /[/\\]@sapper[/\\]/.test(warning.message)) || onwarn(warning);
+const onwarn = (warning, onwarn) => {
+  if((warning.code === "THIS_IS_UNDEFINED" && warning.message.match("equivalent to 'undefined'")) || (warning.code === "SOURCEMAP_ERROR" && warning.message.match("Can't resolve original location of error."))) return;
+  // remove the arweave warning. We can't do anything about that
+  if(warning.code === "CIRCULAR_DEPENDENCY" && warning.importer.includes("arweave")) return;
+  // remove the trackweave warning. Probably needs a fix in MVP 2
+	if(warning.code === "CIRCULAR_DEPENDENCY" && warning.importer.includes("trackweave")) return;
+	// remove the no-onchange warning. In our case, on:change is needed, and on:blur does not work as intended
+	if(warning.code === "PLUGIN_WARNING" && warning.pluginCode === "a11y-no-onchange") return;
+  onwarn(warning);
+};
 
 export default {
 	client: {
@@ -28,19 +40,22 @@ export default {
 			svelte({
 				dev,
 				hydratable: true,
-        emitCss: true,
-        css: css => css.write("public/build/bundle.css"),
-        preprocess: sveltePreprocess()
+				emitCss: true,
+				css: css => css.write("public/build/bundle.css"),
+				preprocess: sveltePreprocess()
 			}),
 			resolve({
 				browser: true,
-				dedupe: ["svelte"]
+				dedupe: ["svelte"],
+				preferBuiltins: false,
 			}),
-      commonjs(),
-      sass(),
-      image(),
-      url(),
-
+			commonjs(),
+			sass(),
+			image(),
+			url(),
+			json(),
+      builtins(),
+      string({ include: ["**/*.graphql", "**/*.gql"] }),
 			legacy && babel({
 				extensions: [".js", ".mjs", ".html", ".svelte"],
 				babelHelpers: "runtime",
@@ -77,16 +92,20 @@ export default {
 			}),
 			svelte({
 				generate: "ssr",
-        dev,
-        preprocess: sveltePreprocess()
+				dev,
+				preprocess: sveltePreprocess()
 			}),
 			resolve({
-				dedupe: ["svelte"]
+				dedupe: ["svelte"],
+				preferBuiltins: false,
 			}),
-      commonjs(),
-      sass(),
-      image(),
-      url()
+			commonjs(),
+			sass(),
+			image(),
+			url(),
+			json(),
+      builtins(),
+      string({ include: ["**/*.graphql", "**/*.gql"] }),
 		],
 		external: Object.keys(pkg.dependencies).concat(require("module").builtinModules),
 

@@ -1,0 +1,36 @@
+query (
+  $owners: [String!]
+  $num: Int
+  $recipients: [String!]
+  $cursor: String
+) {
+  transactions(
+    owners: $owners
+    recipients: $recipients
+    tags: [
+      {
+        name: "Exchange",
+        values: "Verto"
+      }
+    ]
+    first: $num
+    after: $cursor
+  ) {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        block {
+          timestamp
+        }
+        tags {
+          name
+          value
+        }
+      }
+    }
+  }
+}

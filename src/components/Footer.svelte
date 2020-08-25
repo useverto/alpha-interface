@@ -21,7 +21,7 @@
     <div class="Footer" in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
       <div class="FooterContent">
         <div>
-          <a href="/trade">trade</a>
+          <a href="trade">trade</a>
         </div>
         <div>
           <a href="https://github.com/useverto/verto">code</a>
@@ -40,6 +40,9 @@
     width: 80%
     border-top: 5px solid black
     margin: 0 auto
+
+    @media screen and (max-width: 720px)
+      margin-bottom: 4em
   
     .FooterContent
       margin: 30px auto
@@ -61,6 +64,6 @@
         
           &:hover
             transition: color linear 0.1s
-            color: #C54DFD
+            color: #B075CD
 
 </style>

@@ -1,0 +1,23 @@
+query (
+  $owners: [String!]
+) {
+  transactions(
+    owners: $owners
+    tags: [
+      {
+        name: "Exchange",
+        values: "Verto"
+      }
+      {
+        name: "Support",
+        values: "PST"
+      }
+    ]
+  ) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}

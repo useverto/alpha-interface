@@ -1,0 +1,22 @@
+query {
+  transactions(
+    tags: [{ 
+      name: "Exchange", 
+      values: "Verto" 
+    }]
+    first: 5
+  ) {
+    edges {
+      node {
+        id,
+        tags {
+          name,
+          value
+        },
+        quantity {
+          ar
+        }
+      }
+    }
+  }
+}
