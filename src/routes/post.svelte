@@ -228,7 +228,6 @@
         function: "unlockedBalance",
         target: addr
       });
-      console.log(pstContract)
       if (pstContract.balance > 0) {
         tokenBalances.push({
           token: tokens[i].name,
