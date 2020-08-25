@@ -437,7 +437,12 @@
     </div>
     <div class="recommended-post">
       <p>Trading post</p>
-      <select bind:value={selectedPost} on:change={() => {supportedPSTs = getTradingPostSupportedTokens()}}>
+      <select bind:value={selectedPost} on:change={() => {
+        supportedPSTs = getTradingPostSupportedTokens(); 
+        latestExchanges = getLatestExchanges();
+        openTrades = latestOpenExchanges();
+        closedTrades = latestClosedExchanges();
+      }}>
         {#await posts}
           <option disabled>Loading...</option>
         {:then loadedPosts}
@@ -530,7 +535,7 @@
           {/each}
         {:then loadedOpenTrades}
           {#if loadedOpenTrades.length === 0}
-            <p>This trading post doesn't have any pending trades!</p>
+            <p>This trading post doesn't have any open orders!</p>
           {/if}
           {#each loadedOpenTrades as trade}
             <tr>
