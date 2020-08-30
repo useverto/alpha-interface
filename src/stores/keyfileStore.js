@@ -38,7 +38,7 @@ export const balance = derived(
     if(!process.browser) return;
     const 
       client = new Arweave({
-        host: "arweave.net",
+        host: "arweave.dev",
         port: 443,
         protocol: "https",
         timeout: 20000,
@@ -73,7 +73,7 @@ function createArweaveClientStore () {
   const { subscribe, set } = writable({});
   if(process.browser) {
     set(new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,

@@ -27,7 +27,7 @@
     let psts: { id: string, name: string, ticker: string }[] = [];
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -77,7 +77,7 @@
     if(newContractID === "" || newContractID === undefined) cancelClose();
     else {
       const client = new Arweave({
-        host: "arweave.net",
+        host: "arweave.dev",
         port: 443,
         protocol: "https",
         timeout: 20000,

@@ -32,7 +32,7 @@
     let posts: { addr: string, reputation: number, balance: string, stake: number }[] = [];
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -76,7 +76,7 @@
     if(!process.browser) return 0;
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -90,7 +90,7 @@
 
   async function getTimeStaked (addr: string): Promise<number> {
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,

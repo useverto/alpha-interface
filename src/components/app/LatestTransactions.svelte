@@ -23,7 +23,7 @@
     let txs: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
