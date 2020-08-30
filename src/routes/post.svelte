@@ -41,7 +41,7 @@
     let txs: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -106,7 +106,7 @@
     if(!process.browser) return 0;
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -122,7 +122,7 @@
 
   async function getTimeStaked (): Promise<number> {
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -149,7 +149,7 @@
     if(!process.browser) return "";
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -179,7 +179,7 @@
 
     let tokenList = [];
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -214,7 +214,7 @@
     if(!process.browser) return [];
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,

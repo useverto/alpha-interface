@@ -1,7 +1,7 @@
 const Arweave = require('arweave');
 
 const arweave = Arweave.init({
-  host: 'arweave.net',
+  host: 'arweave.dev',
   port: 443,
   protocol: 'https'
 });
