@@ -67,7 +67,7 @@
     let psts: { id: string, name: string, ticker: string }[] = [];
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -111,7 +111,7 @@
 
     let tokenList = [];
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -144,7 +144,7 @@
 
   async function getTokenBalances() {
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,
@@ -188,7 +188,7 @@
 
   async function createExchangeTx (): Promise<Transaction> {
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,
@@ -234,7 +234,7 @@
 
   async function createTipTx(): Promise<Transaction> {
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,
@@ -255,7 +255,7 @@
   
   async function confirmTrade () {
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,
@@ -307,7 +307,7 @@
 
     let fee, txSize, recipient;
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,

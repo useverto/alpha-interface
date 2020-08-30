@@ -17,7 +17,7 @@
   // let's create a new client
   if(process.browser) {
     client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,

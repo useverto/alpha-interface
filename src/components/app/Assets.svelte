@@ -23,7 +23,7 @@
     let psts: { id: string, name: string, ticker: string }[] = [];
     
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -66,7 +66,7 @@
     if(!process.browser) return [];
 
     const client = new Arweave({
-      host: "arweave.net",
+      host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,
