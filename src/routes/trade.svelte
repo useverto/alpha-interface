@@ -194,24 +194,11 @@
 
     const ticker = sendCurrency === "AR" ? recieveCurrency : sendCurrency;
     const supportedPSTs = await psts;
-    let pstTxId;
-    for (const pst of supportedPSTs) {
-      if (pst.ticker === ticker) {
-        pstTxId = pst.id;
-      }
-    }
+    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
     const tags = {
       "Exchange": "Verto",
-      "Target-Token": pstTxId,
-      "Trade-Ratio": (recieveAmount / sendAmount).toFixed(7),
-      "Trade-Opcode": sendCurrency === "AR" ? "Buy" : "Sell",
-      "Buy-For": sendCurrency === "AR" ? sendAmount.toString() : recieveAmount.toString(),
-      "Sell-Qty": sendCurrency === "AR" ? recieveAmount.toString() : sendAmount.toString(),
-      "App-Name": "SmartWeaveAction",
-      "App-Version": "0.3.0",
-      "Contract": pstTxId,
-      "Input": `{ "function": "transfer", "target": "${selectedPost}", "qty": ${sendAmount.toString()} }`
+      "Trade-Opcode": sendCurrency === "AR" ? "Buy" : "Sell"
     };
 
     const tx = await client.createTransaction({
