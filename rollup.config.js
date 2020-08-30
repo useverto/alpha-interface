@@ -21,8 +21,6 @@ const onwarn = (warning, onwarn) => {
   if((warning.code === "THIS_IS_UNDEFINED" && warning.message.match("equivalent to 'undefined'")) || (warning.code === "SOURCEMAP_ERROR" && warning.message.match("Can't resolve original location of error."))) return;
   // remove the arweave warning. We can't do anything about that
   if(warning.code === "CIRCULAR_DEPENDENCY" && warning.importer.includes("arweave")) return;
-  // remove the trackweave warning. Probably needs a fix in MVP 2
-	if(warning.code === "CIRCULAR_DEPENDENCY" && warning.importer.includes("trackweave")) return;
 	// remove the no-onchange warning. In our case, on:change is needed, and on:blur does not work as intended
 	if(warning.code === "PLUGIN_WARNING" && warning.pluginCode === "a11y-no-onchange") return;
   onwarn(warning);

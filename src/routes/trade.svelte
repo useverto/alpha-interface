@@ -17,8 +17,6 @@
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
   import Community from "community-js";
-  import { fetchRootNode, createNode, getNodeTags } from "../trackweave";
-  import { getLatestNode } from "../utils/get_latest_node";
   import Transaction from "arweave/node/lib/transaction";
   import { notification, NotificationType } from "../stores/notificationStore.js";
   import { exchangeWallet, pstContract } from "../utils/constants";
@@ -194,10 +192,6 @@
       timeout: 200000,
     });
 
-    const latestNode = await getLatestNode(client, selectedPost);
-    // @ts-ignore
-    const node = createNode(latestNode, false);
-
     const ticker = sendCurrency === "AR" ? recieveCurrency : sendCurrency;
     const supportedPSTs = await psts;
     let pstTxId;
@@ -207,7 +201,7 @@
       }
     }
 
-    node.otherTags = {
+    const tags = {
       "Exchange": "Verto",
       "Target-Token": pstTxId,
       "Trade-Ratio": (recieveAmount / sendAmount).toFixed(7),
@@ -220,7 +214,6 @@
       "Input": `{ "function": "transfer", "target": "${selectedPost}", "qty": ${sendAmount.toString()} }`
     };
 
-    const tags = getNodeTags(node);
     const tx = await client.createTransaction({
       target: selectedPost,
       data: Math.random().toString().slice(-4)
