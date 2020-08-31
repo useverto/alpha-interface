@@ -7,8 +7,7 @@
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
-
-  import { query } from "../api-client";
+  import query from "../api-client.ts";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import postTokensQuery from "../queries/postTokens.gql";
   import Arweave from "arweave";

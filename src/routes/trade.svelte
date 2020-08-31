@@ -8,8 +8,7 @@
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
-
-  import { query } from "../api-client";
+  import query from "../api-client.ts";
   import galleryQuery from "../queries/gallery.gql";
   import tokensQuery from "../queries/tokens.gql";
   import postTokensQuery from "../queries/postTokens.gql";

@@ -6,7 +6,7 @@
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { fade } from "svelte/transition";
   import latestTransactionsQuery from "../../queries/latestTransactions.gql";
-  import { query } from "../../api-client";
+  import query from "../../api-client.ts";
   import Arweave from "arweave";
 
   let transactions = getLatestTransactions();

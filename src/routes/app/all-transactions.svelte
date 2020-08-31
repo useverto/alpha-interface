@@ -10,7 +10,7 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import { query } from "../../api-client";
+  import query from "../../api-client.ts";
   import Arweave from "arweave";
   import allTransactionsQuery from "../../queries/allTransactions.gql";
   

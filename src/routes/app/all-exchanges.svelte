@@ -5,7 +5,7 @@
   import Footer from "../../components/Footer.svelte";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import { query } from "../../api-client";
+  import query from "../../api-client.ts";
   import exchangesQuery from "../../queries/exchanges.gql";
   import { address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
