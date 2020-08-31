@@ -17,7 +17,8 @@
   import { interactRead } from "smartweave";
   import Community from "community-js";
   import Transaction from "arweave/node/lib/transaction";
-  import { notification, NotificationType } from "../stores/notificationStore.js";
+  import { notification } from "../stores/notificationStore.ts";
+  import { NotificationType } from "../types.ts";
   import { exchangeWallet, pstContract } from "../utils/constants";
 
   let selectedPost;

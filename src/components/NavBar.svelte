@@ -2,7 +2,8 @@
 
   import { fade } from "svelte/transition";
   import { loggedIn, logOut } from "../stores/keyfileStore.js";
-  import { notification, NotificationType } from "../stores/notificationStore.js";
+  import { NotificationType } from "../types.ts";
+  import { notification } from "../stores/notificationStore.ts";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";
