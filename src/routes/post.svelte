@@ -3,7 +3,7 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Button from "../components/Button.svelte";
-  import { loggedIn, address, keyfile } from "../stores/keyfileStore.js";
+  import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";

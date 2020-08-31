@@ -8,7 +8,7 @@
   import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
   import SkeletonLoading from "../SkeletonLoading.svelte";
-  import { address } from "../../stores/keyfileStore";
+  import { address } from "../../stores/keyfileStore.ts";
 
   let exchanges = getLatestExchanges();
 

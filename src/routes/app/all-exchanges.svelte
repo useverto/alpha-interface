@@ -1,13 +1,12 @@
 <script lang="typescript">
 
-  import { loggedIn } from "../../stores/keyfileStore.js";
+  import { loggedIn, address } from "../../stores/keyfileStore.ts";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
   import query from "../../api-client.ts";
   import exchangesQuery from "../../queries/exchanges.gql";
-  import { address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import tokensQuery from "../../queries/tokens.gql";
   import { exchangeWallet } from "../../utils/constants";

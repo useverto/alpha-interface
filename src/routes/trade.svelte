@@ -3,7 +3,7 @@
   import { goto } from "@sapper/app";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import { balance, address, keyfile } from "../stores/keyfileStore.js";
+  import { balance, address, keyfile } from "../stores/keyfileStore.ts";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
