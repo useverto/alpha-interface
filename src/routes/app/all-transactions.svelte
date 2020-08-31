@@ -12,8 +12,6 @@
   import query from "../../api-client.ts";
   import Arweave from "arweave";
   import allTransactionsQuery from "../../queries/allTransactions.gql";
-  
-  if(process.browser && !$loggedIn) goto("/");
 
   let client, element;
   let transactions: { id: string, amount: number, type: string, status: string, timestamp: number }[] = [];

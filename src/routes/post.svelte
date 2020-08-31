@@ -17,8 +17,6 @@
 
   let activeMenu: string = "transactions";
   let addr: string = "";
-  
-  if(process.browser && !$loggedIn) goto("/");
 
   if(process.browser) {
     const params = new URLSearchParams(window.location.search);
