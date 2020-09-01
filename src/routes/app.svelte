@@ -11,6 +11,8 @@
   import { onMount } from "svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
+  if(process.browser && !$loggedIn) goto("/");
+
   function roundCurrency (val: number | string): string {
     if(val === "?") return val;
     if(typeof val === "string") val = parseFloat(val);

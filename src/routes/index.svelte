@@ -8,6 +8,8 @@
   import { keyfile, loggedIn } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
 
+  if(process.browser && $loggedIn) goto("/app");
+
 </script>
 
 <svelte:head>

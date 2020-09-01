@@ -14,6 +14,8 @@
   import Community from "community-js";
   import { pstContract, exchangeWallet } from "../utils/constants";
 
+  if(process.browser && !$loggedIn) goto("/");
+
   let supportedTokens = getSupportedPSTs();
   let addTokenModalOpened: boolean = false;
   let newContractID: string;

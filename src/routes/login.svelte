@@ -13,6 +13,8 @@
   let files: FileList = [];
   let client;
 
+  if(process.browser && $loggedIn) goto("/app");
+
   // let's create a new client
   if(process.browser) {
     client = new Arweave({

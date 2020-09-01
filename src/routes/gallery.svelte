@@ -13,6 +13,8 @@
   import { exchangeWallet, pstContract } from "../utils/constants";
   import Community from "community-js";
 
+  if(process.browser && !$loggedIn) goto("/");
+
   let sortingType: string;
   let tradingPosts: { addr: string, reputation: number, balance: string, stake: number }[] = []
   let lastCursor = "", hasNext = true, loadedFirstPosts = false, loading = false;
