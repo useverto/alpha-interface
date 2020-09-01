@@ -463,28 +463,6 @@
       {/await}
     </table>
   </div>
-  <div class="trade-head">
-    <div class="recommended-post">
-      <p>Trading post</p>
-      <select bind:value={selectedPost} on:change={() => {
-        supportedPSTs = getTradingPostSupportedTokens(); 
-        latestExchanges = getLatestExchanges();
-        openTrades = latestOpenExchanges();
-        closedTrades = latestClosedExchanges();
-      }}>
-        {#await posts}
-          <option disabled>Loading...</option>
-        {:then loadedPosts}
-          {#if loadedPosts.length === 0}
-            <option disabled>No posts found</option>
-          {/if}
-          {#each loadedPosts as post}
-            <option value={post} selected={post === selectedPost}>{post}</option>
-          {/each}
-        {/await}
-      </select>
-    </div>
-  </div>
   <div class="trade-container">
     <div class="exchange-section">
       <p>Amount</p>
@@ -521,7 +499,29 @@
       </div>
     </div>
   </div>
-  <Button click={exchange} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
+  <div class="recommended-post">
+    <div style="width: 100%; padding-right: 1.25em;">
+      <p>Trading post</p>
+      <select bind:value={selectedPost} on:change={() => {
+      supportedPSTs = getTradingPostSupportedTokens();
+      latestExchanges = getLatestExchanges();
+      openTrades = latestOpenExchanges();
+      closedTrades = latestClosedExchanges();
+      }}>
+        {#await posts}
+          <option disabled>Loading...</option>
+        {:then loadedPosts}
+          {#if loadedPosts.length === 0}
+            <option disabled>No posts found</option>
+          {/if}
+          {#each loadedPosts as post}
+            <option value={post} selected={post === selectedPost}>{post}</option>
+          {/each}
+        {/await}
+      </select>
+    </div>
+    <Button click={exchange} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
+  </div>
 </div>
 <div class="exchanges-section">
   <div class="information">
@@ -661,33 +661,24 @@
     .assets
       margin: 2.45em 0
 
-    .trade-head
+    .recommended-post
       display: flex
-      justify-content: space-between
-      margin-bottom: 2.65em
+      align-items: flex-end
 
-      @media screen and (max-width: 720px)
-        display: block
+      select
+        width: 100%
+        font-size: 1.2em
+        padding:
+          top: calc(.3em + 2px) // border + padding of the button
+          bottom: calc(.3em + 2px) // border + padding of the button
 
       p
         color: rgba(#000, .3)
         font-weight: 600
-        font-size: 1.2em
+        font-size: .95em
         margin: 0
+          bottom: .7em
         text-transform: uppercase
-        margin-bottom: .5em
-
-        &.wallet
-          text-transform: none
-
-      .recommended-post
-        width: 60%
-
-        @media screen and (max-width: 720px)
-          width: auto
-
-        select
-          width: 100%
 
     .trade-container
       display: flex
