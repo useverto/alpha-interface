@@ -419,16 +419,51 @@
 
 <NavBar />
 <div class="trade" in:fade={{ duration: 300 }}>
+  <div class="balance">
+    {#if $balance === 0}
+      <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
+      <h1 class="total-balance"><SkeletonLoading style="height: 1em; width: 300px" /></h1>
+      <p class="wallet"><SkeletonLoading style="height: 1em; width: 400px" /></p>
+    {:else}
+      <p in:fade={{ duration: 150 }}>Your balance</p>
+      <h1 class="total-balance" in:fade={{ duration: 150 }}>{roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span></h1>
+      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
+    {/if}
+  </div>
+  <div class="assets">
+    <h1 class="title">Assets</h1>
+    <table>
+      {#await balances}
+        {#each Array(5) as _}
+          <tr>
+            <td style="width: 40%"><SkeletonLoading style="width: 100%" /></td>
+            <td style="width: 18%"><SkeletonLoading style="width: 100%" /></td>
+            <td style="width: 24%"><SkeletonLoading style="width: 100%" /></td>
+            <td style="width: 18%"><SkeletonLoading style="width: 100%" /></td>
+          </tr>
+        {/each}
+      {:then loadedBalances}
+        <tr>
+          <th style="width: 40%">Token</th>
+          <th style="width: 18%">Dist.</th>
+          <th style="width: 24%">Amount</th>
+          <th style="width: 18%">Value (Ar)</th>
+        </tr>
+        {#if loadedBalances.length === 0}
+          <p>You don't have any tokens!</p>
+        {/if}
+        {#each loadedBalances as balance}
+          <tr>
+            <td style="width: 40%">{balance.token}</td>
+            <td style="width: 18%">TODO</td>
+            <td style="width: 24%">{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
+            <td style="width: 18%">TODO</td>
+          </tr>
+        {/each}
+      {/await}
+    </table>
+  </div>
   <div class="trade-head">
-    <div class="balance">
-      {#if $balance === 0}
-        <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
-        <h1><SkeletonLoading style="height: 1em; width: 300px" /></h1>
-      {:else}
-        <p in:fade={{ duration: 150 }}>Your balance</p>
-        <h1 in:fade={{ duration: 150 }}>{roundCurrency($balance)}<span>AR</span></h1>
-      {/if}
-    </div>
     <div class="recommended-post">
       <p>Trading post</p>
       <select bind:value={selectedPost} on:change={() => {
@@ -451,32 +486,8 @@
     </div>
   </div>
   <div class="trade-container">
-    <table>
-      {#await balances}
-        {#each Array(5) as _}
-          <tr>
-            <th style="width: 80%"><SkeletonLoading style="width: 100%" /></th>
-            <th style="width: 20%"><SkeletonLoading style="width: 100%" /></th>
-          </tr>
-        {/each}
-      {:then loadedBalances} 
-        <tr>
-          <th>Token</th>
-          <th>Amount</th>
-        </tr>
-        {#if loadedBalances.length === 0}
-          <p>You don't have any tokens!</p>
-        {/if}
-        {#each loadedBalances as balance}
-          <tr>
-            <td>{balance.token}</td>
-            <td>{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
-          </tr>
-        {/each}
-      {/await}
-    </table>
-    <div class="exchange">
-      <p>You send</p>
+    <div class="exchange-section">
+      <p>Amount</p>
       <div class="input">
         <input type="number" bind:value={sendAmount} min={0} />
         <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
@@ -490,7 +501,9 @@
           {/await}
         </select>
       </div>
-      <p>You recieve</p>
+    </div>
+    <div class="exchange-section">
+      <p>Rate</p>
       <div class="input">
         <input type="number" bind:value={recieveAmount} min={0} />
         <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
@@ -506,10 +519,9 @@
           {/await}
         </select>
       </div>
-      <p class="info">1 {sendCurrency} ~= {(recieveAmount / sendAmount).toFixed(7)} {recieveCurrency}</p>
-      <Button click={exchange} style={"width: 100%; padding-left: 0; padding-right: 0; font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
     </div>
   </div>
+  <Button click={exchange} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
 </div>
 <div class="exchanges-section">
   <div class="information">
@@ -626,6 +638,29 @@
       td:last-child, th:last-child
         text-align: left !important
 
+    .balance
+      p
+        color: rgba(#000, .3)
+        text-transform: uppercase
+        font-size: .9em
+        margin: 0
+        font-weight: 600
+
+        &.wallet
+          text-transform: none
+
+      h1.total-balance
+        font-size: 2.3em
+        color: #000
+        font-weight: 400
+        margin: .14em 0
+
+      @media screen and (max-width: 720px)
+        padding-top: .65em !important
+
+    .assets
+      margin: 2.45em 0
+
     .trade-head
       display: flex
       justify-content: space-between
@@ -642,21 +677,8 @@
         text-transform: uppercase
         margin-bottom: .5em
 
-      .balance
-        width: 40%
-
-        @media screen and (max-width: 720px)
-          width: auto
-          margin-bottom: 2em
-
-        h1
-          font-size: 2.35em
-          color: #000
-          font-weight: 400
-          margin: 0
-
-          span
-            font-size: .4em
+        &.wallet
+          text-transform: none
 
       .recommended-post
         width: 60%
@@ -673,68 +695,52 @@
       @media screen and (max-width: 720px)
         display: block
 
-      table, .exchange
-        width: 50%
+      .exchange-section
+        width: 48%
 
-        @media screen and (max-width: 720px)
-          width: auto
+        &:first-child
+          padding-right: 2%
 
-      table
-        padding-right: 2.5em
+        &:last-child
+          padding-left: 2%
 
-        @media screen and (max-width: 720px)
-          padding: 0
-          margin-bottom: 2em
+      p
+        color: rgba(#000, .3)
+        font-weight: 600
+        font-size: .95em
+        margin: 0
+          bottom: .7em
+        text-transform: uppercase
 
-      .exchange
-        padding-left: 2.5em
+      .input
+        display: flex
+        align-items: center
+        border: 1px solid #000
+        border-radius: .4em
+        height: 2.35em
+        margin-bottom: 1.7em
+        overflow: hidden
 
-        @media screen and (max-width: 720px)
-          padding: 0
+        input
+          width: 80%
+          height: 100%
+          border: none
+          outline: none
+          font-size: 1.2em
+          padding: 0 .5em
+          color: #000
 
-        p
-          color: rgba(#000, .3)
-          font-weight: 600
-          font-size: .95em
-          margin: 0
+          @media screen and (max-width: 720px)
+            width: 62%
+
+        select
+          width: 20%
+          height: 100%
+          border-radius: 0
           text-transform: uppercase
 
-          &.info
-            color: #000
-            font-weight: 400
-            font-size: .74em
-            text-transform: normal
-            margin-bottom: 1.7em
-
-        .input
-          display: flex
-          align-items: center
-          border: 1px solid #000
-          border-radius: .4em
-          height: 2.35em
-          margin-bottom: 1.7em
-          overflow: hidden
-
-          input
-            width: 80%
-            height: 100%
-            border: none
-            outline: none
-            font-size: 1.2em
-            padding: 0 .5em
-            color: #000
-
-            @media screen and (max-width: 720px)
-              width: 62%
-
-          select
-            width: 20%
-            height: 100%
-            border-radius: 0
-            text-transform: uppercase
-
-            @media screen and (max-width: 720px)
-              width: 38%
+          @media screen and (max-width: 720px)
+            width: 38%
 
     select
       $sidePadding: .65em
