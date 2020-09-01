@@ -146,11 +146,11 @@
 </script>
 
 <div class="section">
-  <h1 class="title">Exchanges</h1>
+  <h1 class="title">Trades</h1>
   <table>
     <tr>
       <th>Timestamp</th>
-      <th>Exchange</th>
+      <th>Trade</th>
       <th>Duration</th>
     </tr>
     {#await exchanges}
@@ -163,7 +163,7 @@
       {/each}
     {:then loadedExchanges}
       {#if loadedExchanges.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No exchanges found</p>
+        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No trades found</p>
         <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
       {/if}
       {#each loadedExchanges as exchange}

@@ -177,11 +177,11 @@
 <svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
 <div class="all-exchanges" in:fade={{ duration: 300 }}>
-  <h1 class="title">All Exchanges</h1>
+  <h1 class="title">All Trades</h1>
   <table>
     <tr>
       <th>Timestamp</th>
-      <th>Exchange</th>
+      <th>Trade</th>
       <th>Duration</th>
     </tr>
     {#if !loadedExchanges}
@@ -193,7 +193,7 @@
         </tr>
       {/each}
     {:else if exchanges.length === 0}
-      <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No exchanges found</p>
+      <p in:fade={{ duration: 150 }} style="position: absolute; left: 50%; transform: translateX(-50%);">No trades found</p>
       <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
     {:else}
       {#each exchanges as exchange}
