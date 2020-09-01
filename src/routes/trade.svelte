@@ -28,6 +28,7 @@
   let recieveCurrency: string;
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
+  let mode = "sell";
 
   if(process.browser) {
     const params = new URLSearchParams(window.location.search);
@@ -463,6 +464,10 @@
       {/await}
     </table>
   </div>
+  <div class="menu">
+    <button class:active={mode === "sell"} on:click={() => mode = "sell"}>Sell</button>
+    <button class:active={mode === "buy"} on:click={() => mode = "buy"}>Buy</button>
+  </div>
   <div class="trade-container">
     <div class="exchange-section">
       <p>Amount</p>
@@ -520,7 +525,7 @@
         {/await}
       </select>
     </div>
-    <Button click={exchange} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>EXCHANGE</Button>
+    <Button click={exchange} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>{mode}</Button>
   </div>
 </div>
 <div class="exchanges-section">
@@ -759,55 +764,55 @@
     @include table
     @include page
 
-    .menu
+  .menu
+    position: relative
+    display: flex
+    margin-bottom: 1.5em
+
+    @media screen and (max-width: 720px)
+      justify-content: space-between
+      padding-top: 4em
+
+    button
       position: relative
-      display: flex
-      margin-bottom: 1.5em
+      padding: .4em 1.8em
+      font-family: "JetBrainsMono", monospace
+      text-transform: uppercase
+      font-weight: 600
+      color: #000
+      background-color: transparent
+      border: none
+      font-size: 1.15em
+      outline: none
+        text-align: center
+        cursor: pointer
 
       @media screen and (max-width: 720px)
-        justify-content: space-between
-        padding-top: 4em
+        padding: .18em .14em
+        font-size: .75em
 
-      button
-        position: relative
-        padding: .4em 1.8em
-        font-family: "JetBrainsMono", monospace
-        text-transform: uppercase
-        font-weight: 600
-        color: #000
-        background-color: transparent
-        border: none
-        font-size: 1.15em
-        outline: none
-          text-align: center
-          cursor: pointer
-
-        @media screen and (max-width: 720px)
-          padding: .18em .14em
-          font-size: .75em
-
-        &::after
-          content: ""
-          position: absolute
-          bottom: 0
-          left: 0
-          width: 100%
-          height: 0
-          opacity: 0
-          background-color: #000
-          transition: all .2s
-
-        &.active::after
-          opacity: 1
-          height: 3px
-
-      .trade
+      &::after
+        content: ""
         position: absolute
-        right: 0
-        top: 0
+        bottom: 0
+        left: 0
+        width: 100%
+        height: 0
+        opacity: 0
+        background-color: #000
+        transition: all .2s
 
-        @media screen and (max-width: 720px)
-          right: unset
-          left: 0
+      &.active::after
+        opacity: 1
+        height: 3px
+
+    .trade
+      position: absolute
+      right: 0
+      top: 0
+
+      @media screen and (max-width: 720px)
+        right: unset
+        left: 0
 
 </style>
