@@ -398,6 +398,14 @@
     return closedExchanges;
   }
 
+  async function initiateBuy() {
+
+  }
+
+  async function initiateSell() {
+    
+  }
+
 </script>
 
 <svelte:head>
@@ -449,40 +457,34 @@
     <button class:active={mode === "buy"} on:click={() => mode = "buy"}>Buy</button>
   </div>
   <div class="trade-container">
-    <div class="exchange-section">
-      <p>Amount</p>
-      <div class="input">
-        <input type="number" bind:value={sendAmount} min={0} />
-        <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
-          <option value="AR">AR</option>
-          {#await supportedPSTs}
-            <option disabled>Loading...</option>
-          {:then loadedPsts}
-            {#each loadedPsts as pst}
-              <option value={pst.ticker}>{pst.ticker}</option>
-            {/each}
-          {/await}
-        </select>
-      </div>
-    </div>
-    <div class="exchange-section">
-      <p>Rate</p>
-      <div class="input">
-        <input type="number" bind:value={recieveAmount} min={0} />
-        <select bind:value={recieveCurrency} on:change={() => checkIfArIsPresent("recieve")}>
-          <option value="AR">AR</option>
-          {#await supportedPSTs}
-            <option disabled>Loading...</option>
-          {:then loadedPsts}
-            {#if loadedPsts.length !== 0}
+    {#if mode === "sell"}
+      <div class="exchange-section">
+        <p>Amount</p>
+        <div class="input">
+          <input type="number" bind:value={sendAmount} min={0} />
+          <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
+            {#await supportedPSTs}
+              <option disabled>Loading...</option>
+            {:then loadedPsts}
               {#each loadedPsts as pst}
                 <option value={pst.ticker}>{pst.ticker}</option>
               {/each}
-            {/if}
-          {/await}
-        </select>
+            {/await}
+          </select>
+        </div>
       </div>
-    </div>
+      <div class="exchange-section">
+        <p>Rate</p>
+        <div class="input">
+          <input type="number" bind:value={recieveAmount} min={0} />
+          <div class="select-fake"><span>{sendCurrency} / AR</span></div>
+        </div>
+      </div>
+    {:else if mode === "buy"}
+
+      screw you
+
+    {/if}
   </div>
   <div class="recommended-post">
     <div style="width: 100%; padding-right: 1.25em;">
@@ -643,7 +645,7 @@
       display: flex
       align-items: flex-end
 
-      select
+      select, .select-fake
         width: 100%
         font-size: 1.2em
         padding:
@@ -702,7 +704,7 @@
           @media screen and (max-width: 720px)
             width: 62%
 
-        select
+        select, .select-fake
           width: 20%
           height: 100%
           border-radius: 0
@@ -711,7 +713,7 @@
           @media screen and (max-width: 720px)
             width: 38%
 
-    select
+    select, .select-fake
       $sidePadding: .65em
       position: relative
       color: #fff
@@ -722,16 +724,27 @@
       border-radius: .3em
       outline: none
       border: none
+      -webkit-appearance: none
+      -moz-appearance: none
+      transition: all .3s
+    
+    select
+      $sidePadding: .65em
       background-image: url(/down-arrow.svg)
       background-position: calc(100% - #{$sidePadding}) center
       background-repeat: no-repeat
       background-size: $sidePadding * 1.35
-      -webkit-appearance: none
-      -moz-appearance: none
-      transition: all .3s
 
       &:hover
         opacity: .8
+
+    .select-fake
+      span
+        position: absolute
+        left: 0
+        right: 0
+        top: 0
+        bottom: 0
 
   .exchanges-section
     @include table
