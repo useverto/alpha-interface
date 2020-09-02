@@ -22,17 +22,18 @@
   import { exchangeWallet, pstContract } from "../utils/constants";
 
   let selectedPost;
-  let sendAmount: number = 1;
-  let recieveAmount: number = 1;
-  let sendCurrency: string;
-  let recieveCurrency: string;
+  let buyAmount: number = 1;
+  let sellAmount: number = 1;
+  let buyToken: string;
+  let sellToken: string;
+  let sellRate: number = 1;
+  let mode: string = "buy";
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
-  let mode = "sell";
 
-  if(process.browser) {
+  if (process.browser) {
     const params = new URLSearchParams(window.location.search);
-    if(params.get("post")) selectedPost = params.get("post");
+    if (params.get("post")) selectedPost = params.get("post");
   }
 
   let posts = getTradingPosts();
@@ -175,43 +176,50 @@
 
   // open confirmation modal
   async function exchange () {
-    if(sendCurrency.toLowerCase() === "ar" && recieveCurrency.toLowerCase() === "ar") return; // don't allow transactions with only ar values
     if ($address === selectedPost) {
       notification.notify("Error", "You can not make trades from your own trading post!", NotificationType.error, 5000);
       return;
     }
-    if(sendCurrency.toLowerCase() === "ar" || recieveCurrency.toLowerCase() === "ar") confirmModalOpened = true;
-    exchangeTX = await createExchangeTx();
+    confirmModalOpened = true;
+    if (mode === "sell") {
+      exchangeTX = await initiateSell();
+    } else if (mode === "buy") {
+      exchangeTX = await initiateBuy();
+    } else {
+      notification.notify("Error", "You aren't buying nor selling. This may be a bug.", NotificationType.error, 5000);
+      return;
+    }
+    //exchangeTX = await createExchangeTx();
     fees = await getFee(exchangeTX);
   }
 
-  async function createExchangeTx (): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
+  // async function createExchangeTx (): Promise<Transaction> {
+  //   const client = new Arweave({
+  //     host: "arweave.dev",
+  //     port: 443,
+  //     protocol: "https",
+  //     timeout: 200000,
+  //   });
 
-    const ticker = sendCurrency === "AR" ? recieveCurrency : sendCurrency;
-    const supportedPSTs = await psts;
-    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
+  //   const ticker = sendCurrency === "AR" ? recieveCurrency : sendCurrency;
+  //   const supportedPSTs = await psts;
+  //   const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
-    const tags = {
-      "Exchange": "Verto",
-      "Trade-Opcode": sendCurrency === "AR" ? "Buy" : "Sell"
-    };
+  //   const tags = {
+  //     "Exchange": "Verto",
+  //     "Trade-Opcode": sendCurrency === "AR" ? "Buy" : "Sell"
+  //   };
 
-    const tx = await client.createTransaction({
-      target: selectedPost,
-      data: Math.random().toString().slice(-4)
-    }, JSON.parse($keyfile));
+  //   const tx = await client.createTransaction({
+  //     target: selectedPost,
+  //     data: Math.random().toString().slice(-4)
+  //   }, JSON.parse($keyfile));
     
-    for (const [key, value] of Object.entries(tags)) {
-      tx.addTag(key, value);
-    }
-    return tx;
-  }
+  //   for (const [key, value] of Object.entries(tags)) {
+  //     tx.addTag(key, value);
+  //   }
+  //   return tx;
+  // }
 
   async function createTipTx(): Promise<Transaction> {
     const client = new Arweave({
@@ -266,20 +274,6 @@
 
   function cancelTrade () {
     console.log("Cancelled trade");
-  }
-
-  // only allow exchange if one of the currencies is AR
-  async function checkIfArIsPresent (sendOrRecieve: string) {
-    if(sendCurrency.toLowerCase() !== "ar" && recieveCurrency.toLowerCase() !== "ar") {
-      if(sendOrRecieve === "send") recieveCurrency = "AR";
-      else sendCurrency = "AR";
-    }
-    // only allow one of the receive/send currencies to be AR
-    if(sendCurrency.toLowerCase() === "ar" && recieveCurrency.toLowerCase() === "ar") {
-      let currencies = (await psts).filter(pst => pst.ticker.toLowerCase() !== "ar");
-      if(sendOrRecieve === "send") recieveCurrency = currencies[0].ticker;
-      else sendCurrency = currencies[0].ticker;
-    }
   }
 
   async function getFee(tx: Transaction): Promise<number> {
@@ -403,7 +397,7 @@
   }
 
   async function initiateSell() {
-    
+
   }
 
 </script>
@@ -461,8 +455,8 @@
       <div class="exchange-section">
         <p>Amount</p>
         <div class="input">
-          <input type="number" bind:value={sendAmount} min={0} />
-          <select bind:value={sendCurrency} on:change={() => checkIfArIsPresent("send")}>
+          <input type="number" bind:value={sellAmount} min={0} />
+          <select bind:value={sellToken}>
             {#await supportedPSTs}
               <option disabled>Loading...</option>
             {:then loadedPsts}
@@ -476,8 +470,8 @@
       <div class="exchange-section">
         <p>Rate</p>
         <div class="input">
-          <input type="number" bind:value={recieveAmount} min={0} />
-          <div class="select-fake"><span>{sendCurrency} / AR</span></div>
+          <input type="number" bind:value={sellRate} min={0} />
+          <div class="select-fake"><span>{sellToken} / AR</span></div>
         </div>
       </div>
     {:else if mode === "buy"}
@@ -585,7 +579,7 @@
   </div>
 </div>
 <Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={confirmTrade} onCancel={cancelTrade}>
-  <p style="text-align: center;">
+  <!-- <p style="text-align: center;">
     Exchanging {sendAmount} {sendCurrency} for {recieveAmount} {recieveCurrency}
   </p>
   <p style="text-align: center">
@@ -598,7 +592,8 @@
         This action will cost {sendAmount} {sendCurrency} + {loadedFees} AR
       {/if}
     {/await}
-  </p>
+  </p> -->
+  You have problems
 </Modal>
 <Footer />
 
