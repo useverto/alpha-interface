@@ -418,23 +418,19 @@
     {/if}
   </div>
   <div class="assets">
-    <h1 class="title">Assets</h1>
+    <h1 class="title">Your Assets</h1>
     <table>
       {#await balances}
         {#each Array(5) as _}
           <tr>
             <td style="width: 40%"><SkeletonLoading style="width: 100%" /></td>
-            <td style="width: 18%"><SkeletonLoading style="width: 100%" /></td>
-            <td style="width: 24%"><SkeletonLoading style="width: 100%" /></td>
-            <td style="width: 18%"><SkeletonLoading style="width: 100%" /></td>
+            <td style="width: 60%"><SkeletonLoading style="width: 100%" /></td>
           </tr>
         {/each}
       {:then loadedBalances}
         <tr>
           <th style="width: 40%">Token</th>
-          <th style="width: 18%">Dist.</th>
-          <th style="width: 24%">Amount</th>
-          <th style="width: 18%">Value (Ar)</th>
+          <th style="width: 60%">Amount</th>
         </tr>
         {#if loadedBalances.length === 0}
           <p>You don't have any tokens!</p>
@@ -442,9 +438,7 @@
         {#each loadedBalances as balance}
           <tr>
             <td style="width: 40%">{balance.token}</td>
-            <td style="width: 18%">TODO</td>
-            <td style="width: 24%">{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
-            <td style="width: 18%">TODO</td>
+            <td style="width: 60%">{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
           </tr>
         {/each}
       {/await}
