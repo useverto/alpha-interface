@@ -1,15 +1,16 @@
 <script lang="typescript">
 
-  import { address, loggedIn } from "../../stores/keyfileStore.ts";
+  import { address } from "../../stores/keyfileStore.js";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import Loading from "../../components/Loading.svelte";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
   import moment from "moment";
+  import { loggedIn } from "../../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import query from "../../api-client.ts";
+  import { query } from "../../api-client";
   import Arweave from "arweave";
   import allTransactionsQuery from "../../queries/allTransactions.gql";
   

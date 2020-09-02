@@ -3,11 +3,12 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Loading from "../components/Loading.svelte";
-  import { loggedIn } from "../stores/keyfileStore.ts";
+  import { loggedIn } from "../stores/keyfileStore.js";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-  import query from "../api-client.ts";
+  
+  import { query } from "../api-client.js";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
   import { exchangeWallet, pstContract } from "../utils/constants";

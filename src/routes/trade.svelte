@@ -3,12 +3,13 @@
   import { goto } from "@sapper/app";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import { balance, address, keyfile } from "../stores/keyfileStore.ts";
+  import { balance, address, keyfile } from "../stores/keyfileStore.js";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
-  import query from "../api-client.ts";
+
+  import { query } from "../api-client";
   import galleryQuery from "../queries/gallery.gql";
   import tokensQuery from "../queries/tokens.gql";
   import postTokensQuery from "../queries/postTokens.gql";
@@ -17,8 +18,7 @@
   import { interactRead } from "smartweave";
   import Community from "community-js";
   import Transaction from "arweave/node/lib/transaction";
-  import { notification } from "../stores/notificationStore.ts";
-  import { NotificationType } from "../types.ts";
+  import { notification, NotificationType } from "../stores/notificationStore.js";
   import { exchangeWallet, pstContract } from "../utils/constants";
 
   let selectedPost;

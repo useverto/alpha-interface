@@ -1,5 +1,4 @@
 import { writable } from "svelte/store";
-import type { NotificationType } from "../types";
 
 export const notification = createNotificationStore();
 
@@ -8,10 +7,18 @@ function createNotificationStore () {
   set(null);
 
   return {
-    notify (title: string, description: string, type: NotificationType, timeout: number) {
+    notify (title, description, type, timeout) {
+      if(typeof type !== "number" || type > 3) return;
       set({ title, description, type, timeout });
     },
     subscribe,
     remove: () => set(null)
   }
+}
+
+export const NotificationType = {
+  error: 0,
+  warning: 1,
+  log: 2,
+  success: 3
 }

@@ -1,14 +1,15 @@
 <script lang="ts">
 
   import { fade } from "svelte/transition";
-  import query from "../../api-client.ts";
+
+  import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
   import Arweave from "arweave";
   import tokensQuery from "../../queries/tokens.gql";
   import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
   import SkeletonLoading from "../SkeletonLoading.svelte";
-  import { address } from "../../stores/keyfileStore.ts";
+  import { address } from "../../stores/keyfileStore";
 
   let exchanges = getLatestExchanges();
 

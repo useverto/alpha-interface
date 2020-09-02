@@ -1,9 +1,8 @@
 <script lang="typescript">
 
   import { fade } from "svelte/transition";
-  import { loggedIn, logOut } from "../stores/keyfileStore.ts";
-  import { NotificationType } from "../types.ts";
-  import { notification } from "../stores/notificationStore.ts";
+  import { loggedIn, logOut } from "../stores/keyfileStore.js";
+  import { notification, NotificationType } from "../stores/notificationStore.js";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";
@@ -110,9 +109,6 @@
         background-color: #000
         border-radius: 2px
         text-transform: uppercase
-
-      &:hover
-        opacity: .8
 
     &.hero
       a.title

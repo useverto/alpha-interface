@@ -6,7 +6,7 @@
   import Arweave from "arweave";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import latestTradesQuery from "../../queries/latestTrades.gql";
-  import query from "../../api-client.ts";
+  import { query } from "../../api-client";
 
   let element, y, windowHeight, shown = false;
   let txs = getLatestTrades();
