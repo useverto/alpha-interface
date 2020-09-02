@@ -393,11 +393,63 @@
   }
 
   async function initiateBuy() {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
 
+    const ticker = sellToken
+    const supportedPSTs = await psts;
+    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
+
+    const tags = {
+      "Exchange": "Verto",
+      "Token": pstTxId
+    };
+
+    const tx = await client.createTransaction({
+      target: selectedPost,
+      quantity: client.ar.arToWinston(buyAmount.toString())
+    }, JSON.parse($keyfile));
+    
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value);
+    }
+    return tx;
   }
 
   async function initiateSell() {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
 
+    const ticker = sellToken
+    const supportedPSTs = await psts;
+    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
+
+    const tags = {
+      "Exchange": "Verto",
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      "Contract": pstTxId,
+      "Rate": sellRate,
+      "Input": `{"function":"transfer","target":"${selectedPost}","qty":${sellAmount}}`
+    };
+
+    const tx = await client.createTransaction({
+      target: selectedPost,
+      data: Math.random().toString().slice(-4)
+    }, JSON.parse($keyfile));
+    
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value);
+    }
+    return tx;
   }
 
 </script>
