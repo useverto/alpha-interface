@@ -406,6 +406,7 @@
 
     const tags = {
       "Exchange": "Verto",
+      "Type": "Buy",
       "Token": pstTxId
     };
 
@@ -434,6 +435,7 @@
 
     const tags = {
       "Exchange": "Verto",
+      "Type": "Sell",
       "App-Name": "SmartWeaveAction",
       "App-Version": "0.3.0",
       "Contract": pstTxId,
