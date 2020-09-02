@@ -5,9 +5,10 @@ import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
 import babel from "@rollup/plugin-babel";
 import { terser } from "rollup-plugin-terser";
+import typescript from "rollup-plugin-typescript2";
 import config from "sapper/config/rollup.js";
 import pkg from "./package.json";
-import sveltePreprocess, { sass } from "svelte-preprocess";
+import { sass, typescript as typescriptprocess } from "svelte-preprocess";
 import image from "@rollup/plugin-image";
 import url from "@rollup/plugin-url";
 import json from "@rollup/plugin-json";
@@ -16,11 +17,12 @@ import { string } from "rollup-plugin-string";
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+const tsconfigFile = require("./tsconfig.json");
 
 const onwarn = (warning, onwarn) => {
   if((warning.code === "THIS_IS_UNDEFINED" && warning.message.match("equivalent to 'undefined'")) || (warning.code === "SOURCEMAP_ERROR" && warning.message.match("Can't resolve original location of error."))) return;
-  // remove the arweave warning. We can't do anything about that
-  if(warning.code === "CIRCULAR_DEPENDENCY" && warning.importer.includes("arweave")) return;
+  // remove the arweave / smartweave warning. We can't do anything about that
+  if(warning.code === "CIRCULAR_DEPENDENCY" && (warning.importer.includes("arweave") || warning.importer.includes("smartweave"))) return;
 	// remove the no-onchange warning. In our case, on:change is needed, and on:blur does not work as intended
 	if(warning.code === "PLUGIN_WARNING" && warning.pluginCode === "a11y-no-onchange") return;
   onwarn(warning);
@@ -28,7 +30,7 @@ const onwarn = (warning, onwarn) => {
 
 export default {
 	client: {
-		input: config.client.input(),
+		input: config.client.input().replace(/\.js$/, ".ts"),
 		output: config.client.output(),
 		plugins: [
 			replace({
@@ -40,7 +42,10 @@ export default {
 				hydratable: true,
 				emitCss: true,
 				css: css => css.write("public/build/bundle.css"),
-				preprocess: sveltePreprocess()
+				preprocess: [
+					sass({}),
+					typescriptprocess({ tsconfigFile })
+				]
 			}),
 			resolve({
 				browser: true,
@@ -48,6 +53,7 @@ export default {
 				preferBuiltins: false,
 			}),
 			commonjs(),
+			typescript(),
 			sass(),
 			image(),
 			url(),
@@ -81,7 +87,10 @@ export default {
 	},
 
 	server: {
-		input: config.server.input(),
+		/**
+		 *? config.server.input returns an object instead of a string like the client does. Not sure if this is intended so I have it check the type before calling replace()
+		 */
+		input: ((typeof config.server.input() === 'string') ? config.server.input() : config.server.input().server).replace(/\.js$/, ".ts"),
 		output: config.server.output(),
 		plugins: [
 			replace({
@@ -91,13 +100,17 @@ export default {
 			svelte({
 				generate: "ssr",
 				dev,
-				preprocess: sveltePreprocess()
+				preprocess: [
+					sass({}),
+					typescriptprocess({ tsconfigFile })
+				]
 			}),
 			resolve({
 				dedupe: ["svelte"],
 				preferBuiltins: false,
 			}),
 			commonjs(),
+			typescript(),
 			sass(),
 			image(),
 			url(),

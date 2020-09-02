@@ -4,8 +4,9 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile, loggedIn, address } from "../stores/keyfileStore.js";
-  import { notification, NotificationType } from "../stores/notificationStore.js";
+  import { keyfile, loggedIn, address } from "../stores/keyfileStore.ts";
+  import { NotificationType } from "../types.ts";
+  import { notification } from "../stores/notificationStore.ts";
   import Arweave from "arweave";
 
   let isDragOver = false;

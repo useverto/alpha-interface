@@ -1,9 +1,9 @@
 <script lang="ts">
 
-  import { keyfile } from "../../stores/keyfileStore.js";
+  import { keyfile } from "../../stores/keyfileStore.ts";
   import Loading from "../../components/Loading.svelte";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
-  import { query } from "../../api-client";
+  import query from "../../api-client.ts";
   import tokensQuery from "../../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
