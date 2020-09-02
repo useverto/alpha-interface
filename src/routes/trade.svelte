@@ -527,9 +527,16 @@
         </div>
       </div>
     {:else if mode === "buy"}
-
-      screw you
-
+      <input type="number" bind:value={buyAmount} min={0} />
+      <select bind:value={buyToken}>
+        {#await supportedPSTs}
+          <option disabled>Loading...</option>
+        {:then loadedPsts}
+          {#each loadedPsts as pst}
+            <option value={pst.ticker}>{pst.ticker}</option>
+          {/each}
+        {/await}
+      </select>
     {/if}
   </div>
   <div class="recommended-post">
