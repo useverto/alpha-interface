@@ -398,20 +398,6 @@
     return closedExchanges;
   }
 
-  function updateSelects(trade: { id: string, type: string, ar: string, pst: string, matched: boolean }) {
-    if (trade.type === "Sell") {
-      sendCurrency = trade.ar.split(" ")[1];
-      recieveCurrency = trade.pst.split(" ")[1];
-      sendAmount = parseFloat(trade.ar.split(" ")[0]);
-      recieveAmount = parseFloat(trade.pst.split(" ")[0]);
-    } else if (trade.type === "Buy") {
-      sendCurrency = trade.pst.split(" ")[1];
-      recieveCurrency = trade.ar.split(" ")[1];
-      sendAmount = parseFloat(trade.pst.split(" ")[0]);
-      recieveAmount = parseFloat(trade.ar.split(" ")[0]);
-    }
-  }
-
 </script>
 
 <svelte:head>
@@ -563,13 +549,6 @@
                 {:else}
                   {trade.ar}
                 {/if}
-              </td>
-              <td>
-                <Button
-                  click={() => updateSelects(trade)}
-                  style={"padding-left: 0; padding-right: 0; font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
-                  Match
-                </Button>
               </td>
             </tr>
           {/each}
