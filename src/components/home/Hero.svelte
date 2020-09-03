@@ -1,5 +1,4 @@
 <script lang="typescript">
-
   import { fade } from "svelte/transition";
   import * as animateScroll from "svelte-scrollto";
   import blob1 from "../../assets/blob1.svg";
@@ -7,22 +6,11 @@
   import Button from "../Button.svelte";
 
   // is logged in?
-  $: loggedIn = (process.browser) ? ((localStorage.getItem("keyfile") !== null && localStorage.getItem("keyfile") !== undefined)) : false;
-
+  $: loggedIn = process.browser
+    ? localStorage.getItem("keyfile") !== null &&
+      localStorage.getItem("keyfile") !== undefined
+    : false;
 </script>
-
-<div class="Hero">
-  <div class="blobs">
-    <img src={blob2} alt="blob2" class="blob blob2" draggable={false}>
-    <img src={blob1} alt="blob1" class="blob blob1" draggable={false}>
-  </div>
-  <div class="content" in:fade={{ duration: 750 }}>
-    <h1 class="welcome">Welcome to <span class="verto-name">Verto</span><span class="beta">alpha</span></h1>
-    <p>A decentralized token exchange for <a href="https://arweave.org">Arweave</a> <br>Profit Sharing Tokens</p>
-    <Button reverse={true} clear={true} click={() => animateScroll.scrollTo({element: '#read-more'})}>Read more</Button>
-    <Button reverse={true} href={loggedIn ? 'app' : 'login'}>Exchange now</Button>
-  </div>
-</div>
 
 <style lang="sass">
 
@@ -130,3 +118,29 @@
         100%
           transform: rotate(360deg)
 </style>
+
+<div class="Hero">
+  <div class="blobs">
+    <img src={blob2} alt="blob2" class="blob blob2" draggable={false} />
+    <img src={blob1} alt="blob1" class="blob blob1" draggable={false} />
+  </div>
+  <div class="content" in:fade={{ duration: 750 }}>
+    <h1 class="welcome">
+      Welcome to <span class="verto-name">Verto</span><span
+        class="beta">alpha</span>
+    </h1>
+    <p>
+      A decentralized token exchange for <a href="https://arweave.org">Arweave</a>
+      <br />Profit Sharing Tokens
+    </p>
+    <Button
+      reverse={true}
+      clear={true}
+      click={() => animateScroll.scrollTo({ element: '#read-more' })}>
+      Read more
+    </Button>
+    <Button reverse={true} href={loggedIn ? 'app' : 'login'}>
+      Exchange now
+    </Button>
+  </div>
+</div>

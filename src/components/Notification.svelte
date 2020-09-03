@@ -1,6 +1,8 @@
 <script>
-
-  import { notification, NotificationType } from "../stores/notificationStore.js";
+  import {
+    notification,
+    NotificationType,
+  } from "../stores/notificationStore.js";
   import { cubicIn } from "svelte/easing";
   import { fly, scale, fade } from "svelte/transition";
   import errorIcon from "../assets/notification/error.svg";
@@ -9,36 +11,26 @@
   import infoIcon from "../assets/notification/info.svg";
   import closeIcon from "../assets/notification/close.svg";
 
-  let
-    timeout = null,
+  let timeout = null,
     hover = false;
 
-  $: notificationClass = $notification === null ? "" : Object.keys(NotificationType).find(key => NotificationType[key] === $notification.type);
+  $: notificationClass =
+    $notification === null
+      ? ""
+      : Object.keys(NotificationType).find(
+          (key) => NotificationType[key] === $notification.type
+        );
 
-  function hide () {
+  function hide() {
     notification.remove();
     timeout = null;
   }
 
   $: {
-    if($notification !== null && timeout === null) timeout = setTimeout(hide, $notification.timeout);
+    if ($notification !== null && timeout === null)
+      timeout = setTimeout(hide, $notification.timeout);
   }
-
 </script>
-
-{#if $notification !== null}
-  <div class="notification {notificationClass}" in:fly={{ x: 1000, opacity: 0, easing: cubicIn }} out:scale={{ duration: 200 }} on:click={hide} on:mouseover={() => hover = true} on:mouseleave={() => hover = false}>
-    {#if hover}
-      <img class="notification-icon" src={closeIcon} alt="close-notification" in:fade={{ duration: 300 }}>
-    {:else}
-      <img class="notification-icon" src={notificationClass === "error" ? errorIcon : (notificationClass === "warning" ? warningIcon : (notificationClass === "success" ? successIcon : infoIcon))} alt={notificationClass}  in:fade={{ duration: 300 }}>
-    {/if}
-    <div class="notification-content">
-      <h1 class={notificationClass}>[{$notification.title}]</h1>
-      <p>{$notification.description}</p>
-    </div>
-  </div>
-{/if}
 
 <style lang="sass">
 
@@ -94,3 +86,31 @@
         font-weight: 400
 
 </style>
+
+{#if $notification !== null}
+  <div
+    class="notification {notificationClass}"
+    in:fly={{ x: 1000, opacity: 0, easing: cubicIn }}
+    out:scale={{ duration: 200 }}
+    on:click={hide}
+    on:mouseover={() => (hover = true)}
+    on:mouseleave={() => (hover = false)}>
+    {#if hover}
+      <img
+        class="notification-icon"
+        src={closeIcon}
+        alt="close-notification"
+        in:fade={{ duration: 300 }} />
+    {:else}
+      <img
+        class="notification-icon"
+        src={notificationClass === 'error' ? errorIcon : notificationClass === 'warning' ? warningIcon : notificationClass === 'success' ? successIcon : infoIcon}
+        alt={notificationClass}
+        in:fade={{ duration: 300 }} />
+    {/if}
+    <div class="notification-content">
+      <h1 class={notificationClass}>[{$notification.title}]</h1>
+      <p>{$notification.description}</p>
+    </div>
+  </div>
+{/if}

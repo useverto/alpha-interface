@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import { fade } from "svelte/transition";
 
   import { query } from "../../api-client";
@@ -13,47 +12,72 @@
 
   let exchanges = getLatestExchanges();
 
-  async function getLatestExchanges (): Promise<{ id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[]> {
-    if(!process.browser) return [];
-    
-    let exchanges: { id: string, timestamp: string, type: string, ar: string, pst: string, status: string, duration: string }[] = [];
-    
-    const txs = (await query({
-      query: exchangesQuery,
-      variables: {
-        owners: [$address],
-        num: 5
-      }
-    })).data.transactions.edges;
-    
+  async function getLatestExchanges(): Promise<
+    {
+      id: string;
+      timestamp: string;
+      type: string;
+      ar: string;
+      pst: string;
+      status: string;
+      duration: string;
+    }[]
+  > {
+    if (!process.browser) return [];
+
+    let exchanges: {
+      id: string;
+      timestamp: string;
+      type: string;
+      ar: string;
+      pst: string;
+      status: string;
+      duration: string;
+    }[] = [];
+
+    const txs = (
+      await query({
+        query: exchangesQuery,
+        variables: {
+          owners: [$address],
+          num: 5,
+        },
+      })
+    ).data.transactions.edges;
+
     const psts = await getSupportedPSTs();
 
     txs.map(({ node }) => {
-      const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
+      const tradeType = node.tags.find((tag) => tag.name === "Trade-Opcode")
+        ?.value;
       if (tradeType) {
-        const arVal = node.tags.find(tag => tag.name === "Buy-For")?.value;
-        const pstVal = node.tags.find(tag => tag.name === "Sell-Qty")?.value;
+        const arVal = node.tags.find((tag) => tag.name === "Buy-For")?.value;
+        const pstVal = node.tags.find((tag) => tag.name === "Sell-Qty")?.value;
 
-        const tokenId = node.tags.find(tag => tag.name === "Target-Token")?.value;
-        const token = psts.find(pst => pst.id === tokenId)?.ticker;
+        const tokenId = node.tags.find((tag) => tag.name === "Target-Token")
+          ?.value;
+        const token = psts.find((pst) => pst.id === tokenId)?.ticker;
 
         exchanges.push({
           id: node.id,
-          timestamp: moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss"),
+          timestamp: moment
+            .unix(node.block.timestamp)
+            .format("YYYY-MM-DD hh:mm:ss"),
           type: tradeType,
           ar: arVal + " AR",
           pst: pstVal + " " + token,
           status: "pending",
-          duration: "not completed"
-        })
+          duration: "not completed",
+        });
       }
-    })
+    });
 
     for (let i = 0; i < exchanges.length; i++) {
       const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
-      
-      const match = (await query({
-        query: `
+
+      const match = (
+        await query({
+          query: `
           query {
             transactions(
               tags: [
@@ -77,14 +101,17 @@
             }
           }
         `,
-      })).data.transactions.edges;
-      
+        })
+      ).data.transactions.edges;
+
       if (match[0]) {
         exchanges[i].status = "success";
 
         const start = moment(exchanges[i].timestamp);
         const end = moment(
-          moment.unix(match[0].node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
+          moment
+            .unix(match[0].node.block.timestamp)
+            .format("YYYY-MM-DD hh:mm:ss")
         );
         const duration = moment.duration(end.diff(start));
 
@@ -95,10 +122,12 @@
     return exchanges;
   }
 
-  async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
-    if(!process.browser) return [];
+  async function getSupportedPSTs(): Promise<
+    { id: string; name: string; ticker: string }[]
+  > {
+    if (!process.browser) return [];
 
-    let psts: { id: string, name: string, ticker: string }[] = [];
+    let psts: { id: string; name: string; ticker: string }[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -108,27 +137,30 @@
     });
 
     let txIds = [];
-    const _txIds = (await query({
-      query: tokensQuery,
+    const _txIds = (
+      await query({
+        query: tokensQuery,
         variables: {
-          owners: [exchangeWallet]
-        }
-    })).data.transactions.edges;
+          owners: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges;
     _txIds.map(({ node }) => {
       txIds.push(node.id);
-    })
+    });
 
     for (const id of txIds) {
       try {
-        const contractId = (await client.transactions.getData(
-          id,
-          {decode: true, string: true},
-        )).toString();
+        const contractId = (
+          await client.transactions.getData(id, { decode: true, string: true })
+        ).toString();
         const contractData = JSON.parse(
-          (await client.transactions.getData(
-            contractId,
-            {decode: true, string: true},
-          )).toString()
+          (
+            await client.transactions.getData(contractId, {
+              decode: true,
+              string: true,
+            })
+          ).toString()
         );
         psts.push({
           id: contractId,
@@ -142,8 +174,17 @@
 
     return psts;
   }
-
 </script>
+
+<style lang="sass">
+  @import "../../styles/tables.sass" @import "../../styles/general.sass"
+    .section @include table padding-bottom: 2.5em @media screen and
+    (max-width: 720px) width: 100vw - $mobileSidePadding * 2 overflow-x: auto
+    a.view-all display: block text-align: center color: rgba(#000, 0.5)
+    font-weight: 500 padding: 0.8em 0 transition: all 0.3s &: hover opacity: 0.7
+    &: first-child padding-top: 3.5em a.transaction text-decoration: none color:
+    black;
+</style>
 
 <div class="section">
   <h1 class="title">Trades</h1>
@@ -156,72 +197,42 @@
     {#await exchanges}
       {#each Array(5) as _}
         <tr>
-          <td style="width: 30%"><SkeletonLoading style={"width: 100%"} /></td>
-          <td style="width: 60%"><SkeletonLoading style={"width: 100%"} /></td>
-          <td style="width: 15%"><SkeletonLoading style={"width: 100%"} /></td>
+          <td style="width: 30%">
+            <SkeletonLoading style={'width: 100%'} />
+          </td>
+          <td style="width: 60%">
+            <SkeletonLoading style={'width: 100%'} />
+          </td>
+          <td style="width: 15%">
+            <SkeletonLoading style={'width: 100%'} />
+          </td>
         </tr>
       {/each}
     {:then loadedExchanges}
       {#if loadedExchanges.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">No trades found</p>
-        <tr><td><br></td><td></td></tr> <!-- empty line to push "view-all" down -->
+        <p style="position: absolute; left: 50%; transform: translateX(-50%);">
+          No trades found
+        </p>
+        <tr>
+          <td><br /></td>
+          <td />
+        </tr>
+        <!-- empty line to push "view-all" down -->
       {/if}
       {#each loadedExchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
           <td style="width: 45%">
-            {#if exchange.type === "Buy"}
-              {exchange.ar}
-            {:else}
-              {exchange.pst}
-            {/if}
-            {"->"}
-            {#if exchange.type === "Buy"}
-              {exchange.pst}
-            {:else}
-              {exchange.ar}
-            {/if}
-            <span class="status {exchange.status}"></span>
+            {#if exchange.type === 'Buy'}{exchange.ar}{:else}{exchange.pst}{/if}
+            {'->'}
+            {#if exchange.type === 'Buy'}{exchange.pst}{:else}{exchange.ar}{/if}
+            <span class="status {exchange.status}" />
           </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
-        <tr>
-      </tr>
+        <tr />
       {/each}
     {/await}
   </table>
-  <a href="/app/all-exchanges" class="view-all">View all {"->"}</a>
+  <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
 </div>
-
-<style lang="sass">
-  
-  @import "../../styles/tables.sass"
-  @import "../../styles/general.sass"
-
-  .section
-    @include table
-    padding-bottom: 2.5em
-
-    @media screen and (max-width: 720px)
-      width: 100vw - $mobileSidePadding * 2
-      overflow-x: auto
-
-    a.view-all
-      display: block
-      text-align: center
-      color: rgba(#000, .5)
-      font-weight: 500
-      padding: .8em 0
-      transition: all .3s
-
-      &:hover
-        opacity: .7
-
-    &:first-child
-      padding-top: 3.5em
-
-    a.transaction
-      text-decoration: none
-      color: black
-
-</style>

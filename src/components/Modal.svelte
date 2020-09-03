@@ -1,5 +1,4 @@
 <script lang="typescript">
-
   import { fade } from "svelte/transition";
 
   export let confirmation: boolean = false; // show confirmation button
@@ -10,31 +9,13 @@
 
   let canceledClose = false; // if closing the modal was cancelled. This adds the "cancelled" class to the modal
 
-  async function close (execute: Function) {
+  async function close(execute: Function) {
     canceledClose = false;
-    let cancelClose = () => canceledClose = true;
+    let cancelClose = () => (canceledClose = true);
     await execute(cancelClose);
-    if(!canceledClose) opened = false;
+    if (!canceledClose) opened = false;
   }
-
 </script>
-
-{#if opened}
-  <div class="modal-overlay" in:fade={{ duration: 150 }} out:fade={{ duration: 100 }} on:click={() => { if(!confirmation) close(onClose); }}></div>
-  <div class="Modal" in:fade={{ duration: 240 }} out:fade={{ duration: 180 }} class:cancelled={canceledClose}>
-    <div class="content">
-      <slot></slot>
-    </div>
-    <div class="confirmation">
-      {#if confirmation}
-        <button class="confirm" on:click={() => { close(onConfirm); }}>[Confirm]</button>
-        <button class="cancel" on:click={() => { close(onCancel); }}>[Cancel]</button>
-      {:else}
-        <button on:click={() => { close(onClose); }}>[Ok]</button>
-      {/if}
-    </div>
-  </div>
-{/if}
 
 <style lang="sass">
 
@@ -101,3 +82,41 @@
         color: #FF375D
 
 </style>
+
+{#if opened}
+  <div
+    class="modal-overlay"
+    in:fade={{ duration: 150 }}
+    out:fade={{ duration: 100 }}
+    on:click={() => {
+      if (!confirmation) close(onClose);
+    }} />
+  <div
+    class="Modal"
+    in:fade={{ duration: 240 }}
+    out:fade={{ duration: 180 }}
+    class:cancelled={canceledClose}>
+    <div class="content">
+      <slot />
+    </div>
+    <div class="confirmation">
+      {#if confirmation}
+        <button
+          class="confirm"
+          on:click={() => {
+            close(onConfirm);
+          }}>[Confirm]</button>
+        <button
+          class="cancel"
+          on:click={() => {
+            close(onCancel);
+          }}>[Cancel]</button>
+      {:else}
+        <button
+          on:click={() => {
+            close(onClose);
+          }}>[Ok]</button>
+      {/if}
+    </div>
+  </div>
+{/if}
