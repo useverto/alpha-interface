@@ -11,6 +11,7 @@
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .Button
@@ -72,7 +73,6 @@
           color: #000   
 
 </style>
-
 <a
   {href}
   {target}

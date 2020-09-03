@@ -141,16 +141,52 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
-  @import "../../styles/tables.sass" @import "../../styles/general.sass"
-    .section @include table padding-bottom: 2.5em display: flex justify-content:
-    space-between align-items: center @media screen and (max-width: 720px) width:
-    100vw - $mobileSidePadding * 2 overflow-x: auto .assets-table width: 50%
-    transition: all 0.3s &.noelements width: 100% a.view-all display: block
-    text-align: center color: rgba(#000, 0.5) font-weight: 500 padding: 0.8em 0
-    transition: all 0.3s &: hover opacity: 0.7 a.transaction text-decoration:
-    none color: black .assets-chart width: 50% transition: all 0.3s &.noelements
-    width: 0%;
+  
+  @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
+
+  .section
+    @include table
+    padding-bottom: 2.5em
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    @media screen and (max-width: 720px)
+      width: 100vw - $mobileSidePadding * 2
+      overflow-x: auto
+
+    .assets-table
+      width: 50%
+      transition: all .3s
+
+      &.noelements
+        width: 100%
+
+      a.view-all
+        display: block
+        text-align: center
+        color: rgba(#000, .5)
+        font-weight: 500
+        padding: .8em 0
+        transition: all .3s
+
+        &:hover
+          opacity: .7
+
+      a.transaction
+        text-decoration: none
+        color: black
+
+    .assets-chart
+      width: 50%
+      transition: all .3s
+
+      &.noelements
+        width: 0%
+
 </style>
 
 <div class="section">

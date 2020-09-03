@@ -19,16 +19,50 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
-  @import "../styles/tables.sass" @import "../styles/general.sass" .dashboard
-    @include page @include table @media screen and (max-width: 720px)
-    padding-top: 2em .section padding-bottom: 2.5em .balance p color:
-    rgba(#000, 0.3) text-transform: uppercase font-size: 0.9em margin: 0
-    font-weight: 600 &.wallet text-transform: none h1.total-balance font-size:
-    2.3em color: #000 font-weight: 400 margin: 0.14em 0 @media screen and
-    (max-width: 720px) padding-top: 0.65em !important h1.title font-size: 2.3em
-    font-weight: 600 @media screen and (max-width: 720px) width: 100% font-size:
-    2.01em;
+
+  @import "../styles/tables.sass"
+  @import "../styles/general.sass"
+
+  .dashboard
+    @include page
+    @include table
+
+    @media screen and (max-width: 720px)
+      padding-top: 2em
+
+    .section
+      padding-bottom: 2.5em
+
+    .balance
+      p
+        color: rgba(#000, .3)
+        text-transform: uppercase
+        font-size: .9em
+        margin: 0
+        font-weight: 600
+
+        &.wallet
+          text-transform: none
+
+      h1.total-balance
+        font-size: 2.3em
+        color: #000
+        font-weight: 400
+        margin: .14em 0
+
+      @media screen and (max-width: 720px)
+        padding-top: .65em !important
+
+    h1.title
+      font-size: 2.3em
+      font-weight: 600
+
+      @media screen and (max-width: 720px)
+        width: 100%
+        font-size: 2.01em
+
 </style>
 
 <svelte:head>

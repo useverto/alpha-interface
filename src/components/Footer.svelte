@@ -16,6 +16,7 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .Footer

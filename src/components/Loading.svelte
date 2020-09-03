@@ -5,6 +5,7 @@
   export let style: string = ""; // external styling
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .Loading

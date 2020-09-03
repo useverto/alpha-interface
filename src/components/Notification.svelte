@@ -32,6 +32,7 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .notification

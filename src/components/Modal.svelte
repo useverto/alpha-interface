@@ -17,6 +17,7 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .modal-overlay

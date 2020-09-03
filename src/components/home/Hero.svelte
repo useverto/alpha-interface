@@ -12,6 +12,7 @@
     : false;
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .Hero

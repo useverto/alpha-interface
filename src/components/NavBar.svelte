@@ -38,6 +38,7 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .NavBar

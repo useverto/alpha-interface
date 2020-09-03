@@ -4,6 +4,7 @@
   export let style: string = "";
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .skeleton-loading

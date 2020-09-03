@@ -176,14 +176,38 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
-  @import "../../styles/tables.sass" @import "../../styles/general.sass"
-    .section @include table padding-bottom: 2.5em @media screen and
-    (max-width: 720px) width: 100vw - $mobileSidePadding * 2 overflow-x: auto
-    a.view-all display: block text-align: center color: rgba(#000, 0.5)
-    font-weight: 500 padding: 0.8em 0 transition: all 0.3s &: hover opacity: 0.7
-    &: first-child padding-top: 3.5em a.transaction text-decoration: none color:
-    black;
+  
+  @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
+
+  .section
+    @include table
+    padding-bottom: 2.5em
+
+    @media screen and (max-width: 720px)
+      width: 100vw - $mobileSidePadding * 2
+      overflow-x: auto
+
+    a.view-all
+      display: block
+      text-align: center
+      color: rgba(#000, .5)
+      font-weight: 500
+      padding: .8em 0
+      transition: all .3s
+
+      &:hover
+        opacity: .7
+
+    &:first-child
+      padding-top: 3.5em
+
+    a.transaction
+      text-decoration: none
+      color: black
+
 </style>
 
 <div class="section">

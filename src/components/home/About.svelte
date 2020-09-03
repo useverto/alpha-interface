@@ -18,6 +18,7 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .About
