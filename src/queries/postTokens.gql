@@ -4,7 +4,7 @@ query($owners: [String!], $recipients: [String!]) {
     recipients: $recipients
     tags: [
       { name: "Exchange", values: "Verto" }
-      { name: "Trading-Post-Genesis", values: "Genesis" }
+      { name: "Type", values: "Genesis" }
     ]
   ) {
     edges {
