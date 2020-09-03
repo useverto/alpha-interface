@@ -1,3 +1,26 @@
+<script lang="typescript">
+  import { loggedIn, logOut } from "../stores/keyfileStore.js";
+  import {
+    notification,
+    NotificationType,
+  } from "../stores/notificationStore.js";
+  import { goto } from "@sapper/app";
+  import Button from "../components/Button.svelte";
+
+  function _logOut() {
+    if (!process.browser) return;
+    if (!$loggedIn) return;
+    logOut();
+    goto("/");
+    notification.notify(
+      "Logged out",
+      "You've successfully logged out.",
+      NotificationType.log,
+      5000
+    );
+  }
+</script>
+
 <style lang="sass">
     
   .gate
@@ -35,6 +58,7 @@
         You must submit at least one data transaction to Arweave in order to be
         eligible to use Verto!
       </p>
+      <Button click={_logOut}>Sign Out</Button>
     </div>
   </div>
 </div>

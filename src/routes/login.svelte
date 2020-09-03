@@ -41,13 +41,19 @@
           .jwkToAddress(JSON.parse(localStorage.getItem("keyfile")))
           .then((_address) => {
             address.set(_address);
-            goto("/app");
-            notification.notify(
-              "Welcome",
-              "You've successfully logged in!",
-              NotificationType.success,
-              5000
-            );
+            client.wallets.getLastTransactionID(_address).then((id) => {
+              if (id === "") {
+                goto("/gate");
+              } else {
+                goto("/app");
+              }
+              notification.notify(
+                "Welcome",
+                "You've successfully logged in!",
+                NotificationType.success,
+                5000
+              );
+            })
           });
       };
       reader.readAsText(files[0]);
