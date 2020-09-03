@@ -7,7 +7,7 @@
   if (process.browser && $loggedIn) {
     console.log($loggedIn);
     goto("/app");
-  };
+  }
 </script>
 
 <svelte:head>
@@ -19,9 +19,10 @@
     <div class="text">
       <h1>You aren't eligible...</h1>
       <p>
-        Verto is in testing and only open to early permaweb adopters right now. We look forward to welcoming you when become an Arweaver.
+        Verto is in testing and only open to early permaweb adopters right now.
+        We look forward to welcoming you when become an Arweaver.
       </p>
-      <Button click={() => goto("/")}>Go Back</Button>
+      <Button click={() => goto('/')}>Go Back</Button>
     </div>
   </div>
 </div>

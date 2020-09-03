@@ -40,7 +40,9 @@
       reader.onload = async () => {
         if (typeof reader.result !== "string") goto("/");
         // @ts-ignore
-        let _address = await client.wallets.jwkToAddress(JSON.parse(reader.result));
+        let _address = await client.wallets.jwkToAddress(
+          JSON.parse(reader.result)
+        );
         const outTxs = (
           await query({
             query: latestTransactionsQuery,

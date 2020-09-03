@@ -6,6 +6,6 @@ const arweave = Arweave.init({
   protocol: "https",
 });
 
-arweave.wallets.generate().then(key => {
+arweave.wallets.generate().then((key) => {
   console.log(key);
 });
