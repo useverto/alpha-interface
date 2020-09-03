@@ -19,5 +19,5 @@ jobs:
 
       - name: Check fmt
         run: |
-          yarn fmt:check
           yarn prefmt
+          yarn fmt:check
