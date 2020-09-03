@@ -275,38 +275,155 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
-  @import "../styles/tables.sass" @import "../styles/general.sass" .post
-      @include page @media screen and (max-width: 720px) padding-top: 2em
-      .post-info display: flex justify-content: space-between margin-bottom:
-      1.6em @media screen and (max-width: 720px) display: block justify-content:
-      unset .long-cell width: 78% @media screen and (max-width: 720px) width:
-      auto margin-bottom: 2em .short-cell p,
-    h1 text-align: right @media screen and (max-width: 720px) text-align: left
-      h1 color: #000 font-size: 1.25em margin: 0 &.big h1 font-size: 2em h1
-      span.currency font-size: 0.6em text-transform: uppercase @media screen and
-      (max-width: 720px) white-space: nowrap overflow: hidden position: relative
-      transition: font-size 0.3s &: : after content: "" position: absolute top: 0
-      bottom: 0 right: 0 width: 1px box-shadow: -3px 0px 20px 20px #fff
-      background-color: #fff transition: opacity 0.3s &: hover font-size: 0.65em
-      &: : after opacity: 0 p color: rgba(#000, 0.3) font-weight: 600 font-size:
-      0.9em margin: 0 0 0.8em 0 text-transform: uppercase .information @include table
-      .content @media screen and (max-width: 720px) width: 100vw - $mobileSidePadding
-      overflow-x: auto a.view-all display: block text-align: center color: rgba(
-        #000,
-        0.5
-      ) font-weight: 500 padding: 0.8em 0 transition: all 0.3s &: hover opacity:
-      0.7 .menu position: relative display: flex margin-bottom: 1.5em @media screen
-      and (max-width: 720px) justify-content: space-between padding-top: 4em button
-      position: relative padding: 0.4em 1.8em font-family: "JetBrainsMono",
-    monospace text-transform: uppercase font-weight: 600 color: #000
-      background-color: transparent border: none font-size: 1.15em outline: none
-      text-align: center cursor: pointer @media screen and (max-width: 720px)
-      padding: 0.18em 0.14em font-size: 0.75em &: : after content: "" position: absolute
-      bottom: 0 left: 0 width: 100% height: 0 opacity: 0 background-color: #000 transition:
-      all 0.2s &.active: : after opacity: 1 height: 3px .trade position:
-      absolute right: 0 top: 0 @media screen and (max-width: 720px) right: unset
-      left: 0;
+
+  @import "../styles/tables.sass"
+  @import "../styles/general.sass"
+
+  .post
+    @include page
+
+    @media screen and (max-width: 720px)
+      padding-top: 2em
+
+    .post-info
+      display: flex
+      justify-content: space-between
+      margin-bottom: 1.6em
+
+      @media screen and (max-width: 720px)
+        display: block
+        justify-content: unset
+
+      .long-cell
+        width: 78%
+
+        @media screen and (max-width: 720px)
+          width: auto
+          margin-bottom: 2em
+
+      .short-cell
+        p, h1
+          text-align: right
+
+          @media screen and (max-width: 720px)
+            text-align: left
+
+      h1
+        color: #000
+        font-size: 1.25em
+        margin: 0
+
+      &.big
+        h1
+          font-size: 2em
+
+      h1
+        span.currency
+          font-size: .6em
+          text-transform: uppercase
+
+        @media screen and (max-width: 720px)
+          white-space: nowrap
+          overflow: hidden
+          position: relative
+          transition: font-size .3s
+
+          &::after
+            content: ""
+            position: absolute
+            top: 0
+            bottom: 0
+            right: 0
+            width: 1px
+            box-shadow: -3px 0px 20px 20px #fff
+            background-color: #fff
+            transition: opacity .3s
+
+          &:hover
+            font-size: .65em
+
+            &::after
+              opacity: 0
+
+      p
+        color: rgba(#000, .3)
+        font-weight: 600
+        font-size: .9em
+        margin: 0 0 .8em 0
+        text-transform: uppercase
+
+    .information
+      @include table
+
+      .content
+        @media screen and (max-width: 720px)
+          width: 100vw - $mobileSidePadding
+          overflow-x: auto
+
+      a.view-all
+        display: block
+        text-align: center
+        color: rgba(#000, .5)
+        font-weight: 500
+        padding: .8em 0
+        transition: all .3s
+
+        &:hover
+          opacity: .7
+
+      .menu
+        position: relative
+        display: flex
+        margin-bottom: 1.5em
+
+        @media screen and (max-width: 720px)
+          justify-content: space-between
+          padding-top: 4em
+
+        button
+          position: relative
+          padding: .4em 1.8em
+          font-family: "JetBrainsMono", monospace
+          text-transform: uppercase
+          font-weight: 600
+          color: #000
+          background-color: transparent
+          border: none
+          font-size: 1.15em
+          outline: none
+          text-align: center
+          cursor: pointer
+
+          @media screen and (max-width: 720px)
+            padding: .18em .14em
+            font-size: .75em
+
+          &::after
+            content: ""
+            position: absolute
+            bottom: 0
+            left: 0
+            width: 100%
+            height: 0
+            opacity: 0
+            background-color: #000
+            transition: all .2s
+
+          &.active::after
+            opacity: 1
+            height: 3px
+
+        .trade
+          position: absolute
+          right: 0
+          top: 0
+
+          @media screen and (max-width: 720px)
+            right: unset
+            left: 0
+
 </style>
 
 <svelte:head>

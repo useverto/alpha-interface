@@ -142,6 +142,7 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../styles/general.sass"

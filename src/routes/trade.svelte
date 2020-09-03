@@ -671,51 +671,206 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
-  @import "../styles/tables.sass" @import "../styles/general.sass" .trade
-      @include table @include page @media screen and (max-width: 720px)
-      padding-top: 2em table td: last-child,
-    th: last-child text-align: left !important .balance p color: rgba(#000, 0.3)
-      text-transform: uppercase font-size: 0.9em margin: 0 font-weight: 600
-      &.wallet text-transform: none h1.total-balance font-size: 2.3em color:
-      #000 font-weight: 400 margin: 0.14em 0 @media screen and
-      (max-width: 720px) padding-top: 0.65em !important .assets margin: 2.45em 0
-      .recommended-post display: flex align-items: flex-end select,
-    .select-fake width: 100% font-size: 1.2em padding: top: calc(0.3em + 2px)
-      // border + padding of the button
-    bottom: calc(0.3em + 2px) // border + padding of the button
-    p color: rgba(#000, 0.3) font-weight: 600 font-size: 0.95em margin: 0 bottom:
-      0.7em text-transform: uppercase .trade-container display: flex @media
-      screen and (max-width: 720px) display: block .exchange-section width: 48%
-      &: first-child padding-right: 2% &: last-child padding-left: 2% p color:
-      rgba(#000, 0.3) font-weight: 600 font-size: 0.95em margin: 0 bottom: 0.7em
-      text-transform: uppercase .input display: flex align-items: center border:
-      1px solid #000 border-radius: 0.4em height: 2.35em margin-bottom: 1.7em
-      overflow: hidden input width: 80% height: 100% border: none outline: none
-      font-size: 1.2em padding: 0 0.5em color: #000 @media screen and
-      (max-width: 720px) width: 62% select,
-    .select-fake width: 20% height: 100% border-radius: 0 text-transform:
-      uppercase @media screen and (max-width: 720px) width: 38% select,
-    .select-fake $sidePadding: 0.65em position: relative color: #fff
-      background-color: #000 font-size: 1em padding: 0.34em
-      ($sidePadding * 3 + 0.3em) 0.34em $sidePadding cursor: pointer
-      border-radius: 0.3em outline: none border: none -webkit-appearance: none -moz-appearance:
-      none transition: all 0.3s select $sidePadding: 0.65em background-image:
-      url(/down-arrow.svg) background-position: calc(100% - #{$sidePadding})
-      center background-repeat: no-repeat background-size: $sidePadding * 1.35 &:
-      hover opacity: 0.8 .select-fake span position: absolute left: 0 right: 0
-      top: 0 bottom: 0 .exchanges-section @include table @include page .menu
-      position: relative display: flex margin-bottom: 1.5em @media screen and
-      (max-width: 720px) justify-content: space-between padding-top: 4em button
-      position: relative padding: 0.4em 1.8em font-family: "JetBrainsMono",
-    monospace text-transform: uppercase font-weight: 600 color: #000
-      background-color: transparent border: none font-size: 1.15em outline: none
-      text-align: center cursor: pointer @media screen and (max-width: 720px)
-      padding: 0.18em 0.14em font-size: 0.75em &: : after content: "" position: absolute
-      bottom: 0 left: 0 width: 100% height: 0 opacity: 0 background-color: #000 transition:
-      all 0.2s &.active: : after opacity: 1 height: 3px .trade position:
-      absolute right: 0 top: 0 @media screen and (max-width: 720px) right: unset
-      left: 0;
+
+  @import "../styles/tables.sass"
+  @import "../styles/general.sass"
+
+  .trade
+    @include table
+    @include page
+
+    @media screen and (max-width: 720px)
+      padding-top: 2em
+
+    table
+      td:last-child, th:last-child
+        text-align: left !important
+
+    .balance
+      p
+        color: rgba(#000, .3)
+        text-transform: uppercase
+        font-size: .9em
+        margin: 0
+        font-weight: 600
+
+        &.wallet
+          text-transform: none
+
+      h1.total-balance
+        font-size: 2.3em
+        color: #000
+        font-weight: 400
+        margin: .14em 0
+
+      @media screen and (max-width: 720px)
+        padding-top: .65em !important
+
+    .assets
+      margin: 2.45em 0
+
+    .recommended-post
+      display: flex
+      align-items: flex-end
+
+      select, .select-fake
+        width: 100%
+        font-size: 1.2em
+        padding:
+          top: calc(.3em + 2px) // border + padding of the button
+          bottom: calc(.3em + 2px) // border + padding of the button
+
+      p
+        color: rgba(#000, .3)
+        font-weight: 600
+        font-size: .95em
+        margin: 0
+          bottom: .7em
+        text-transform: uppercase
+
+    .trade-container
+      display: flex
+
+      @media screen and (max-width: 720px)
+        display: block
+
+      .exchange-section
+        width: 48%
+
+        &:first-child
+          padding-right: 2%
+
+        &:last-child
+          padding-left: 2%
+
+      p
+        color: rgba(#000, .3)
+        font-weight: 600
+        font-size: .95em
+        margin: 0
+          bottom: .7em
+        text-transform: uppercase
+
+      .input
+        display: flex
+        align-items: center
+        border: 1px solid #000
+        border-radius: .4em
+        height: 2.35em
+        margin-bottom: 1.7em
+        overflow: hidden
+
+        input
+          width: 80%
+          height: 100%
+          border: none
+          outline: none
+          font-size: 1.2em
+          padding: 0 .5em
+          color: #000
+
+          @media screen and (max-width: 720px)
+            width: 62%
+
+        select, .select-fake
+          width: 20%
+          height: 100%
+          border-radius: 0
+          text-transform: uppercase
+
+          @media screen and (max-width: 720px)
+            width: 38%
+
+    select, .select-fake
+      $sidePadding: .65em
+      position: relative
+      color: #fff
+      background-color: #000
+      font-size: 1em
+      padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
+      cursor: pointer
+      border-radius: .3em
+      outline: none
+      border: none
+      -webkit-appearance: none
+      -moz-appearance: none
+      transition: all .3s
+    
+    select
+      $sidePadding: .65em
+      background-image: url(/down-arrow.svg)
+      background-position: calc(100% - #{$sidePadding}) center
+      background-repeat: no-repeat
+      background-size: $sidePadding * 1.35
+
+      &:hover
+        opacity: .8
+
+    .select-fake
+      span
+        position: absolute
+        left: 0
+        right: 0
+        top: 0
+        bottom: 0
+
+  .exchanges-section
+    @include table
+    @include page
+
+  .menu
+    position: relative
+    display: flex
+    margin-bottom: 1.5em
+
+    @media screen and (max-width: 720px)
+      justify-content: space-between
+      padding-top: 4em
+
+    button
+      position: relative
+      padding: .4em 1.8em
+      font-family: "JetBrainsMono", monospace
+      text-transform: uppercase
+      font-weight: 600
+      color: #000
+      background-color: transparent
+      border: none
+      font-size: 1.15em
+      outline: none
+        text-align: center
+        cursor: pointer
+
+      @media screen and (max-width: 720px)
+        padding: .18em .14em
+        font-size: .75em
+
+      &::after
+        content: ""
+        position: absolute
+        bottom: 0
+        left: 0
+        width: 100%
+        height: 0
+        opacity: 0
+        background-color: #000
+        transition: all .2s
+
+      &.active::after
+        opacity: 1
+        height: 3px
+
+    .trade
+      position: absolute
+      right: 0
+      top: 0
+
+      @media screen and (max-width: 720px)
+        right: unset
+        left: 0
+
 </style>
 
 <svelte:head>

@@ -206,6 +206,7 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
   @import "../../styles/tables.sass" @import "../../styles/general.sass"
     .all-exchanges @include page @include table;

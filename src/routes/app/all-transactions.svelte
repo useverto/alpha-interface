@@ -148,10 +148,25 @@
   }
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
-  @import "../../styles/tables.sass" @import "../../styles/general.sass"
-    .all-transactions @include page @include table .pagination margin-top: 1.3em
-    @include pagination td a text-decoration: none color: black;
+
+  @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
+
+  .all-transactions
+    @include page
+    @include table 
+
+    .pagination
+      margin-top: 1.3em
+      @include pagination
+
+    td
+      a
+        text-decoration: none
+        color: black
+
 </style>
 
 <svelte:head>

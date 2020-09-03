@@ -3,6 +3,7 @@
   import Button from "../components/Button.svelte";
 </script>
 
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .NotFound

@@ -20,7 +20,7 @@ You can access the code for trading posts [here](https://github.com/useverto/tra
 
 ## Guide
 
-To build/use the service on localhost, you will have to download Node, and install the yarn package manager (`npm i -g yarn`). When you have these, clone this repository and run `yarn install` to add the required dependencies.
+To build/use the service on localhost, you will have to download Node, and install the yarn package manager (`npm i -g yarn`). When you have these, clone this repository and run `yarn` to add the required dependencies.
 Below, you will see the available commands to test/build the project.
 
 ### Libraries
