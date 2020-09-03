@@ -30,6 +30,7 @@
   let mode: string = "buy";
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
+  let confirmModalText: string = "Loading...";
 
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
@@ -40,7 +41,7 @@
   let psts = getExchangeSupportedTokens();
   let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
-  let exchangeTX, fees;
+  let exchangeTX;
 
   async function getTradingPosts (): Promise<string[]> {
     if(!process.browser) return [];
@@ -99,7 +100,7 @@
           ticker: contractData["ticker"],
         });
       } catch (error) {
-        console.log(error);
+        notification.notify("Error", error, NotificationType.error, 50000);
       }
     }
 
@@ -175,22 +176,36 @@
   }
 
   // open confirmation modal
-  async function exchange () {
+  async function exchange() {
+    let a = await latestOpenExchanges;
+    let b = await latestClosedExchanges;
     if ($address === selectedPost) {
       notification.notify("Error", "You can not make trades from your own trading post!", NotificationType.error, 5000);
       return;
     }
     confirmModalOpened = true;
     if (mode === "sell") {
-      exchangeTX = await initiateSell();
+      let arCost = await getFee(
+        await initiateSell()
+      ) + await getFee(
+        await initiateTradingPostFee()
+      ) + await getFee(
+        await initiateVRTHolderFee()
+      );
+      let pstCost = sellAmount + getTradingPostFee() + getVRTHolderFee();
+      confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
     } else if (mode === "buy") {
-      exchangeTX = await initiateBuy();
+      let txFees = await getFee(
+        await initiateBuy()
+      ) + await getFee(
+        await initiateExchangeFee()
+      );
+      let arCost = txFees + buyAmount + getExchangeFee();
+      confirmModalText = `You're sending ${arCost} AR`;
     } else {
       notification.notify("Error", "You aren't buying nor selling. This may be a bug.", NotificationType.error, 5000);
       return;
     }
-    //exchangeTX = await createExchangeTx();
-    fees = await getFee(exchangeTX);
   }
   
   async function confirmTrade () {
@@ -200,6 +215,8 @@
       protocol: "https",
       timeout: 200000,
     });
+
+    // TODO (@johnletey): Pull necessary info from genesis tx to ping trading post API to ensure it is online
 
     let tx = mode === "buy" ? await initiateBuy() : await initiateSell();
     let tipExchange = await initiateExchangeFee();
@@ -244,6 +261,7 @@
 
   function cancelTrade () {
     console.log("Cancelled trade");
+    confirmModalText = "Loading...";
   }
 
   async function getFee(tx: Transaction): Promise<number> {
@@ -331,7 +349,6 @@
         exchanges[i].matched = true;
       }
     }
-    console.log(exchanges);
     return exchanges;
   }
 
@@ -370,7 +387,7 @@
       timeout: 200000,
     });
 
-    const ticker = sellToken
+    const ticker = buyToken;
     const supportedPSTs = await psts;
     const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
@@ -399,7 +416,7 @@
       timeout: 200000,
     });
 
-    const ticker = sellToken
+    const ticker = sellToken;
     const supportedPSTs = await psts;
     const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
@@ -438,7 +455,7 @@
       "Type": "Fee-Exchange",
     };
 
-    const fee = buyAmount * exchangeFee;
+    const fee = getExchangeFee();
 
     const tx = await client.createTransaction({
       target: exchangeWallet,
@@ -463,8 +480,7 @@
     const supportedPSTs = await psts;
     const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
-    // TODO (johnletey): Get trading post fee from genesis tx
-    const tradingPostFee = sellAmount * 0.1; // The 0.1 needs to be replaced with actual fee amount
+    const tradingPostFee = getTradingPostFee();
 
     const tags = {
       "Exchange": "Verto",
@@ -502,7 +518,7 @@
     const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
     const tipReceiver = await community.selectWeightedHolder();
-    const fee = sellAmount * exchangeFee;
+    const fee = getVRTHolderFee();
 
     const tags = {
       "Exchange": "Verto",
@@ -523,6 +539,20 @@
       tx.addTag(key, value);
     }
     return tx;
+  }
+
+  function getExchangeFee(): number {
+    return buyAmount * exchangeFee;
+  }
+
+  function getTradingPostFee(): number {
+    // TODO (johnletey): Get trading post fee from genesis tx
+
+    return sellAmount * 0.1; // The 0.1 needs to be replaced with actual fee amount
+  }
+
+  function getVRTHolderFee(): number {
+    return sellAmount * exchangeFee;
   }
 
 </script>
@@ -572,8 +602,8 @@
     </table>
   </div>
   <div class="menu">
-    <button class:active={mode === "sell"} on:click={() => mode = "sell"}>Sell</button>
     <button class:active={mode === "buy"} on:click={() => mode = "buy"}>Buy</button>
+    <button class:active={mode === "sell"} on:click={() => mode = "sell"}>Sell</button>
   </div>
   <div class="trade-container">
     {#if mode === "sell"}
@@ -581,15 +611,15 @@
         <p>Amount</p>
         <div class="input">
           <input type="number" bind:value={sellAmount} min={0} />
-          <select bind:value={sellToken}>
-            {#await supportedPSTs}
-              <option disabled>Loading...</option>
-            {:then loadedPsts}
-              {#each loadedPsts as pst}
+          {#await supportedPSTs}
+            <SkeletonLoading style="width: 35px; height: 38px" />
+          {:then loadedPSTs} 
+            <select bind:value={sellToken}>
+              {#each loadedPSTs as pst}
                 <option value={pst.ticker}>{pst.ticker}</option>
               {/each}
-            {/await}
-          </select>
+            </select>
+          {/await}
         </div>
       </div>
       <div class="exchange-section">
@@ -600,16 +630,16 @@
         </div>
       </div>
     {:else if mode === "buy"}
-      <input type="number" bind:value={buyAmount} min={0} />
-      <select bind:value={buyToken}>
-        {#await supportedPSTs}
-          <option disabled>Loading...</option>
-        {:then loadedPsts}
-          {#each loadedPsts as pst}
+      <input type="number" bind:value={buyAmount} min={0} /> AR's worth of
+      {#await supportedPSTs}
+        <SkeletonLoading style="width: 35px; height: 38px" />
+      {:then loadedPSTs} 
+        <select bind:value={buyToken}>
+          {#each loadedPSTs as pst}
             <option value={pst.ticker}>{pst.ticker}</option>
           {/each}
-        {/await}
-      </select>
+        </select>
+      {/await}
     {/if}
   </div>
   <div class="recommended-post">
@@ -711,21 +741,20 @@
   </div>
 </div>
 <Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={confirmTrade} onCancel={cancelTrade}>
-  <!-- <p style="text-align: center;">
-    Exchanging {sendAmount} {sendCurrency} for {recieveAmount} {recieveCurrency}
+  <p style="text-align: center;">
+    {#if mode === "buy"}
+      Buying {buyAmount} AR's worth of {buyToken}
+    {:else if mode === "sell"}
+      Selling {sellAmount} {sellToken} at a rate of {sellRate} {sellToken}/AR
+    {/if}
   </p>
   <p style="text-align: center">
-    {#await fees}
+    {#await confirmModalText}
       Loading fees...
-    {:then loadedFees}
-      {#if sendCurrency === "AR"}
-        This action will cost {sendAmount + (sendAmount * 0.0025) + loadedFees} AR
-      {:else}
-        This action will cost {sendAmount} {sendCurrency} + {loadedFees} AR
-      {/if}
+    {:then loadedText}
+      {loadedText}
     {/await}
-  </p> -->
-  You have problems
+  </p>
 </Modal>
 <Footer />
 
