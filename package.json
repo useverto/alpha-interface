@@ -11,8 +11,8 @@
     "cy:open": "cypress open",
     "test": "run-p --race dev cy:run",
     "prefmt": "cd ./node_modules/prettier-plugin-svelte/ && yarn && yarn build",
-    "fmt": "prettier --write --plugin-search-dir=. ./**/*.svelte",
-    "fmt:check": "prettier --check --plugin-search-dir=. ./**/*.svelte"
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check ."
   },
   "dependencies": {
     "arweave": "^1.9.1",
