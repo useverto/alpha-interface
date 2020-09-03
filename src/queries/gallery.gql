@@ -1,7 +1,9 @@
 query (
+  $owners: [String!]
   $recipients: [String!]
 ) {
   transactions(
+    owners: $owners
     recipients: $recipients
     tags: [
       { 
@@ -20,6 +22,7 @@ query (
     edges {
       cursor
       node {
+        id
         owner {
           address
         }

@@ -192,7 +192,7 @@
       ) + await getFee(
         await initiateVRTHolderFee()
       );
-      let pstCost = sellAmount + getTradingPostFee() + getVRTHolderFee();
+      let pstCost = sellAmount + await getTradingPostFee() + getVRTHolderFee();
       confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
     } else if (mode === "buy") {
       let txFees = await getFee(
@@ -545,10 +545,30 @@
     return buyAmount * exchangeFee;
   }
 
-  function getTradingPostFee(): number {
-    // TODO (johnletey): Get trading post fee from genesis tx
+  async function getTradingPostFee(): Promise<number> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
 
-    return sellAmount * 0.1; // The 0.1 needs to be replaced with actual fee amount
+    const txId = (await query({
+      query: galleryQuery,
+      variables: {
+        owners: [selectedPost],
+        recipients: [exchangeWallet]
+      }
+    })).data.transactions.edges[0]?.node.id;
+
+    const config = JSON.parse(
+      (await client.transactions.getData(
+        txId,
+        {decode: true, string: true},
+      )).toString()
+    );
+
+    return sellAmount * config["tradeFee"];
   }
 
   function getVRTHolderFee(): number {
