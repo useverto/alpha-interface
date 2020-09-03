@@ -48,9 +48,10 @@
     const psts = await getSupportedPSTs();
 
     txs.map(({ node }) => {
-      const tradeType = node.tags.find((tag) => tag.name === "Trade-Opcode")
+      const tradeType = node.tags.find((tag) => tag.name === "Type")
         ?.value;
       if (tradeType) {
+        // TODO(@johnletey): Update these tags
         const arVal = node.tags.find((tag) => tag.name === "Buy-For")?.value;
         const pstVal = node.tags.find((tag) => tag.name === "Sell-Qty")?.value;
 
@@ -81,14 +82,9 @@
           query {
             transactions(
               tags: [
-                {
-                  name: "Exchange",
-                  values: "Verto"
-                },
-                {
-                  name: "${inverseTradeType}ing-Tx",
-                  values: "${exchanges[i].id}"
-                }
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "Confirmation" }
+                { name: "Match", values: "${exchanges[i].id}" }
               ]
             ) {
               edges {
