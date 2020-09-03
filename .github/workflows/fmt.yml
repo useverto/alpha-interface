@@ -1,0 +1,25 @@
+name: validate
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    name: Validate code
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+
+      - name: Install yarn
+        run: npm i -g yarn
+      
+      - name: Install dependencies
+        run: yarn
+      
+      - name: Check fmt
+        run: |
+          yarn fmt:check
+          yarn prefmt
