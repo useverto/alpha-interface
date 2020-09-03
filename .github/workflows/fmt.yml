@@ -1,11 +1,11 @@
-name: validate
+name: fmt
 
 on: [push, pull_request]
 
 jobs:
   build:
 
-    name: Validate code
+    name: Check code formatting
     runs-on: ubuntu-latest
 
     steps:
