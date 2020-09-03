@@ -216,7 +216,27 @@
       timeout: 200000,
     });
 
-    // TODO (@johnletey): Pull necessary info from genesis tx to ping trading post API to ensure it is online
+    const txId = (await query({
+      query: galleryQuery,
+      variables: {
+        owners: [selectedPost],
+        recipients: [exchangeWallet]
+      }
+    })).data.transactions.edges[0]?.node.id;
+
+    const config = JSON.parse(
+      (await client.transactions.getData(
+        txId,
+        {decode: true, string: true},
+      )).toString()
+    );
+
+    try {
+      await fetch(config["publicURL"].endsWith("/") ? "ping" : "/ping");
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
 
     let tx = mode === "buy" ? await initiateBuy() : await initiateSell();
     let tipExchange = await initiateExchangeFee();
