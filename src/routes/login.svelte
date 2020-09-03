@@ -53,7 +53,7 @@
                 NotificationType.success,
                 5000
               );
-            })
+            });
           });
       };
       reader.readAsText(files[0]);
