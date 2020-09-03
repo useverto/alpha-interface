@@ -8,6 +8,8 @@
     notification,
     NotificationType,
   } from "../stores/notificationStore.js";
+  import { query } from "../api-client";
+  import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
 
   let isDragOver = false;
@@ -35,20 +37,34 @@
       files[0].type === "application/json"
     ) {
       const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") keyfile.set(reader.result);
-        client.wallets
-          .jwkToAddress(JSON.parse(localStorage.getItem("keyfile")))
-          .then((_address) => {
-            address.set(_address);
-            goto("/app");
-            notification.notify(
-              "Welcome",
-              "You've successfully logged in!",
-              NotificationType.success,
-              5000
-            );
-          });
+      reader.onload = async () => {
+        if (typeof reader.result !== "string") goto("/");
+        // @ts-ignore
+        let _address = await client.wallets.jwkToAddress(
+          JSON.parse(reader.result)
+        );
+        const outTxs = (
+          await query({
+            query: latestTransactionsQuery,
+            variables: {
+              recipients: null,
+              owners: [_address],
+            },
+          })
+        ).data.transactions.edges;
+        if (outTxs.length > 0) {
+          keyfile.set(reader.result);
+          address.set(_address);
+          goto("/app");
+          notification.notify(
+            "Welcome",
+            "You've successfully logged in!",
+            NotificationType.success,
+            5000
+          );
+        } else {
+          goto("/gate");
+        }
       };
       reader.readAsText(files[0]);
     }
