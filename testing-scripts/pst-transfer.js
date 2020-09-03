@@ -1,21 +1,27 @@
-const Arweave = require('arweave');
+const Arweave = require("arweave");
 
 const arweave = Arweave.init({
-  host: 'arweave.dev',
+  host: "arweave.dev",
   port: 443,
-  protocol: 'https'
+  protocol: "https",
 });
 
 const key = "KEY HERE";
 
 async function pstTransfer(pstContractID) {
-  let pstTransaction = await arweave.createTransaction({
-    data: "test"
-  }, key);
+  let pstTransaction = await arweave.createTransaction(
+    {
+      data: "test",
+    },
+    key
+  );
 
   pstTransaction.addTag("Content-Type", "text/html");
   pstTransaction.addTag("Exchange", "Verto");
-  pstTransaction.addTag("Input", `{"function":"transfer","target":"l-x7026roC1dkAmJ5iWhz4vGOxVnKmotGbceFAA-NwE","qty":10000}`);
+  pstTransaction.addTag(
+    "Input",
+    `{"function":"transfer","target":"l-x7026roC1dkAmJ5iWhz4vGOxVnKmotGbceFAA-NwE","qty":10000}`
+  );
   pstTransaction.addTag("Contract", pstContractID);
 
   try {

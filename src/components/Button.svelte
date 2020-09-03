@@ -1,5 +1,4 @@
 <script lang="typescript">
-
   export let href: string = undefined;
   export let reverse: boolean = false;
   export let clear: boolean = false;
@@ -10,13 +9,9 @@
   // don't let malicious links override the content of the site
   // https://web.dev/external-anchors-use-rel-noopener/
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
-
 </script>
 
-<a href={href} target={target} rel={rel} class="Button" on:click={click} style={style} class:clear class:reverse>
-  <slot></slot>
-</a>
-
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .Button
@@ -78,3 +73,14 @@
           color: #000   
 
 </style>
+<a
+  {href}
+  {target}
+  {rel}
+  class="Button"
+  on:click={click}
+  {style}
+  class:clear
+  class:reverse>
+  <slot />
+</a>

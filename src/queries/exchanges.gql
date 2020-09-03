@@ -1,18 +1,8 @@
-query (
-  $owners: [String!]
-  $num: Int
-  $recipients: [String!]
-  $cursor: String
-) {
+query($owners: [String!], $num: Int, $recipients: [String!], $cursor: String) {
   transactions(
     owners: $owners
     recipients: $recipients
-    tags: [
-      {
-        name: "Exchange",
-        values: "Verto"
-      }
-    ]
+    tags: [{ name: "Exchange", values: "Verto" }]
     first: $num
     after: $cursor
   ) {

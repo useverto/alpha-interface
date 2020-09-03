@@ -1,17 +1,20 @@
-const Arweave = require('arweave');
+const Arweave = require("arweave");
 
 const arweave = Arweave.init({
-  host: 'arweave.dev',
+  host: "arweave.dev",
   port: 443,
-  protocol: 'https'
+  protocol: "https",
 });
 
 const key = "MY JSON KEY OBJECT";
 
 async function supportPST(pstContractID) {
-  let pstTransaction = await arweave.createTransaction({
-    data: pstContractID
-  }, key);
+  let pstTransaction = await arweave.createTransaction(
+    {
+      data: pstContractID,
+    },
+    key
+  );
 
   pstTransaction.addTag("Content-Type", "text/html");
   pstTransaction.addTag("Exchange", "Verto");

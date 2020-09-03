@@ -1,17 +1,9 @@
-query (
-  $owners: [String!]
-) {
+query($owners: [String!]) {
   transactions(
     owners: $owners
     tags: [
-      {
-        name: "Exchange",
-        values: "Verto"
-      }
-      {
-        name: "Support",
-        values: "PST"
-      }
+      { name: "Exchange", values: "Verto" }
+      { name: "Support", values: "PST" }
     ]
   ) {
     edges {

@@ -1,5 +1,4 @@
 <script lang="typescript">
-
   import { goto } from "@sapper/app";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
@@ -18,8 +17,11 @@
   import { interactRead } from "smartweave";
   import Community from "community-js";
   import Transaction from "arweave/node/lib/transaction";
-  import { notification, NotificationType } from "../stores/notificationStore.js";
-  import { exchangeWallet, pstContract } from "../utils/constants";
+  import {
+    notification,
+    NotificationType,
+  } from "../stores/notificationStore.js";
+  import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
 
   let selectedPost;
   let buyAmount: number = 1;
@@ -30,6 +32,7 @@
   let mode: string = "buy";
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
+  let confirmModalText: string = "Loading...";
 
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
@@ -40,31 +43,36 @@
   let psts = getExchangeSupportedTokens();
   let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
-  let exchangeTX, fees;
+  let exchangeTX;
 
-  async function getTradingPosts (): Promise<string[]> {
-    if(!process.browser) return [];
-    
+  async function getTradingPosts(): Promise<string[]> {
+    if (!process.browser) return [];
+
     let posts: string[] = [];
 
-    const _posts = (await query({
-      query: galleryQuery
-    })).data.transactions.edges;
+    const _posts = (
+      await query({
+        query: galleryQuery,
+      })
+    ).data.transactions.edges;
 
     _posts.map(({ node }) => {
       posts.push(node.owner.address);
     });
 
     posts = [...new Set(posts)]; // remove duplicates
-    if(selectedPost === undefined || selectedPost === "Loading...") selectedPost = posts[0]; // set initial post if it is not selected in the URL already
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = posts[0]; // set initial post if it is not selected in the URL already
 
     return posts;
   }
 
-  async function getExchangeSupportedTokens (): Promise<{ id: string, name: string, ticker: string }[]> {
-    if(!process.browser) return [];
+  async function getExchangeSupportedTokens(): Promise<
+    { id: string; name: string; ticker: string }[]
+  > {
+    if (!process.browser) return [];
 
-    let psts: { id: string, name: string, ticker: string }[] = [];
+    let psts: { id: string; name: string; ticker: string }[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -74,24 +82,27 @@
     });
 
     let txIds = [];
-    const _txIds = (await query({
-      query: tokensQuery
-    })).data.transactions.edges;
+    const _txIds = (
+      await query({
+        query: tokensQuery,
+      })
+    ).data.transactions.edges;
     _txIds.map(({ node }) => {
       txIds.push(node.id);
-    })
+    });
 
     for (const id of txIds) {
       try {
-        const contractId = (await client.transactions.getData(
-          id,
-          {decode: true, string: true},
-        )).toString();
+        const contractId = (
+          await client.transactions.getData(id, { decode: true, string: true })
+        ).toString();
         const contractData = JSON.parse(
-          (await client.transactions.getData(
-            contractId,
-            {decode: true, string: true},
-          )).toString()
+          (
+            await client.transactions.getData(contractId, {
+              decode: true,
+              string: true,
+            })
+          ).toString()
         );
         psts.push({
           id: contractId,
@@ -99,15 +110,17 @@
           ticker: contractData["ticker"],
         });
       } catch (error) {
-        console.log(error);
+        notification.notify("Error", error, NotificationType.error, 50000);
       }
     }
 
     return psts;
   }
 
-  async function getTradingPostSupportedTokens(): Promise<{ id: string, name: string, ticker: string }[]> {
-    if(!process.browser) return [];
+  async function getTradingPostSupportedTokens(): Promise<
+    { id: string; name: string; ticker: string }[]
+  > {
+    if (!process.browser) return [];
 
     let tokenList = [];
     const client = new Arweave({
@@ -119,26 +132,38 @@
 
     await posts;
 
-    const supported = (await query({
-      query: postTokensQuery,
-      variables: {
-        owners: [selectedPost],
-        recipients: [exchangeWallet]
-      }
-    })).data.transactions.edges;
+    const supported = (
+      await query({
+        query: postTokensQuery,
+        variables: {
+          owners: [selectedPost],
+          recipients: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges;
 
     // @ts-ignore
-    const txData = JSON.parse(await client.transactions.getData(supported[0].node.id, {decode: true, string: true}));
+    const txData = JSON.parse(
+      await client.transactions.getData(supported[0].node.id, {
+        decode: true,
+        string: true,
+      })
+    );
     for (let x = 0; x < txData.acceptedTokens.length; x++) {
       // @ts-ignore
-      let pstInfo = JSON.parse(await client.transactions.getData(txData.acceptedTokens[x], {decode: true, string: true}));
+      let pstInfo = JSON.parse(
+        await client.transactions.getData(txData.acceptedTokens[x], {
+          decode: true,
+          string: true,
+        })
+      );
       tokenList.push({
         id: txData.acceptedTokens[x],
         name: pstInfo.name,
-        ticker: pstInfo.ticker
-      })
+        ticker: pstInfo.ticker,
+      });
     }
-    
+
     return tokenList;
   }
 
@@ -153,14 +178,19 @@
     let tokenBalances = [];
 
     for (let i = 0; i < supportedPSTs.length; i++) {
-      let pstContract = await interactRead(client, JSON.parse($keyfile), supportedPSTs[i].id, {
-        function: "unlockedBalance"
-      });
+      let pstContract = await interactRead(
+        client,
+        JSON.parse($keyfile),
+        supportedPSTs[i].id,
+        {
+          function: "unlockedBalance",
+        }
+      );
       if (pstContract.balance > 0) {
         tokenBalances.push({
           token: supportedPSTs[i].name,
           ticker: supportedPSTs[i].ticker,
-          balance: pstContract.balance
+          balance: pstContract.balance,
         });
       }
     }
@@ -168,81 +198,52 @@
     return tokenBalances;
   }
 
-  function roundCurrency (val: number | string): string {
-    if(val === "?") return val;
-    if(typeof val === "string") val = parseFloat(val);
+  function roundCurrency(val: number | string): string {
+    if (val === "?") return val;
+    if (typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
   }
 
   // open confirmation modal
-  async function exchange () {
+  async function exchange() {
+    let a = await latestOpenExchanges;
+    let b = await latestClosedExchanges;
     if ($address === selectedPost) {
-      notification.notify("Error", "You can not make trades from your own trading post!", NotificationType.error, 5000);
+      notification.notify(
+        "Error",
+        "You can not make trades from your own trading post!",
+        NotificationType.error,
+        5000
+      );
       return;
     }
     confirmModalOpened = true;
     if (mode === "sell") {
-      exchangeTX = await initiateSell();
+      let arCost =
+        (await getFee(await initiateSell())) +
+        (await getFee(await initiateTradingPostFee())) +
+        (await getFee(await initiateVRTHolderFee()));
+      let pstCost =
+        sellAmount + (await getTradingPostFee()) + getVRTHolderFee();
+      confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
     } else if (mode === "buy") {
-      exchangeTX = await initiateBuy();
+      let txFees =
+        (await getFee(await initiateBuy())) +
+        (await getFee(await initiateExchangeFee()));
+      let arCost = txFees + buyAmount + getExchangeFee();
+      confirmModalText = `You're sending ${arCost} AR`;
     } else {
-      notification.notify("Error", "You aren't buying nor selling. This may be a bug.", NotificationType.error, 5000);
+      notification.notify(
+        "Error",
+        "You aren't buying nor selling. This may be a bug.",
+        NotificationType.error,
+        5000
+      );
       return;
     }
-    //exchangeTX = await createExchangeTx();
-    fees = await getFee(exchangeTX);
   }
 
-  // async function createExchangeTx (): Promise<Transaction> {
-  //   const client = new Arweave({
-  //     host: "arweave.dev",
-  //     port: 443,
-  //     protocol: "https",
-  //     timeout: 200000,
-  //   });
-
-  //   const ticker = sendCurrency === "AR" ? recieveCurrency : sendCurrency;
-  //   const supportedPSTs = await psts;
-  //   const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
-
-  //   const tags = {
-  //     "Exchange": "Verto",
-  //     "Trade-Opcode": sendCurrency === "AR" ? "Buy" : "Sell"
-  //   };
-
-  //   const tx = await client.createTransaction({
-  //     target: selectedPost,
-  //     data: Math.random().toString().slice(-4)
-  //   }, JSON.parse($keyfile));
-    
-  //   for (const [key, value] of Object.entries(tags)) {
-  //     tx.addTag(key, value);
-  //   }
-  //   return tx;
-  // }
-
-  async function createTipTx(): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    let tipReceiver = await community.selectWeightedHolder();
-
-    let tipTx = await client.createTransaction({
-      target: tipReceiver,
-      quantity: sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString()
-    }, JSON.parse($keyfile));
-
-    console.log(sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString());
-    return tipTx;
-  }
-  
-  async function confirmTrade () {
+  async function confirmTrade() {
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
@@ -250,16 +251,58 @@
       timeout: 200000,
     });
 
-    let tx = await createExchangeTx();
-    let tip = await createTipTx();
+    const txId = (
+      await query({
+        query: galleryQuery,
+        variables: {
+          owners: [selectedPost],
+          recipients: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges[0]?.node.id;
+
+    const config = JSON.parse(
+      (
+        await client.transactions.getData(txId, { decode: true, string: true })
+      ).toString()
+    );
 
     try {
-      await client.transactions.sign(tip, JSON.parse($keyfile));
-      await client.transactions.post(tip);
+      await fetch(config["publicURL"].endsWith("/") ? "ping" : "/ping");
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
     }
+
+    let tx = mode === "buy" ? await initiateBuy() : await initiateSell();
+    let tipExchange = await initiateExchangeFee();
+    let tipTradingPost = await initiateTradingPostFee();
+    let tipVRTHolder = await initiateVRTHolderFee();
+
+    try {
+      await client.transactions.sign(tipVRTHolder, JSON.parse($keyfile));
+      await client.transactions.post(tipVRTHolder);
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+
+    try {
+      await client.transactions.sign(tipTradingPost, JSON.parse($keyfile));
+      await client.transactions.post(tipTradingPost);
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+
+    try {
+      await client.transactions.sign(tipExchange, JSON.parse($keyfile));
+      await client.transactions.post(tipExchange);
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+
     try {
       await client.transactions.sign(tx, JSON.parse($keyfile));
       await client.transactions.post(tx);
@@ -268,12 +311,18 @@
       return;
     }
 
-    notification.notify("Sent", "We're processing your trade now! This may take a few minutes.", NotificationType.success, 5000);
+    notification.notify(
+      "Sent",
+      "We're processing your trade now! This may take a few minutes.",
+      NotificationType.success,
+      5000
+    );
     goto("/app");
   }
 
-  function cancelTrade () {
+  function cancelTrade() {
     console.log("Cancelled trade");
+    confirmModalText = "Loading...";
   }
 
   async function getFee(tx: Transaction): Promise<number> {
@@ -287,7 +336,7 @@
       protocol: "https",
       timeout: 200000,
     });
-    
+
     txSize = parseFloat(tx.data_size);
     recipient = tx.target;
     fee = await client.transactions.getPrice(txSize, recipient);
@@ -297,41 +346,54 @@
 
   let latestExchanges = getLatestExchanges();
 
-  async function getLatestExchanges (): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
-    if(!process.browser) return [];
+  async function getLatestExchanges(): Promise<
+    { id: string; type: string; ar: string; pst: string; matched: boolean }[]
+  > {
+    if (!process.browser) return [];
     let loadedPsts = await psts;
-    let exchanges: { id: string, type: string, ar: string, pst: string, matched: boolean }[] = [];
-    
-    const txs = (await query({
-      query: exchangesQuery,
-      variables: {
-        recipients: [selectedPost]
-      }
-    })).data.transactions.edges;
-    txs.map(({ node }) => {
-      const tradeType = node.tags.find(tag => tag.name === "Trade-Opcode")?.value;
-      if (tradeType) {
-        const arVal = node.tags.find(tag => tag.name === "Buy-For")?.value;
-        const pstVal = node.tags.find(tag => tag.name === "Sell-Qty")?.value;
+    let exchanges: {
+      id: string;
+      type: string;
+      ar: string;
+      pst: string;
+      matched: boolean;
+    }[] = [];
 
-        const tokenId = node.tags.find(tag => tag.name === "Target-Token")?.value;
-        const token = loadedPsts.find(pst => pst.id === tokenId)?.ticker;
+    const txs = (
+      await query({
+        query: exchangesQuery,
+        variables: {
+          recipients: [selectedPost],
+        },
+      })
+    ).data.transactions.edges;
+    txs.map(({ node }) => {
+      const tradeType = node.tags.find((tag) => tag.name === "Trade-Opcode")
+        ?.value;
+      if (tradeType) {
+        const arVal = node.tags.find((tag) => tag.name === "Buy-For")?.value;
+        const pstVal = node.tags.find((tag) => tag.name === "Sell-Qty")?.value;
+
+        const tokenId = node.tags.find((tag) => tag.name === "Target-Token")
+          ?.value;
+        const token = loadedPsts.find((pst) => pst.id === tokenId)?.ticker;
 
         exchanges.push({
           id: node.id,
           type: tradeType,
           ar: arVal + " AR",
           pst: pstVal + " " + token,
-          matched: false
+          matched: false,
         });
       }
-    })
+    });
 
     for (let i = 0; i < exchanges.length; i++) {
       const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
-      
-      const match = (await query({
-        query: `
+
+      const match = (
+        await query({
+          query: `
           query {
             transactions(
               tags: [
@@ -355,24 +417,26 @@
             }
           }
         `,
-      })).data.transactions.edges;
-      
+        })
+      ).data.transactions.edges;
+
       if (match && match[0]) {
         exchanges[i].matched = true;
       }
     }
-    console.log(exchanges);
     return exchanges;
   }
 
   let openTrades = latestOpenExchanges();
 
-  async function latestOpenExchanges(): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
+  async function latestOpenExchanges(): Promise<
+    { id: string; type: string; ar: string; pst: string; matched: boolean }[]
+  > {
     let txs = await latestExchanges;
 
     let openExchanges = [];
     for (let i = 0; i < txs.length; i++) {
-      if (txs[i].matched === false){
+      if (txs[i].matched === false) {
         openExchanges.push(txs[i]);
       }
     }
@@ -381,7 +445,9 @@
 
   let closedTrades = latestClosedExchanges();
 
-  async function latestClosedExchanges(): Promise<{ id: string, type: string, ar: string, pst: string, matched: boolean }[]> {
+  async function latestClosedExchanges(): Promise<
+    { id: string; type: string; ar: string; pst: string; matched: boolean }[]
+  > {
     let txs = await latestExchanges;
 
     let closedExchanges = [];
@@ -392,7 +458,7 @@
     return closedExchanges;
   }
 
-  async function initiateBuy() {
+  async function initiateBuy(): Promise<Transaction> {
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
@@ -400,28 +466,31 @@
       timeout: 200000,
     });
 
-    const ticker = sellToken
+    const ticker = buyToken;
     const supportedPSTs = await psts;
     const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
     const tags = {
-      "Exchange": "Verto",
-      "Type": "Buy",
-      "Token": pstTxId
+      Exchange: "Verto",
+      Type: "Buy",
+      Token: pstTxId,
     };
 
-    const tx = await client.createTransaction({
-      target: selectedPost,
-      quantity: client.ar.arToWinston(buyAmount.toString())
-    }, JSON.parse($keyfile));
-    
+    const tx = await client.createTransaction(
+      {
+        target: selectedPost,
+        quantity: client.ar.arToWinston(buyAmount.toString()),
+      },
+      JSON.parse($keyfile)
+    );
+
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value);
     }
     return tx;
   }
 
-  async function initiateSell() {
+  async function initiateSell(): Promise<Transaction> {
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
@@ -429,235 +498,180 @@
       timeout: 200000,
     });
 
-    const ticker = sellToken
+    const ticker = sellToken;
     const supportedPSTs = await psts;
     const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
     const tags = {
-      "Exchange": "Verto",
-      "Type": "Sell",
+      Exchange: "Verto",
+      Type: "Sell",
       "App-Name": "SmartWeaveAction",
       "App-Version": "0.3.0",
-      "Contract": pstTxId,
-      "Rate": sellRate,
-      "Input": `{"function":"transfer","target":"${selectedPost}","qty":${sellAmount}}`
+      Contract: pstTxId,
+      Rate: sellRate,
+      Input: `{"function":"transfer","target":"${selectedPost}","qty":${sellAmount}}`,
     };
 
-    const tx = await client.createTransaction({
-      target: selectedPost,
-      data: Math.random().toString().slice(-4)
-    }, JSON.parse($keyfile));
-    
+    const tx = await client.createTransaction(
+      {
+        target: selectedPost,
+        data: Math.random().toString().slice(-4),
+      },
+      JSON.parse($keyfile)
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      // @ts-ignore
+      tx.addTag(key, value);
+    }
+    return tx;
+  }
+
+  async function initiateExchangeFee(): Promise<Transaction> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const tags = {
+      Exchange: "Verto",
+      Type: "Fee-Exchange",
+    };
+
+    const fee = getExchangeFee();
+
+    const tx = await client.createTransaction(
+      {
+        target: exchangeWallet,
+        quantity: client.ar.arToWinston(fee.toString()),
+      },
+      JSON.parse($keyfile)
+    );
+
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value);
     }
     return tx;
   }
 
+  async function initiateTradingPostFee(): Promise<Transaction> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const ticker = sellToken;
+    const supportedPSTs = await psts;
+    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
+
+    const tradingPostFee = getTradingPostFee();
+
+    const tags = {
+      Exchange: "Verto",
+      Type: "Fee-Trading-Post",
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      Contract: pstTxId,
+      Input: `{"function":"transfer","target":"${selectedPost}","qty":${tradingPostFee}}`,
+    };
+
+    const tx = await client.createTransaction(
+      {
+        target: selectedPost,
+        data: Math.random().toString().slice(-4),
+      },
+      JSON.parse($keyfile)
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      // @ts-ignore
+      tx.addTag(key, value);
+    }
+    return tx;
+  }
+
+  async function initiateVRTHolderFee(): Promise<Transaction> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+    let community = new Community(client);
+    await community.setCommunityTx(pstContract);
+
+    const ticker = sellToken;
+    const supportedPSTs = await psts;
+    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
+
+    const tipReceiver = await community.selectWeightedHolder();
+    const fee = getVRTHolderFee();
+
+    const tags = {
+      Exchange: "Verto",
+      Type: "Fee-VRT-Holder",
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      Contract: pstTxId,
+      Input: `{"function":"transfer","target":"${tipReceiver}","qty":${fee}}`,
+    };
+
+    const tx = await client.createTransaction(
+      {
+        target: tipReceiver,
+        data: Math.random().toString().slice(-4),
+      },
+      JSON.parse($keyfile)
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      // @ts-ignore
+      tx.addTag(key, value);
+    }
+    return tx;
+  }
+
+  function getExchangeFee(): number {
+    return buyAmount * exchangeFee;
+  }
+
+  async function getTradingPostFee(): Promise<number> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const txId = (
+      await query({
+        query: galleryQuery,
+        variables: {
+          owners: [selectedPost],
+          recipients: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges[0]?.node.id;
+
+    const config = JSON.parse(
+      (
+        await client.transactions.getData(txId, { decode: true, string: true })
+      ).toString()
+    );
+
+    return sellAmount * config["tradeFee"];
+  }
+
+  function getVRTHolderFee(): number {
+    return sellAmount * exchangeFee;
+  }
 </script>
 
-<svelte:head>
-  <title>Verto — Trade</title>
-</svelte:head>
-
-<NavBar />
-<div class="trade" in:fade={{ duration: 300 }}>
-  <div class="balance">
-    {#if $balance === 0}
-      <p><SkeletonLoading style="height: 1em; width: 120px" /></p>
-      <h1 class="total-balance"><SkeletonLoading style="height: 1em; width: 300px" /></h1>
-      <p class="wallet"><SkeletonLoading style="height: 1em; width: 400px" /></p>
-    {:else}
-      <p in:fade={{ duration: 150 }}>Your balance</p>
-      <h1 class="total-balance" in:fade={{ duration: 150 }}>{roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span></h1>
-      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
-    {/if}
-  </div>
-  <div class="assets">
-    <h1 class="title">Your Assets</h1>
-    <table>
-      {#await balances}
-        {#each Array(5) as _}
-          <tr>
-            <td style="width: 40%"><SkeletonLoading style="width: 100%" /></td>
-            <td style="width: 60%"><SkeletonLoading style="width: 100%" /></td>
-          </tr>
-        {/each}
-      {:then loadedBalances}
-        <tr>
-          <th style="width: 40%">Token</th>
-          <th style="width: 60%">Amount</th>
-        </tr>
-        {#if loadedBalances.length === 0}
-          <p>You don't have any tokens!</p>
-        {/if}
-        {#each loadedBalances as balance}
-          <tr>
-            <td style="width: 40%">{balance.token}</td>
-            <td style="width: 60%">{roundCurrency(balance.balance)} <span class="currency">{balance.ticker}</span></td>
-          </tr>
-        {/each}
-      {/await}
-    </table>
-  </div>
-  <div class="menu">
-    <button class:active={mode === "sell"} on:click={() => mode = "sell"}>Sell</button>
-    <button class:active={mode === "buy"} on:click={() => mode = "buy"}>Buy</button>
-  </div>
-  <div class="trade-container">
-    {#if mode === "sell"}
-      <div class="exchange-section">
-        <p>Amount</p>
-        <div class="input">
-          <input type="number" bind:value={sellAmount} min={0} />
-          <select bind:value={sellToken}>
-            {#await supportedPSTs}
-              <option disabled>Loading...</option>
-            {:then loadedPsts}
-              {#each loadedPsts as pst}
-                <option value={pst.ticker}>{pst.ticker}</option>
-              {/each}
-            {/await}
-          </select>
-        </div>
-      </div>
-      <div class="exchange-section">
-        <p>Rate</p>
-        <div class="input">
-          <input type="number" bind:value={sellRate} min={0} />
-          <div class="select-fake"><span>{sellToken} / AR</span></div>
-        </div>
-      </div>
-    {:else if mode === "buy"}
-      <input type="number" bind:value={buyAmount} min={0} />
-      <select bind:value={buyToken}>
-        {#await supportedPSTs}
-          <option disabled>Loading...</option>
-        {:then loadedPsts}
-          {#each loadedPsts as pst}
-            <option value={pst.ticker}>{pst.ticker}</option>
-          {/each}
-        {/await}
-      </select>
-    {/if}
-  </div>
-  <div class="recommended-post">
-    <div style="width: 100%; padding-right: 1.25em;">
-      <p>Trading post</p>
-      <select bind:value={selectedPost} on:change={() => {
-      supportedPSTs = getTradingPostSupportedTokens();
-      latestExchanges = getLatestExchanges();
-      openTrades = latestOpenExchanges();
-      closedTrades = latestClosedExchanges();
-      }}>
-        {#await posts}
-          <option disabled>Loading...</option>
-        {:then loadedPosts}
-          {#if loadedPosts.length === 0}
-            <option disabled>No posts found</option>
-          {/if}
-          {#each loadedPosts as post}
-            <option value={post} selected={post === selectedPost}>{post}</option>
-          {/each}
-        {/await}
-      </select>
-    </div>
-    <Button click={exchange} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>{mode}</Button>
-  </div>
-</div>
-<div class="exchanges-section">
-  <div class="information">
-    <div class="menu">
-      <button class:active={activeMenu === "open"} on:click={() => activeMenu = "open"}>Open Orders</button>
-      <button class:active={activeMenu === "closed"} on:click={() => activeMenu = "closed"}>Closed Orders</button>
-    </div>
-  </div>
-  <div class="content">
-    {#if activeMenu === "open"}
-      <table in:fade={{ duration: 400 }}>
-        {#await openTrades}
-          {#each Array(5) as _}
-            <tr>
-              <th style="width: 80%"><SkeletonLoading style="width: 100%;" /></th>
-              <th style="width: 20%"><SkeletonLoading style="width: 100%;" /></th>
-            </tr>
-          {/each}
-        {:then loadedOpenTrades}
-          {#if loadedOpenTrades.length === 0}
-            <p>This trading post doesn't have any open orders!</p>
-          {/if}
-          {#each loadedOpenTrades as trade}
-            <tr>
-              <td style="text-align: left">
-                {#if trade.type === "Buy"}
-                  {trade.ar}
-                {:else}
-                  {trade.pst}
-                {/if}
-                {"->"}
-                {#if trade.type === "Buy"}
-                  {trade.pst}
-                {:else}
-                  {trade.ar}
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        {/await}
-      </table>
-    {:else if activeMenu === "closed"}
-      <table in:fade={{ duration: 400 }}>
-        {#await closedTrades}
-          {#each Array(5) as _}
-            <tr>
-              <td style="width: 100%"><SkeletonLoading style="width: 100%;" /></td>
-            </tr>
-          {/each}
-        {:then loadedOpenTrades}
-          {#if loadedOpenTrades.length === 0}
-            <p>This trading post doesn't have any completed trades!</p>
-          {/if}
-          {#each loadedOpenTrades as trade}
-            <tr>
-              <td style="text-align: left">
-                {#if trade.type === "Buy"}
-                  {trade.ar}
-                {:else}
-                  {trade.pst}
-                {/if}
-                {"->"}
-                {#if trade.type === "Buy"}
-                  {trade.pst}
-                {:else}
-                  {trade.ar}
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        {/await}
-      </table>
-    {/if}
-  </div>
-</div>
-<Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={confirmTrade} onCancel={cancelTrade}>
-  <!-- <p style="text-align: center;">
-    Exchanging {sendAmount} {sendCurrency} for {recieveAmount} {recieveCurrency}
-  </p>
-  <p style="text-align: center">
-    {#await fees}
-      Loading fees...
-    {:then loadedFees}
-      {#if sendCurrency === "AR"}
-        This action will cost {sendAmount + (sendAmount * 0.0025) + loadedFees} AR
-      {:else}
-        This action will cost {sendAmount} {sendCurrency} + {loadedFees} AR
-      {/if}
-    {/await}
-  </p> -->
-  You have problems
-</Modal>
-<Footer />
-
+<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../styles/tables.sass"
@@ -858,3 +872,231 @@
         left: 0
 
 </style>
+
+<svelte:head>
+  <title>Verto — Trade</title>
+</svelte:head>
+
+<NavBar />
+<div class="trade" in:fade={{ duration: 300 }}>
+  <div class="balance">
+    {#if $balance === 0}
+      <p>
+        <SkeletonLoading style="height: 1em; width: 120px" />
+      </p>
+      <h1 class="total-balance">
+        <SkeletonLoading style="height: 1em; width: 300px" />
+      </h1>
+      <p class="wallet">
+        <SkeletonLoading style="height: 1em; width: 400px" />
+      </p>
+    {:else}
+      <p in:fade={{ duration: 150 }}>Your balance</p>
+      <h1 class="total-balance" in:fade={{ duration: 150 }}>
+        {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
+      </h1>
+      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
+    {/if}
+  </div>
+  <div class="assets">
+    <h1 class="title">Your Assets</h1>
+    <table>
+      {#await balances}
+        {#each Array(5) as _}
+          <tr>
+            <td style="width: 40%">
+              <SkeletonLoading style="width: 100%" />
+            </td>
+            <td style="width: 60%">
+              <SkeletonLoading style="width: 100%" />
+            </td>
+          </tr>
+        {/each}
+      {:then loadedBalances}
+        <tr>
+          <th style="width: 40%">Token</th>
+          <th style="width: 60%">Amount</th>
+        </tr>
+        {#if loadedBalances.length === 0}
+          <p>You don't have any tokens!</p>
+        {/if}
+        {#each loadedBalances as balance}
+          <tr>
+            <td style="width: 40%">{balance.token}</td>
+            <td style="width: 60%">
+              {roundCurrency(balance.balance)}
+              <span class="currency">{balance.ticker}</span>
+            </td>
+          </tr>
+        {/each}
+      {/await}
+    </table>
+  </div>
+  <div class="menu">
+    <button
+      class:active={mode === 'buy'}
+      on:click={() => (mode = 'buy')}>Buy</button>
+    <button
+      class:active={mode === 'sell'}
+      on:click={() => (mode = 'sell')}>Sell</button>
+  </div>
+  <div class="trade-container">
+    {#if mode === 'sell'}
+      <div class="exchange-section">
+        <p>Amount</p>
+        <div class="input">
+          <input type="number" bind:value={sellAmount} min={0} />
+          {#await supportedPSTs}
+            <SkeletonLoading style="width: 35px; height: 38px" />
+          {:then loadedPSTs}
+            <select bind:value={sellToken}>
+              {#each loadedPSTs as pst}
+                <option value={pst.ticker}>{pst.ticker}</option>
+              {/each}
+            </select>
+          {/await}
+        </div>
+      </div>
+      <div class="exchange-section">
+        <p>Rate</p>
+        <div class="input">
+          <input type="number" bind:value={sellRate} min={0} />
+          <div class="select-fake"><span>{sellToken} / AR</span></div>
+        </div>
+      </div>
+    {:else if mode === 'buy'}
+      <input type="number" bind:value={buyAmount} min={0} /> AR's worth of
+      {#await supportedPSTs}
+        <SkeletonLoading style="width: 35px; height: 38px" />
+      {:then loadedPSTs}
+        <select bind:value={buyToken}>
+          {#each loadedPSTs as pst}
+            <option value={pst.ticker}>{pst.ticker}</option>
+          {/each}
+        </select>
+      {/await}
+    {/if}
+  </div>
+  <div class="recommended-post">
+    <div style="width: 100%; padding-right: 1.25em;">
+      <p>Trading post</p>
+      <select
+        bind:value={selectedPost}
+        on:change={() => {
+          supportedPSTs = getTradingPostSupportedTokens();
+          latestExchanges = getLatestExchanges();
+          openTrades = latestOpenExchanges();
+          closedTrades = latestClosedExchanges();
+        }}>
+        {#await posts}
+          <option disabled>Loading...</option>
+        {:then loadedPosts}
+          {#if loadedPosts.length === 0}
+            <option disabled>No posts found</option>
+          {/if}
+          {#each loadedPosts as post}
+            <option value={post} selected={post === selectedPost}>
+              {post}
+            </option>
+          {/each}
+        {/await}
+      </select>
+    </div>
+    <Button
+      click={exchange}
+      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
+      {mode}
+    </Button>
+  </div>
+</div>
+<div class="exchanges-section">
+  <div class="information">
+    <div class="menu">
+      <button
+        class:active={activeMenu === 'open'}
+        on:click={() => (activeMenu = 'open')}>Open Orders</button>
+      <button
+        class:active={activeMenu === 'closed'}
+        on:click={() => (activeMenu = 'closed')}>Closed Orders</button>
+    </div>
+  </div>
+  <div class="content">
+    {#if activeMenu === 'open'}
+      <table in:fade={{ duration: 400 }}>
+        {#await openTrades}
+          {#each Array(5) as _}
+            <tr>
+              <th style="width: 80%">
+                <SkeletonLoading style="width: 100%;" />
+              </th>
+              <th style="width: 20%">
+                <SkeletonLoading style="width: 100%;" />
+              </th>
+            </tr>
+          {/each}
+        {:then loadedOpenTrades}
+          {#if loadedOpenTrades.length === 0}
+            <p>This trading post doesn't have any open orders!</p>
+          {/if}
+          {#each loadedOpenTrades as trade}
+            <tr>
+              <td style="text-align: left">
+                {#if trade.type === 'Buy'}{trade.ar}{:else}{trade.pst}{/if}
+                {'->'}
+                {#if trade.type === 'Buy'}{trade.pst}{:else}{trade.ar}{/if}
+              </td>
+            </tr>
+          {/each}
+        {/await}
+      </table>
+    {:else if activeMenu === 'closed'}
+      <table in:fade={{ duration: 400 }}>
+        {#await closedTrades}
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 100%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+            </tr>
+          {/each}
+        {:then loadedOpenTrades}
+          {#if loadedOpenTrades.length === 0}
+            <p>This trading post doesn't have any completed trades!</p>
+          {/if}
+          {#each loadedOpenTrades as trade}
+            <tr>
+              <td style="text-align: left">
+                {#if trade.type === 'Buy'}{trade.ar}{:else}{trade.pst}{/if}
+                {'->'}
+                {#if trade.type === 'Buy'}{trade.pst}{:else}{trade.ar}{/if}
+              </td>
+            </tr>
+          {/each}
+        {/await}
+      </table>
+    {/if}
+  </div>
+</div>
+<Modal
+  bind:opened={confirmModalOpened}
+  confirmation={true}
+  onConfirm={confirmTrade}
+  onCancel={cancelTrade}>
+  <p style="text-align: center;">
+    {#if mode === 'buy'}
+      Buying {buyAmount} AR's worth of {buyToken}
+    {:else if mode === 'sell'}
+      Selling {sellAmount}
+      {sellToken} at a rate of {sellRate}
+      {sellToken}/AR
+    {/if}
+  </p>
+  <p style="text-align: center">
+    {#await confirmModalText}
+      Loading fees...
+    {:then loadedText}
+      {loadedText}
+    {/await}
+  </p>
+</Modal>
+<Footer />

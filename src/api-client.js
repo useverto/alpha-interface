@@ -2,12 +2,12 @@
 export async function query({ query, variables = null }) {
   var graphql = JSON.stringify({
     query,
-    variables
+    variables,
   });
   var requestOptions = {
     method: "POST",
     headers: {
-      "content-type": "application/json"
+      "content-type": "application/json",
     },
     body: graphql,
   };

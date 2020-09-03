@@ -1,5 +1,4 @@
 <script lang="typescript">
-
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Button from "../components/Button.svelte";
@@ -15,16 +14,18 @@
   import Community from "community-js";
   import { pstContract, exchangeWallet } from "../utils/constants";
 
-  if(process.browser && !$loggedIn) goto("/");
+  if (process.browser && !$loggedIn) goto("/");
 
   let supportedTokens = getSupportedPSTs();
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
 
-  async function getSupportedPSTs (): Promise<{ id: string, name: string, ticker: string }[]> {
-    if(!process.browser) return [];
+  async function getSupportedPSTs(): Promise<
+    { id: string; name: string; ticker: string }[]
+  > {
+    if (!process.browser) return [];
 
-    let psts: { id: string, name: string, ticker: string }[] = [];
+    let psts: { id: string; name: string; ticker: string }[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -34,27 +35,30 @@
     });
 
     let txIds = [];
-    const _txIds = (await query({
-      query: tokensQuery,
+    const _txIds = (
+      await query({
+        query: tokensQuery,
         variables: {
-          owners: [exchangeWallet]
-        }
-    })).data.transactions.edges;
+          owners: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges;
     _txIds.map(({ node }) => {
       txIds.push(node.id);
-    })
+    });
 
     for (const id of txIds) {
       try {
-        const contractId = (await client.transactions.getData(
-          id,
-          {decode: true, string: true},
-        )).toString();
+        const contractId = (
+          await client.transactions.getData(id, { decode: true, string: true })
+        ).toString();
         const contractData = JSON.parse(
-          (await client.transactions.getData(
-            contractId,
-            {decode: true, string: true},
-          )).toString()
+          (
+            await client.transactions.getData(contractId, {
+              decode: true,
+              string: true,
+            })
+          ).toString()
         );
         psts.push({
           id: contractId,
@@ -74,7 +78,7 @@
   }
 
   async function confirmAdd(cancelClose: Function) {
-    if(newContractID === "" || newContractID === undefined) cancelClose();
+    if (newContractID === "" || newContractID === undefined) cancelClose();
     else {
       const client = new Arweave({
         host: "arweave.dev",
@@ -84,28 +88,28 @@
       });
       let community = new Community(client, JSON.parse($keyfile));
       await community.setCommunityTx(pstContract);
-      
+
       // Make sure user has balance of our PST
       try {
         let balance = await community.get({
-          function: "unlockedBalance"
+          function: "unlockedBalance",
         });
 
         if (balance.balance > 0) {
-          console.log("YOUR BAL IS GREATER THAN 0")
+          console.log("YOUR BAL IS GREATER THAN 0");
         } else {
           // Show an error because they need to have a balance
 
           addTokenModalOpened = false;
         }
-      } catch(err) {
+      } catch (err) {
         console.log(err);
       }
 
       // Propose a vote to the DAO
       await community.proposeVote({
         type: "indicative",
-        note: newContractID
+        note: newContractID,
       });
       newContractID = "";
     }
@@ -116,46 +120,14 @@
     newContractID = "";
   }
 
-  function roundCurrency (val: number | string): string {
-    if(val === "?") return val;
-    if(typeof val === "string") val = parseFloat(val);
+  function roundCurrency(val: number | string): string {
+    if (val === "?") return val;
+    if (typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
   }
-
 </script>
 
-<svelte:head>
-  <title>Verto — Tokens</title>
-</svelte:head>
-
-<NavBar />
-<div class="tokens" in:fade={{ duration: 300 }}>
-  <div class="tokens-head">
-    <h1 class="title">Supported Tokens</h1>
-    <Button click={addToken} style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>Add Token</Button>
-  </div>
-  <div class="tokens-content">
-    {#await supportedTokens}
-      <Loading />
-    {:then loadedPSTs} 
-      {#each loadedPSTs as pst}
-        <a class="token" href="https://viewblock.io/arweave/tx/{pst.id}">
-          <h1 class="short">{pst.ticker}</h1>
-          <div class="info">
-            <h1><span>[PST]</span>{pst.name}</h1>
-            <p><span>ID:</span>{pst.id}</p>
-          </div>
-        </a>
-      {/each}
-    {/await}
-  </div>
-</div>
-<Modal bind:opened={addTokenModalOpened} confirmation={true} onConfirm={confirmAdd} onCancel={cancelAdd}>
-  <h3 style="text-align: center;">Token Contract ID</h3>
-  <input type="text" bind:value={newContractID} class="light contract-id" placeholder="Contract ID">
-</Modal>
-<Footer />
-
+<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../styles/general.sass"
@@ -282,3 +254,47 @@
         transform: translate3d(4px, 0, 0)
 
 </style>
+
+<svelte:head>
+  <title>Verto — Tokens</title>
+</svelte:head>
+
+<NavBar />
+<div class="tokens" in:fade={{ duration: 300 }}>
+  <div class="tokens-head">
+    <h1 class="title">Supported Tokens</h1>
+    <Button
+      click={addToken}
+      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
+      Add Token
+    </Button>
+  </div>
+  <div class="tokens-content">
+    {#await supportedTokens}
+      <Loading />
+    {:then loadedPSTs}
+      {#each loadedPSTs as pst}
+        <a class="token" href="https://viewblock.io/arweave/tx/{pst.id}">
+          <h1 class="short">{pst.ticker}</h1>
+          <div class="info">
+            <h1><span>[PST]</span>{pst.name}</h1>
+            <p><span>ID:</span>{pst.id}</p>
+          </div>
+        </a>
+      {/each}
+    {/await}
+  </div>
+</div>
+<Modal
+  bind:opened={addTokenModalOpened}
+  confirmation={true}
+  onConfirm={confirmAdd}
+  onCancel={cancelAdd}>
+  <h3 style="text-align: center;">Token Contract ID</h3>
+  <input
+    type="text"
+    bind:value={newContractID}
+    class="light contract-id"
+    placeholder="Contract ID" />
+</Modal>
+<Footer />

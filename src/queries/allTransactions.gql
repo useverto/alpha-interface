@@ -1,13 +1,5 @@
-query (
-  $recipients: [String!]
-  $owners: [String!]
-  $after: String
-) {
-  transactions(
-    recipients: $recipients
-    owners: $owners
-    after: $after
-  ) {
+query($recipients: [String!], $owners: [String!], $after: String) {
+  transactions(recipients: $recipients, owners: $owners, after: $after) {
     pageInfo {
       hasNextPage
     }

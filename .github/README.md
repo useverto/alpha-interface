@@ -20,7 +20,7 @@ You can access the code for trading posts [here](https://github.com/useverto/tra
 
 ## Guide
 
-To build/use the service on localhost, you will have to download Node, and install the yarn package manager (`npm i -g yarn`). When you have these, clone this repository and run `yarn install` to add the required dependencies. 
+To build/use the service on localhost, you will have to download Node, and install the yarn package manager (`npm i -g yarn`). When you have these, clone this repository and run `yarn` to add the required dependencies.
 Below, you will see the available commands to test/build the project.
 
 ### Libraries
@@ -30,6 +30,7 @@ We use the arweave-js library with Svelte/Sapper. You can read more about these 
 ### Debug
 
 This will start the app with live reload, according to the rollup config
+
 ```sh
 yarn dev
 ```
@@ -37,6 +38,7 @@ yarn dev
 ### Export
 
 This will export the app to static html/css/js to `__sapper__/export`
+
 ```sh
 yarn export
 ```
@@ -48,6 +50,7 @@ yarn export
 - [Aidan O'Kelly](https://github.com/aidanok)
 
 ## How to deploy
+
 Since Sapper needs to know the exact path it will be served from, and when you deploy on arweave, you don't know the path until after you've deployed, a workaround is needed.
 
 Sapper has to be given a string to be served from (for e.g. `FAKEROOTPATH`), that can be searched and replaced later in the build output with `./`.
