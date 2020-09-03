@@ -19,7 +19,7 @@
   import Community from "community-js";
   import Transaction from "arweave/node/lib/transaction";
   import { notification, NotificationType } from "../stores/notificationStore.js";
-  import { exchangeWallet, pstContract } from "../utils/constants";
+  import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
 
   let selectedPost;
   let buyAmount: number = 1;
@@ -221,26 +221,26 @@
   //   return tx;
   // }
 
-  async function createTipTx(): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
+  // async function createTipTx(): Promise<Transaction> {
+  //   const client = new Arweave({
+  //     host: "arweave.dev",
+  //     port: 443,
+  //     protocol: "https",
+  //     timeout: 200000,
+  //   });
+  //   let community = new Community(client);
+  //   await community.setCommunityTx(pstContract);
 
-    let tipReceiver = await community.selectWeightedHolder();
+  //   let tipReceiver = await community.selectWeightedHolder();
 
-    let tipTx = await client.createTransaction({
-      target: tipReceiver,
-      quantity: sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString()
-    }, JSON.parse($keyfile));
+  //   let tipTx = await client.createTransaction({
+  //     target: tipReceiver,
+  //     quantity: sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString()
+  //   }, JSON.parse($keyfile));
 
-    console.log(sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString());
-    return tipTx;
-  }
+  //   console.log(sendCurrency === "AR" ? (sendAmount * 0.0025).toString() : (recieveAmount * 0.0025).toString());
+  //   return tipTx;
+  // }
   
   async function confirmTrade () {
     const client = new Arweave({
@@ -392,7 +392,7 @@
     return closedExchanges;
   }
 
-  async function initiateBuy() {
+  async function initiateBuy(): Promise<Transaction> {
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
@@ -421,7 +421,7 @@
     return tx;
   }
 
-  async function initiateSell() {
+  async function initiateSell(): Promise<Transaction> {
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
@@ -449,6 +449,107 @@
     }, JSON.parse($keyfile));
     
     for (const [key, value] of Object.entries(tags)) {
+      // @ts-ignore
+      tx.addTag(key, value);
+    }
+    return tx;
+  }
+
+  async function initiateExchangeFee(): Promise<Transaction> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const tags = {
+      "Exchange": "Verto",
+      "Type": "Fee-Exchange",
+    };
+
+    const fee = buyAmount * exchangeFee;
+
+    const tx = await client.createTransaction({
+      target: exchangeWallet,
+      quantity: client.ar.arToWinston(fee.toString())
+    }, JSON.parse($keyfile));
+    
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value);
+    }
+    return tx;
+  }
+
+  async function initiateTradingPostFee(): Promise<Transaction> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const ticker = sellToken;
+    const supportedPSTs = await psts;
+    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
+
+    // TODO (johnletey): Get trading post fee from genesis tx
+    const tradingPostFee = sellAmount * 0.1; // The 0.1 needs to be replaced with actual fee amount
+
+    const tags = {
+      "Exchange": "Verto",
+      "Type": "Fee-Trading-Post",
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      "Contract": pstTxId,
+      "Input": `{"function":"transfer","target":"${selectedPost}","qty":${tradingPostFee}}`
+    };
+
+    const tx = await client.createTransaction({
+      target: selectedPost,
+      data: Math.random().toString().slice(-4)
+    }, JSON.parse($keyfile));
+    
+    for (const [key, value] of Object.entries(tags)) {
+      // @ts-ignore
+      tx.addTag(key, value);
+    }
+    return tx;
+  }
+
+  async function initateVRTHolderFee(): Promise<Transaction> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+    let community = new Community(client);
+    await community.setCommunityTx(pstContract);
+
+    const ticker = sellToken;
+    const supportedPSTs = await psts;
+    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
+
+    const tipReceiver = await community.selectWeightedHolder();
+    const fee = sellAmount * exchangeFee;
+
+    const tags = {
+      "Exchange": "Verto",
+      "Type": "Fee-VRT-Holder",
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      "Contract": pstTxId,
+      "Input": `{"function":"transfer","target":"${tipReceiver}","qty":${fee}}`
+    };
+
+    const tx = await client.createTransaction({
+      target: tipReceiver,
+      data: Math.random().toString().slice(-4)
+    }, JSON.parse($keyfile));
+    
+    for (const [key, value] of Object.entries(tags)) {
+      // @ts-ignore
       tx.addTag(key, value);
     }
     return tx;
