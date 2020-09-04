@@ -9,7 +9,6 @@
   import moment from "moment";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { address } from "../../stores/keyfileStore";
-  import { tick } from "svelte";
 
   let exchanges = getLatestExchanges();
 
