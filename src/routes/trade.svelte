@@ -1053,14 +1053,15 @@
                   {#if sellToken === undefined}
                     <option>...</option>
                   {:else}
-                    <option>{sellToken + "/AR"}</option>
+                    <option>{sellToken + '/AR'}</option>
                   {/if}
                 </select>
               </div>
             </div>
           </div>
           <div class="short-content">
-            <p><br /><p>
+            <p><br /></p>
+            <p />
             <div class="input" style="border: none">
               <Button
                 click={exchange}
@@ -1138,7 +1139,8 @@
               <p>Receive</p>
               <div class="input">
                 {#await supportedPSTs}
-                  <SkeletonLoading style="width: 100% !important; height: 100% !important" />
+                  <SkeletonLoading
+                    style="width: 100% !important; height: 100% !important" />
                 {:then loadedPSTs}
                   <select bind:value={buyToken} style="width: 100% !important;">
                     {#each loadedPSTs as pst}
@@ -1150,7 +1152,8 @@
             </div>
           </div>
           <div class="short-content">
-            <p><br /><p>
+            <p><br /></p>
+            <p />
             <div class="input" style="border: none">
               <Button
                 click={exchange}
