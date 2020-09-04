@@ -88,13 +88,17 @@
               tags: [
                 { name: "Exchange", values: "Verto" }
                 { name: "Type", values: "Confirmation" }
-                { name: "Matched", values: "${exchanges[i].id}" }
+                { name: "Match", values: "${exchanges[i].id}" }
               ]
             ) {
               edges {
                 node {
                   block {
                     timestamp
+                  }
+                  tags {
+                    name
+                    value
                   }
                 }
               }
@@ -107,15 +111,26 @@
       if (match[0]) {
         exchanges[i].status = "success";
 
-        const start = moment(exchanges[i].timestamp);
-        const end = moment(
-          moment
-            .unix(match[0].node.block.timestamp)
-            .format("YYYY-MM-DD hh:mm:ss")
-        );
-        const duration = moment.duration(end.diff(start));
+        if (match[0].node.block) {
+          const start = moment(exchanges[i].timestamp);
+          const end = moment(
+            moment
+              .unix(match[0].node.block.timestamp)
+              .format("YYYY-MM-DD hh:mm:ss")
+          );
+          const duration = moment.duration(end.diff(start));
 
-        exchanges[i].duration = duration.humanize();
+          exchanges[i].duration = duration.humanize();
+        } else {
+          exchanges[i].duration = "NOT MINED YET";
+        }
+
+        const receivedTag = match[0].node.tags.find(
+          (tag: any) => tag.name === "Received"
+        );
+        if (receivedTag) {
+          exchanges[i].received = receivedTag.value;
+        }
       }
     }
 
