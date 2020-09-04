@@ -9,6 +9,7 @@
   import moment from "moment";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { address } from "../../stores/keyfileStore";
+  import { tick } from "svelte";
 
   let exchanges = getLatestExchanges();
 
@@ -17,8 +18,8 @@
       id: string;
       timestamp: string;
       type: string;
-      ar: string;
-      pst: string;
+      sent: string;
+      received: string;
       status: string;
       duration: string;
     }[]
@@ -29,8 +30,8 @@
       id: string;
       timestamp: string;
       type: string;
-      ar: string;
-      pst: string;
+      sent: string;
+      received: string;
       status: string;
       duration: string;
     }[] = [];
@@ -50,13 +51,20 @@
     txs.map(({ node }) => {
       const tradeType = node.tags.find((tag) => tag.name === "Type")?.value;
       if (tradeType) {
-        // TODO(@johnletey): Update these tags
-        const arVal = node.tags.find((tag) => tag.name === "Buy-For")?.value;
-        const pstVal = node.tags.find((tag) => tag.name === "Sell-Qty")?.value;
+        const tokenTag = tradeType === "Buy" ? "Token" : "Contract";
+        const token = node.tags.find((tag: any) => tag.name === tokenTag)
+          ?.value!;
+        const ticker = psts.find((pst) => pst.id === token)?.ticker;
 
-        const tokenId = node.tags.find((tag) => tag.name === "Target-Token")
-          ?.value;
-        const token = psts.find((pst) => pst.id === tokenId)?.ticker;
+        const sent =
+          tradeType === "Buy"
+            ? node.quantity.ar + " AR"
+            : JSON.parse(
+                node.tags.find((tag: any) => tag.name === "Input")?.value!
+              )["qty"] +
+              " " +
+              ticker;
+        const received = "??? " + (tradeType === "Buy" ? ticker : "AR");
 
         exchanges.push({
           id: node.id,
@@ -64,8 +72,8 @@
             .unix(node.block.timestamp)
             .format("YYYY-MM-DD hh:mm:ss"),
           type: tradeType,
-          ar: arVal + " AR",
-          pst: pstVal + " " + token,
+          sent,
+          received,
           status: "pending",
           duration: "not completed",
         });
@@ -73,8 +81,6 @@
     });
 
     for (let i = 0; i < exchanges.length; i++) {
-      const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
-
       const match = (
         await query({
           query: `
@@ -83,7 +89,7 @@
               tags: [
                 { name: "Exchange", values: "Verto" }
                 { name: "Type", values: "Confirmation" }
-                { name: "Match", values: "${exchanges[i].id}" }
+                { name: "Matched", values: "${exchanges[i].id}" }
               ]
             ) {
               edges {
@@ -242,9 +248,9 @@
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
           <td style="width: 45%">
-            {#if exchange.type === 'Buy'}{exchange.ar}{:else}{exchange.pst}{/if}
+            {exchange.sent}
             {'->'}
-            {#if exchange.type === 'Buy'}{exchange.pst}{:else}{exchange.ar}{/if}
+            {exchange.received}
             <span class="status {exchange.status}" />
           </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>

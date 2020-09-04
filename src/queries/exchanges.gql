@@ -19,6 +19,9 @@ query($owners: [String!], $num: Int, $recipients: [String!], $cursor: String) {
         block {
           timestamp
         }
+        quantity {
+          ar
+        }
         tags {
           name
           value
