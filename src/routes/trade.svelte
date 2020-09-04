@@ -351,15 +351,25 @@
   let latestExchanges = getLatestExchanges();
 
   async function getLatestExchanges(): Promise<
-    { id: string; type: string; ar: string; pst: string; matched: boolean }[]
+    {
+      id: string;
+      type: string;
+      sent: string;
+      received: string;
+      rate: string;
+      ticker: string;
+      matched: boolean;
+    }[]
   > {
     if (!process.browser) return [];
     let loadedPsts = await psts;
     let exchanges: {
       id: string;
       type: string;
-      ar: string;
-      pst: string;
+      sent: string;
+      received: string;
+      rate: string;
+      ticker: string;
       matched: boolean;
     }[] = [];
 
@@ -372,21 +382,32 @@
       })
     ).data.transactions.edges;
     txs.map(({ node }) => {
-      const tradeType = node.tags.find((tag) => tag.name === "Trade-Opcode")
-        ?.value;
+      const tradeType = node.tags.find((tag) => tag.name === "Type")?.value;
       if (tradeType) {
-        const arVal = node.tags.find((tag) => tag.name === "Buy-For")?.value;
-        const pstVal = node.tags.find((tag) => tag.name === "Sell-Qty")?.value;
+        const tokenTag = tradeType === "Buy" ? "Token" : "Contract";
+        const token = node.tags.find((tag: any) => tag.name === tokenTag)
+          ?.value!;
+        const ticker = loadedPsts.find((pst) => pst.id === token)?.ticker;
 
-        const tokenId = node.tags.find((tag) => tag.name === "Target-Token")
-          ?.value;
-        const token = loadedPsts.find((pst) => pst.id === tokenId)?.ticker;
+        const sent =
+          tradeType === "Buy"
+            ? node.quantity.ar + " AR"
+            : JSON.parse(
+                node.tags.find((tag: any) => tag.name === "Input")?.value!
+              )["qty"] +
+              " " +
+              ticker;
+        const received = "??? " + (tradeType === "Buy" ? ticker : "AR");
+
+        const rate = node.tags.find((tag: any) => tag.name === "Rate")?.value!;
 
         exchanges.push({
           id: node.id,
           type: tradeType,
-          ar: arVal + " AR",
-          pst: pstVal + " " + token,
+          sent,
+          received,
+          rate,
+          ticker,
           matched: false,
         });
       }
@@ -401,20 +422,19 @@
           query {
             transactions(
               tags: [
-                {
-                  name: "Exchange",
-                  values: "Verto"
-                },
-                {
-                  name: "${inverseTradeType}ing-Tx",
-                  values: "${exchanges[i].id}"
-                }
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "Confirmation" }
+                { name: "Match", values: "${exchanges[i].id}" }
               ]
             ) {
               edges {
                 node {
                   block {
                     timestamp
+                  }
+                  tags {
+                    name
+                    value
                   }
                 }
               }
@@ -424,8 +444,15 @@
         })
       ).data.transactions.edges;
 
-      if (match && match[0]) {
+      if (match[0]) {
         exchanges[i].matched = true;
+
+        const receivedTag = match[0].node.tags.find(
+          (tag: any) => tag.name === "Received"
+        );
+        if (receivedTag) {
+          exchanges[i].received = receivedTag.value;
+        }
       }
     }
     return exchanges;
@@ -434,7 +461,15 @@
   let openTrades = latestOpenExchanges();
 
   async function latestOpenExchanges(): Promise<
-    { id: string; type: string; ar: string; pst: string; matched: boolean }[]
+    {
+      id: string;
+      type: string;
+      sent: string;
+      received: string;
+      rate: string;
+      ticker: string;
+      matched: boolean;
+    }[]
   > {
     let txs = await latestExchanges;
 
@@ -450,7 +485,15 @@
   let closedTrades = latestClosedExchanges();
 
   async function latestClosedExchanges(): Promise<
-    { id: string; type: string; ar: string; pst: string; matched: boolean }[]
+    {
+      id: string;
+      type: string;
+      sent: string;
+      received: string;
+      rate: string;
+      ticker: string;
+      matched: boolean;
+    }[]
   > {
     let txs = await latestExchanges;
 
@@ -1050,9 +1093,13 @@
           {#each loadedOpenTrades as trade}
             <tr>
               <td style="text-align: left">
-                {#if trade.type === 'Buy'}{trade.ar}{:else}{trade.pst}{/if}
-                {'->'}
-                {#if trade.type === 'Buy'}{trade.pst}{:else}{trade.ar}{/if}
+                <span class="direction">{trade.type}</span>
+                {trade.sent}
+                {#if trade.type === 'Sell'}
+                  {`| Rate = `}
+                  {trade.rate}
+                  {trade.ticker}/AR
+                {/if}
               </td>
             </tr>
           {/each}
@@ -1075,9 +1122,9 @@
           {#each loadedOpenTrades as trade}
             <tr>
               <td style="text-align: left">
-                {#if trade.type === 'Buy'}{trade.ar}{:else}{trade.pst}{/if}
+                {trade.sent}
                 {'->'}
-                {#if trade.type === 'Buy'}{trade.pst}{:else}{trade.ar}{/if}
+                {trade.received}
               </td>
             </tr>
           {/each}
