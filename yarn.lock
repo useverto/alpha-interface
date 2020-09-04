@@ -1655,13 +1655,13 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-community-js@^1.0.12:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.0.13.tgz#4857523b6f7894c201d9dcd5339f015cfcdc07f6"
-  integrity sha512-VOZGbHppnmayoLK20DI3/zc/Rb8/WYiurnHOy0E5i0633RhymFnDyaA2PJ3d06JULJ56QRF6HM0RCcZZ2Byo2w==
+community-js@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.0.14.tgz#8ec963d9df0c9393fe31359a0ca2d90f5ac8dc42"
+  integrity sha512-TuMeZjGBYUDnRr7byCW1J8yWZqgCWpel9tZEfcJR9styImsAj42liYDlcAIASzihePVbl3EYyT+xjEgboaWeBw==
   dependencies:
     arweave "^1.9.1"
-    smartweave "^0.3.3"
+    smartweave "^0.3.5"
     tiny-worker "^2.3.0"
 
 compressible@~2.0.16:
@@ -3954,18 +3954,10 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-smartweave@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.3.3.tgz#331b31f099cfe655e4b1300210234cee097bc70d"
-  integrity sha512-G//7xPG4vRRC3FR7u269zzzvAY5e67Kp5Ypkiu03hOyIHYh4kDFGlOAdSJJcJ+mWKE9MhOjdU4IxxZqbFVJQeA==
-  dependencies:
-    arweave "^1.9.1"
-    bignumber.js "^9.0.0"
-    yargs "^15.3.1"
-
-"smartweave@https://arweave.net/QKWySKiNimiOU7taGjuh3eLCESmcbBO9A8iNw8FdUFc":
-  version "0.3.2"
-  resolved "https://arweave.net/QKWySKiNimiOU7taGjuh3eLCESmcbBO9A8iNw8FdUFc#a07150cd6228643fe252890956a8f93b3c3b260b"
+smartweave@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.3.5.tgz#780cb2604d40a8024e5a0a2d294d51838b727049"
+  integrity sha512-yNb4FBJpWgzTwxesCw1GV9dCA6XRJmP7aF7/JFR8uur8QgAZUXghugyC1IdpAtjven4ASFl7U2uApvj78CIGlw==
   dependencies:
     arweave "^1.9.1"
     bignumber.js "^9.0.0"

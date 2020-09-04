@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "arweave": "^1.9.1",
-    "community-js": "^1.0.12",
+    "community-js": "^1.0.14",
     "compression": "^1.7.1",
     "moment": "^2.27.0",
     "polka": "next",
     "sirv": "^1.0.6",
-    "smartweave": "https://arweave.net/QKWySKiNimiOU7taGjuh3eLCESmcbBO9A8iNw8FdUFc",
+    "smartweave": "^0.3.5",
     "svelte-chartjs": "^1.0.1"
   },
   "devDependencies": {
