@@ -29,7 +29,7 @@
   let buyToken: string;
   let sellToken: string;
   let sellRate: number = 1;
-  let mode: string = "buy";
+  let mode: string = "sell";
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "Loading...";
@@ -735,59 +735,55 @@
         text-transform: uppercase
 
     .trade-container
-      display: flex
-
-      @media screen and (max-width: 720px)
-        display: block
-
-      .exchange-section
-        width: 48%
-
-        &:first-child
-          padding-right: 2%
-
-        &:last-child
-          padding-left: 2%
-
-      p
-        color: rgba(#000, .3)
-        font-weight: 600
-        font-size: .95em
-        margin: 0
-          bottom: .7em
-        text-transform: uppercase
-
-      .input
+      .trade-section
         display: flex
+        justify-content: space-between
         align-items: center
-        border: 1px solid #000
-        border-radius: .4em
-        height: 2.35em
-        margin-bottom: 1.7em
-        overflow: hidden
+        margin: 2em 0
 
-        input
+        .short-content
+          width: 14%
+          margin-left: 3%
+          height: 100%
+
+        .long-content
           width: 80%
-          height: 100%
-          border: none
-          outline: none
-          font-size: 1.2em
-          padding: 0 .5em
-          color: #000
+          margin-right: 3%
+          display: flex
+          justify-content: space-between
 
-          @media screen and (max-width: 720px)
-            width: 62%
+        .short-content, .long-content
+          p
+            color: rgba(#000, .3)
+            font-weight: 600
+            font-size: .95em
+            margin: 0
+              bottom: .7em
+            text-transform: uppercase
 
-        select, .select-fake
-          width: 20%
-          height: 100%
-          border-radius: 0
-          text-transform: uppercase
+          select, .fake-select
+            width: 100% !important
+            height: 2.35em !important  
 
-          @media screen and (max-width: 720px)
-            width: 38%
+          .fake-select
+            opacity: 1 !important
+            background-image: none !important
 
-    select, .select-fake
+          .input
+            border: 2px solid #000
+            display: flex
+            border-radius: .3em
+            overflow: hidden
+
+            input
+              border: none
+              width: 70% !important
+
+            select
+              width: 30% !important
+              border-radius: 0
+
+    select
       $sidePadding: .65em
       position: relative
       color: #fff
@@ -903,7 +899,7 @@
     {/if}
   </div>
   <div class="assets">
-    <h1 class="title">Your Assets</h1>
+    <h1 class="title">Assets</h1>
     <table>
       {#await balances}
         {#each Array(5) as _}
@@ -938,84 +934,199 @@
   </div>
   <div class="menu">
     <button
-      class:active={mode === 'buy'}
-      on:click={() => (mode = 'buy')}>Buy</button>
-    <button
       class:active={mode === 'sell'}
       on:click={() => (mode = 'sell')}>Sell</button>
+    <button
+      class:active={mode === 'buy'}
+      on:click={() => (mode = 'buy')}>Buy</button>
   </div>
   <div class="trade-container">
     {#if mode === 'sell'}
-      <div class="exchange-section">
-        <p>Amount</p>
-        <div class="input">
-          <input
-            type="number"
-            step="1"
-            pattern="\d+"
-            bind:value={sellAmount}
-            min={1} />
-          {#await supportedPSTs}
-            <SkeletonLoading style="width: 35px; height: 38px" />
-          {:then loadedPSTs}
-            <select bind:value={sellToken}>
-              {#each loadedPSTs as pst}
-                <option value={pst.ticker}>{pst.ticker}</option>
-              {/each}
-            </select>
-          {/await}
+      <div>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
+          <div class="long-content">
+            <div style="width: 100%">
+              <p>Trading post</p>
+              <select
+                bind:value={selectedPost}
+                style="width: 100%"
+                on:change={() => {
+                  supportedPSTs = getTradingPostSupportedTokens();
+                  latestExchanges = getLatestExchanges();
+                  openTrades = latestOpenExchanges();
+                  closedTrades = latestClosedExchanges();
+                }}>
+                {#await posts}
+                  <option disabled>Loading...</option>
+                {:then loadedPosts}
+                  {#if loadedPosts.length === 0}
+                    <option disabled>No posts found</option>
+                  {/if}
+                  {#each loadedPosts as post}
+                    <option value={post} selected={post === selectedPost}>
+                      {post}
+                    </option>
+                  {/each}
+                {/await}
+              </select>
+            </div>
+          </div>
+          <div class="short-content">
+            <div style="width: 100%">
+              <p>Fee</p>
+              <select class="fake-select" disabled>
+                <option>0.03%</option>
+              </select>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="exchange-section">
-        <p>Rate</p>
-        <div class="input">
-          <input type="number" bind:value={sellRate} min={0.0000001} />
-          <div class="select-fake"><span>{sellToken} / AR</span></div>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
+          <div class="long-content">
+            <div style="width: 47%; margin-right: 3%">
+              <p>Amount</p>
+              <div class="input">
+                <input
+                  type="number"
+                  step="1"
+                  pattern="\d+"
+                  bind:value={sellAmount}
+                  min={1} />
+                {#await supportedPSTs}
+                  <SkeletonLoading style="width: 35px; height: 38px" />
+                {:then loadedPSTs}
+                  <select bind:value={sellToken}>
+                    {#each loadedPSTs as pst}
+                      <option value={pst.ticker}>{pst.ticker}</option>
+                    {/each}
+                  </select>
+                {/await}
+              </div>
+            </div>
+            <div style="width: 47%; margin-left: 3%">
+              <p>Rate</p>
+              <div class="input">
+                <input type="number" bind:value={sellRate} min={0.0000001} />
+                <select class="fake-select" disabled>
+                  {#if sellToken === undefined}
+                    <option>...</option>
+                  {:else}
+                    <option>{sellToken + "/AR"}</option>
+                  {/if}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="short-content">
+            <p><br /><p>
+            <div class="input" style="border: none">
+              <Button
+                click={exchange}
+                style={`
+                  font-family: 'JetBrainsMono', monospace; 
+                  text-transform: uppercase; 
+                  width: 100%;
+                  display: block;
+                  padding-left: 0;
+                  padding-right: 0;
+                  height: 100%;
+                `}>
+                {mode}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     {:else if mode === 'buy'}
-      <input type="number" bind:value={buyAmount} min={0.0000001} /> AR's worth of
-      {#await supportedPSTs}
-        <SkeletonLoading style="width: 35px; height: 38px" />
-      {:then loadedPSTs}
-        <select bind:value={buyToken}>
-          {#each loadedPSTs as pst}
-            <option value={pst.ticker}>{pst.ticker}</option>
-          {/each}
-        </select>
-      {/await}
+      <div>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
+          <div class="long-content">
+            <div style="width: 100%">
+              <p>Trading post</p>
+              <select
+                bind:value={selectedPost}
+                style="width: 100%"
+                on:change={() => {
+                  supportedPSTs = getTradingPostSupportedTokens();
+                  latestExchanges = getLatestExchanges();
+                  openTrades = latestOpenExchanges();
+                  closedTrades = latestClosedExchanges();
+                }}>
+                {#await posts}
+                  <option disabled>Loading...</option>
+                {:then loadedPosts}
+                  {#if loadedPosts.length === 0}
+                    <option disabled>No posts found</option>
+                  {/if}
+                  {#each loadedPosts as post}
+                    <option value={post} selected={post === selectedPost}>
+                      {post}
+                    </option>
+                  {/each}
+                {/await}
+              </select>
+            </div>
+          </div>
+          <div class="short-content">
+            <div style="width: 100%">
+              <p>Fee</p>
+              <select class="fake-select" disabled>
+                <option>0.03%</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
+          <div class="long-content">
+            <div style="width: 47%; margin-right: 3%">
+              <p>Send</p>
+              <div class="input">
+                <input
+                  type="number"
+                  step="1"
+                  pattern="\d+"
+                  bind:value={sellAmount}
+                  min={1} />
+                <select class="fake-select" disabled>
+                  <option>AR</option>
+                </select>
+              </div>
+            </div>
+            <div style="width: 47%; margin-left: 3%">
+              <p>Receive</p>
+              <div class="input">
+                {#await supportedPSTs}
+                  <SkeletonLoading style="width: 100% !important; height: 100% !important" />
+                {:then loadedPSTs}
+                  <select bind:value={buyToken} style="width: 100% !important;">
+                    {#each loadedPSTs as pst}
+                      <option value={pst.ticker}>{pst.ticker}</option>
+                    {/each}
+                  </select>
+                {/await}
+              </div>
+            </div>
+          </div>
+          <div class="short-content">
+            <p><br /><p>
+            <div class="input" style="border: none">
+              <Button
+                click={exchange}
+                style={`
+                  font-family: 'JetBrainsMono', monospace; 
+                  text-transform: uppercase; 
+                  width: 100%;
+                  display: block;
+                  padding-left: 0;
+                  padding-right: 0;
+                  height: 100%;
+                `}>
+                {mode}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     {/if}
-  </div>
-  <div class="recommended-post">
-    <div style="width: 100%; padding-right: 1.25em;">
-      <p>Trading post</p>
-      <select
-        bind:value={selectedPost}
-        on:change={() => {
-          supportedPSTs = getTradingPostSupportedTokens();
-          latestExchanges = getLatestExchanges();
-          openTrades = latestOpenExchanges();
-          closedTrades = latestClosedExchanges();
-        }}>
-        {#await posts}
-          <option disabled>Loading...</option>
-        {:then loadedPosts}
-          {#if loadedPosts.length === 0}
-            <option disabled>No posts found</option>
-          {/if}
-          {#each loadedPosts as post}
-            <option value={post} selected={post === selectedPost}>
-              {post}
-            </option>
-          {/each}
-        {/await}
-      </select>
-    </div>
-    <Button
-      click={exchange}
-      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
-      {mode}
-    </Button>
   </div>
 </div>
 <div class="exchanges-section">
