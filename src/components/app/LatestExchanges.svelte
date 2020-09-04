@@ -67,9 +67,9 @@
 
         exchanges.push({
           id: node.id,
-          timestamp: moment
-            .unix(node.block.timestamp)
-            .format("YYYY-MM-DD hh:mm:ss"),
+          timestamp: node.block
+            ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
+            : "NOT MINED YET",
           type: tradeType,
           sent,
           received,
