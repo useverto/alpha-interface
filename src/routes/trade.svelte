@@ -275,32 +275,36 @@
     }
 
     let tx = mode === "buy" ? await initiateBuy() : await initiateSell();
-    let tipExchange = await initiateExchangeFee();
-    let tipTradingPost = await initiateTradingPostFee();
-    let tipVRTHolder = await initiateVRTHolderFee();
 
-    try {
-      await client.transactions.sign(tipVRTHolder, JSON.parse($keyfile));
-      await client.transactions.post(tipVRTHolder);
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
-    }
+    if (mode === "buy") {
+      let tipExchange = await initiateExchangeFee();
 
-    try {
-      await client.transactions.sign(tipTradingPost, JSON.parse($keyfile));
-      await client.transactions.post(tipTradingPost);
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
-    }
+      try {
+        await client.transactions.sign(tipExchange, JSON.parse($keyfile));
+        await client.transactions.post(tipExchange);
+      } catch (err) {
+        notification.notify("Error", err, NotificationType.error, 5000);
+        return;
+      }
+    } else {
+      let tipTradingPost = await initiateTradingPostFee();
+      let tipVRTHolder = await initiateVRTHolderFee();
 
-    try {
-      await client.transactions.sign(tipExchange, JSON.parse($keyfile));
-      await client.transactions.post(tipExchange);
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
+      try {
+        await client.transactions.sign(tipVRTHolder, JSON.parse($keyfile));
+        await client.transactions.post(tipVRTHolder);
+      } catch (err) {
+        notification.notify("Error", err, NotificationType.error, 5000);
+        return;
+      }
+
+      try {
+        await client.transactions.sign(tipTradingPost, JSON.parse($keyfile));
+        await client.transactions.post(tipTradingPost);
+      } catch (err) {
+        notification.notify("Error", err, NotificationType.error, 5000);
+        return;
+      }
     }
 
     try {
@@ -568,7 +572,7 @@
     const supportedPSTs = await psts;
     const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
 
-    const tradingPostFee = getTradingPostFee();
+    const tradingPostFee = await getTradingPostFee();
 
     const tags = {
       Exchange: "Verto",
@@ -945,7 +949,12 @@
       <div class="exchange-section">
         <p>Amount</p>
         <div class="input">
-          <input type="number" step="1" pattern="\d+" bind:value={sellAmount} min={1} />
+          <input
+            type="number"
+            step="1"
+            pattern="\d+"
+            bind:value={sellAmount}
+            min={1} />
           {#await supportedPSTs}
             <SkeletonLoading style="width: 35px; height: 38px" />
           {:then loadedPSTs}

@@ -48,8 +48,7 @@
     const psts = await getSupportedPSTs();
 
     txs.map(({ node }) => {
-      const tradeType = node.tags.find((tag) => tag.name === "Type")
-        ?.value;
+      const tradeType = node.tags.find((tag) => tag.name === "Type")?.value;
       if (tradeType) {
         // TODO(@johnletey): Update these tags
         const arVal = node.tags.find((tag) => tag.name === "Buy-For")?.value;

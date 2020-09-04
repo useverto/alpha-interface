@@ -10,23 +10,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>Verto — Gate</title>
-</svelte:head>
-
-<div class="gate">
-  <div class="container">
-    <div class="text">
-      <h1>You aren't eligible...</h1>
-      <p>
-        Verto is in testing and only open to early permaweb adopters right now.
-        We look forward to welcoming you when become an Arweaver.
-      </p>
-      <Button click={() => goto('/')}>Go Back</Button>
-    </div>
-  </div>
-</div>
-
 <style lang="sass">
     
   .gate
@@ -48,3 +31,20 @@
       line-height: 2rem
 
 </style>
+
+<svelte:head>
+  <title>Verto — Gate</title>
+</svelte:head>
+
+<div class="gate">
+  <div class="container">
+    <div class="text">
+      <h1>You aren't eligible...</h1>
+      <p>
+        Verto is in testing and only open to early permaweb adopters right now.
+        We look forward to welcoming you when become an Arweaver.
+      </p>
+      <Button click={() => goto('/')}>Go Back</Button>
+    </div>
+  </div>
+</div>
