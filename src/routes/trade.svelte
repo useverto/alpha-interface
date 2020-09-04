@@ -663,11 +663,11 @@
       ).toString()
     );
 
-    return sellAmount * config["tradeFee"];
+    return Math.ceil(sellAmount * config["tradeFee"]);
   }
 
   function getVRTHolderFee(): number {
-    return sellAmount * exchangeFee;
+    return Math.ceil(sellAmount * exchangeFee);
   }
 </script>
 
@@ -945,7 +945,7 @@
       <div class="exchange-section">
         <p>Amount</p>
         <div class="input">
-          <input type="number" bind:value={sellAmount} min={0} />
+          <input type="number" step="1" pattern="\d+" bind:value={sellAmount} min={1} />
           {#await supportedPSTs}
             <SkeletonLoading style="width: 35px; height: 38px" />
           {:then loadedPSTs}
@@ -960,12 +960,12 @@
       <div class="exchange-section">
         <p>Rate</p>
         <div class="input">
-          <input type="number" bind:value={sellRate} min={0} />
+          <input type="number" bind:value={sellRate} min={0.0000001} />
           <div class="select-fake"><span>{sellToken} / AR</span></div>
         </div>
       </div>
     {:else if mode === 'buy'}
-      <input type="number" bind:value={buyAmount} min={0} /> AR's worth of
+      <input type="number" bind:value={buyAmount} min={0.0000001} /> AR's worth of
       {#await supportedPSTs}
         <SkeletonLoading style="width: 35px; height: 38px" />
       {:then loadedPSTs}
