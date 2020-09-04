@@ -1,0 +1,21 @@
+{
+  "github": {
+    "silent": true
+  },
+  "public": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/i/win",
+      "destination": "https://raw.githubusercontent.com/useverto/trading-post/master/install/windows.ps1"
+    },
+    {
+      "source": "/i/mac",
+      "destination": "https://raw.githubusercontent.com/useverto/trading-post/master/install/mac.sh"
+    },
+    {
+      "source": "/i/linux",
+      "destination": "https://raw.githubusercontent.com/useverto/trading-post/master/install/linux.sh"
+    }
+  ]
+}
