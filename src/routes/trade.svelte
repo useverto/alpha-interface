@@ -53,6 +53,9 @@
     const _posts = (
       await query({
         query: galleryQuery,
+        variables: {
+          recipients: [exchangeWallet]
+        }
       })
     ).data.transactions.edges;
 
