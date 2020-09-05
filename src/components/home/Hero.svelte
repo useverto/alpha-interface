@@ -22,6 +22,7 @@
     top: 0
     left: 0
     right: 0
+    padding-bottom: 5vh
 
     .content
       z-index: 10
