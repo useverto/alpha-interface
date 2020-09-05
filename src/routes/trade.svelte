@@ -2,7 +2,12 @@
   import { goto } from "@sapper/app";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import { balance, address, keyfile, loggedIn } from "../stores/keyfileStore.js";
+  import {
+    balance,
+    address,
+    keyfile,
+    loggedIn,
+  } from "../stores/keyfileStore.js";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
@@ -45,7 +50,7 @@
   let psts = getExchangeSupportedTokens();
   let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
-  
+
   let exchangeTX;
 
   async function getTradingPosts(): Promise<string[]> {
