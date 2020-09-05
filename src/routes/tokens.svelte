@@ -274,7 +274,7 @@
       <Loading />
     {:then loadedPSTs}
       {#each loadedPSTs as pst}
-        <a class="token" href="https://viewblock.io/arweave/tx/{pst.id}">
+        <a class="token" href="https://viewblock.io/arweave/tx/{pst.id}" target="_blank">
           <h1 class="short">{pst.ticker}</h1>
           <div class="info">
             <h1><span>[PST]</span>{pst.name}</h1>
