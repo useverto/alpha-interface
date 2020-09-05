@@ -2,7 +2,7 @@
   import { goto } from "@sapper/app";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
-  import { balance, address, keyfile } from "../stores/keyfileStore.js";
+  import { balance, address, keyfile, loggedIn } from "../stores/keyfileStore.js";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
@@ -34,6 +34,8 @@
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "Loading...";
 
+  if (process.browser && !$loggedIn) goto("/");
+
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
     if (params.get("post")) selectedPost = params.get("post");
@@ -43,6 +45,7 @@
   let psts = getExchangeSupportedTokens();
   let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
+  
   let exchangeTX;
 
   async function getTradingPosts(): Promise<string[]> {
@@ -716,6 +719,36 @@
     return Math.ceil(sellAmount * config["tradeFee"]);
   }
 
+  let tradingPostFeePercent = getTradingPostFeePercent();
+
+  async function getTradingPostFeePercent(): Promise<number> {
+    if (!process.browser) return;
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    await posts;
+
+    const txId = (
+      await query({
+        query: galleryQuery,
+        variables: {
+          owners: [selectedPost],
+          recipients: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges[0]?.node.id;
+    const config = JSON.parse(
+      (
+        await client.transactions.getData(txId, { decode: true, string: true })
+      ).toString()
+    );
+    return parseFloat(config["tradeFee"]) * 100;
+  }
+
   function getVRTHolderFee(): number {
     return Math.ceil(sellAmount * exchangeFee);
   }
@@ -1001,6 +1034,7 @@
                   latestExchanges = getLatestExchanges();
                   openTrades = latestOpenExchanges();
                   closedTrades = latestClosedExchanges();
+                  tradingPostFeePercent = getTradingPostFeePercent();
                 }}>
                 {#await posts}
                   <option disabled>Loading...</option>
@@ -1020,9 +1054,14 @@
           <div class="short-content">
             <div style="width: 100%">
               <p>Fee</p>
-              <select class="fake-select" disabled>
-                <option>0.03%</option>
-              </select>
+              {#await tradingPostFeePercent}
+                <SkeletonLoading
+                  style="width: 100% !important; height: 100% !important" />
+              {:then feePercent}
+                <select class="fake-select" disabled>
+                  <option>{feePercent}%</option>
+                </select>
+              {/await}
             </div>
           </div>
         </div>
@@ -1097,6 +1136,7 @@
                   latestExchanges = getLatestExchanges();
                   openTrades = latestOpenExchanges();
                   closedTrades = latestClosedExchanges();
+                  tradingPostFeePercent = getTradingPostFeePercent();
                 }}>
                 {#await posts}
                   <option disabled>Loading...</option>
@@ -1116,9 +1156,14 @@
           <div class="short-content">
             <div style="width: 100%">
               <p>Fee</p>
-              <select class="fake-select" disabled>
-                <option>0.03%</option>
-              </select>
+              {#await tradingPostFeePercent}
+                <SkeletonLoading
+                  style="width: 100% !important; height: 100% !important" />
+              {:then percent}
+                <select class="fake-select" disabled>
+                  <option>{percent}%</option>
+                </select>
+              {/await}
             </div>
           </div>
         </div>

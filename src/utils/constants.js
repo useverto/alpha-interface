@@ -5,4 +5,5 @@
 // For Production
 export const pstContract = "fE2OcfjlS-sHqG5K8QvxE8wHtcqKxS-YV0bDEgxo-eI";
 export const exchangeWallet = "aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A";
+
 export const exchangeFee = 0.005;
