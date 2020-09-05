@@ -1,18 +1,11 @@
 <script type="typescript">
-
   import { fade } from "svelte/transition";
 
   export let size: number = 40; // width and height
   export let style: string = ""; // external styling
-
 </script>
 
-<div class="Loading" style="width: {size}px; height: {size}px; {style}" in:fade={{ duration: 140 }}>
-  <svg viewBox="22 22 44 44">
-    <circle class="spinner" cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6"></circle> 
-  </svg>
-</div>
-
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .Loading
@@ -47,3 +40,18 @@
       stroke-dashoffset: -125px
 
 </style>
+
+<div
+  class="Loading"
+  style="width: {size}px; height: {size}px; {style}"
+  in:fade={{ duration: 140 }}>
+  <svg viewBox="22 22 44 44">
+    <circle
+      class="spinner"
+      cx="44"
+      cy="44"
+      r="20.2"
+      fill="none"
+      stroke-width="3.6" />
+  </svg>
+</div>

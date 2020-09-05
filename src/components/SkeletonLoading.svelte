@@ -1,13 +1,10 @@
 <script lang="typescript">
-
   import { fade } from "svelte/transition";
 
   export let style: string = "";
-
 </script>
 
-<div class="skeleton-loading" style={style} in:fade={{ duration: 100 }} out:fade={{ duration: 70 }}></div>
-
+<!-- prettier-ignore -->
 <style lang="sass">
 
   .skeleton-loading
@@ -35,3 +32,9 @@
         transform: translateX(100%)
 
 </style>
+
+<div
+  class="skeleton-loading"
+  {style}
+  in:fade={{ duration: 100 }}
+  out:fade={{ duration: 70 }} />

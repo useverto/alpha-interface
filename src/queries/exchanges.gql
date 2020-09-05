@@ -1,17 +1,10 @@
-query (
-  $owners: [String!]
-  $num: Int
-  $recipients: [String!]
-  $cursor: String
-) {
+query($owners: [String!], $num: Int, $recipients: [String!], $cursor: String) {
   transactions(
     owners: $owners
     recipients: $recipients
     tags: [
-      {
-        name: "Exchange",
-        values: "Verto"
-      }
+      { name: "Exchange", values: "Verto" }
+      { name: "Type", values: ["Buy", "Sell"] }
     ]
     first: $num
     after: $cursor
@@ -25,6 +18,9 @@ query (
         id
         block {
           timestamp
+        }
+        quantity {
+          ar
         }
         tags {
           name

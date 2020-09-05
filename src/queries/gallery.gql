@@ -1,17 +1,10 @@
-query (
-  $recipients: [String!]
-) {
+query($owners: [String!], $recipients: [String!]) {
   transactions(
+    owners: $owners
     recipients: $recipients
     tags: [
-      { 
-        name: "Exchange", 
-        values: "Verto" 
-      }
-      { 
-        name: "Trading-Post-Genesis", 
-        values: "Genesis" 
-      }
+      { name: "Exchange", values: "Verto" }
+      { name: "Type", values: "Genesis" }
     ]
   ) {
     pageInfo {
@@ -20,6 +13,7 @@ query (
     edges {
       cursor
       node {
+        id
         owner {
           address
         }
