@@ -54,8 +54,8 @@
       await query({
         query: galleryQuery,
         variables: {
-          recipients: [exchangeWallet]
-        }
+          recipients: [exchangeWallet],
+        },
       })
     ).data.transactions.edges;
 
