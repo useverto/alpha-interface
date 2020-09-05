@@ -16,6 +16,10 @@
     {
       "source": "/i/linux",
       "destination": "https://raw.githubusercontent.com/useverto/trading-post/master/install/linux.sh"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
     }
   ]
 }
