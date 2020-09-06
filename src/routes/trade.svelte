@@ -28,6 +28,13 @@
   } from "../stores/notificationStore.js";
   import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
 
+  notification.notify(
+    "Warning",
+    "Verto is currently in Alpha. Use at your own risk.",
+    NotificationType.warning,
+    10000
+  );
+
   let selectedPost;
   let buyAmount: number = 1;
   let sellAmount: number = 1;
@@ -121,7 +128,7 @@
           ticker: contractData["ticker"],
         });
       } catch (error) {
-        notification.notify("Error", error, NotificationType.error, 50000);
+        notification.notify("Error", error, NotificationType.error, 5000);
       }
     }
 
