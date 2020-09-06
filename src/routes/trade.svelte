@@ -235,7 +235,7 @@
         (await getFee(await initiateTradingPostFee())) +
         (await getFee(await initiateVRTHolderFee()));
       let pstCost =
-        sellAmount + (await getTradingPostFee()) + getVRTHolderFee();
+        Math.ceil(sellAmount) + await getTradingPostFee() + getVRTHolderFee();
       confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
     } else if (mode === "buy") {
       let txFees =
@@ -567,7 +567,7 @@
       "App-Version": "0.3.0",
       Contract: pstTxId,
       Rate: sellRate,
-      Input: `{"function":"transfer","target":"${selectedPost}","qty":${sellAmount}}`,
+      Input: `{"function":"transfer","target":"${selectedPost}","qty":${Math.ceil(sellAmount)}}`,
     };
 
     const tx = await client.createTransaction(
@@ -721,7 +721,7 @@
       ).toString()
     );
 
-    return Math.ceil(sellAmount * config["tradeFee"]);
+    return Math.ceil(Math.ceil(sellAmount) * config["tradeFee"]);
   }
 
   let tradingPostFeePercent = getTradingPostFeePercent();
@@ -755,7 +755,7 @@
   }
 
   function getVRTHolderFee(): number {
-    return Math.ceil(sellAmount * exchangeFee);
+    return Math.ceil(Math.ceil(sellAmount) * exchangeFee);
   }
 </script>
 
@@ -1179,10 +1179,9 @@
               <div class="input">
                 <input
                   type="number"
-                  step="1"
                   pattern="\d+"
                   bind:value={buyAmount}
-                  min={1} />
+                  min={0.000001} />
                 <select class="fake-select" disabled>
                   <option>AR</option>
                 </select>
@@ -1309,7 +1308,7 @@
     {#if mode === 'buy'}
       Buying {buyAmount} AR's worth of {buyToken}
     {:else if mode === 'sell'}
-      Selling {sellAmount}
+      Selling {Math.ceil(sellAmount)}
       {sellToken} at a rate of {sellRate}
       {sellToken}/AR
     {/if}
