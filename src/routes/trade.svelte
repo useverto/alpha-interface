@@ -253,6 +253,53 @@
       return;
     }
   }
+  interface TokenInstance {
+    txID: string;
+    amnt: number;
+    rate?: number;
+    addr: string;
+    type: Order;
+    createdAt: Date;
+  }
+  interface Order {
+    token: string;
+    orders: TokenInstance[];
+  }
+
+  async function getOrderBook(): Promise<Order[]> {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    const txId = (
+      await query({
+        query: galleryQuery,
+        variables: {
+          owners: [selectedPost],
+          recipients: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges[0]?.node.id;
+
+    const config = JSON.parse(
+      (
+        await client.transactions.getData(txId, { decode: true, string: true })
+      ).toString()
+    );
+
+    try {
+      let res = await fetch(
+        config["publicURL"].endsWith("/") ? "orders" : "/orders"
+      );
+      return res.json();
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+  }
 
   async function confirmTrade() {
     const client = new Arweave({
