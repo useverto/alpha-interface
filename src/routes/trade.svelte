@@ -235,7 +235,7 @@
         (await getFee(await initiateTradingPostFee())) +
         (await getFee(await initiateVRTHolderFee()));
       let pstCost =
-        Math.ceil(sellAmount) + await getTradingPostFee() + getVRTHolderFee();
+        Math.ceil(sellAmount) + (await getTradingPostFee()) + getVRTHolderFee();
       confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
     } else if (mode === "buy") {
       let txFees =
@@ -567,7 +567,9 @@
       "App-Version": "0.3.0",
       Contract: pstTxId,
       Rate: sellRate,
-      Input: `{"function":"transfer","target":"${selectedPost}","qty":${Math.ceil(sellAmount)}}`,
+      Input: `{"function":"transfer","target":"${selectedPost}","qty":${Math.ceil(
+        sellAmount
+      )}}`,
     };
 
     const tx = await client.createTransaction(
