@@ -1181,7 +1181,7 @@
                   type="number"
                   step="1"
                   pattern="\d+"
-                  bind:value={sellAmount}
+                  bind:value={buyAmount}
                   min={1} />
                 <select class="fake-select" disabled>
                   <option>AR</option>
