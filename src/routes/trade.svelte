@@ -12,6 +12,7 @@
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
+  import Loading from "../components/Loading.svelte";
 
   import { query } from "../api-client";
   import galleryQuery from "../queries/gallery.gql";
@@ -44,7 +45,7 @@
   let mode: string = "sell";
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
-  let confirmModalText: string = "Loading...";
+  let confirmModalText: string = "";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -59,6 +60,7 @@
   let balances = getTokenBalances();
 
   let exchangeTX;
+  let loading: boolean = false;
 
   async function getTradingPosts(): Promise<string[]> {
     if (!process.browser) return [];
@@ -224,6 +226,7 @@
 
   // open confirmation modal
   async function exchange() {
+    loading = true;
     let a = await latestOpenExchanges;
     let b = await latestClosedExchanges;
     if ($address === selectedPost) {
@@ -233,40 +236,10 @@
         NotificationType.error,
         5000
       );
+      loading = false;
       return;
     }
 
-    if (mode === "sell") {
-      const token = (await supportedPSTs).find(
-        (pst) => pst.ticker === sellToken
-      );
-      const amount = (await balances).find(
-        (amount) =>
-          amount.token === token.name && amount.ticker === token.ticker
-      );
-
-      if (!amount) {
-        notification.notify(
-          "Error",
-          "You don't have that token.",
-          NotificationType.error,
-          5000
-        );
-        return;
-      }
-
-      if (amount.balance < sellAmount) {
-        notification.notify(
-          "Error",
-          "You don't have that many tokens.",
-          NotificationType.error,
-          5000
-        );
-        return;
-      }
-    }
-
-    confirmModalOpened = true;
     if (mode === "sell") {
       let arCost =
         (await getFee(await initiateSell())) +
@@ -274,13 +247,64 @@
         (await getFee(await initiateVRTHolderFee()));
       let pstCost =
         Math.ceil(sellAmount) + (await getTradingPostFee()) + getVRTHolderFee();
+      const token = (await supportedPSTs).find(
+        (pst) => pst.ticker === sellToken
+      );
+      const amount = (await balances).find(
+        (amount) =>
+          amount.token === token.name && amount.ticker === token.ticker
+      );
+      if (!amount) {
+        notification.notify(
+          "Error",
+          "You don't have that token.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      } else if (pstCost > amount.balance) {
+        notification.notify(
+          "Error",
+          "You don't have that many tokens.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      } else if (arCost > $balance) {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
       confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
+      confirmModalOpened = true;
+      loading = false;
+      return;
     } else if (mode === "buy") {
       let txFees =
         (await getFee(await initiateBuy())) +
         (await getFee(await initiateExchangeFee()));
       let arCost = txFees + buyAmount + getExchangeFee();
+      if (arCost > $balance) {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
       confirmModalText = `You're sending ${arCost} AR`;
+      confirmModalOpened = true;
+      loading = false;
+      return;
     } else {
       notification.notify(
         "Error",
@@ -288,6 +312,7 @@
         NotificationType.error,
         5000
       );
+      loading = false;
       return;
     }
   }
@@ -1150,19 +1175,23 @@
             <p><br /></p>
             <p />
             <div class="input" style="border: none">
-              <Button
-                click={exchange}
-                style={`
-                  font-family: 'JetBrainsMono', monospace; 
-                  text-transform: uppercase; 
-                  width: 100%;
-                  display: block;
-                  padding-left: 0;
-                  padding-right: 0;
-                  height: 100%;
-                `}>
-                {mode}
-              </Button>
+              {#if !loading}
+                <Button
+                  click={exchange}
+                  style={`
+                    font-family: 'JetBrainsMono', monospace; 
+                    text-transform: uppercase; 
+                    width: 100%;
+                    display: block;
+                    padding-left: 0;
+                    padding-right: 0;
+                    height: 100%;
+                  `}>
+                  {mode}
+                </Button>
+              {:else}
+                <Loading />
+              {/if}
             </div>
           </div>
         </div>
@@ -1247,19 +1276,23 @@
             <p><br /></p>
             <p />
             <div class="input" style="border: none">
-              <Button
-                click={exchange}
-                style={`
-                  font-family: 'JetBrainsMono', monospace; 
-                  text-transform: uppercase; 
-                  width: 100%;
-                  display: block;
-                  padding-left: 0;
-                  padding-right: 0;
-                  height: 100%;
-                `}>
-                {mode}
-              </Button>
+              {#if !loading}
+                <Button
+                  click={exchange}
+                  style={`
+                    font-family: 'JetBrainsMono', monospace; 
+                    text-transform: uppercase; 
+                    width: 100%;
+                    display: block;
+                    padding-left: 0;
+                    padding-right: 0;
+                    height: 100%;
+                  `}>
+                  {mode}
+                </Button>
+              {:else}
+                <Loading />
+              {/if}
             </div>
           </div>
         </div>
