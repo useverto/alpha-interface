@@ -235,6 +235,37 @@
       );
       return;
     }
+
+    if (mode === "sell") {
+      const token = (await supportedPSTs).find(
+        (pst) => pst.ticker === sellToken
+      );
+      const amount = (await balances).find(
+        (amount) =>
+          amount.token === token.name && amount.ticker === token.ticker
+      );
+
+      if (!amount) {
+        notification.notify(
+          "Error",
+          "You don't have that token.",
+          NotificationType.error,
+          5000
+        );
+        return;
+      }
+
+      if (amount.balance < sellAmount) {
+        notification.notify(
+          "Error",
+          "You don't have that many tokens.",
+          NotificationType.error,
+          5000
+        );
+        return;
+      }
+    }
+
     confirmModalOpened = true;
     if (mode === "sell") {
       let arCost =
