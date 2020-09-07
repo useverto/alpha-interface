@@ -917,6 +917,7 @@
           .fake-select
             opacity: 1 !important
             background-image: none !important
+            padding-right: 0 !important
 
           .input
             border: 2px solid #000
