@@ -26,13 +26,18 @@ jobs:
       - name: Start server
         run: | 
           cd __sapper__/export 
-          python -m SimpleHTTPServer &
+          python -m SimpleHTTPServer 8080 &
           
       - name: Run Lighthouse
-        uses: foo-software/lighthouse-check-action@master
+        uses: BrunnerLivio/lighthouse-action@master
+        id: lighthouse
         with:
-          accessToken: ${{ secrets.LIGHTHOUSE_CHECK_GITHUB_ACCESS_TOKEN }}
-          author: ${{ github.actor }}
           urls: http://localhost:8080/
-          prCommentEnabled: true
+      - name: Comment output on PR
+        if: github.event_name == 'pull_request'
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: "Lighthouse score \nPerformance: ${{ steps.lighthouse.outputs.performance }}\nAccessibility: ${{ steps.lighthouse.outputs.accessibility }}\nBest Practices: ${{ steps.lighthouse.outputs.practices }}\nSEO: ${{ steps.lighthouse.outputs.seo }}\n            PWA: ${{ steps.lighthouse.outputs.pwa }}\n"
           
