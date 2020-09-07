@@ -330,7 +330,7 @@
 
   async function getOrderBook(): Promise<TokenInstance[]> {
     if (!process.browser) return [];
-    
+
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
@@ -401,11 +401,16 @@
     );
 
     try {
-      let url = config["publicURL"].startsWith("https://")
+      let url = config["publicURL"].startsWith("http://")
         ? config["publicURL"]
-        : "https://" + config["publicURL"];
+        : "http://" + config["publicURL"];
       const endpoint = url.endsWith("/") ? "ping" : "/ping";
-      await fetch(url + endpoint);
+      await fetch(url + endpoint, {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
