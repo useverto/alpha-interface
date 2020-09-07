@@ -22,3 +22,24 @@ jobs:
 
       - name: Export
         run: yarn export
+      
+      - name: Start server
+        run: | 
+          cd __sapper__/export 
+          python -m SimpleHTTPServer &
+          
+      - name: Run Lighthouse
+        uses: foo-software/lighthouse-check-action@master
+        with:
+          accessToken: ${{ secrets.LIGHTHOUSE_CHECK_GITHUB_ACCESS_TOKEN }}
+          author: ${{ github.actor }}
+          urls: http://localhost:8080/
+          prCommentEnabled: true
+          outputDirectory: /tmp/artifacts
+          
+      - name: Upload lighthouse artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: Lighthouse reports
+          path: /tmp/artifacts
+          
