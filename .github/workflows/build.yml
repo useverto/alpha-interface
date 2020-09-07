@@ -22,17 +22,17 @@ jobs:
 
       - name: Export
         run: yarn export
-      
+
       - name: Start server
-        run: | 
+        run: |
           cd __sapper__/export 
           python -m SimpleHTTPServer 8080 &
-          
+
       - name: Run Lighthouse
         uses: BrunnerLivio/lighthouse-action@master
         id: lighthouse
         with:
-          url: 'http://localhost:8080/'
+          url: "http://localhost:8080/"
       - name: Comment output on PR
         if: github.event_name == 'pull_request'
         uses: unsplash/comment-on-pr@master
@@ -40,4 +40,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           msg: "Lighthouse score \nPerformance: ${{ steps.lighthouse.outputs.performance }}\nAccessibility: ${{ steps.lighthouse.outputs.accessibility }}\nBest Practices: ${{ steps.lighthouse.outputs.practices }}\nSEO: ${{ steps.lighthouse.outputs.seo }}\n            PWA: ${{ steps.lighthouse.outputs.pwa }}\n"
-          
