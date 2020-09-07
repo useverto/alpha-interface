@@ -35,11 +35,4 @@ jobs:
           author: ${{ github.actor }}
           urls: http://localhost:8080/
           prCommentEnabled: true
-          outputDirectory: /tmp/artifacts
-          
-      - name: Upload lighthouse artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: Lighthouse reports
-          path: /tmp/artifacts
           
