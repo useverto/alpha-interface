@@ -316,26 +316,29 @@
       return;
     }
   }
+
   interface TokenInstance {
     txID: string;
     amnt: number;
     rate?: number;
     addr: string;
-    type: Order;
+    type: string;
     createdAt: Date;
   }
-  interface Order {
-    token: string;
-    orders: TokenInstance[];
-  }
 
-  async function getOrderBook(): Promise<Order[]> {
+  let orderBook = getOrderBook();
+
+  async function getOrderBook(): Promise<TokenInstance[]> {
+    if (!process.browser) return [];
+    
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,
     });
+
+    await posts;
 
     const txId = (
       await query({
@@ -354,10 +357,17 @@
     );
 
     try {
-      let res = await fetch(
-        config["publicURL"].endsWith("/") ? "orders" : "/orders"
-      );
-      return res.json();
+      let url = config["publicURL"].startsWith("https://")
+        ? config["publicURL"]
+        : "https://" + config["publicURL"];
+      let endpoint = url.endsWith("/") ? "orders" : "/orders";
+
+      let res = await (await fetch(url + endpoint)).clone().json();
+      let loadedPsts = await psts;
+      const token = loadedPsts.find(
+        (pst) => pst.name === (sellToken || buyToken)
+      )?.id;
+      return res.find((orders) => orders.token === token).orders;
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
@@ -372,6 +382,8 @@
       timeout: 200000,
     });
 
+    await posts;
+
     const txId = (
       await query({
         query: galleryQuery,
@@ -389,7 +401,11 @@
     );
 
     try {
-      await fetch(config["publicURL"].endsWith("/") ? "ping" : "/ping");
+      let url = config["publicURL"].startsWith("https://")
+        ? config["publicURL"]
+        : "https://" + config["publicURL"];
+      const endpoint = url.endsWith("/") ? "ping" : "/ping";
+      await fetch(url + endpoint);
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
@@ -1362,7 +1378,7 @@
   <div class="content">
     {#if activeMenu === 'open'}
       <table in:fade={{ duration: 400 }}>
-        {#await openTrades}
+        {#await orderBook}
           {#each Array(5) as _}
             <tr>
               <th style="width: 80%">
@@ -1373,20 +1389,15 @@
               </th>
             </tr>
           {/each}
-        {:then loadedOpenTrades}
-          {#if loadedOpenTrades.length === 0}
+        {:then loadedOrders}
+          {#if loadedOrders.length === 0}
             <p>This trading post doesn't have any open orders!</p>
           {/if}
-          {#each loadedOpenTrades as trade}
+          {#each loadedOrders as trade}
             <tr>
               <td style="text-align: left">
                 <span class="direction">{trade.type}</span>
-                {trade.sent}
-                {#if trade.type === 'Sell'}
-                  {`| Rate = `}
-                  {trade.rate}
-                  {trade.ticker}/AR
-                {/if}
+                <!-- TODO(@johnletey): Show other data -->
               </td>
             </tr>
           {/each}
