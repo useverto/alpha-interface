@@ -32,7 +32,7 @@ jobs:
         uses: BrunnerLivio/lighthouse-action@master
         id: lighthouse
         with:
-          urls: http://localhost:8080/
+          url: 'http://localhost:8080/'
       - name: Comment output on PR
         if: github.event_name == 'pull_request'
         uses: unsplash/comment-on-pr@master
