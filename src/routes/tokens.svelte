@@ -40,6 +40,7 @@
         query: tokensQuery,
         variables: {
           owners: [exchangeWallet],
+          contractSrc: pstContract,
         },
       })
     ).data.transactions.edges;
