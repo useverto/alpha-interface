@@ -1410,7 +1410,12 @@
             <tr>
               <td style="text-align: left">
                 <span class="direction">{trade.type}</span>
-                <!-- TODO(@johnletey): Show other data -->
+                {trade.amnt}
+                {sellToken || buyToken}
+                {#if trade.type === 'Sell'}
+                  at {trade.rate}
+                  {sellToken || buyToken}/AR
+                {/if}
               </td>
             </tr>
           {/each}
