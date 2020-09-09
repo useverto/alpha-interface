@@ -369,7 +369,7 @@
       let res = await (await fetch(url + endpoint)).clone().json();
       let loadedPSTs = await supportedPSTs;
       const token = loadedPSTs.find(
-        (pst) => pst.ticker === (sellToken || buyToken)
+        (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
       )?.id;
       return res.find((orders) => orders.token === token).orders;
     } catch (err) {
@@ -1416,10 +1416,10 @@
               <td style="text-align: left">
                 <span class="direction">{trade.type}</span>
                 {trade.amnt}
-                {sellToken || buyToken}
+                {mode === 'sell' ? sellToken : buyToken}
                 {#if trade.type === 'Sell'}
                   at {trade.rate}
-                  {sellToken || buyToken}/AR
+                  {mode === 'sell' ? sellToken : buyToken}/AR
                 {/if}
               </td>
             </tr>
