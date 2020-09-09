@@ -6,6 +6,7 @@ query($owners: [String!], $recipients: [String!]) {
       { name: "Exchange", values: "Verto" }
       { name: "Type", values: "Genesis" }
     ]
+    first: 1
   ) {
     edges {
       node {
