@@ -1152,10 +1152,16 @@
   <div class="menu">
     <button
       class:active={mode === 'sell'}
-      on:click={() => (mode = 'sell')}>Sell</button>
+      on:click={() => {
+        mode = 'sell';
+        orderBook = getOrderBook();
+      }}>Sell</button>
     <button
       class:active={mode === 'buy'}
-      on:click={() => (mode = 'buy')}>Buy</button>
+      on:click={() => {
+        mode = 'buy';
+        orderBook = getOrderBook();
+      }}>Buy</button>
   </div>
   <div class="trade-container">
     {#if mode === 'sell'}
@@ -1411,11 +1417,10 @@
               <td style="text-align: left">
                 <span class="direction">{trade.type}</span>
                 {trade.amnt}
-                {mode === 'sell' ? sellToken : buyToken}
                 {#if trade.type === 'Sell'}
-                  at {trade.rate}
+                  {mode === 'sell' ? sellToken : buyToken} at {trade.rate}
                   {mode === 'sell' ? sellToken : buyToken}/AR
-                {/if}
+                {:else}AR {'->'} {mode === 'sell' ? sellToken : buyToken}{/if}
               </td>
             </tr>
           {/each}
