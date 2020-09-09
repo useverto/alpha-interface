@@ -1,4 +1,4 @@
-query($owners: [String!], $contractSrc: String!) {
+query($owners: [String!], $contractSrc: [String!]!) {
   transactions(
     owners: $owners
     tags: [
