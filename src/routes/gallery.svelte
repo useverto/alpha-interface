@@ -85,6 +85,8 @@
     }
 
     tradingPosts = tradingPosts.concat(posts);
+    tradingPosts = [...new Map(tradingPosts.map((x) => [x.addr, x])).values()];
+
     loadedFirstPosts = true;
     setTimeout(() => (loading = false), 400); // wait for animation and latency to complete (needed for the scroll)
   }
