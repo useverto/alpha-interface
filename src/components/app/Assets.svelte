@@ -6,6 +6,7 @@
   import tokensQuery from "../../queries/tokens.gql";
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
+  import { pstContract, exchangeWallet } from "../../utils/constants";
 
   import Pie from "svelte-chartjs/src/Pie.svelte";
 
@@ -34,6 +35,10 @@
     const _txIds = (
       await query({
         query: tokensQuery,
+        variables: {
+          owners: [exchangeWallet],
+          contractSrc: pstContract,
+        },
       })
     ).data.transactions.edges;
     _txIds.map(({ node }) => {

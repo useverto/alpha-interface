@@ -6,6 +6,7 @@ const arweave = Arweave.init({
   protocol: "https",
 });
 
+const exchangePST = "fE2OcfjlS-sHqG5K8QvxE8wHtcqKxS-YV0bDEgxo-eI";
 const key = "MY JSON KEY OBJECT";
 
 async function supportPST(pstContractID) {
@@ -18,7 +19,8 @@ async function supportPST(pstContractID) {
 
   pstTransaction.addTag("Content-Type", "text/html");
   pstTransaction.addTag("Exchange", "Verto");
-  pstTransaction.addTag("Support", "PST");
+  pstTransaction.addTag("Type", "PST");
+  pstTransaction.addTag("Contract", exchangePST);
 
   try {
     await arweave.transactions.sign(pstTransaction, key);

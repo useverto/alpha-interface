@@ -5,7 +5,7 @@
   import exchangesQuery from "../../queries/exchanges.gql";
   import Arweave from "arweave";
   import tokensQuery from "../../queries/tokens.gql";
-  import { exchangeWallet } from "../../utils/constants";
+  import { exchangeWallet, pstContract } from "../../utils/constants";
   import moment from "moment";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { address } from "../../stores/keyfileStore";
@@ -157,6 +157,7 @@
         query: tokensQuery,
         variables: {
           owners: [exchangeWallet],
+          contractSrc: pstContract,
         },
       })
     ).data.transactions.edges;

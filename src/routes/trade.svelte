@@ -105,6 +105,10 @@
     const _txIds = (
       await query({
         query: tokensQuery,
+        variables: {
+          owners: [exchangeWallet],
+          contractSrc: pstContract,
+        },
       })
     ).data.transactions.edges;
     _txIds.map(({ node }) => {
