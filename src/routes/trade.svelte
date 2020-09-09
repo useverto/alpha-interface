@@ -409,12 +409,7 @@
         ? config["publicURL"]
         : "http://" + config["publicURL"];
       const endpoint = url.endsWith("/") ? "ping" : "/ping";
-      await fetch(url + endpoint, {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      await fetch(url + endpoint);
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
