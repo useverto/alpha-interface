@@ -367,9 +367,9 @@
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
       let res = await (await fetch(url + endpoint)).clone().json();
-      let loadedPsts = await psts;
-      const token = loadedPsts.find(
-        (pst) => pst.name === (sellToken || buyToken)
+      let loadedPSTs = await supportedPSTs;
+      const token = loadedPSTs.find(
+        (pst) => pst.ticker === (sellToken || buyToken)
       )?.id;
       return res.find((orders) => orders.token === token).orders;
     } catch (err) {
@@ -1222,7 +1222,11 @@
                 {#await supportedPSTs}
                   <SkeletonLoading style="width: 35px; height: 38px" />
                 {:then loadedPSTs}
-                  <select bind:value={sellToken}>
+                  <select
+                    bind:value={sellToken}
+                    on:change={() => {
+                      orderBook = getOrderBook();
+                    }}>
                     {#each loadedPSTs as pst}
                       <option value={pst.ticker}>{pst.ticker}</option>
                     {/each}
@@ -1336,7 +1340,12 @@
                   <SkeletonLoading
                     style="width: 100% !important; height: 100% !important" />
                 {:then loadedPSTs}
-                  <select bind:value={buyToken} style="width: 100% !important;">
+                  <select
+                    bind:value={buyToken}
+                    style="width: 100% !important;"
+                    on:change={() => {
+                      orderBook = getOrderBook();
+                    }}>
                     {#each loadedPSTs as pst}
                       <option value={pst.ticker}>{pst.ticker}</option>
                     {/each}
