@@ -321,13 +321,28 @@
     }
   }
 
-  async function confirmTrade() {
+  interface TokenInstance {
+    txID: string;
+    amnt: number;
+    rate?: number;
+    addr: string;
+    type: string;
+    createdAt: Date;
+  }
+
+  let orderBook = getOrderBook();
+
+  async function getOrderBook(): Promise<TokenInstance[]> {
+    if (!process.browser) return [];
+
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
       protocol: "https",
       timeout: 200000,
     });
+
+    await posts;
 
     const txId = (
       await query({
@@ -346,7 +361,55 @@
     );
 
     try {
-      await fetch(config["publicURL"].endsWith("/") ? "ping" : "/ping");
+      let url = config["publicURL"].startsWith("https://")
+        ? config["publicURL"]
+        : "https://" + config["publicURL"];
+      let endpoint = url.endsWith("/") ? "orders" : "/orders";
+
+      let res = await (await fetch(url + endpoint)).clone().json();
+      let loadedPSTs = await supportedPSTs;
+      const token = loadedPSTs.find(
+        (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
+      )?.id;
+      return res.find((orders) => orders.token === token).orders;
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+  }
+
+  async function confirmTrade() {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 200000,
+    });
+
+    await posts;
+
+    const txId = (
+      await query({
+        query: galleryQuery,
+        variables: {
+          owners: [selectedPost],
+          recipients: [exchangeWallet],
+        },
+      })
+    ).data.transactions.edges[0]?.node.id;
+
+    const config = JSON.parse(
+      (
+        await client.transactions.getData(txId, { decode: true, string: true })
+      ).toString()
+    );
+
+    try {
+      let url = config["publicURL"].startsWith("http://")
+        ? config["publicURL"]
+        : "http://" + config["publicURL"];
+      const endpoint = url.endsWith("/") ? "ping" : "/ping";
+      await fetch(url + endpoint);
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
@@ -1089,10 +1152,16 @@
   <div class="menu">
     <button
       class:active={mode === 'sell'}
-      on:click={() => (mode = 'sell')}>Sell</button>
+      on:click={() => {
+        mode = 'sell';
+        orderBook = getOrderBook();
+      }}>Sell</button>
     <button
       class:active={mode === 'buy'}
-      on:click={() => (mode = 'buy')}>Buy</button>
+      on:click={() => {
+        mode = 'buy';
+        orderBook = getOrderBook();
+      }}>Buy</button>
   </div>
   <div class="trade-container">
     {#if mode === 'sell'}
@@ -1154,7 +1223,11 @@
                 {#await supportedPSTs}
                   <SkeletonLoading style="width: 35px; height: 38px" />
                 {:then loadedPSTs}
-                  <select bind:value={sellToken}>
+                  <select
+                    bind:value={sellToken}
+                    on:change={() => {
+                      orderBook = getOrderBook();
+                    }}>
                     {#each loadedPSTs as pst}
                       <option value={pst.ticker}>{pst.ticker}</option>
                     {/each}
@@ -1268,7 +1341,12 @@
                   <SkeletonLoading
                     style="width: 100% !important; height: 100% !important" />
                 {:then loadedPSTs}
-                  <select bind:value={buyToken} style="width: 100% !important;">
+                  <select
+                    bind:value={buyToken}
+                    style="width: 100% !important;"
+                    on:change={() => {
+                      orderBook = getOrderBook();
+                    }}>
                     {#each loadedPSTs as pst}
                       <option value={pst.ticker}>{pst.ticker}</option>
                     {/each}
@@ -1319,7 +1397,7 @@
   <div class="content">
     {#if activeMenu === 'open'}
       <table in:fade={{ duration: 400 }}>
-        {#await openTrades}
+        {#await orderBook}
           {#each Array(5) as _}
             <tr>
               <th style="width: 80%">
@@ -1330,20 +1408,19 @@
               </th>
             </tr>
           {/each}
-        {:then loadedOpenTrades}
-          {#if loadedOpenTrades.length === 0}
+        {:then loadedOrders}
+          {#if loadedOrders.length === 0}
             <p>This trading post doesn't have any open orders!</p>
           {/if}
-          {#each loadedOpenTrades as trade}
+          {#each loadedOrders as trade}
             <tr>
               <td style="text-align: left">
                 <span class="direction">{trade.type}</span>
-                {trade.sent}
+                {trade.amnt}
                 {#if trade.type === 'Sell'}
-                  {`| Rate = `}
-                  {trade.rate}
-                  {trade.ticker}/AR
-                {/if}
+                  {mode === 'sell' ? sellToken : buyToken} at {trade.rate}
+                  {mode === 'sell' ? sellToken : buyToken}/AR
+                {:else}AR {'->'} {mode === 'sell' ? sellToken : buyToken}{/if}
               </td>
             </tr>
           {/each}
