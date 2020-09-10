@@ -366,11 +366,7 @@
         : "https://" + config["publicURL"];
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
-      let res = await (
-        await fetch(url + endpoint)
-      )
-        .clone()
-        .json();
+      let res = await (await fetch(url + endpoint)).clone().json();
       let loadedPSTs = await supportedPSTs;
       const token = loadedPSTs.find(
         (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
