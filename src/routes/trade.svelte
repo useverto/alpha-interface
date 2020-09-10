@@ -1473,8 +1473,7 @@
       Buying {buyAmount} AR's worth of {buyToken}
     {:else if mode === 'sell'}
       Selling {Math.ceil(sellAmount)}
-      {sellToken} at a rate of {sellRate}
-      AR/{sellToken}
+      {sellToken} at a rate of {sellRate} AR/{sellToken}
     {/if}
   </p>
   <p style="text-align: center">
