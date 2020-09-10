@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
-    "export": "sapper export --legacy --entry '/ trade tokens post login gallery app 404 app/all-exchanges app/all-transactions'",
+    "export": "sapper export --legacy --entry \"/ trade tokens post login gallery app 404 app/all-exchanges app/all-transactions\"",
     "start": "node __sapper__/build",
     "prefmt": "cd ./node_modules/prettier-plugin-svelte/ && yarn && yarn build",
     "fmt": "prettier --write .",
