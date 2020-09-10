@@ -313,7 +313,7 @@
               <p>
                 <span>Balance</span>{post.balance}<span class="ar">ar</span>
               </p>
-              <p><span>Stake</span>{post.stake}<span class="ar">ar</span></p>
+              <p><span>Stake</span>{post.stake}<span class="ar">VRT</span></p>
             </div>
           </div>
           <h1 class="reputation">{post.reputation}</h1>
