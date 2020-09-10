@@ -78,6 +78,7 @@ export const loggedIn = derived(
 // this removes the keyfile from local stroage
 export function logOut() {
   keyfile.reset();
+  localStorage.clear();
 }
 
 /*
