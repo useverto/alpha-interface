@@ -42,7 +42,7 @@
   let buyToken: string;
   let sellToken: string;
   let sellRate: number = 1;
-  let mode: string = "sell";
+  let mode: string = "buy";
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
@@ -1161,17 +1161,17 @@
   </div>
   <div class="menu">
     <button
-      class:active={mode === 'sell'}
-      on:click={() => {
-        mode = 'sell';
-        orderBook = getOrderBook();
-      }}>Sell</button>
-    <button
       class:active={mode === 'buy'}
       on:click={() => {
         mode = 'buy';
         orderBook = getOrderBook();
       }}>Buy</button>
+    <button
+      class:active={mode === 'sell'}
+      on:click={() => {
+        mode = 'sell';
+        orderBook = getOrderBook();
+      }}>Sell</button>
   </div>
   <div class="trade-container">
     {#if mode === 'sell'}
