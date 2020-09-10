@@ -233,6 +233,7 @@
     loading = true;
     let a = await latestOpenExchanges;
     let b = await latestClosedExchanges;
+    let c = await orderBook;
     if ($address === selectedPost) {
       notification.notify(
         "Error",
@@ -301,6 +302,15 @@
           "You don't have enough AR.",
           NotificationType.error,
           5000
+        );
+        loading = false;
+        return;
+      } else if (c.find((o) => o.type === "Sell") === undefined) {
+        notification.notify(
+          "Error",
+          "There aren't any sell orders open. You cannot buy tokens if no sell orders are open.",
+          NotificationType.error,
+          10000
         );
         loading = false;
         return;
