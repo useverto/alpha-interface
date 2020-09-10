@@ -706,7 +706,7 @@
       "App-Name": "SmartWeaveAction",
       "App-Version": "0.3.0",
       Contract: pstTxId,
-      Rate: sellRate,
+      Rate: 1 / sellRate,
       Input: `{"function":"transfer","target":"${selectedPost}","qty":${Math.ceil(
         sellAmount
       )}}`,
@@ -1253,7 +1253,7 @@
                   {#if sellToken === undefined}
                     <option>...</option>
                   {:else}
-                    <option>{sellToken + '/AR'}</option>
+                    <option>{'AR/' + sellToken}</option>
                   {/if}
                 </select>
               </div>
@@ -1428,8 +1428,7 @@
                 <span class="direction">{trade.type}</span>
                 {trade.amnt}
                 {#if trade.type === 'Sell'}
-                  {mode === 'sell' ? sellToken : buyToken} at {trade.rate}
-                  {mode === 'sell' ? sellToken : buyToken}/AR
+                  {mode === 'sell' ? sellToken : buyToken} at {1 / trade.rate} AR/{mode === 'sell' ? sellToken : buyToken}
                 {:else}AR {'->'} {mode === 'sell' ? sellToken : buyToken}{/if}
               </td>
             </tr>
@@ -1446,11 +1445,11 @@
               </td>
             </tr>
           {/each}
-        {:then loadedOpenTrades}
-          {#if loadedOpenTrades.length === 0}
+        {:then loadedClosedTrades}
+          {#if loadedClosedTrades.length === 0}
             <p>This trading post doesn't have any completed trades!</p>
           {/if}
-          {#each loadedOpenTrades as trade}
+          {#each loadedClosedTrades as trade}
             <tr>
               <td style="text-align: left">
                 {trade.sent}
