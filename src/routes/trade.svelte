@@ -366,16 +366,7 @@
         : "https://" + config["publicURL"];
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
-      let res = await (
-        await fetch(url + endpoint, {
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-        })
-      )
-        .clone()
-        .json();
+      let res = await (await fetch(url + endpoint)).clone().json();
       let loadedPSTs = await supportedPSTs;
       const token = loadedPSTs.find(
         (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
@@ -414,16 +405,11 @@
     );
 
     try {
-      let url = config["publicURL"].startsWith("http://")
+      let url = config["publicURL"].startsWith("https://")
         ? config["publicURL"]
-        : "http://" + config["publicURL"];
+        : "https://" + config["publicURL"];
       const endpoint = url.endsWith("/") ? "ping" : "/ping";
-      await fetch(url + endpoint, {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      await fetch(url + endpoint);
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
