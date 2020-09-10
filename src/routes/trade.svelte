@@ -1399,9 +1399,9 @@
       <button
         class:active={activeMenu === 'open'}
         on:click={() => (activeMenu = 'open')}>Open Orders</button>
-      <button
+      <!-- <button
         class:active={activeMenu === 'closed'}
-        on:click={() => (activeMenu = 'closed')}>Closed Orders</button>
+        on:click={() => (activeMenu = 'closed')}>Closed Orders</button> -->
     </div>
   </div>
   <div class="content">
@@ -1435,7 +1435,7 @@
           {/each}
         {/await}
       </table>
-    {:else if activeMenu === 'closed'}
+    <!-- {:else if activeMenu === 'closed'}
       <table in:fade={{ duration: 400 }}>
         {#await closedTrades}
           {#each Array(5) as _}
@@ -1459,7 +1459,7 @@
             </tr>
           {/each}
         {/await}
-      </table>
+      </table> -->
     {/if}
   </div>
 </div>
