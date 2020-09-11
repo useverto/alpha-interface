@@ -381,7 +381,8 @@
       const token = loadedPSTs.find(
         (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
       )?.id;
-      return res.find((orders) => orders.token === token).orders;
+      let orders = res.find((orders) => orders.token === token).orders;
+      return orders.sort((a, b) => b.rate - a.rate);
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
