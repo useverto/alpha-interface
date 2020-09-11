@@ -1435,7 +1435,7 @@
           {/each}
         {/await}
       </table>
-    <!-- {:else if activeMenu === 'closed'}
+      <!-- {:else if activeMenu === 'closed'}
       <table in:fade={{ duration: 400 }}>
         {#await closedTrades}
           {#each Array(5) as _}
