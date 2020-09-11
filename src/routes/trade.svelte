@@ -230,112 +230,105 @@
 
   // open confirmation modal
   async function exchange() {
-    notification.notify(
-      "Error",
-      "Trading post not yet updated. Check back soon!",
-      NotificationType.error,
-      5000
-    );
+    loading = true;
+    let a = await latestOpenExchanges;
+    let b = await latestClosedExchanges;
+    let c = await orderBook;
+    if ($address === selectedPost) {
+      notification.notify(
+        "Error",
+        "You can not make trades from your own trading post!",
+        NotificationType.error,
+        5000
+      );
+      loading = false;
+      return;
+    }
 
-    // loading = true;
-    // let a = await latestOpenExchanges;
-    // let b = await latestClosedExchanges;
-    // let c = await orderBook;
-    // if ($address === selectedPost) {
-    //   notification.notify(
-    //     "Error",
-    //     "You can not make trades from your own trading post!",
-    //     NotificationType.error,
-    //     5000
-    //   );
-    //   loading = false;
-    //   return;
-    // }
-
-    // if (mode === "sell") {
-    //   let arCost =
-    //     (await getFee(await initiateSell())) +
-    //     (await getFee(await initiateTradingPostFee())) +
-    //     (await getFee(await initiateVRTHolderFee()));
-    //   let pstCost =
-    //     Math.ceil(sellAmount) + (await getTradingPostFee()) + getVRTHolderFee();
-    //   const token = (await supportedPSTs).find(
-    //     (pst) => pst.ticker === sellToken
-    //   );
-    //   const amount = (await balances).find(
-    //     (amount) =>
-    //       amount.token === token.name && amount.ticker === token.ticker
-    //   );
-    //   if (!amount) {
-    //     notification.notify(
-    //       "Error",
-    //       "You don't have that token.",
-    //       NotificationType.error,
-    //       5000
-    //     );
-    //     loading = false;
-    //     return;
-    //   } else if (pstCost > amount.balance) {
-    //     notification.notify(
-    //       "Error",
-    //       "You don't have that many tokens.",
-    //       NotificationType.error,
-    //       5000
-    //     );
-    //     loading = false;
-    //     return;
-    //   } else if (arCost > $balance) {
-    //     notification.notify(
-    //       "Error",
-    //       "You don't have enough AR.",
-    //       NotificationType.error,
-    //       5000
-    //     );
-    //     loading = false;
-    //     return;
-    //   }
-    //   confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
-    //   confirmModalOpened = true;
-    //   loading = false;
-    //   return;
-    // } else if (mode === "buy") {
-    //   let txFees =
-    //     (await getFee(await initiateBuy())) +
-    //     (await getFee(await initiateExchangeFee()));
-    //   let arCost = txFees + buyAmount + getExchangeFee();
-    //   if (arCost > $balance) {
-    //     notification.notify(
-    //       "Error",
-    //       "You don't have enough AR.",
-    //       NotificationType.error,
-    //       5000
-    //     );
-    //     loading = false;
-    //     return;
-    //   } else if (c.find((o) => o.type === "Sell") === undefined) {
-    //     notification.notify(
-    //       "Error",
-    //       "There aren't any sell orders open. You cannot buy tokens if no sell orders are open.",
-    //       NotificationType.error,
-    //       10000
-    //     );
-    //     loading = false;
-    //     return;
-    //   }
-    //   confirmModalText = `You're sending ${arCost} AR`;
-    //   confirmModalOpened = true;
-    //   loading = false;
-    //   return;
-    // } else {
-    //   notification.notify(
-    //     "Error",
-    //     "You aren't buying nor selling. This may be a bug.",
-    //     NotificationType.error,
-    //     5000
-    //   );
-    //   loading = false;
-    //   return;
-    // }
+    if (mode === "sell") {
+      let arCost =
+        (await getFee(await initiateSell())) +
+        (await getFee(await initiateTradingPostFee())) +
+        (await getFee(await initiateVRTHolderFee()));
+      let pstCost =
+        Math.ceil(sellAmount) + (await getTradingPostFee()) + getVRTHolderFee();
+      const token = (await supportedPSTs).find(
+        (pst) => pst.ticker === sellToken
+      );
+      const amount = (await balances).find(
+        (amount) =>
+          amount.token === token.name && amount.ticker === token.ticker
+      );
+      if (!amount) {
+        notification.notify(
+          "Error",
+          "You don't have that token.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      } else if (pstCost > amount.balance) {
+        notification.notify(
+          "Error",
+          "You don't have that many tokens.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      } else if (arCost > $balance) {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
+      confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
+      confirmModalOpened = true;
+      loading = false;
+      return;
+    } else if (mode === "buy") {
+      let txFees =
+        (await getFee(await initiateBuy())) +
+        (await getFee(await initiateExchangeFee()));
+      let arCost = txFees + buyAmount + getExchangeFee();
+      if (arCost > $balance) {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      } else if (c.find((o) => o.type === "Sell") === undefined) {
+        notification.notify(
+          "Error",
+          "There aren't any sell orders open. You cannot buy tokens if no sell orders are open.",
+          NotificationType.error,
+          10000
+        );
+        loading = false;
+        return;
+      }
+      confirmModalText = `You're sending ${arCost} AR`;
+      confirmModalOpened = true;
+      loading = false;
+      return;
+    } else {
+      notification.notify(
+        "Error",
+        "You aren't buying nor selling. This may be a bug.",
+        NotificationType.error,
+        5000
+      );
+      loading = false;
+      return;
+    }
   }
 
   interface TokenInstance {
@@ -1442,7 +1435,7 @@
           {/each}
         {/await}
       </table>
-      <!-- {:else if activeMenu === 'closed'}
+    <!-- {:else if activeMenu === 'closed'}
       <table in:fade={{ duration: 400 }}>
         {#await closedTrades}
           {#each Array(5) as _}
