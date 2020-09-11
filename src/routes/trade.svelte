@@ -231,9 +231,9 @@
   // open confirmation modal
   async function exchange() {
     loading = true;
-    let a = await latestOpenExchanges;
-    let b = await latestClosedExchanges;
-    let c = await orderBook;
+    //let a = await latestOpenExchanges;
+    //let b = await latestClosedExchanges;
+    //let c = await orderBook;
     if ($address === selectedPost) {
       notification.notify(
         "Error",
@@ -370,22 +370,23 @@
       ).toString()
     );
 
-    try {
-      let url = config["publicURL"].startsWith("https://")
-        ? config["publicURL"]
-        : "https://" + config["publicURL"];
-      let endpoint = url.endsWith("/") ? "orders" : "/orders";
+    // try {
+    //   let url = config["publicURL"].startsWith("https://")
+    //     ? config["publicURL"]
+    //     : "https://" + config["publicURL"];
+    //   let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
-      let res = await (await fetch(url + endpoint)).clone().json();
-      let loadedPSTs = await supportedPSTs;
-      const token = loadedPSTs.find(
-        (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
-      )?.id;
-      return res.find((orders) => orders.token === token).orders;
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
-    }
+    //   let res = await (await fetch(url + endpoint)).clone().json();
+    //   let loadedPSTs = await supportedPSTs;
+    //   const token = loadedPSTs.find(
+    //     (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
+    //   )?.id;
+    //   return res.find((orders) => orders.token === token).orders;
+    // } catch (err) {
+    //   notification.notify("Error", err, NotificationType.error, 5000);
+    //   return;
+    // }
+    return [];
   }
 
   async function confirmTrade() {
@@ -414,16 +415,16 @@
       ).toString()
     );
 
-    try {
-      let url = config["publicURL"].startsWith("https://")
-        ? config["publicURL"]
-        : "https://" + config["publicURL"];
-      const endpoint = url.endsWith("/") ? "ping" : "/ping";
-      await fetch(url + endpoint);
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
-    }
+    // try {
+    //   let url = config["publicURL"].startsWith("https://")
+    //     ? config["publicURL"]
+    //     : "https://" + config["publicURL"];
+    //   const endpoint = url.endsWith("/") ? "ping" : "/ping";
+    //   await fetch(url + endpoint);
+    // } catch (err) {
+    //   notification.notify("Error", err, NotificationType.error, 5000);
+    //   return;
+    // }
 
     let tx = mode === "buy" ? await initiateBuy() : await initiateSell();
 

@@ -6,7 +6,7 @@ const arweave = Arweave.init({
   protocol: "https",
 });
 
-const exchangePST = "fE2OcfjlS-sHqG5K8QvxE8wHtcqKxS-YV0bDEgxo-eI";
+const exchangePST = "c25-RdheC6khcACLv23-XXg1W7YuA-VSZ_1_qnNFbhw";
 const key = "MY JSON KEY OBJECT";
 
 async function supportPST(pstContractID) {
@@ -36,4 +36,4 @@ async function supportPST(pstContractID) {
   }
 }
 
-supportPST("FcM-QQpfcD0xTTzr8u4Su9QCgcvRx_JH4JSCQoFi6Ck");
+supportPST("c25-RdheC6khcACLv23-XXg1W7YuA-VSZ_1_qnNFbhw");
