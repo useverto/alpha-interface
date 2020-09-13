@@ -239,7 +239,7 @@
 
       &:hover
         opacity: .8
-  
+
 </style>
 
 <div class="volume">
