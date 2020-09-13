@@ -1,10 +1,13 @@
 <script lang="typescript">
   import { query } from "../../api-client";
   import { exchangeWallet } from "../../utils/constants";
+  import moment from "moment";
 
   const volume = getVolume();
 
   async function getVolume() {
+    if (!process.browser) return [];
+
     //
 
     const gensisTxs = (
@@ -84,7 +87,30 @@
 
     //
 
-    return [];
+    let volume: { amnt: number; date: string }[] = [];
+
+    let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
+    while (high.unix() >= orders[orders.length - 1].timestamp) {
+      let sum = 0;
+
+      const low = high.clone().subtract(1, "days");
+      orders.map((order) => {
+        if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
+          sum += order.amnt;
+        }
+      });
+
+      volume.push({
+        amnt: sum,
+        date: low.format("YYYY-MM-DD"),
+      });
+
+      high = low;
+    }
+
+    //
+
+    return volume;
   }
 </script>
 
