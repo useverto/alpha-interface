@@ -2,6 +2,7 @@
   import { query } from "../../api-client";
   import { exchangeWallet } from "../../utils/constants";
   import moment from "moment";
+  import Line from "svelte-chartjs/src/Line.svelte";
 
   const volume = getVolume();
 
@@ -87,7 +88,8 @@
 
     //
 
-    let volume: { amnt: number; date: string }[] = [];
+    let volume: number[] = [];
+    let days: string[] = [];
 
     let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
     while (high.unix() >= orders[orders.length - 1].timestamp) {
@@ -100,20 +102,23 @@
         }
       });
 
-      volume.push({
-        amnt: sum,
-        date: low.format("YYYY-MM-DD"),
-      });
+      volume.push(sum);
+      days.push(low.format("YYYY-MM-DD"));
 
       high = low;
     }
 
     //
 
-    return volume;
+    return [volume.reverse(), days.reverse()];
   }
 </script>
 
 <div>
-  {#await volume}{/await}
+  {#await volume}
+    <p />
+  {:then loadedVolume}
+    <Line
+      data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: null, borderColor: '#B075CD' }] }} />
+  {/await}
 </div>
