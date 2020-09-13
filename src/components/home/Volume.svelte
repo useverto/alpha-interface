@@ -134,6 +134,6 @@
               gradient.addColorStop(1, '#8D5FBC');
               return gradient;
             } }] }}
-      options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
+      options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: true, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: 'AR' }, gridLines: { display: false } }] } }} />
   {/await}
 </div>
