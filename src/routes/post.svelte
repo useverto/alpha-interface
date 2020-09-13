@@ -494,7 +494,7 @@
         on:click={() => (activeMenu = 'assets')}>Assets</button>
       <button
         class:active={activeMenu === 'supported'}
-        on:click={() => (activeMenu = 'supported')}>Suppported Assets</button>
+        on:click={() => (activeMenu = 'supported')}>Supported Assets</button>
       <div class="trade">
         <Button
           href="/trade?post={addr}"
