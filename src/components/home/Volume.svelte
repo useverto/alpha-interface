@@ -245,7 +245,10 @@
 <div class="volume">
   <div class="title-section">
     <h1 class="title">Trading Volume</h1>
-    <select bind:value={selected} on:change={() => (volume = getVolume())}>
+    <select
+      style="width: 15%"
+      bind:value={selected}
+      on:change={() => (volume = getVolume())}>
       <option value="AR">AR</option>
       {#await tokens then loadedTokens}
         {#each loadedTokens as token}
