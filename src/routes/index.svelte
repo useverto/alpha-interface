@@ -31,8 +31,8 @@
 
 <NavBar hero={true} />
 <Hero />
-<Volume />
 <LatestTrades />
+<Volume />
 <About id="read-more">
   <h1 class="title">What are PSTs?</h1>
   <p class="about-description">

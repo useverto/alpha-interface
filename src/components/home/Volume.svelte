@@ -110,6 +110,18 @@
 
   .volume
     padding: 2em 15vw 2em
+    
+    @media screen and (max-width: 720px)
+      overflow-x: auto
+      margin-right: 15vw
+
+    h1.title
+      font-size: 2.3em
+      font-weight: 600
+
+      @media screen and (max-width: 720px)
+        width: 100%
+        font-size: 2.01em
 
 </style>
 
@@ -117,6 +129,7 @@
   {#await volume}
     <p />
   {:then loadedVolume}
+    <h1 class="title">Trading Volume</h1>
     <Line
       data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: function (context) {
               let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
