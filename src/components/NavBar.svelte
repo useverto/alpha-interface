@@ -1,10 +1,10 @@
 <script lang="typescript">
   import { fade } from "svelte/transition";
-  import { loggedIn, logOut } from "../stores/keyfileStore.js";
+  import { loggedIn, logOut } from "../stores/keyfileStore.ts";
   import {
     notification,
     NotificationType,
-  } from "../stores/notificationStore.js";
+  } from "../stores/notificationStore.ts";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";

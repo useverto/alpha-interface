@@ -15,6 +15,7 @@ function createCustomStore(storeName) {
   const { subscribe, set } = writable("");
 
   if (
+    // @ts-ignore
     process.browser &&
     localStorage.getItem(storeName) !== null &&
     localStorage.getItem(storeName) !== "" &&
@@ -43,7 +44,8 @@ function createCustomStore(storeName) {
 // return the balance
 export const balance = derived(
   address,
-  ($address, set) => {
+  ($address, set: Function) => {
+    // @ts-ignore
     if (!process.browser) return;
     const client = new Arweave({
         host: "arweave.dev",
@@ -54,7 +56,7 @@ export const balance = derived(
       getBalance = () =>
         client.wallets
           .getBalance($address)
-          .then((_balance) => set(client.ar.winstonToAr(_balance)));
+          .then(_balance => set(client.ar.winstonToAr(_balance)));
     getBalance();
     // refresh in every minute
     setInterval(getBalance, 60000);

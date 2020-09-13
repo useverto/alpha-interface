@@ -4,7 +4,7 @@
   import LatestTrades from "../components/home/LatestTrades.svelte";
   import About from "../components/home/About.svelte";
   import Footer from "../components/Footer.svelte";
-  import { keyfile, loggedIn } from "../stores/keyfileStore.js";
+  import { keyfile, loggedIn } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
 
   if (process.browser && $loggedIn) goto("/app");

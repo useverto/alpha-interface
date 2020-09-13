@@ -2,7 +2,7 @@
   import {
     notification,
     NotificationType,
-  } from "../stores/notificationStore.js";
+  } from "../stores/notificationStore.ts";
   import { cubicIn } from "svelte/easing";
   import { fly, scale, fade } from "svelte/transition";
   import errorIcon from "../assets/notification/error.svg";

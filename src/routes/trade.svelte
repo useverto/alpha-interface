@@ -7,7 +7,7 @@
     address,
     keyfile,
     loggedIn,
-  } from "../stores/keyfileStore.js";
+  } from "../stores/keyfileStore.ts";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
@@ -26,7 +26,7 @@
   import {
     notification,
     NotificationType,
-  } from "../stores/notificationStore.js";
+  } from "../stores/notificationStore.ts";
   import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
 
   notification.notify(

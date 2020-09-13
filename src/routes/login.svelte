@@ -3,11 +3,11 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile, loggedIn, address } from "../stores/keyfileStore.js";
+  import { keyfile, loggedIn, address } from "../stores/keyfileStore.ts";
   import {
     notification,
     NotificationType,
-  } from "../stores/notificationStore.js";
+  } from "../stores/notificationStore.ts";
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";

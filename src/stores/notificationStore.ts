@@ -7,10 +7,7 @@ function createNotificationStore() {
   set(null);
 
   return {
-    notify(title, description, type, timeout) {
-      if (typeof type !== "number" || type > 3) return;
-      set({ title, description, type, timeout });
-    },
+    notify: (title: string, description: string, type: number, timeout: number) => set({ title, description, type, timeout }),
     subscribe,
     remove: () => set(null),
   };
