@@ -9,8 +9,6 @@
   async function getVolume() {
     if (!process.browser) return [];
 
-    //
-
     const gensisTxs = (
       await query({
         query: `
@@ -43,8 +41,6 @@
         posts.push(tx.node.owner.address);
       }
     });
-
-    //
 
     const maxInt = 2147483647;
 
@@ -86,8 +82,6 @@
       });
     });
 
-    //
-
     let volume: number[] = [];
     let days: string[] = [];
 
@@ -102,19 +96,18 @@
         }
       });
 
+      console.log(sum);
       volume.push(sum);
-      days.push(low.format("YYYY-MM-DD"));
+      days.push(low.format("MM-DD"));
 
       high = low;
     }
-
-    //
 
     return [volume.reverse(), days.reverse()];
   }
 </script>
 
-<div>
+<div class="volume">
   {#await volume}
     <p />
   {:then loadedVolume}
@@ -123,3 +116,10 @@
       options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
   {/await}
 </div>
+
+<style lang="sass">
+
+  .volume
+    padding: 2em 15vw 2em
+
+</style>
