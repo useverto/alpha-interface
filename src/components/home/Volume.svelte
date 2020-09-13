@@ -172,21 +172,23 @@
     let volume: number[] = [];
     let days: string[] = [];
 
-    let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
-    while (high.unix() >= orders[orders.length - 1].timestamp) {
-      let sum = 0;
+    if (orders.length > 0) {
+      let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
+      while (high.unix() >= orders[orders.length - 1].timestamp) {
+        let sum = 0;
 
-      const low = high.clone().subtract(1, "days");
-      orders.map((order) => {
-        if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
-          sum += order.amnt;
-        }
-      });
+        const low = high.clone().subtract(1, "days");
+        orders.map((order) => {
+          if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
+            sum += order.amnt;
+          }
+        });
 
-      volume.push(sum);
-      days.push(low.format("MMM DD"));
+        volume.push(sum);
+        days.push(low.format("MMM DD"));
 
-      high = low;
+        high = low;
+      }
     }
 
     return [volume.reverse(), days.reverse()];
@@ -238,35 +240,41 @@
 </style>
 
 <div class="volume">
-  <h1 class="title">Trading Volume</h1>
-  <select bind:value={selected} on:change={() => (volume = getVolume())}>
-    <option value="AR">AR</option>
-    {#await tokens then loadedTokens}
-      {#each loadedTokens as token}
-        <option value={token.ticker}>{token.ticker}</option>
-      {/each}
-    {/await}
-  </select>
+  <div style="align-items: center; justify-content: space-between">
+    <h1 class="title">Trading Volume</h1>
+    <select bind:value={selected} on:change={() => (volume = getVolume())}>
+      <option value="AR">AR</option>
+      {#await tokens then loadedTokens}
+        {#each loadedTokens as token}
+          <option value={token.ticker}>{token.ticker}</option>
+        {/each}
+      {/await}
+    </select>
+  </div>
   {#await volume}
-    <p />
+    <!-- TODO: Add loading state -->
   {:then loadedVolume}
-    <Line
-      data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: function (context) {
-              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-              gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
-              gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
-              return gradient;
-            }, borderColor: function (context) {
-              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-              gradient.addColorStop(0, '#E698E8');
-              gradient.addColorStop(1, '#8D5FBC');
-              return gradient;
-            }, pointBackgroundColor: function (context) {
-              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-              gradient.addColorStop(0, '#E698E8');
-              gradient.addColorStop(1, '#8D5FBC');
-              return gradient;
-            } }] }}
-      options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: true, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }} />
+    {#if loadedVolume[0].length === 0 && loadedVolume[1].length === 0}
+      <p>No trading volume.</p>
+    {:else}
+      <Line
+        data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
+                gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
+                return gradient;
+              }, borderColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              }, pointBackgroundColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              } }] }}
+        options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: true, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }} />
+    {/if}
   {/await}
 </div>
