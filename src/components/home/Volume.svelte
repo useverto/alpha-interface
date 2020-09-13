@@ -3,6 +3,7 @@
   import { query } from "../../api-client";
   import { exchangeWallet, pstContract } from "../../utils/constants";
   import moment from "moment";
+  import Loading from "../Loading.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
 
   let selected: string = "AR";
@@ -252,7 +253,7 @@
     </select>
   </div>
   {#await volume}
-    <!-- TODO: Add loading state -->
+    <Loading />
   {:then loadedVolume}
     {#if loadedVolume[0].length === 0 && loadedVolume[1].length === 0}
       <p>No trading volume.</p>
