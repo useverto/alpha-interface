@@ -119,6 +119,7 @@
     <p />
   {:then loadedVolume}
     <Line
-      data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: null, borderColor: '#B075CD' }] }} />
+      data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], fill: false, borderColor: '#B075CD', pointBackgroundColor: '#B075CD' }] }}
+      options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
   {/await}
 </div>
