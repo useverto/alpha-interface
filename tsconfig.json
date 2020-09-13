@@ -7,7 +7,6 @@
     "public/*",
     "src/service-worker.js"
   ],
-  "files": ["typings/graphql/graphql.d.ts"],
   "compilerOptions": {
     "target": "ESNEXT",
     "module": "ESNEXT",

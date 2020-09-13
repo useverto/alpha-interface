@@ -7,7 +7,7 @@
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
 
-  import { query } from "../api-client.js";
+  import { query } from "../api-client";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
   import { exchangeWallet, pstContract } from "../utils/constants";
