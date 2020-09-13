@@ -1,16 +1,16 @@
 // Simple arweave graphql API client
 export async function query({ query, variables = null }) {
-  var graphql = JSON.stringify({
+  const graphql = JSON.stringify({
     query,
     variables,
   });
-  var requestOptions = {
+  const requestOptions = {
     method: "POST",
     headers: {
       "content-type": "application/json",
     },
     body: graphql,
   };
-  let res = await fetch("https://arweave.dev/graphql", requestOptions);
+  const res = await fetch("https://arweave.dev/graphql", requestOptions);
   return await res.clone().json();
 }

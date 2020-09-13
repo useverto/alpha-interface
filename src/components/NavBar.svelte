@@ -1,16 +1,14 @@
 <script lang="typescript">
   import { fade } from "svelte/transition";
-  import { loggedIn, logOut } from "../stores/keyfileStore.js";
-  import {
-    notification,
-    NotificationType,
-  } from "../stores/notificationStore.js";
+  import { loggedIn, logOut } from "../stores/keyfileStore.ts";
+  import { notification } from "../stores/notificationStore.ts";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";
   import postsLogo from "../assets/nav/posts.svg";
   import logoutLogo from "../assets/nav/logout.svg";
   import Modal from "../components/Modal.svelte";
+  import { NotificationType } from "../utils/types.ts";
 
   export let hero: boolean = false;
   let y: number;

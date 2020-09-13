@@ -7,13 +7,13 @@
     address,
     keyfile,
     loggedIn,
-  } from "../stores/keyfileStore.js";
+  } from "../stores/keyfileStore.ts";
   import Button from "../components/Button.svelte";
   import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Loading from "../components/Loading.svelte";
-
+  import { NotificationType } from "../utils/types.ts";
   import { query } from "../api-client";
   import galleryQuery from "../queries/gallery.gql";
   import tokensQuery from "../queries/tokens.gql";
@@ -23,10 +23,7 @@
   import { interactRead } from "smartweave";
   import Community from "community-js";
   import Transaction from "arweave/node/lib/transaction";
-  import {
-    notification,
-    NotificationType,
-  } from "../stores/notificationStore.js";
+  import { notification } from "../stores/notificationStore.ts";
   import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
 
   notification.notify(

@@ -1,8 +1,6 @@
 <script>
-  import {
-    notification,
-    NotificationType,
-  } from "../stores/notificationStore.js";
+  import { notification } from "../stores/notificationStore.ts";
+  import { NotificationType } from "../utils/types.ts";
   import { cubicIn } from "svelte/easing";
   import { fly, scale, fade } from "svelte/transition";
   import errorIcon from "../assets/notification/error.svg";
@@ -14,12 +12,7 @@
   let timeout = null,
     hover = false;
 
-  $: notificationClass =
-    $notification === null
-      ? ""
-      : Object.keys(NotificationType).find(
-          (key) => NotificationType[key] === $notification.type
-        );
+  $: notificationClass = $notification === null ? "" : $notification.type;
 
   function hide() {
     notification.remove();

@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { address } from "../../stores/keyfileStore.js";
+  import { address } from "../../stores/keyfileStore.ts";
   import moment from "moment";
   import Loading from "../Loading.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";

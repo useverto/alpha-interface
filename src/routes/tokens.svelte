@@ -4,11 +4,11 @@
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
-  import { loggedIn, address, keyfile } from "../stores/keyfileStore.js";
+  import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
 
-  import { query } from "../api-client.js";
+  import { query } from "../api-client";
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
   import Community from "community-js";
