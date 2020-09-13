@@ -42,6 +42,48 @@
 
     //
 
+    const maxInt = 2147483647;
+
+    const orderTxs = (
+      await query({
+        query: `
+      query($recipients: [String!]) {
+        transactions(
+          recipients: $recipients
+          tags: [
+            { name: "Exchange", values: "Verto" }
+            { name: "Type", values: "Buy" }
+          ]
+          first: ${maxInt}
+        ) {
+          edges {
+            node {
+              block {
+                timestamp
+              }
+              quantity {
+                ar
+              }
+            }
+          }
+        }
+      }`,
+        variables: {
+          recipients: posts,
+        },
+      })
+    ).data.transactions.edges;
+
+    let orders: { amnt: number; timestamp: number }[] = [];
+    orderTxs.map((order) => {
+      orders.push({
+        amnt: parseFloat(order.node.quantity.ar),
+        timestamp: order.node.block.timestamp,
+      });
+    });
+
+    //
+
     return [];
   }
 </script>
