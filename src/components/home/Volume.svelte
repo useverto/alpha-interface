@@ -107,6 +107,13 @@
   }
 </script>
 
+<style lang="sass">
+
+  .volume
+    padding: 2em 15vw 2em
+
+</style>
+
 <div class="volume">
   {#await volume}
     <p />
@@ -116,10 +123,3 @@
       options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
   {/await}
 </div>
-
-<style lang="sass">
-
-  .volume
-    padding: 2em 15vw 2em
-
-</style>
