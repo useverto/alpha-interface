@@ -205,6 +205,11 @@
       overflow-x: auto
       margin-right: 15vw
 
+    .title-section
+      display: flex
+      align-items: center
+      justify-content: space-between
+
     h1.title
       font-size: 2.3em
       font-weight: 600
@@ -213,35 +218,32 @@
         width: 100%
         font-size: 2.01em
 
-  select
-    $sidePadding: .65em
-    position: relative
-    color: #fff
-    background-color: #000
-    font-size: 1em
-    padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
-    cursor: pointer
-    border-radius: .3em
-    outline: none
-    border: none
-    -webkit-appearance: none
-    -moz-appearance: none
-    transition: all .3s
+    select
+      $sidePadding: .65em
+      position: relative
+      color: #fff
+      background-color: #000
+      background-image: url(/down-arrow.svg)
+      background-position: calc(100% - #{$sidePadding}) center
+      background-repeat: no-repeat
+      background-size: $sidePadding * 1.35
+      font-size: 1em
+      padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
+      cursor: pointer
+      border-radius: .3em
+      outline: none
+      border: none
+      -webkit-appearance: none
+      -moz-appearance: none
+      transition: all .3s
+
+      &:hover
+        opacity: .8
   
-  select
-    $sidePadding: .65em
-    background-image: url(/down-arrow.svg)
-    background-position: calc(100% - #{$sidePadding}) center
-    background-repeat: no-repeat
-    background-size: $sidePadding * 1.35
-
-    &:hover
-      opacity: .8
-
 </style>
 
 <div class="volume">
-  <div style="align-items: center; justify-content: space-between">
+  <div class="title-section">
     <h1 class="title">Trading Volume</h1>
     <select bind:value={selected} on:change={() => (volume = getVolume())}>
       <option value="AR">AR</option>
