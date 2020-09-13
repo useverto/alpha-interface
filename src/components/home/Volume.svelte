@@ -253,9 +253,7 @@
 <div class="volume">
   <div class="title-section">
     <h1 class="title">Daily Volume</h1>
-    <select
-      bind:value={selected}
-      on:change={() => (volume = getVolume())}>
+    <select bind:value={selected} on:change={() => (volume = getVolume())}>
       <option value="AR">AR</option>
       {#await tokens then loadedTokens}
         {#each loadedTokens as token}
