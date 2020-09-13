@@ -3,4 +3,4 @@ export enum NotificationType {
   warning = "warning",
   log = "log",
   success = "success",
-};
+}

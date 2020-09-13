@@ -56,7 +56,7 @@ export const balance = derived(
       getBalance = () =>
         client.wallets
           .getBalance($address)
-          .then(_balance => set(client.ar.winstonToAr(_balance)));
+          .then((_balance) => set(client.ar.winstonToAr(_balance)));
     getBalance();
     // refresh in every minute
     setInterval(getBalance, 60000);

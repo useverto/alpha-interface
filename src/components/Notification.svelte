@@ -12,10 +12,7 @@
   let timeout = null,
     hover = false;
 
-  $: notificationClass =
-    $notification === null
-      ? ""
-      : $notification.type;
+  $: notificationClass = $notification === null ? "" : $notification.type;
 
   function hide() {
     notification.remove();

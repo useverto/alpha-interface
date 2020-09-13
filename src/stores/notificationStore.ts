@@ -8,7 +8,12 @@ function createNotificationStore() {
   set(null);
 
   return {
-    notify: (title: string, description: string, type: NotificationType, timeout: number) => set({ title, description, type, timeout }),
+    notify: (
+      title: string,
+      description: string,
+      type: NotificationType,
+      timeout: number
+    ) => set({ title, description, type, timeout }),
     subscribe,
     remove: () => set(null),
   };
