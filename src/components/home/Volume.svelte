@@ -244,7 +244,7 @@
 
 <div class="volume">
   <div class="title-section">
-    <h1 class="title">Trading Volume</h1>
+    <h1 class="title">Daily Volume</h1>
     <select
       style="width: 15%"
       bind:value={selected}
