@@ -1,8 +1,6 @@
 <script>
-  import {
-    notification,
-    NotificationType,
-  } from "../stores/notificationStore.ts";
+  import { notification } from "../stores/notificationStore.ts";
+  import { NotificationType } from "../utils/types.ts";
   import { cubicIn } from "svelte/easing";
   import { fly, scale, fade } from "svelte/transition";
   import errorIcon from "../assets/notification/error.svg";
@@ -17,9 +15,7 @@
   $: notificationClass =
     $notification === null
       ? ""
-      : Object.keys(NotificationType).find(
-          (key) => NotificationType[key] === $notification.type
-        );
+      : $notification.type;
 
   function hide() {
     notification.remove();

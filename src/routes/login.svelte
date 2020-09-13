@@ -4,10 +4,8 @@
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
   import { keyfile, loggedIn, address } from "../stores/keyfileStore.ts";
-  import {
-    notification,
-    NotificationType,
-  } from "../stores/notificationStore.ts";
+  import { notification } from "../stores/notificationStore.ts";
+  import { NotificationType } from "../utils/types.ts";
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
