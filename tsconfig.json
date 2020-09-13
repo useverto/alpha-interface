@@ -1,0 +1,32 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": ["src/**/*", "typings"],
+  "exclude": [
+    "node_modules/*",
+    "__sapper__/*",
+    "public/*",
+    "src/service-worker.js"
+  ],
+  "files": ["typings/graphql/graphql.d.ts"],
+  "compilerOptions": {
+    "target": "ESNEXT",
+    "module": "ESNEXT",
+    "allowJs": true,
+    "checkJs": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "@app/*": ["./src/"],
+      "@components/*": ["./src/components/*"],
+      "@includes/*": ["./src/includes/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@routes/*": ["./src/routes/*"]
+    },
+    "typeRoots": ["node_modules/@types", "typings"],
+    "types": ["svelte", "@sapper", "node"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
+}

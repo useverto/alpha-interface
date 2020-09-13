@@ -7,15 +7,17 @@ import babel from "@rollup/plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import config from "sapper/config/rollup.js";
 import pkg from "./package.json";
-import sveltePreprocess, { sass } from "svelte-preprocess";
+import { sass, typescript as tsProcess } from "svelte-preprocess";
 import image from "@rollup/plugin-image";
 import url from "@rollup/plugin-url";
 import json from "@rollup/plugin-json";
 import { string } from "rollup-plugin-string";
+import typescript from "@rollup/plugin-typescript";
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+const tsconfigFile = require("./tsconfig.json");
 
 const onwarn = (warning, onwarn) => {
   if (
@@ -42,7 +44,7 @@ const onwarn = (warning, onwarn) => {
 
 export default {
   client: {
-    input: config.client.input(),
+    input: config.client.input().replace(/\.js$/, ".ts"),
     output: config.client.output(),
     plugins: [
       replace({
@@ -54,7 +56,7 @@ export default {
         hydratable: true,
         emitCss: true,
         css: (css) => css.write("public/build/bundle.css"),
-        preprocess: sveltePreprocess(),
+        preprocess: [sass(), tsProcess({ tsconfigFile })],
       }),
       resolve({
         browser: true,
@@ -62,6 +64,7 @@ export default {
         preferBuiltins: false,
       }),
       commonjs(),
+      typescript({ sourceMap: dev }),
       sass(),
       image(),
       url(),
@@ -103,7 +106,10 @@ export default {
   },
 
   server: {
-    input: config.server.input(),
+    input: (typeof config.server.input() === "string"
+      ? config.server.input()
+      : config.server.input().server
+    ).replace(/\.js$/, ".ts"),
     output: config.server.output(),
     plugins: [
       replace({
@@ -113,13 +119,14 @@ export default {
       svelte({
         generate: "ssr",
         dev,
-        preprocess: sveltePreprocess(),
+        preprocess: [sass(), tsProcess({ tsconfigFile })],
       }),
       resolve({
         dedupe: ["svelte"],
         preferBuiltins: false,
       }),
       commonjs(),
+      typescript({ sourceMap: dev }),
       sass(),
       image(),
       url(),
@@ -135,6 +142,7 @@ export default {
     onwarn,
   },
 
+  // we don't need typescript for the service worker
   serviceworker: {
     input: config.serviceworker.input(),
     output: config.serviceworker.output(),
