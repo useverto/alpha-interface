@@ -1,6 +1,7 @@
 <script lang="typescript">
   import NavBar from "../components/NavBar.svelte";
   import Hero from "../components/home/Hero.svelte";
+  import Price from "../components/home/Price.svelte";
   import LatestTrades from "../components/home/LatestTrades.svelte";
   import About from "../components/home/About.svelte";
   import Footer from "../components/Footer.svelte";
@@ -30,6 +31,7 @@
 
 <NavBar hero={true} />
 <Hero />
+<Price />
 <LatestTrades />
 <About id="read-more">
   <h1 class="title">What are PSTs?</h1>
