@@ -1,10 +1,79 @@
 <script lang="typescript">
+  import Arweave from "arweave";
   import { query } from "../../api-client";
-  import { exchangeWallet } from "../../utils/constants";
+  import { exchangeWallet, pstContract } from "../../utils/constants";
   import moment from "moment";
   import Line from "svelte-chartjs/src/Line.svelte";
 
-  const volume = getVolume();
+  let selected: string = "AR";
+
+  const tokens = getTokens();
+
+  async function getTokens() {
+    if (!process.browser) return [];
+
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    const tokensQuery = (
+      await query({
+        query: `
+        query($owners: [String!], $contractSrc: [String!]!) {
+          transactions(
+            owners: $owners
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "PST" }
+              { name: "Contract", values: $contractSrc }
+            ]
+          ) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }`,
+        variables: {
+          owners: [exchangeWallet],
+          contractSrc: pstContract,
+        },
+      })
+    ).data.transactions.edges;
+
+    let txIDs: string[] = [];
+    tokensQuery.map((tx) => {
+      txIDs.push(tx.node.id);
+    });
+
+    let tokens: { id: string; ticker: string }[] = [];
+    for (const id of txIDs) {
+      const contractId = (
+        await client.transactions.getData(id, { decode: true, string: true })
+      ).toString();
+      const contractData = JSON.parse(
+        (
+          await client.transactions.getData(contractId, {
+            decode: true,
+            string: true,
+          })
+        ).toString()
+      );
+
+      tokens.push({
+        id: contractId,
+        ticker: contractData.ticker,
+      });
+    }
+
+    return tokens;
+  }
+
+  let volume = getVolume();
 
   async function getVolume() {
     if (!process.browser) return [];
@@ -52,7 +121,16 @@
           recipients: $recipients
           tags: [
             { name: "Exchange", values: "Verto" }
-            { name: "Type", values: "Buy" }
+            { name: "Type", values: "${selected === "AR" ? "Buy" : "Sell"}" }
+            ${
+              selected === "AR"
+                ? ""
+                : `{ name: "Contract", values: "${
+                    (await getTokens()).find(
+                      (token) => token.ticker === selected
+                    ).id
+                  }" }`
+            }
           ]
           first: ${maxInt}
         ) {
@@ -63,6 +141,10 @@
               }
               quantity {
                 ar
+              }
+              tags {
+                name
+                value
               }
             }
           }
@@ -77,7 +159,12 @@
     let orders: { amnt: number; timestamp: number }[] = [];
     orderTxs.map((order) => {
       orders.push({
-        amnt: parseFloat(order.node.quantity.ar),
+        amnt:
+          selected === "AR"
+            ? parseFloat(order.node.quantity.ar)
+            : JSON.parse(
+                order.node.tags.find((tag) => tag.name === "Input").value
+              ).qty,
         timestamp: order.node.block.timestamp,
       });
     });
@@ -130,6 +217,14 @@
     <p />
   {:then loadedVolume}
     <h1 class="title">Trading Volume</h1>
+    <select bind:value={selected} on:change={() => (volume = getVolume())}>
+      <option value="AR">AR</option>
+      {#await tokens then loadedTokens}
+        {#each loadedTokens as token}
+          <option value={token.ticker}>{token.ticker}</option>
+        {/each}
+      {/await}
+    </select>
     <Line
       data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: function (context) {
               let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
@@ -147,6 +242,6 @@
               gradient.addColorStop(1, '#8D5FBC');
               return gradient;
             } }] }}
-      options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: true, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: 'AR' }, gridLines: { display: false } }] } }} />
+      options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: true, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }} />
   {/await}
 </div>
