@@ -96,9 +96,8 @@
         }
       });
 
-      console.log(sum);
       volume.push(sum);
-      days.push(low.format("MM-DD"));
+      days.push(low.format("MMM DD"));
 
       high = low;
     }
