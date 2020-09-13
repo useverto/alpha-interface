@@ -118,7 +118,22 @@
     <p />
   {:then loadedVolume}
     <Line
-      data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], fill: false, borderColor: '#B075CD', pointBackgroundColor: '#B075CD' }] }}
+      data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: function (context) {
+              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+              gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
+              gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
+              return gradient;
+            }, borderColor: function (context) {
+              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+              gradient.addColorStop(0, '#E698E8');
+              gradient.addColorStop(1, '#8D5FBC');
+              return gradient;
+            }, pointBackgroundColor: function (context) {
+              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+              gradient.addColorStop(0, '#E698E8');
+              gradient.addColorStop(1, '#8D5FBC');
+              return gradient;
+            } }] }}
       options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
   {/await}
 </div>
