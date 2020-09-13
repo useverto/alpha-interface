@@ -210,21 +210,46 @@
         width: 100%
         font-size: 2.01em
 
+  select
+    $sidePadding: .65em
+    position: relative
+    color: #fff
+    background-color: #000
+    font-size: 1em
+    padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
+    cursor: pointer
+    border-radius: .3em
+    outline: none
+    border: none
+    -webkit-appearance: none
+    -moz-appearance: none
+    transition: all .3s
+  
+  select
+    $sidePadding: .65em
+    background-image: url(/down-arrow.svg)
+    background-position: calc(100% - #{$sidePadding}) center
+    background-repeat: no-repeat
+    background-size: $sidePadding * 1.35
+
+    &:hover
+      opacity: .8
+
 </style>
 
 <div class="volume">
+  <h1 class="title">Trading Volume</h1>
+  <select bind:value={selected} on:change={() => (volume = getVolume())}>
+    <option value="AR">AR</option>
+    {#await tokens then loadedTokens}
+      {#each loadedTokens as token}
+        <option value={token.ticker}>{token.ticker}</option>
+      {/each}
+    {/await}
+  </select>
   {#await volume}
     <p />
   {:then loadedVolume}
-    <h1 class="title">Trading Volume</h1>
-    <select bind:value={selected} on:change={() => (volume = getVolume())}>
-      <option value="AR">AR</option>
-      {#await tokens then loadedTokens}
-        {#each loadedTokens as token}
-          <option value={token.ticker}>{token.ticker}</option>
-        {/each}
-      {/await}
-    </select>
     <Line
       data={{ labels: loadedVolume[1], datasets: [{ data: loadedVolume[0], backgroundColor: function (context) {
               let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
