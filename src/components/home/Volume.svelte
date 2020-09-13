@@ -203,12 +203,15 @@
     
     @media screen and (max-width: 720px)
       overflow-x: auto
-      margin-right: 15vw
+      padding: 2em 10vw 2em
 
     .title-section
       display: flex
       align-items: center
       justify-content: space-between
+
+      @media screen and (max-width: 720px)
+        display: inline
 
     h1.title
       font-size: 2.3em
@@ -236,6 +239,11 @@
       -webkit-appearance: none
       -moz-appearance: none
       transition: all .3s
+      width: 15%
+
+      @media screen and (max-width: 720px)
+        width: 100%
+        margin-bottom: 2em
 
       &:hover
         opacity: .8
@@ -246,7 +254,6 @@
   <div class="title-section">
     <h1 class="title">Daily Volume</h1>
     <select
-      style="width: 15%"
       bind:value={selected}
       on:change={() => (volume = getVolume())}>
       <option value="AR">AR</option>
@@ -280,7 +287,7 @@
                 gradient.addColorStop(1, '#8D5FBC');
                 return gradient;
               } }] }}
-        options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: true, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }} />
+        options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }} />
     {/if}
   {/await}
 </div>
