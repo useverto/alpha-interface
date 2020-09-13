@@ -71,7 +71,7 @@
       });
     }
 
-    return tokens;
+    return tokens.reverse();
   }
 
   let volume = getVolume();
