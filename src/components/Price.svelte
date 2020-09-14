@@ -168,7 +168,11 @@
     let days: string[] = [];
 
     let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
-    while (high.unix() >= orders[orders.length - 1].timestamp) {
+    const limit =
+      orders[orders.length - 1].timestamp >= 1599955200
+        ? orders[orders.length - 1].timestamp
+        : 1599955200;
+    while (high.unix() >= limit) {
       let prices: number[] = [];
 
       const low = high.clone().subtract(1, "days");
