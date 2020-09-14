@@ -1,11 +1,12 @@
 <script lang="typescript">
   import NavBar from "../components/NavBar.svelte";
   import Hero from "../components/home/Hero.svelte";
-  import Price from "../components/home/Price.svelte";
   import LatestTrades from "../components/home/LatestTrades.svelte";
+  import Volume from "../components/home/Volume.svelte";
+  import Price from "../components/home/Price.svelte";
   import About from "../components/home/About.svelte";
   import Footer from "../components/Footer.svelte";
-  import { keyfile, loggedIn } from "../stores/keyfileStore.js";
+  import { keyfile, loggedIn } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
 
   if (process.browser && $loggedIn) goto("/app");
@@ -31,8 +32,9 @@
 
 <NavBar hero={true} />
 <Hero />
-<Price />
 <LatestTrades />
+<Volume />
+<Price />
 <About id="read-more">
   <h1 class="title">What are PSTs?</h1>
   <p class="about-description">

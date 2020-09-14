@@ -25,7 +25,7 @@ Below, you will see the available commands to test/build the project.
 
 ### Libraries
 
-We use the arweave-js library with Svelte/Sapper. You can read more about these in their github repos.
+We use the [arweave-js](https://github.com/ArweaveTeam/arweave-js) library with [Svelte/Sapper](https://github.com/sveltejs/sapper). You can read more about these in their github repos.
 
 ### Debug
 
