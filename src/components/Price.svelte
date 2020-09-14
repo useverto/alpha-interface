@@ -1,9 +1,9 @@
 <script lang="typescript">
   import Arweave from "arweave";
-  import { query } from "../../api-client";
-  import { exchangeWallet, pstContract } from "../../utils/constants";
+  import { query } from "../api-client";
+  import { exchangeWallet, pstContract } from "../utils/constants";
   import moment from "moment";
-  import Loading from "../Loading.svelte";
+  import Loading from "./Loading.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
 
   let selected: string;

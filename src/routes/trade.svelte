@@ -13,6 +13,7 @@
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Loading from "../components/Loading.svelte";
+  import Price from "../components/Price.svelte";
   import { NotificationType } from "../utils/types.ts";
   import { query } from "../api-client";
   import galleryQuery from "../queries/gallery.gql";
@@ -1157,6 +1158,7 @@
       {/await}
     </table>
   </div>
+  <Price />
   <div class="menu">
     <button
       class:active={mode === 'buy'}
