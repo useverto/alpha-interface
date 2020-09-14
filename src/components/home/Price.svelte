@@ -79,7 +79,10 @@
   async function getPrice() {
     if (!process.browser) return [];
 
-    await tokens;
+    const tokens = await getTokens();
+    if (!selected) {
+      selected = tokens[0].ticker;
+    }
 
     const gensisTxs = (
       await query({
@@ -128,7 +131,7 @@
             { name: "Exchange", values: "Verto" }
             { name: "Type", values: "Buy" }
             { name: "Token", values: "${
-              (await getTokens()).find((token) => token.ticker === selected).id
+              tokens.find((token) => token.ticker === selected).id
             }" }
           ]
           first: ${maxInt}
