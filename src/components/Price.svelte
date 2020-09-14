@@ -205,7 +205,7 @@
             })
           ).data.transactions.edges;
 
-          if (confirmationTx.length > 0) {
+          if (confirmationTx.length === 1) {
             prices.push(
               order.amnt /
                 parseFloat(
