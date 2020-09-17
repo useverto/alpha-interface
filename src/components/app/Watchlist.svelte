@@ -6,11 +6,15 @@
   import Line from "svelte-chartjs/src/Line.svelte";
   import { fade } from "svelte/transition";
   import type { IWatchlistElement } from "../../utils/types.ts";
+  import Modal from "../Modal.svelte";
 
   let editMode = false;
+  let addModalOpened = false;
+  let addPst: string = "test";
+  let addPeriod: number = 24;
 
-  function add () {
-
+  function add() {
+    watchlist.addPst({ pst: addPst, period: addPeriod });
   }
 </script>
 
@@ -79,10 +83,24 @@
     Watchlist
     <div>
       {#if editMode}
-        <img src={addIcon} alt="add" on:click={add} in:fade>
-        <img src={closeIcon} alt="close" on:click={() => { editMode = !editMode }} in:fade>
+        <img src={addIcon} alt="add" on:click={() => {
+          addModalOpened = true;
+        }} in:fade />
+        <img
+          src={closeIcon}
+          alt="close"
+          on:click={() => {
+            editMode = !editMode;
+          }}
+          in:fade />
       {:else}
-        <img src={editIcon} alt="edit" on:click={() => { editMode = !editMode }} in:fade>
+        <img
+          src={editIcon}
+          alt="edit"
+          on:click={() => {
+            editMode = !editMode;
+          }}
+          in:fade />
       {/if}
     </div>
   </h1>
@@ -94,8 +112,15 @@
         <div class="pst" in:fade>
           <div class="graph-container{editMode ? ' edit' : ''}">
             {#if editMode}
-              <img src={closeIcon} alt="close" on:click={() => { watchlist.removePst(pst.pst) }} in:fade>
+              <img
+                src={closeIcon}
+                alt="close"
+                on:click={() => {
+                  watchlist.removePst(pst.pst);
+                }}
+                in:fade />
             {/if}
+            <!-- TODO @johnletey -->
             <Line
               data={{ labels: ['test', 'fd', 'fdfd', 'tgffgf'], datasets: [{ data: [10, 20, 10, 40, 60, 80, 100, 61, 50, 70, 80, 60, 90], backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}
               options={{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }} />
@@ -105,3 +130,12 @@
     </div>
   {/if}
 </div>
+<Modal bind:opened={addModalOpened} confirmation={true} onConfirm={add}>
+  <h1 style="text-align: center; font-weight: 400; margin-top: 0;">Add to watchlist</h1>
+  <h2 style="margin-bottom: 0; font-weight: 400;">PST</h2>
+  <select bind:value={addPst} style="display: block; color: #fff; width: 100%; background-color: transparent; outline: none; border: 1px solid #fff; border-radius: 4px; font-size: 1.4em; padding: 0.18em 0.6em;">
+    <option value="test">test</option>
+  </select>
+  <h2 style="margin-bottom: 0; font-weight: 400;">Hours</h2>
+  <input type="number" class="light" bind:value={addPeriod}>
+</Modal>
