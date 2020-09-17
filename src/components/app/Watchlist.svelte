@@ -56,7 +56,14 @@
 </style>
 
 <div class="watchlist">
-  <h1 class="title">Watchlist <img src={editMode ? closeIcon : editIcon} alt="edit" on:click={() => { editMode = !editMode }}></h1>
+  <h1 class="title">
+    Watchlist <img
+      src={editMode ? closeIcon : editIcon}
+      alt="edit"
+      on:click={() => {
+        editMode = !editMode;
+      }} />
+  </h1>
   {#if $watchlist.length === 0}
     <p>No PSTs watched.</p>
   {:else}
@@ -65,7 +72,7 @@
         <div class="pst{editMode ? ' edit' : ''}">
           <div class="graph-container">
             <Line
-              data={{ labels: ['test', 'fd', 'fdfd', 'tgffgf'], datasets: [{ data: [10, 20 ,10 ,40, 60 ,80, 100, 61, 50, 70, 80, 60, 90], backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}
+              data={{ labels: ['test', 'fd', 'fdfd', 'tgffgf'], datasets: [{ data: [10, 20, 10, 40, 60, 80, 100, 61, 50, 70, 80, 60, 90], backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}
               options={{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }} />
           </div>
         </div>
