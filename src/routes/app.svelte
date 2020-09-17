@@ -1,6 +1,7 @@
 <script lang="typescript">
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
+  import Watchlist from "../components/app/Watchlist.svelte";
   import Assets from "../components/app/Assets.svelte";
   import LatestExchanges from "../components/app/LatestExchanges.svelte";
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
@@ -90,6 +91,7 @@
       <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
     {/if}
   </div>
+  <Watchlist />
   <Assets />
   <LatestExchanges />
   <LatestTransactions />
