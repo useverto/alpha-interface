@@ -12,6 +12,7 @@
   let addModalOpened = false;
   let addPst: string = "test";
   let addPeriod: number = 24;
+  let addPsts: string[] = ["test", "fff", "xd"];
 
   function add() {
     watchlist.addPst({ pst: addPst, period: addPeriod });
@@ -134,7 +135,9 @@
   <h1 style="text-align: center; font-weight: 400; margin-top: 0;">Add to watchlist</h1>
   <h2 style="margin-bottom: 0; font-weight: 400;">PST</h2>
   <select bind:value={addPst} style="display: block; color: #fff; width: 100%; background-color: transparent; outline: none; border: 1px solid #fff; border-radius: 4px; font-size: 1.4em; padding: 0.18em 0.6em;">
-    <option value="test">test</option>
+    {#each addPsts as pst}
+      <option value={pst}>{pst}</option>
+    {/each}
   </select>
   <h2 style="margin-bottom: 0; font-weight: 400;">Hours</h2>
   <input type="number" class="light" bind:value={addPeriod}>
