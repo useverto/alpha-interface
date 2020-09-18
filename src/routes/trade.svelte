@@ -380,6 +380,11 @@
         (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
       )?.id;
       let orders = res.find((orders) => orders.token === token).orders;
+      orders.map((order) => {
+        if (order.type === "Sell") {
+          order.amnt = Math.floor(order.amnt);
+        }
+      });
       return orders.sort((a, b) => b.rate - a.rate);
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
