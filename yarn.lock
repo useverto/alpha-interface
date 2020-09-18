@@ -2895,6 +2895,11 @@ lodash@^4.0.0, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@~4.17.1
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
+loglevel@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.7.0.tgz#728166855a740d59d38db01cf46f042caa041bb0"
+  integrity sha512-i2sY04nal5jDcagM3FMfG++T69GEEM8CYuOfeOIvmXzOIcwE9a/CJPR0MFM97pYMj/u10lzz7/zd7+qwhrBTqQ==
+
 loose-envify@^1.0.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -3966,6 +3971,16 @@ smartweave@^0.3.5:
   dependencies:
     arweave "^1.9.1"
     bignumber.js "^9.0.0"
+    yargs "^15.3.1"
+
+smartweave@^0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.3.6.tgz#97a78d10b2f094f78a4b6bdecb6b55c8527d6728"
+  integrity sha512-+JWkNkeZj+S1u8qwJBDypzYQwuxVuWfOlLBQQRXiEMk+9YB4z28aWIFu5PxaGYYsKK1Vwc3J9bjI5EATaRBQCQ==
+  dependencies:
+    arweave "^1.9.1"
+    bignumber.js "^9.0.0"
+    loglevel "^1.7.0"
     yargs "^15.3.1"
 
 source-map-support@~0.5.12:
