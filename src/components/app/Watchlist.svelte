@@ -13,7 +13,7 @@
   let editMode = false;
   let addModalOpened = false;
   let addPeriod: number = 24;
-  let psts: string[] = ["test", "mmmdfds", "fadff"];
+  let psts: string[] = ["LUM", "VRT", "ART"];
 
   $: addPsts = psts.filter(pst => $watchlist.filter((wEl: IWatchlistElement) => wEl.pst === pst).length === 0);
   $: addPst = addPsts.length === 0 ? null : addPsts[0];
@@ -98,12 +98,48 @@
         &:nth-child(3n)
           order: 1
 
+        @media screen and (max-width: 720px)
+          width: 100%
+          order: 1
+
         .graph-container
           width: calc(75% - .75em)
+          position: relative
           padding-right: .75em
           border-radius: 3px
           margin: 0 auto
           transition: all .3s
+
+          .pst-info
+            position: absolute
+            top: 0
+            left: 0
+            right: 0
+            display: flex
+            align-items: flex-start
+            justify-content: space-between
+
+            h1
+              font-size: 1.3em
+              color: #000
+              font-weight: 600
+              text-transform: uppercase
+              margin: 0
+
+              span
+                font-size: .9em
+
+            .pst-price
+              text-align: right
+
+              h1
+                text-align: right
+                margin-bottom: .38em
+
+              span.percentage
+                text-transform: uppercase
+                font-size: .93em
+                text-align: right  
 
           &.edit
             position: relative
@@ -116,6 +152,7 @@
               width: 1em
               height: 1em
               padding: .2em
+              z-index: 100
               border-radius: 100%
               background-color: #fff
               box-shadow: 0 0 4px 4px rgba(0, 0, 0, .1)
@@ -174,7 +211,15 @@
             <!-- TODO @johnletey -->
             <!-- Don't forget to change the color too :) -->
             <!-- Color depends on increase or decrease (decrease: #FF375D, increase: #00D46E) -->
-            <!-- Make sure to change both the borderColor and the pointBackgroundColor, but not the backgroundColor -->
+            <!-- Make sure to change both the borderColor and the pointBackgroundColor, but not the backgroundColor in the graph -->
+            <!-- Change the color of the increase/decrease percentage too -->
+            <div class="pst-info">
+              <h1>{pst.pst}</h1>
+              <div class="pst-price">
+                <h1>0.0577<span>Ar</span></h1>
+                <span class="percentage" style="color: #FF375D">-6.04%</span>
+              </div>
+            </div>
             <Line
               data={{ labels: ['test', 'fd', 'fdfd', 'tgffgf'], datasets: [{ data: [10, 20, 10, 40, 60, 80, 100, 61, 50, 70, 80, 60, 90], backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}
               options={{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }} />
@@ -197,5 +242,5 @@
     {/each}
   </select>
   <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">Period (hours)</h2>
-  <input type="number" class="light" bind:value={addPeriod} />
+  <input type="number" class="light" style="width: calc(100% - 1.2em);" bind:value={addPeriod} />
 </Modal>
