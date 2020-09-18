@@ -66,10 +66,20 @@
 </About>
 <About>
   <h1 class="title">VRT - The Verto Protocol Token</h1>
-  <p class="about-description">VRT is a way for any person to passively earn a volume-weighted index of all profit sharing tokens being traded on the exchange. 0.5% of any PST transaction made on the exchange is sent straight to a VRT holder.</p>
-  <p class="about-description">By holding VRT, a user is also inherently a member of the Verto Profit-Sharing DAO, which means they can choose to stake their tokens to have a say in the various decisions made for the platform.</p>
   <p class="about-description">
-    <li>VRT Contract Address: <a href="https://community.xyz/#usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A/tokens">usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A</a></li>
+    VRT is a way for any person to passively earn a volume-weighted index of all
+    profit sharing tokens being traded on the exchange. 0.5% of any PST
+    transaction made on the exchange is sent straight to a VRT holder.
+  </p>
+  <p class="about-description">
+    By holding VRT, a user is also inherently a member of the Verto
+    Profit-Sharing DAO, which means they can choose to stake their tokens to
+    have a say in the various decisions made for the platform.
+  </p>
+  <p class="about-description">
+    <li>
+      VRT Contract Address: <a href="https://community.xyz/#usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A/tokens">usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A</a>
+    </li>
     <li>Initial Supply: 250,000,000</li>
   </p>
 </About>
