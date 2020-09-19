@@ -15,11 +15,15 @@
   let addPeriod: number = 24;
   let psts: string[] = ["LUM", "VRT", "ART"];
 
-  $: addPsts = psts.filter(pst => $watchlist.filter((wEl: IWatchlistElement) => wEl.pst === pst).length === 0);
+  $: addPsts = psts.filter(
+    (pst) =>
+      $watchlist.filter((wEl: IWatchlistElement) => wEl.pst === pst).length ===
+      0
+  );
   $: addPst = addPsts.length === 0 ? null : addPsts[0];
 
   function add() {
-    if(addPst === null) {
+    if (addPst === null) {
       notification.notify(
         "Error",
         `No more PSTs available to add. Refresh the page!`,
@@ -33,24 +37,24 @@
     addPeriod = 24;
     notification.notify(
       "Added",
-      `Added ${ addPst } to watchlist.`,
+      `Added ${addPst} to watchlist.`,
       NotificationType.success,
       2000
     );
   }
 
-  function remove (pst: IWatchlistElement) {
+  function remove(pst: IWatchlistElement) {
     watchlist.removePst(pst.pst);
     notification.notify(
       "Removed",
-      `Removed ${ pst.pst } from watchlist.`,
+      `Removed ${pst.pst} from watchlist.`,
       NotificationType.error,
       2000
     );
   }
 
-  function openAddModal () {
-    if(addPsts.length === 0) {
+  function openAddModal() {
+    if (addPsts.length === 0) {
       notification.notify(
         "Error",
         `No more PSTs available to add.`,
@@ -197,7 +201,10 @@
   {:else}
     <div class="psts">
       {#each $watchlist as pst}
-        <div class="pst" in:fade={{ duration: 500 }} out:scale={{ duration: 250 }}>
+        <div
+          class="pst"
+          in:fade={{ duration: 500 }}
+          out:scale={{ duration: 250 }}>
           <div class="graph-container{editMode ? ' edit' : ''}">
             {#if editMode}
               <img
@@ -241,6 +248,12 @@
       <option value={pst} style="background-color: #000;">{pst}</option>
     {/each}
   </select>
-  <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">Period (hours)</h2>
-  <input type="number" class="light" style="width: calc(100% - 1.2em);" bind:value={addPeriod} />
+  <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">
+    Period (hours)
+  </h2>
+  <input
+    type="number"
+    class="light"
+    style="width: calc(100% - 1.2em);"
+    bind:value={addPeriod} />
 </Modal>
