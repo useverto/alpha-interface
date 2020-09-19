@@ -134,7 +134,6 @@
   }
 </script>
 
-
 <svelte:head>
   <title>Verto — Gallery</title>
 </svelte:head>
@@ -187,6 +186,8 @@
 </div>
 <Footer />
 <span style="width: 100%; height: 1px" bind:this="{element}"></span>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

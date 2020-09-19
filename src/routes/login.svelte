@@ -77,7 +77,6 @@
   }
 </script>
 
-
 <svelte:head>
   <title>Verto — Sign In</title>
   <meta
@@ -138,6 +137,8 @@
     </p>
   </div>
 </div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

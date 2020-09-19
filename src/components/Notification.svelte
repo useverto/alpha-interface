@@ -25,7 +25,6 @@
   }
 </script>
 
-
 {#if $notification !== null}
   <div
     class="notification {notificationClass}"
@@ -53,6 +52,8 @@
     </div>
   </div>
 {/if}
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

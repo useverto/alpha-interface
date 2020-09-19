@@ -12,7 +12,6 @@
     : false;
 </script>
 
-
 <div class="Hero">
   <div class="blobs">
     <img src="{blob2}" alt="blob2" class="blob blob2" draggable="{false}" />
@@ -38,6 +37,8 @@
     </Button>
   </div>
 </div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

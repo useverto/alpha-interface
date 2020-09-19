@@ -172,7 +172,6 @@
   }
 </script>
 
-
 <div class="section">
   <h1 class="title">Trades</h1>
   <table>
@@ -223,6 +222,8 @@
   </table>
   <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
 </div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

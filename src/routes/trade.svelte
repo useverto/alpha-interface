@@ -854,7 +854,6 @@
   }
 </script>
 
-
 <svelte:head>
   <title>Verto — Trade</title>
 </svelte:head>
@@ -1243,6 +1242,8 @@
   </p>
 </Modal>
 <Footer />
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

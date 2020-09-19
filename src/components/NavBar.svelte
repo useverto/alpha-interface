@@ -36,7 +36,6 @@
   }
 </script>
 
-
 <svelte:window bind:scrollY="{y}" />
 <div
   class="NavBar {$loggedIn ? '' : 'logged-out'}"
@@ -74,6 +73,8 @@
   onConfirm="{_logOut}">
   <p style="text-align: center">Are you sure you want to log out?</p>
 </Modal>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

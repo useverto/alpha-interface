@@ -5,7 +5,6 @@
   export let style: string = ""; // external styling
 </script>
 
-
 <div
   class="Loading"
   style="width: {size}px; height: {size}px; {style}"
@@ -20,6 +19,8 @@
       stroke-width="3.6"></circle>
   </svg>
 </div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

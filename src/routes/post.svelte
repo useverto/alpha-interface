@@ -259,7 +259,6 @@
   }
 </script>
 
-
 <svelte:head>
   <title>Verto — Trading Post</title>
 </svelte:head>
@@ -452,6 +451,8 @@
   </div>
 </div>
 <Footer />
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

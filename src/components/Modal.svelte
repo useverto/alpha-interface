@@ -17,7 +17,6 @@
   }
 </script>
 
-
 {#if opened}
   <div
     class="modal-overlay"
@@ -55,6 +54,8 @@
     </div>
   </div>
 {/if}
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

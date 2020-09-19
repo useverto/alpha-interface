@@ -144,7 +144,6 @@
   }
 </script>
 
-
 <div class="section">
   <div class="assets-table" class:noelements>
     <h1 class="title">Assets</h1>
@@ -191,6 +190,8 @@
     {/await}
   </div>
 </div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

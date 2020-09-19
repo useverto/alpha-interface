@@ -18,7 +18,6 @@
   }
 </script>
 
-
 <svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
 <div class="About" bind:this="{element}" id="{id}">
   {#if shown}
@@ -29,6 +28,8 @@
     </div>
   {/if}
 </div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

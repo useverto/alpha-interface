@@ -3,7 +3,6 @@
   import Button from "../components/Button.svelte";
 </script>
 
-
 <svelte:head>
   <title>Verto — 404</title>
   <meta name="description" content="Not Found" />
@@ -23,6 +22,8 @@
     <Button href="/" reverse="{true}">Go home</Button>
   </div>
 </div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

@@ -140,7 +140,6 @@
   }
 </script>
 
-
 <svelte:head>
   <title>Verto — Tokens</title>
 </svelte:head>
@@ -187,6 +186,8 @@
     placeholder="Contract ID" />
 </Modal>
 <Footer />
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">

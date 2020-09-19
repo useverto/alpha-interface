@@ -18,7 +18,6 @@
   }
 </script>
 
-
 <svelte:head>
   <title>Verto — Dashboard</title>
 </svelte:head>
@@ -49,6 +48,8 @@
   <LatestTransactions />
 </div>
 <Footer />
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">
