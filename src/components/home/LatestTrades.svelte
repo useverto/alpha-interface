@@ -71,6 +71,46 @@
   }
 </script>
 
+
+<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
+<div class="LatestTrades" bind:this="{element}">
+  {#if shown}
+    <div in:fade="{{ duration: 400, delay: 411, easing: backOut }}">
+      <h1 class="title">Latest Activity</h1>
+      <table>
+        <tr>
+          <th>TxID</th>
+          <th>AMOUNT</th>
+          <th>PST</th>
+        </tr>
+        {#await txs}
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 70%">
+                <SkeletonLoading style="{'width: 100%'}" />
+              </td>
+              <td style="width: 20%">
+                <SkeletonLoading style="{'width: 100%'}" />
+              </td>
+              <td style="width: 10%">
+                <SkeletonLoading style="{'width: 100%'}" />
+              </td>
+            </tr>
+          {/each}
+        {:then loadedTxs}
+          {#each loadedTxs as tx}
+            <tr in:fade="{{ duration: 185 }}">
+              <td>{tx.id}</td>
+              <td>{tx.amount}</td>
+              <td class="pst">{tx.pst}</td>
+            </tr>
+          {/each}
+        {/await}
+      </table>
+    </div>
+  {/if}
+</div>
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -115,42 +155,3 @@
             text-transform: uppercase
 
 </style>
-
-<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
-<div class="LatestTrades" bind:this={element}>
-  {#if shown}
-    <div in:fade={{ duration: 400, delay: 411, easing: backOut }}>
-      <h1 class="title">Latest Activity</h1>
-      <table>
-        <tr>
-          <th>TxID</th>
-          <th>AMOUNT</th>
-          <th>PST</th>
-        </tr>
-        {#await txs}
-          {#each Array(5) as _}
-            <tr>
-              <td style="width: 70%">
-                <SkeletonLoading style={'width: 100%'} />
-              </td>
-              <td style="width: 20%">
-                <SkeletonLoading style={'width: 100%'} />
-              </td>
-              <td style="width: 10%">
-                <SkeletonLoading style={'width: 100%'} />
-              </td>
-            </tr>
-          {/each}
-        {:then loadedTxs}
-          {#each loadedTxs as tx}
-            <tr in:fade={{ duration: 185 }}>
-              <td>{tx.id}</td>
-              <td>{tx.amount}</td>
-              <td class="pst">{tx.pst}</td>
-            </tr>
-          {/each}
-        {/await}
-      </table>
-    </div>
-  {/if}
-</div>

@@ -259,6 +259,200 @@
   }
 </script>
 
+
+<svelte:head>
+  <title>Verto — Trading Post</title>
+</svelte:head>
+
+<NavBar />
+<div class="post" in:fade="{{ duration: 300 }}">
+  <div class="post-info">
+    <div class="long-cell">
+      <p>trading post address</p>
+      <h1 class="address">{addr}</h1>
+    </div>
+    <div class="short-cell">
+      {#await reputation}
+        <p>
+          <SkeletonLoading style="height: 1em; width: 100px" />
+        </p>
+        <h1>
+          <SkeletonLoading style="height: 1em; width: 100px" />
+        </h1>
+      {:then loadedReputation}
+        <p>reputation</p>
+        <h1>{loadedReputation}</h1>
+      {/await}
+    </div>
+  </div>
+  <div class="post-info big">
+    <div class="long-cell">
+      {#await balance}
+        <p>
+          <SkeletonLoading style="height: 1em; width: 120px" />
+        </p>
+        <h1>
+          <SkeletonLoading style="height: 1em; width: 300px" />
+        </h1>
+      {:then loadedBalance}
+        <p in:fade="{{ duration: 150 }}">total balance</p>
+        <h1 in:fade="{{ duration: 150 }}">
+          {roundCurrency(loadedBalance)}<span class="currency">AR</span>
+        </h1>
+      {/await}
+    </div>
+    <div class="short-cell">
+      {#await stake}
+        <p>
+          <SkeletonLoading style="height: 1em; width: 120px" />
+        </p>
+        <h1>
+          <SkeletonLoading style="height: 1em; width: 180px" />
+        </h1>
+      {:then loadedStake}
+        <p>total stake</p>
+        <h1>
+          {roundCurrency(loadedStake.toString())}<span class="currency">VRT</span>
+        </h1>
+      {/await}
+    </div>
+  </div>
+  <br />
+  <div class="information">
+    <div class="menu">
+      <button
+        class:active="{activeMenu === 'transactions'}"
+        on:click="{() => (activeMenu = 'transactions')}">Transactions</button>
+      <button
+        class:active="{activeMenu === 'assets'}"
+        on:click="{() => (activeMenu = 'assets')}">Assets</button>
+      <button
+        class:active="{activeMenu === 'supported'}"
+        on:click="{() => (activeMenu = 'supported')}">Supported Assets</button>
+      <div class="trade">
+        <Button
+          href="/trade?post={addr}"
+          style="{"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}">
+          Trade now
+        </Button>
+      </div>
+    </div>
+    <div class="content">
+      {#if activeMenu === 'assets'}
+        <table in:fade="{{ duration: 400 }}">
+          <tr>
+            <th>Token</th>
+            <th>Amount</th>
+          </tr>
+          {#await balances}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 80%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 20%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+              </tr>
+            {/each}
+          {:then loadedBalances}
+            {#if loadedBalances.length === 0}
+              <p>This trading post doesn't have any tokens!</p>
+            {/if}
+            {#each loadedBalances as balance}
+              <tr>
+                <td>{balance.token}</td>
+                <td>
+                  {roundCurrency(balance.balance)}
+                  <span class="currency">{balance.ticker}</span>
+                </td>
+              </tr>
+            {/each}
+          {/await}
+        </table>
+      {:else if activeMenu === 'transactions'}
+        <table in:fade="{{ duration: 400 }}">
+          {#await transactions}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 70%">
+                  <SkeletonLoading style="{'width: 100%'}" />
+                </td>
+                <td style="width: 20%">
+                  <SkeletonLoading style="{'width: 100%'}" />
+                </td>
+              </tr>
+            {/each}
+          {:then loadedTxs}
+            <tr>
+              <th style="text-transform: none; width: 70%">TxID</th>
+              <th style="width: 20%">Amount</th>
+            </tr>
+            {#if loadedTxs.length === 0}
+              <p
+                style="position: absolute; left: 50%; transform: translateX(-50%);">
+                No transactions found
+              </p>
+            {/if}
+            {#each loadedTxs as tx}
+              <tr in:fade="{{ duration: 300 }}">
+                <td style="width: 70%">
+                  <a
+                    href="https://viewblock.io/arweave/tx/{tx.id}"
+                    class="transaction">
+                    <span class="direction">{tx.type}</span>
+                    {tx.id}
+                  </a>
+                  <span class="status {tx.status}"></span>
+                </td>
+                <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+              </tr>
+            {/each}
+          {/await}
+        </table>
+      {:else if activeMenu === 'supported'}
+        <table in:fade="{{ duration: 400 }}">
+          {#await supportedTokens}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 30%">
+                  <SkeletonLoading style="{'width: 100%'}" />
+                </td>
+                <td style="width: 20%">
+                  <SkeletonLoading style="{'width: 100%'}" />
+                </td>
+                <td style="width: 50%">
+                  <SkeletonLoading style="{'width: 100%'}" />
+                </td>
+              </tr>
+            {/each}
+          {:then loadedTokens}
+            <tr>
+              <th>Token</th>
+              <th>Ticker</th>
+              <th>ID</th>
+            </tr>
+            {#if loadedTokens.length === 0}
+              <p
+                style="position: absolute; left: 50%; transform: translateX(-50%);">
+                No transactions found
+              </p>
+            {/if}
+            {#each loadedTokens as token}
+              <tr>
+                <td>{token.name}</td>
+                <td>{token.ticker}</td>
+                <td>{token.id}</td>
+              </tr>
+            {/each}
+          {/await}
+        </table>
+      {/if}
+    </div>
+  </div>
+</div>
+<Footer />
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -409,196 +603,3 @@
             left: 0
 
 </style>
-
-<svelte:head>
-  <title>Verto — Trading Post</title>
-</svelte:head>
-
-<NavBar />
-<div class="post" in:fade={{ duration: 300 }}>
-  <div class="post-info">
-    <div class="long-cell">
-      <p>trading post address</p>
-      <h1 class="address">{addr}</h1>
-    </div>
-    <div class="short-cell">
-      {#await reputation}
-        <p>
-          <SkeletonLoading style="height: 1em; width: 100px" />
-        </p>
-        <h1>
-          <SkeletonLoading style="height: 1em; width: 100px" />
-        </h1>
-      {:then loadedReputation}
-        <p>reputation</p>
-        <h1>{loadedReputation}</h1>
-      {/await}
-    </div>
-  </div>
-  <div class="post-info big">
-    <div class="long-cell">
-      {#await balance}
-        <p>
-          <SkeletonLoading style="height: 1em; width: 120px" />
-        </p>
-        <h1>
-          <SkeletonLoading style="height: 1em; width: 300px" />
-        </h1>
-      {:then loadedBalance}
-        <p in:fade={{ duration: 150 }}>total balance</p>
-        <h1 in:fade={{ duration: 150 }}>
-          {roundCurrency(loadedBalance)}<span class="currency">AR</span>
-        </h1>
-      {/await}
-    </div>
-    <div class="short-cell">
-      {#await stake}
-        <p>
-          <SkeletonLoading style="height: 1em; width: 120px" />
-        </p>
-        <h1>
-          <SkeletonLoading style="height: 1em; width: 180px" />
-        </h1>
-      {:then loadedStake}
-        <p>total stake</p>
-        <h1>
-          {roundCurrency(loadedStake.toString())}<span class="currency">VRT</span>
-        </h1>
-      {/await}
-    </div>
-  </div>
-  <br />
-  <div class="information">
-    <div class="menu">
-      <button
-        class:active={activeMenu === 'transactions'}
-        on:click={() => (activeMenu = 'transactions')}>Transactions</button>
-      <button
-        class:active={activeMenu === 'assets'}
-        on:click={() => (activeMenu = 'assets')}>Assets</button>
-      <button
-        class:active={activeMenu === 'supported'}
-        on:click={() => (activeMenu = 'supported')}>Supported Assets</button>
-      <div class="trade">
-        <Button
-          href="/trade?post={addr}"
-          style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
-          Trade now
-        </Button>
-      </div>
-    </div>
-    <div class="content">
-      {#if activeMenu === 'assets'}
-        <table in:fade={{ duration: 400 }}>
-          <tr>
-            <th>Token</th>
-            <th>Amount</th>
-          </tr>
-          {#await balances}
-            {#each Array(5) as _}
-              <tr>
-                <td style="width: 80%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 20%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-              </tr>
-            {/each}
-          {:then loadedBalances}
-            {#if loadedBalances.length === 0}
-              <p>This trading post doesn't have any tokens!</p>
-            {/if}
-            {#each loadedBalances as balance}
-              <tr>
-                <td>{balance.token}</td>
-                <td>
-                  {roundCurrency(balance.balance)}
-                  <span class="currency">{balance.ticker}</span>
-                </td>
-              </tr>
-            {/each}
-          {/await}
-        </table>
-      {:else if activeMenu === 'transactions'}
-        <table in:fade={{ duration: 400 }}>
-          {#await transactions}
-            {#each Array(5) as _}
-              <tr>
-                <td style="width: 70%">
-                  <SkeletonLoading style={'width: 100%'} />
-                </td>
-                <td style="width: 20%">
-                  <SkeletonLoading style={'width: 100%'} />
-                </td>
-              </tr>
-            {/each}
-          {:then loadedTxs}
-            <tr>
-              <th style="text-transform: none; width: 70%">TxID</th>
-              <th style="width: 20%">Amount</th>
-            </tr>
-            {#if loadedTxs.length === 0}
-              <p
-                style="position: absolute; left: 50%; transform: translateX(-50%);">
-                No transactions found
-              </p>
-            {/if}
-            {#each loadedTxs as tx}
-              <tr in:fade={{ duration: 300 }}>
-                <td style="width: 70%">
-                  <a
-                    href="https://viewblock.io/arweave/tx/{tx.id}"
-                    class="transaction">
-                    <span class="direction">{tx.type}</span>
-                    {tx.id}
-                  </a>
-                  <span class="status {tx.status}" />
-                </td>
-                <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
-              </tr>
-            {/each}
-          {/await}
-        </table>
-      {:else if activeMenu === 'supported'}
-        <table in:fade={{ duration: 400 }}>
-          {#await supportedTokens}
-            {#each Array(5) as _}
-              <tr>
-                <td style="width: 30%">
-                  <SkeletonLoading style={'width: 100%'} />
-                </td>
-                <td style="width: 20%">
-                  <SkeletonLoading style={'width: 100%'} />
-                </td>
-                <td style="width: 50%">
-                  <SkeletonLoading style={'width: 100%'} />
-                </td>
-              </tr>
-            {/each}
-          {:then loadedTokens}
-            <tr>
-              <th>Token</th>
-              <th>Ticker</th>
-              <th>ID</th>
-            </tr>
-            {#if loadedTokens.length === 0}
-              <p
-                style="position: absolute; left: 50%; transform: translateX(-50%);">
-                No transactions found
-              </p>
-            {/if}
-            {#each loadedTokens as token}
-              <tr>
-                <td>{token.name}</td>
-                <td>{token.ticker}</td>
-                <td>{token.id}</td>
-              </tr>
-            {/each}
-          {/await}
-        </table>
-      {/if}
-    </div>
-  </div>
-</div>
-<Footer />

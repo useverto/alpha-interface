@@ -854,6 +854,396 @@
   }
 </script>
 
+
+<svelte:head>
+  <title>Verto — Trade</title>
+</svelte:head>
+
+<NavBar />
+<div class="trade" in:fade="{{ duration: 300 }}">
+  <div class="balance">
+    {#if $balance === 0}
+      <p>
+        <SkeletonLoading style="height: 1em; width: 120px" />
+      </p>
+      <h1 class="total-balance">
+        <SkeletonLoading style="height: 1em; width: 300px" />
+      </h1>
+      <p class="wallet">
+        <SkeletonLoading style="height: 1em; width: 400px" />
+      </p>
+    {:else}
+      <p in:fade="{{ duration: 150 }}">Your balance</p>
+      <h1 class="total-balance" in:fade="{{ duration: 150 }}">
+        {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
+      </h1>
+      <p class="wallet" in:fade="{{ duration: 150 }}">Wallet: {$address}</p>
+    {/if}
+  </div>
+  <div class="assets">
+    <h1 class="title">Assets</h1>
+    <table>
+      {#await balances}
+        {#each Array(5) as _}
+          <tr>
+            <td style="width: 40%">
+              <SkeletonLoading style="width: 100%" />
+            </td>
+            <td style="width: 60%">
+              <SkeletonLoading style="width: 100%" />
+            </td>
+          </tr>
+        {/each}
+      {:then loadedBalances}
+        <tr>
+          <th style="width: 40%">Token</th>
+          <th style="width: 60%">Amount</th>
+        </tr>
+        {#if loadedBalances.length === 0}
+          <p>You don't have any tokens!</p>
+        {/if}
+        {#each loadedBalances as balance}
+          <tr>
+            <td style="width: 40%">{balance.token}</td>
+            <td style="width: 60%">
+              {roundCurrency(balance.balance)}
+              <span class="currency">{balance.ticker}</span>
+            </td>
+          </tr>
+        {/each}
+      {/await}
+    </table>
+  </div>
+  <div class="menu">
+    <button
+      class:active="{mode === 'buy'}"
+      on:click="{() => {
+        mode = 'buy';
+        orderBook = getOrderBook();
+      }}">Buy</button>
+    <button
+      class:active="{mode === 'sell'}"
+      on:click="{() => {
+        mode = 'sell';
+        orderBook = getOrderBook();
+      }}">Sell</button>
+  </div>
+  <div class="trade-container">
+    {#if mode === 'sell'}
+      <div>
+        <div class="trade-section" in:fade="{{ duration: 300 }}">
+          <div class="long-content">
+            <div style="width: 100%">
+              <p>Trading post</p>
+              <select
+                bind:value="{selectedPost}"
+                style="width: 100%"
+                on:change="{() => {
+                  supportedPSTs = getTradingPostSupportedTokens();
+                  latestExchanges = getLatestExchanges();
+                  openTrades = latestOpenExchanges();
+                  closedTrades = latestClosedExchanges();
+                  tradingPostFeePercent = getTradingPostFeePercent();
+                }}">
+                {#await posts}
+                  <option disabled>Loading...</option>
+                {:then loadedPosts}
+                  {#if loadedPosts.length === 0}
+                    <option disabled>No posts found</option>
+                  {/if}
+                  {#each loadedPosts as post}
+                    <option value="{post}" selected="{post === selectedPost}">
+                      {post}
+                    </option>
+                  {/each}
+                {/await}
+              </select>
+            </div>
+          </div>
+          <div class="short-content">
+            <div style="width: 100%">
+              <p>Fee</p>
+              {#await tradingPostFeePercent}
+                <SkeletonLoading
+                  style="width: 100% !important; height: 100% !important" />
+              {:then feePercent}
+                <select class="fake-select" disabled>
+                  <option>{feePercent}%</option>
+                </select>
+              {/await}
+            </div>
+          </div>
+        </div>
+        <div class="trade-section" in:fade="{{ duration: 300 }}">
+          <div class="long-content">
+            <div style="width: 47%; margin-right: 3%">
+              <p>Amount</p>
+              <div class="input">
+                <input
+                  type="number"
+                  step="1"
+                  pattern="\d+"
+                  bind:value="{sellAmount}"
+                  min="{1}" />
+                {#await supportedPSTs}
+                  <SkeletonLoading style="width: 35px; height: 38px" />
+                {:then loadedPSTs}
+                  <select
+                    bind:value="{sellToken}"
+                    on:change="{() => {
+                      orderBook = getOrderBook();
+                    }}">
+                    {#each loadedPSTs as pst}
+                      <option value="{pst.ticker}">{pst.ticker}</option>
+                    {/each}
+                  </select>
+                {/await}
+              </div>
+            </div>
+            <div style="width: 47%; margin-left: 3%">
+              <p>Rate</p>
+              <div class="input">
+                <input
+                  type="number"
+                  bind:value="{sellRate}"
+                  min="{0.0000001}" />
+                <select class="fake-select" disabled>
+                  {#if sellToken === undefined}
+                    <option>...</option>
+                  {:else}
+                    <option>{'AR/' + sellToken}</option>
+                  {/if}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="short-content">
+            <p><br /></p>
+            <p></p>
+            <div class="input" style="border: none">
+              {#if !loading}
+                <Button
+                  click="{exchange}"
+                  style="{`
+                    font-family: 'JetBrainsMono', monospace; 
+                    text-transform: uppercase; 
+                    width: 100%;
+                    display: block;
+                    padding-left: 0;
+                    padding-right: 0;
+                    height: 100%;
+                  `}">
+                  {mode}
+                </Button>
+              {:else}
+                <Loading />
+              {/if}
+            </div>
+          </div>
+        </div>
+      </div>
+    {:else if mode === 'buy'}
+      <div>
+        <div class="trade-section" in:fade="{{ duration: 300 }}">
+          <div class="long-content">
+            <div style="width: 100%">
+              <p>Trading post</p>
+              <select
+                bind:value="{selectedPost}"
+                style="width: 100%"
+                on:change="{() => {
+                  supportedPSTs = getTradingPostSupportedTokens();
+                  latestExchanges = getLatestExchanges();
+                  openTrades = latestOpenExchanges();
+                  closedTrades = latestClosedExchanges();
+                  tradingPostFeePercent = getTradingPostFeePercent();
+                }}">
+                {#await posts}
+                  <option disabled>Loading...</option>
+                {:then loadedPosts}
+                  {#if loadedPosts.length === 0}
+                    <option disabled>No posts found</option>
+                  {/if}
+                  {#each loadedPosts as post}
+                    <option value="{post}" selected="{post === selectedPost}">
+                      {post}
+                    </option>
+                  {/each}
+                {/await}
+              </select>
+            </div>
+          </div>
+          <div class="short-content">
+            <div style="width: 100%">
+              <p>Fee</p>
+              {#await tradingPostFeePercent}
+                <SkeletonLoading
+                  style="width: 100% !important; height: 100% !important" />
+              {:then percent}
+                <select class="fake-select" disabled>
+                  <option>{percent}%</option>
+                </select>
+              {/await}
+            </div>
+          </div>
+        </div>
+        <div class="trade-section" in:fade="{{ duration: 300 }}">
+          <div class="long-content">
+            <div style="width: 47%; margin-right: 3%">
+              <p>Send</p>
+              <div class="input">
+                <input
+                  type="number"
+                  pattern="\d+"
+                  bind:value="{buyAmount}"
+                  min="{0.000001}" />
+                <select class="fake-select" disabled>
+                  <option>AR</option>
+                </select>
+              </div>
+            </div>
+            <div style="width: 47%; margin-left: 3%">
+              <p>Receive</p>
+              <div class="input">
+                {#await supportedPSTs}
+                  <SkeletonLoading
+                    style="width: 100% !important; height: 100% !important" />
+                {:then loadedPSTs}
+                  <select
+                    bind:value="{buyToken}"
+                    style="width: 100% !important;"
+                    on:change="{() => {
+                      orderBook = getOrderBook();
+                    }}">
+                    {#each loadedPSTs as pst}
+                      <option value="{pst.ticker}">{pst.ticker}</option>
+                    {/each}
+                  </select>
+                {/await}
+              </div>
+            </div>
+          </div>
+          <div class="short-content">
+            <p><br /></p>
+            <p></p>
+            <div class="input" style="border: none">
+              {#if !loading}
+                <Button
+                  click="{exchange}"
+                  style="{`
+                    font-family: 'JetBrainsMono', monospace; 
+                    text-transform: uppercase; 
+                    width: 100%;
+                    display: block;
+                    padding-left: 0;
+                    padding-right: 0;
+                    height: 100%;
+                  `}">
+                  {mode}
+                </Button>
+              {:else}
+                <Loading />
+              {/if}
+            </div>
+          </div>
+        </div>
+      </div>
+    {/if}
+  </div>
+</div>
+<div class="exchanges-section">
+  <div class="information">
+    <div class="menu">
+      <button
+        class:active="{activeMenu === 'open'}"
+        on:click="{() => (activeMenu = 'open')}">Open Orders</button>
+      <!-- <button
+        class:active={activeMenu === 'closed'}
+        on:click={() => (activeMenu = 'closed')}>Closed Orders</button> -->
+    </div>
+  </div>
+  <div class="content">
+    {#if activeMenu === 'open'}
+      <table in:fade="{{ duration: 400 }}">
+        {#await orderBook}
+          {#each Array(5) as _}
+            <tr>
+              <th style="width: 80%">
+                <SkeletonLoading style="width: 100%;" />
+              </th>
+              <th style="width: 20%">
+                <SkeletonLoading style="width: 100%;" />
+              </th>
+            </tr>
+          {/each}
+        {:then loadedOrders}
+          {#if loadedOrders.length === 0}
+            <p>This trading post doesn't have any open orders!</p>
+          {/if}
+          {#each loadedOrders as trade}
+            <tr>
+              <td style="text-align: left">
+                <span class="direction">{trade.type}</span>
+                {trade.amnt}
+                {#if trade.type === 'Sell'}
+                  {mode === 'sell' ? sellToken : buyToken} at {1 / trade.rate} AR/{mode === 'sell' ? sellToken : buyToken}
+                {:else}AR {'->'} {mode === 'sell' ? sellToken : buyToken}{/if}
+              </td>
+            </tr>
+          {/each}
+        {/await}
+      </table>
+      <!-- {:else if activeMenu === 'closed'}
+      <table in:fade={{ duration: 400 }}>
+        {#await closedTrades}
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 100%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+            </tr>
+          {/each}
+        {:then loadedClosedTrades}
+          {#if loadedClosedTrades.length === 0}
+            <p>This trading post doesn't have any completed trades!</p>
+          {/if}
+          {#each loadedClosedTrades as trade}
+            <tr>
+              <td style="text-align: left">
+                {trade.sent}
+                {'->'}
+                {trade.received}
+              </td>
+            </tr>
+          {/each}
+        {/await}
+      </table> -->
+    {/if}
+  </div>
+</div>
+<Modal
+  bind:opened="{confirmModalOpened}"
+  confirmation="{true}"
+  onConfirm="{confirmTrade}"
+  onCancel="{cancelTrade}">
+  <p style="text-align: center;">
+    {#if mode === 'buy'}
+      Buying {buyAmount} AR's worth of {buyToken}
+    {:else if mode === 'sell'}
+      Selling {Math.ceil(sellAmount)}
+      {sellToken} at a rate of {sellRate} AR/{sellToken}
+    {/if}
+  </p>
+  <p style="text-align: center">
+    {#await confirmModalText}
+      Loading fees...
+    {:then loadedText}
+      {loadedText}
+    {/await}
+  </p>
+</Modal>
+<Footer />
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -1052,389 +1442,3 @@
         left: 0
 
 </style>
-
-<svelte:head>
-  <title>Verto — Trade</title>
-</svelte:head>
-
-<NavBar />
-<div class="trade" in:fade={{ duration: 300 }}>
-  <div class="balance">
-    {#if $balance === 0}
-      <p>
-        <SkeletonLoading style="height: 1em; width: 120px" />
-      </p>
-      <h1 class="total-balance">
-        <SkeletonLoading style="height: 1em; width: 300px" />
-      </h1>
-      <p class="wallet">
-        <SkeletonLoading style="height: 1em; width: 400px" />
-      </p>
-    {:else}
-      <p in:fade={{ duration: 150 }}>Your balance</p>
-      <h1 class="total-balance" in:fade={{ duration: 150 }}>
-        {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
-      </h1>
-      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
-    {/if}
-  </div>
-  <div class="assets">
-    <h1 class="title">Assets</h1>
-    <table>
-      {#await balances}
-        {#each Array(5) as _}
-          <tr>
-            <td style="width: 40%">
-              <SkeletonLoading style="width: 100%" />
-            </td>
-            <td style="width: 60%">
-              <SkeletonLoading style="width: 100%" />
-            </td>
-          </tr>
-        {/each}
-      {:then loadedBalances}
-        <tr>
-          <th style="width: 40%">Token</th>
-          <th style="width: 60%">Amount</th>
-        </tr>
-        {#if loadedBalances.length === 0}
-          <p>You don't have any tokens!</p>
-        {/if}
-        {#each loadedBalances as balance}
-          <tr>
-            <td style="width: 40%">{balance.token}</td>
-            <td style="width: 60%">
-              {roundCurrency(balance.balance)}
-              <span class="currency">{balance.ticker}</span>
-            </td>
-          </tr>
-        {/each}
-      {/await}
-    </table>
-  </div>
-  <div class="menu">
-    <button
-      class:active={mode === 'buy'}
-      on:click={() => {
-        mode = 'buy';
-        orderBook = getOrderBook();
-      }}>Buy</button>
-    <button
-      class:active={mode === 'sell'}
-      on:click={() => {
-        mode = 'sell';
-        orderBook = getOrderBook();
-      }}>Sell</button>
-  </div>
-  <div class="trade-container">
-    {#if mode === 'sell'}
-      <div>
-        <div class="trade-section" in:fade={{ duration: 300 }}>
-          <div class="long-content">
-            <div style="width: 100%">
-              <p>Trading post</p>
-              <select
-                bind:value={selectedPost}
-                style="width: 100%"
-                on:change={() => {
-                  supportedPSTs = getTradingPostSupportedTokens();
-                  latestExchanges = getLatestExchanges();
-                  openTrades = latestOpenExchanges();
-                  closedTrades = latestClosedExchanges();
-                  tradingPostFeePercent = getTradingPostFeePercent();
-                }}>
-                {#await posts}
-                  <option disabled>Loading...</option>
-                {:then loadedPosts}
-                  {#if loadedPosts.length === 0}
-                    <option disabled>No posts found</option>
-                  {/if}
-                  {#each loadedPosts as post}
-                    <option value={post} selected={post === selectedPost}>
-                      {post}
-                    </option>
-                  {/each}
-                {/await}
-              </select>
-            </div>
-          </div>
-          <div class="short-content">
-            <div style="width: 100%">
-              <p>Fee</p>
-              {#await tradingPostFeePercent}
-                <SkeletonLoading
-                  style="width: 100% !important; height: 100% !important" />
-              {:then feePercent}
-                <select class="fake-select" disabled>
-                  <option>{feePercent}%</option>
-                </select>
-              {/await}
-            </div>
-          </div>
-        </div>
-        <div class="trade-section" in:fade={{ duration: 300 }}>
-          <div class="long-content">
-            <div style="width: 47%; margin-right: 3%">
-              <p>Amount</p>
-              <div class="input">
-                <input
-                  type="number"
-                  step="1"
-                  pattern="\d+"
-                  bind:value={sellAmount}
-                  min={1} />
-                {#await supportedPSTs}
-                  <SkeletonLoading style="width: 35px; height: 38px" />
-                {:then loadedPSTs}
-                  <select
-                    bind:value={sellToken}
-                    on:change={() => {
-                      orderBook = getOrderBook();
-                    }}>
-                    {#each loadedPSTs as pst}
-                      <option value={pst.ticker}>{pst.ticker}</option>
-                    {/each}
-                  </select>
-                {/await}
-              </div>
-            </div>
-            <div style="width: 47%; margin-left: 3%">
-              <p>Rate</p>
-              <div class="input">
-                <input type="number" bind:value={sellRate} min={0.0000001} />
-                <select class="fake-select" disabled>
-                  {#if sellToken === undefined}
-                    <option>...</option>
-                  {:else}
-                    <option>{'AR/' + sellToken}</option>
-                  {/if}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="short-content">
-            <p><br /></p>
-            <p />
-            <div class="input" style="border: none">
-              {#if !loading}
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 100%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
-              {:else}
-                <Loading />
-              {/if}
-            </div>
-          </div>
-        </div>
-      </div>
-    {:else if mode === 'buy'}
-      <div>
-        <div class="trade-section" in:fade={{ duration: 300 }}>
-          <div class="long-content">
-            <div style="width: 100%">
-              <p>Trading post</p>
-              <select
-                bind:value={selectedPost}
-                style="width: 100%"
-                on:change={() => {
-                  supportedPSTs = getTradingPostSupportedTokens();
-                  latestExchanges = getLatestExchanges();
-                  openTrades = latestOpenExchanges();
-                  closedTrades = latestClosedExchanges();
-                  tradingPostFeePercent = getTradingPostFeePercent();
-                }}>
-                {#await posts}
-                  <option disabled>Loading...</option>
-                {:then loadedPosts}
-                  {#if loadedPosts.length === 0}
-                    <option disabled>No posts found</option>
-                  {/if}
-                  {#each loadedPosts as post}
-                    <option value={post} selected={post === selectedPost}>
-                      {post}
-                    </option>
-                  {/each}
-                {/await}
-              </select>
-            </div>
-          </div>
-          <div class="short-content">
-            <div style="width: 100%">
-              <p>Fee</p>
-              {#await tradingPostFeePercent}
-                <SkeletonLoading
-                  style="width: 100% !important; height: 100% !important" />
-              {:then percent}
-                <select class="fake-select" disabled>
-                  <option>{percent}%</option>
-                </select>
-              {/await}
-            </div>
-          </div>
-        </div>
-        <div class="trade-section" in:fade={{ duration: 300 }}>
-          <div class="long-content">
-            <div style="width: 47%; margin-right: 3%">
-              <p>Send</p>
-              <div class="input">
-                <input
-                  type="number"
-                  pattern="\d+"
-                  bind:value={buyAmount}
-                  min={0.000001} />
-                <select class="fake-select" disabled>
-                  <option>AR</option>
-                </select>
-              </div>
-            </div>
-            <div style="width: 47%; margin-left: 3%">
-              <p>Receive</p>
-              <div class="input">
-                {#await supportedPSTs}
-                  <SkeletonLoading
-                    style="width: 100% !important; height: 100% !important" />
-                {:then loadedPSTs}
-                  <select
-                    bind:value={buyToken}
-                    style="width: 100% !important;"
-                    on:change={() => {
-                      orderBook = getOrderBook();
-                    }}>
-                    {#each loadedPSTs as pst}
-                      <option value={pst.ticker}>{pst.ticker}</option>
-                    {/each}
-                  </select>
-                {/await}
-              </div>
-            </div>
-          </div>
-          <div class="short-content">
-            <p><br /></p>
-            <p />
-            <div class="input" style="border: none">
-              {#if !loading}
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 100%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
-              {:else}
-                <Loading />
-              {/if}
-            </div>
-          </div>
-        </div>
-      </div>
-    {/if}
-  </div>
-</div>
-<div class="exchanges-section">
-  <div class="information">
-    <div class="menu">
-      <button
-        class:active={activeMenu === 'open'}
-        on:click={() => (activeMenu = 'open')}>Open Orders</button>
-      <!-- <button
-        class:active={activeMenu === 'closed'}
-        on:click={() => (activeMenu = 'closed')}>Closed Orders</button> -->
-    </div>
-  </div>
-  <div class="content">
-    {#if activeMenu === 'open'}
-      <table in:fade={{ duration: 400 }}>
-        {#await orderBook}
-          {#each Array(5) as _}
-            <tr>
-              <th style="width: 80%">
-                <SkeletonLoading style="width: 100%;" />
-              </th>
-              <th style="width: 20%">
-                <SkeletonLoading style="width: 100%;" />
-              </th>
-            </tr>
-          {/each}
-        {:then loadedOrders}
-          {#if loadedOrders.length === 0}
-            <p>This trading post doesn't have any open orders!</p>
-          {/if}
-          {#each loadedOrders as trade}
-            <tr>
-              <td style="text-align: left">
-                <span class="direction">{trade.type}</span>
-                {trade.amnt}
-                {#if trade.type === 'Sell'}
-                  {mode === 'sell' ? sellToken : buyToken} at {1 / trade.rate} AR/{mode === 'sell' ? sellToken : buyToken}
-                {:else}AR {'->'} {mode === 'sell' ? sellToken : buyToken}{/if}
-              </td>
-            </tr>
-          {/each}
-        {/await}
-      </table>
-      <!-- {:else if activeMenu === 'closed'}
-      <table in:fade={{ duration: 400 }}>
-        {#await closedTrades}
-          {#each Array(5) as _}
-            <tr>
-              <td style="width: 100%">
-                <SkeletonLoading style="width: 100%;" />
-              </td>
-            </tr>
-          {/each}
-        {:then loadedClosedTrades}
-          {#if loadedClosedTrades.length === 0}
-            <p>This trading post doesn't have any completed trades!</p>
-          {/if}
-          {#each loadedClosedTrades as trade}
-            <tr>
-              <td style="text-align: left">
-                {trade.sent}
-                {'->'}
-                {trade.received}
-              </td>
-            </tr>
-          {/each}
-        {/await}
-      </table> -->
-    {/if}
-  </div>
-</div>
-<Modal
-  bind:opened={confirmModalOpened}
-  confirmation={true}
-  onConfirm={confirmTrade}
-  onCancel={cancelTrade}>
-  <p style="text-align: center;">
-    {#if mode === 'buy'}
-      Buying {buyAmount} AR's worth of {buyToken}
-    {:else if mode === 'sell'}
-      Selling {Math.ceil(sellAmount)}
-      {sellToken} at a rate of {sellRate} AR/{sellToken}
-    {/if}
-  </p>
-  <p style="text-align: center">
-    {#await confirmModalText}
-      Loading fees...
-    {:then loadedText}
-      {loadedText}
-    {/await}
-  </p>
-</Modal>
-<Footer />

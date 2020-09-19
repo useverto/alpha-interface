@@ -27,9 +27,9 @@ export interface Transaction {
   timestamp: number;
 }
 
-export interface Token { 
-  id: string; 
-  name: string; 
+export interface Token {
+  id: string;
+  name: string;
   ticker: string;
 }
 
@@ -53,10 +53,10 @@ export interface LatestExchange {
   matched: boolean;
 }
 
-export interface Trade { 
-  id: string; 
-  amount: number; 
-  pst: string 
+export interface Trade {
+  id: string;
+  amount: number;
+  pst: string;
 }
 
 export interface TokenInstance {

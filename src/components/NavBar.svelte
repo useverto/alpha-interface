@@ -36,6 +36,45 @@
   }
 </script>
 
+
+<svelte:window bind:scrollY="{y}" />
+<div
+  class="NavBar {$loggedIn ? '' : 'logged-out'}"
+  class:scrolled="{y > 20}"
+  class:hero
+  in:fade="{{ duration: 750 }}">
+  <a href="{$loggedIn ? '/app' : '/'}" class="title">
+    <img src="/logo_light.svg" alt="v" />
+    <span class="beta">alpha</span>
+  </a>
+  <div class="menu">
+    {#if $loggedIn}
+      <a href="/trade">Trade</a>
+      <a href="/gallery">Posts</a>
+      <a href="/tokens">Tokens</a>
+      <a href="/" on:click="{_logOut}">Sign Out</a>
+    {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
+  </div>
+</div>
+<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"></div>
+<div class="mobile-nav">
+  {#if $loggedIn}
+    <a href="/trade"><img src="{tradeLogo}" alt="trade" /></a>
+    <a href="/gallery"><img src="{postsLogo}" alt="gallery" /></a>
+    <a href="/app"><img class="verto" src="/logo_light.svg" alt="v" /></a>
+    <a href="/tokens"><img src="{tokensLogo}" alt="tokens" /></a>
+    <a href="/" on:click="{mobileLogOut}"><img
+        src="{logoutLogo}"
+        alt="logout" /></a>
+  {/if}
+</div>
+<Modal
+  bind:opened="{confirmModalOpened}"
+  confirmation="{true}"
+  onConfirm="{_logOut}">
+  <p style="text-align: center">Are you sure you want to log out?</p>
+</Modal>
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -204,36 +243,3 @@
           height: 2.17em
 
 </style>
-
-<svelte:window bind:scrollY={y} />
-<div
-  class="NavBar {$loggedIn ? '' : 'logged-out'}"
-  class:scrolled={y > 20}
-  class:hero
-  in:fade={{ duration: 750 }}>
-  <a href={$loggedIn ? '/app' : '/'} class="title">
-    <img src="/logo_light.svg" alt="v" />
-    <span class="beta">alpha</span>
-  </a>
-  <div class="menu">
-    {#if $loggedIn}
-      <a href="/trade">Trade</a>
-      <a href="/gallery">Posts</a>
-      <a href="/tokens">Tokens</a>
-      <a href="/" on:click={_logOut}>Sign Out</a>
-    {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
-  </div>
-</div>
-<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}" />
-<div class="mobile-nav">
-  {#if $loggedIn}
-    <a href="/trade"><img src={tradeLogo} alt="trade" /></a>
-    <a href="/gallery"><img src={postsLogo} alt="gallery" /></a>
-    <a href="/app"><img class="verto" src="/logo_light.svg" alt="v" /></a>
-    <a href="/tokens"><img src={tokensLogo} alt="tokens" /></a>
-    <a href="/" on:click={mobileLogOut}><img src={logoutLogo} alt="logout" /></a>
-  {/if}
-</div>
-<Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={_logOut}>
-  <p style="text-align: center">Are you sure you want to log out?</p>
-</Modal>

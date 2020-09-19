@@ -3,6 +3,27 @@
   import Button from "../components/Button.svelte";
 </script>
 
+
+<svelte:head>
+  <title>Verto — 404</title>
+  <meta name="description" content="Not Found" />
+  <meta content="Verto 404" property="og:title" />
+  <meta content="Not Found" property="og:description" />
+  <!--<meta property="og:image" content="https://image">
+  <meta name="twitter:card" content="summary_large_image">-->
+  <meta name="twitter:title" content="Verto 404" />
+  <meta name="twitter:description" content="Not found" />
+  <!--<meta name="twitter:image" content="https://iimage">-->
+</svelte:head>
+
+<div class="NotFound">
+  <div class="content" in:fade="{{ duration: 750 }}">
+    <h1><span>404</span> Not Found</h1>
+    <p>This is not the page you're looking for.</p>
+    <Button href="/" reverse="{true}">Go home</Button>
+  </div>
+</div>
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -48,23 +69,3 @@
           -webkit-text-fill-color: transparent
 
 </style>
-
-<svelte:head>
-  <title>Verto — 404</title>
-  <meta name="description" content="Not Found" />
-  <meta content="Verto 404" property="og:title" />
-  <meta content="Not Found" property="og:description" />
-  <!--<meta property="og:image" content="https://image">
-  <meta name="twitter:card" content="summary_large_image">-->
-  <meta name="twitter:title" content="Verto 404" />
-  <meta name="twitter:description" content="Not found" />
-  <!--<meta name="twitter:image" content="https://iimage">-->
-</svelte:head>
-
-<div class="NotFound">
-  <div class="content" in:fade={{ duration: 750 }}>
-    <h1><span>404</span> Not Found</h1>
-    <p>This is not the page you're looking for.</p>
-    <Button href="/" reverse={true}>Go home</Button>
-  </div>
-</div>

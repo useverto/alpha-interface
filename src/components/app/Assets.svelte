@@ -144,6 +144,54 @@
   }
 </script>
 
+
+<div class="section">
+  <div class="assets-table" class:noelements>
+    <h1 class="title">Assets</h1>
+    <table style="{noelements ? 'position: relative' : ''}">
+      <tr style="width: 100%">
+        <th>Token</th>
+        <th>Amount</th>
+      </tr>
+      {#await balances}
+        {#each Array(4) as _}
+          <tr>
+            <td style="width: 80%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+          </tr>
+        {/each}
+      {:then loadedBalances}
+        {#if loadedBalances.length === 0}
+          <p
+            style="position: absolute; top: 1.8em; left: 0; right: 0; text-align: center;">
+            You don't have any tokens!
+          </p>
+        {/if}
+        {#each loadedBalances as balance}
+          <tr>
+            <td>{balance.token}</td>
+            <td>
+              {roundCurrency(balance.balance)}
+              <span class="currency">{balance.ticker}</span>
+            </td>
+          </tr>
+        {/each}
+      {/await}
+    </table>
+  </div>
+  <div class="assets-chart" class:noelements>
+    {#await balanceChart}
+      <Loading style="margin: 100px auto;" />
+    {:then data}
+      <Pie data="{data}" options="{options}" />
+    {/await}
+  </div>
+</div>
+
 <!-- prettier-ignore -->
 <style lang="sass">
   
@@ -191,50 +239,3 @@
         width: 0%
 
 </style>
-
-<div class="section">
-  <div class="assets-table" class:noelements>
-    <h1 class="title">Assets</h1>
-    <table style={noelements ? 'position: relative' : ''}>
-      <tr style="width: 100%">
-        <th>Token</th>
-        <th>Amount</th>
-      </tr>
-      {#await balances}
-        {#each Array(4) as _}
-          <tr>
-            <td style="width: 80%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-            <td style="width: 20%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-          </tr>
-        {/each}
-      {:then loadedBalances}
-        {#if loadedBalances.length === 0}
-          <p
-            style="position: absolute; top: 1.8em; left: 0; right: 0; text-align: center;">
-            You don't have any tokens!
-          </p>
-        {/if}
-        {#each loadedBalances as balance}
-          <tr>
-            <td>{balance.token}</td>
-            <td>
-              {roundCurrency(balance.balance)}
-              <span class="currency">{balance.ticker}</span>
-            </td>
-          </tr>
-        {/each}
-      {/await}
-    </table>
-  </div>
-  <div class="assets-chart" class:noelements>
-    {#await balanceChart}
-      <Loading style="margin: 100px auto;" />
-    {:then data}
-      <Pie {data} {options} />
-    {/await}
-  </div>
-</div>

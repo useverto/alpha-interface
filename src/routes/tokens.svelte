@@ -140,6 +140,54 @@
   }
 </script>
 
+
+<svelte:head>
+  <title>Verto — Tokens</title>
+</svelte:head>
+
+<NavBar />
+<div class="tokens" in:fade="{{ duration: 300 }}">
+  <div class="tokens-head">
+    <h1 class="title">Supported Tokens</h1>
+    <Button
+      click="{addToken}"
+      style="{"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}">
+      Add Token
+    </Button>
+  </div>
+  <div class="tokens-content">
+    {#await supportedTokens}
+      <Loading />
+    {:then loadedPSTs}
+      {#each loadedPSTs as pst}
+        <a
+          class="token"
+          href="https://viewblock.io/arweave/tx/{pst.id}"
+          target="_blank">
+          <h1 class="short">{pst.ticker}</h1>
+          <div class="info">
+            <h1><span>[PST]</span>{pst.name}</h1>
+            <p><span>ID:</span>{pst.id}</p>
+          </div>
+        </a>
+      {/each}
+    {/await}
+  </div>
+</div>
+<Modal
+  bind:opened="{addTokenModalOpened}"
+  confirmation="{true}"
+  onConfirm="{confirmAdd}"
+  onCancel="{cancelAdd}">
+  <h3 style="text-align: center;">Token Contract ID</h3>
+  <input
+    type="text"
+    bind:value="{newContractID}"
+    class="light contract-id"
+    placeholder="Contract ID" />
+</Modal>
+<Footer />
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -267,50 +315,3 @@
         transform: translate3d(4px, 0, 0)
 
 </style>
-
-<svelte:head>
-  <title>Verto — Tokens</title>
-</svelte:head>
-
-<NavBar />
-<div class="tokens" in:fade={{ duration: 300 }}>
-  <div class="tokens-head">
-    <h1 class="title">Supported Tokens</h1>
-    <Button
-      click={addToken}
-      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
-      Add Token
-    </Button>
-  </div>
-  <div class="tokens-content">
-    {#await supportedTokens}
-      <Loading />
-    {:then loadedPSTs}
-      {#each loadedPSTs as pst}
-        <a
-          class="token"
-          href="https://viewblock.io/arweave/tx/{pst.id}"
-          target="_blank">
-          <h1 class="short">{pst.ticker}</h1>
-          <div class="info">
-            <h1><span>[PST]</span>{pst.name}</h1>
-            <p><span>ID:</span>{pst.id}</p>
-          </div>
-        </a>
-      {/each}
-    {/await}
-  </div>
-</div>
-<Modal
-  bind:opened={addTokenModalOpened}
-  confirmation={true}
-  onConfirm={confirmAdd}
-  onCancel={cancelAdd}>
-  <h3 style="text-align: center;">Token Contract ID</h3>
-  <input
-    type="text"
-    bind:value={newContractID}
-    class="light contract-id"
-    placeholder="Contract ID" />
-</Modal>
-<Footer />

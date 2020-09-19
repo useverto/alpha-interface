@@ -4,6 +4,13 @@
   export let style: string = "";
 </script>
 
+
+<div
+  class="skeleton-loading"
+  style="{style}"
+  in:fade="{{ duration: 100 }}"
+  out:fade="{{ duration: 70 }}"></div>
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -32,9 +39,3 @@
         transform: translateX(100%)
 
 </style>
-
-<div
-  class="skeleton-loading"
-  {style}
-  in:fade={{ duration: 100 }}
-  out:fade={{ duration: 70 }} />
