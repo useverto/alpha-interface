@@ -36,6 +36,7 @@
     "@rollup/plugin-typescript": "^5.0.2",
     "@rollup/plugin-url": "^5.0.1",
     "@tsconfig/svelte": "^1.0.10",
+    "@types/polka": "^0.5.1",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "eslint": "^7.5.0",

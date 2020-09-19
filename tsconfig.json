@@ -1,9 +1,13 @@
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
-  "include": ["src/**/*", "typings"],
+  "include": [
+    "src/**/*",
+    "src/node_modules/**/*"
+  ],
   "exclude": [
     "node_modules/*",
     "__sapper__/*",
+    "static/*",
     "public/*",
     "src/service-worker.js"
   ],
@@ -16,9 +20,13 @@
     "noImplicitAny": false,
     "moduleResolution": "node",
     "baseUrl": "./",
-    "typeRoots": ["node_modules/@types", "typings"],
-    "types": ["svelte", "@sapper", "node"],
+    "lib": ["DOM", "ES2017", "WebWorker"],
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+    "sourceMap": true,
+    "types": ["svelte"]
   }
 }
