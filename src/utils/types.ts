@@ -6,6 +6,6 @@ export enum NotificationType {
 }
 
 export interface GraphqlQuery {
-  query: string
-  variables: Record<string, any> | null
+  query: string;
+  variables: Record<string, any> | null;
 }

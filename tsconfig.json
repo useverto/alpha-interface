@@ -1,16 +1,7 @@
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
-  "include": [
-    "src/**/*",
-    "src/node_modules/**/*"
-  ],
-  "exclude": [
-    "node_modules/*",
-    "__sapper__/*",
-    "static/*",
-    "public/*",
-    "src/service-worker.js"
-  ],
+  "include": ["src/**/*", "src/node_modules/**/*", "typings/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "static/*", "public/*"],
   "compilerOptions": {
     "target": "ESNEXT",
     "module": "ESNEXT",
