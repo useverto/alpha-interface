@@ -11,7 +11,7 @@
   import Arweave from "arweave";
 
   let isDragOver = false;
-  let files: FileList = [];
+  let files: File[] = [];
   let client;
 
   if (process.browser && $loggedIn) goto("/app");

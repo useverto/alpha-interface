@@ -12,17 +12,10 @@
   import moment from "moment";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
   import Loading from "../../components/Loading.svelte";
+  import type { Exchange } from "../../utils/types";
 
   let client, element, windowHeight, y;
-  let exchanges: {
-    id: string;
-    timestamp: string;
-    type: string;
-    sent: string;
-    received: string;
-    status: string;
-    duration: string;
-  }[] = [];
+  let exchanges: Exchange[] = [];
   let lastCursor = "";
   let hasNext = true,
     loadedExchanges = false,
@@ -34,15 +27,7 @@
     if (!process.browser) return;
     if (!hasNext) return;
 
-    let _exchanges: {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[] = [];
+    let _exchanges: Exchange[] = [];
     loading = true;
 
     const txsQuery = (

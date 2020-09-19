@@ -4,12 +4,12 @@
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
-  import { NotificationType } from "../utils/types.ts";
+  import type { Token } from "../utils/types";
+  import { NotificationType } from "../utils/types";
   import { notification } from "../stores/notificationStore.ts";
   import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-
   import { query } from "../api-client";
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
@@ -22,12 +22,10 @@
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
 
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getSupportedPSTs(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
+    let psts: Token[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",

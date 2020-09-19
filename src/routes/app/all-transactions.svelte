@@ -11,17 +11,12 @@
   import { query } from "../../api-client";
   import Arweave from "arweave";
   import allTransactionsQuery from "../../queries/allTransactions.gql";
+  import type { Transaction } from "../../utils/types";
 
   if (process.browser && !$loggedIn) goto("/");
 
   let client, element;
-  let transactions: {
-    id: string;
-    amount: number;
-    type: string;
-    status: string;
-    timestamp: number;
-  }[] = [];
+  let transactions: Transaction[] = [];
   let lastCursorOut = "",
     lastCursorIn = "";
   let hasNextOut = true,
@@ -83,13 +78,7 @@
       : false;
     hasNextIn = hasNextIn ? inQuery.transactions.pageInfo.hasNextPage : false;
 
-    let _transactions: {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[] = [];
+    let _transactions: Transaction[] = [];
 
     if (outTxs !== null)
       outTxs.map(({ node, cursor }) => {

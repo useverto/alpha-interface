@@ -6,7 +6,7 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-
+  import type { TradingPost } from "../utils/types";
   import { query } from "../api-client";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
@@ -16,12 +16,7 @@
   if (process.browser && !$loggedIn) goto("/");
 
   let sortingType: string;
-  let tradingPosts: {
-    addr: string;
-    reputation: number;
-    balance: string;
-    stake: number;
-  }[] = [];
+  let tradingPosts: TradingPost[] = [];
   let lastCursor = "",
     hasNext = true,
     loadedFirstPosts = false,
@@ -36,12 +31,7 @@
     if (!hasNext) return;
 
     loading = true;
-    let posts: {
-      addr: string;
-      reputation: number;
-      balance: string;
-      stake: number;
-    }[] = [];
+    let posts: TradingPost[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",

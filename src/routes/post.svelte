@@ -6,7 +6,7 @@
   import { fade } from "svelte/transition";
   import { goto } from "@sapper/app";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
-
+  import type { Transaction, Token } from "../utils/types";
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import postTokensQuery from "../queries/postTokens.gql";
@@ -34,24 +34,10 @@
 
   let transactions = getLatestTransactions();
 
-  async function getLatestTransactions(): Promise<
-    {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[]
-  > {
+  async function getLatestTransactions(): Promise<Transaction[]> {
     if (!process.browser) return [];
 
-    let txs: {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[] = [];
+    let txs: Transaction[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -189,12 +175,10 @@
 
   let supportedTokens = getSupportedTokens();
 
-  async function getSupportedTokens(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getSupportedTokens(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let tokenList = [];
+    let tokenList: Token[] = [];
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,

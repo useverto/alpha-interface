@@ -6,6 +6,7 @@
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import latestTradesQuery from "../../queries/latestTrades.gql";
   import { query } from "../../api-client";
+  import type { Trade } from "../../utils/types";
 
   let element,
     y,
@@ -21,12 +22,10 @@
     }
   }
 
-  async function getLatestTrades(): Promise<
-    { id: string; amount: number; pst: string }[]
-  > {
+  async function getLatestTrades(): Promise<Trade[]> {
     if (!process.browser) return [];
 
-    let txs: { id: string; amount: number; pst: string }[] = [];
+    let txs: Trade[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",

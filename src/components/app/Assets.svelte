@@ -7,7 +7,7 @@
   import Arweave from "arweave";
   import { interactRead } from "smartweave";
   import { pstContract, exchangeWallet } from "../../utils/constants";
-
+  import type { Token } from "../../utils/types";
   import Pie from "svelte-chartjs/src/Pie.svelte";
 
   let balances = getTokenBalances();
@@ -17,12 +17,10 @@
   let noelements = false;
   let balanceChart = populateChart();
 
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getSupportedPSTs(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
+    let psts: Token[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",

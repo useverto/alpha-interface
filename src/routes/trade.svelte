@@ -13,7 +13,8 @@
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Loading from "../components/Loading.svelte";
-  import { NotificationType } from "../utils/types.ts";
+  import { NotificationType } from "../utils/types";
+  import type { Token, TokenInstance, LatestExchange } from "../utils/types";
   import { query } from "../api-client";
   import galleryQuery from "../queries/gallery.gql";
   import tokensQuery from "../queries/tokens.gql";
@@ -84,12 +85,10 @@
     return posts;
   }
 
-  async function getExchangeSupportedTokens(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getExchangeSupportedTokens(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
+    let psts: Token[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -138,12 +137,10 @@
     return psts;
   }
 
-  async function getTradingPostSupportedTokens(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getTradingPostSupportedTokens(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let tokenList = [];
+    let tokenList: Token[] = [];
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
@@ -328,15 +325,6 @@
     }
   }
 
-  interface TokenInstance {
-    txID: string;
-    amnt: number;
-    rate?: number;
-    addr: string;
-    type: string;
-    createdAt: Date;
-  }
-
   let orderBook = getOrderBook();
 
   async function getOrderBook(): Promise<TokenInstance[]> {
@@ -504,28 +492,10 @@
 
   let latestExchanges = getLatestExchanges();
 
-  async function getLatestExchanges(): Promise<
-    {
-      id: string;
-      type: string;
-      sent: string;
-      received: string;
-      rate: string;
-      ticker: string;
-      matched: boolean;
-    }[]
-  > {
+  async function getLatestExchanges(): Promise<LatestExchange[]> {
     if (!process.browser) return [];
     let loadedPsts = await psts;
-    let exchanges: {
-      id: string;
-      type: string;
-      sent: string;
-      received: string;
-      rate: string;
-      ticker: string;
-      matched: boolean;
-    }[] = [];
+    let exchanges: LatestExchange[] = [];
 
     const txs = (
       await query({
@@ -614,17 +584,7 @@
 
   let openTrades = latestOpenExchanges();
 
-  async function latestOpenExchanges(): Promise<
-    {
-      id: string;
-      type: string;
-      sent: string;
-      received: string;
-      rate: string;
-      ticker: string;
-      matched: boolean;
-    }[]
-  > {
+  async function latestOpenExchanges(): Promise<LatestExchange[]> {
     let txs = await latestExchanges;
 
     let openExchanges = [];
@@ -638,17 +598,7 @@
 
   let closedTrades = latestClosedExchanges();
 
-  async function latestClosedExchanges(): Promise<
-    {
-      id: string;
-      type: string;
-      sent: string;
-      received: string;
-      rate: string;
-      ticker: string;
-      matched: boolean;
-    }[]
-  > {
+  async function latestClosedExchanges(): Promise<LatestExchange[]> {
     let txs = await latestExchanges;
 
     let closedExchanges = [];

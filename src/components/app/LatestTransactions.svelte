@@ -7,6 +7,7 @@
   import latestTransactionsQuery from "../../queries/latestTransactions.gql";
   import { query } from "../../api-client";
   import Arweave from "arweave";
+  import type { Transaction } from "../../utils/types";
 
   let transactions = getLatestTransactions();
 
@@ -16,24 +17,10 @@
     return val.toFixed(7);
   }
 
-  async function getLatestTransactions(): Promise<
-    {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[]
-  > {
+  async function getLatestTransactions(): Promise<Transaction[]> {
     if (!process.browser) return [];
 
-    let txs: {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[] = [];
+    let txs: Transaction[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",

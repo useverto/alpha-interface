@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-
+  import type { Exchange, Token } from "../../utils/types";
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
   import Arweave from "arweave";
@@ -12,28 +12,10 @@
 
   let exchanges = getLatestExchanges();
 
-  async function getLatestExchanges(): Promise<
-    {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[]
-  > {
+  async function getLatestExchanges(): Promise<Exchange[]> {
     if (!process.browser) return [];
 
-    let exchanges: {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[] = [];
+    let exchanges: Exchange[] = [];
 
     const txs = (
       await query({
@@ -137,12 +119,10 @@
     return exchanges;
   }
 
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getSupportedPSTs(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
+    let psts: Token[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
