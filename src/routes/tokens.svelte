@@ -4,6 +4,8 @@
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
+  import { NotificationType } from "../utils/types.ts";
+  import { notification } from "../stores/notificationStore.ts";
   import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
@@ -93,15 +95,20 @@
       // Make sure user has balance of our PST
       try {
         let balance = await community.get({
-          function: "unlockedBalance",
+          function: "vaultBalance",
         });
 
         if (balance.balance > 0) {
           console.log("YOUR BAL IS GREATER THAN 0");
         } else {
-          // Show an error because they need to have a balance
-
           addTokenModalOpened = false;
+          notification.notify(
+            "Error",
+            "You don't have any locked VRT. This is needed to propose a vote to the community.",
+            NotificationType.error,
+            5000
+          );
+          return;
         }
       } catch (err) {
         console.log(err);
@@ -113,6 +120,13 @@
         note: newContractID,
       });
       newContractID = "";
+      addTokenModalOpened = false;
+      notification.notify(
+        "Success",
+        "Your vote has been proposed. Check back soon!",
+        NotificationType.success,
+        5000
+      );
     }
   }
 
