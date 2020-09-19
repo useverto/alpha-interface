@@ -4,3 +4,8 @@ export enum NotificationType {
   log = "log",
   success = "success",
 }
+
+export interface GraphqlQuery {
+  query: string
+  variables: Record<string, any> | null
+}

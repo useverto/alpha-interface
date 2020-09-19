@@ -1,5 +1,7 @@
+import type { GraphqlQuery } from "./utils/types";
+
 // Simple arweave graphql API client
-export async function query({ query, variables = null }) {
+export async function query({ query, variables = null }: GraphqlQuery) {
   const graphql = JSON.stringify({
     query,
     variables,
