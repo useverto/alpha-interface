@@ -11,6 +11,20 @@
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
 </script>
 
+<a
+  href="{href}"
+  target="{target}"
+  rel="{rel}"
+  class="Button"
+  on:click="{click}"
+  style="{style}"
+  class:clear
+  class:reverse>
+  <slot />
+</a>
+
+
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -73,14 +87,3 @@
           color: #000   
 
 </style>
-<a
-  {href}
-  {target}
-  {rel}
-  class="Button"
-  on:click={click}
-  {style}
-  class:clear
-  class:reverse>
-  <slot />
-</a>

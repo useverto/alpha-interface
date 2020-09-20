@@ -29,7 +29,7 @@
   <!--<meta name="twitter:image" content="https://iimage">-->
 </svelte:head>
 
-<NavBar hero={true} />
+<NavBar hero="{true}" />
 <Hero />
 <LatestTrades />
 <!-- <Volume /> -->

@@ -4,12 +4,12 @@
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
-  import { NotificationType } from "../utils/types.ts";
+  import type { Token } from "../utils/types";
+  import { NotificationType } from "../utils/types";
   import { notification } from "../stores/notificationStore.ts";
   import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-
   import { query } from "../api-client";
   import tokensQuery from "../queries/tokens.gql";
   import Arweave from "arweave";
@@ -22,12 +22,10 @@
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
 
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getSupportedPSTs(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
+    let psts: Token[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -141,6 +139,55 @@
     return val.toFixed(7);
   }
 </script>
+
+<svelte:head>
+  <title>Verto — Tokens</title>
+</svelte:head>
+
+<NavBar />
+<div class="tokens" in:fade="{{ duration: 300 }}">
+  <div class="tokens-head">
+    <h1 class="title">Supported Tokens</h1>
+    <Button
+      click="{addToken}"
+      style="{"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}">
+      Add Token
+    </Button>
+  </div>
+  <div class="tokens-content">
+    {#await supportedTokens}
+      <Loading />
+    {:then loadedPSTs}
+      {#each loadedPSTs as pst}
+        <a
+          class="token"
+          href="https://viewblock.io/arweave/tx/{pst.id}"
+          target="_blank">
+          <h1 class="short">{pst.ticker}</h1>
+          <div class="info">
+            <h1><span>[PST]</span>{pst.name}</h1>
+            <p><span>ID:</span>{pst.id}</p>
+          </div>
+        </a>
+      {/each}
+    {/await}
+  </div>
+</div>
+<Modal
+  bind:opened="{addTokenModalOpened}"
+  confirmation="{true}"
+  onConfirm="{confirmAdd}"
+  onCancel="{cancelAdd}">
+  <h3 style="text-align: center;">Token Contract ID</h3>
+  <input
+    type="text"
+    bind:value="{newContractID}"
+    class="light contract-id"
+    placeholder="Contract ID" />
+</Modal>
+<Footer />
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">
@@ -269,50 +316,3 @@
         transform: translate3d(4px, 0, 0)
 
 </style>
-
-<svelte:head>
-  <title>Verto — Tokens</title>
-</svelte:head>
-
-<NavBar />
-<div class="tokens" in:fade={{ duration: 300 }}>
-  <div class="tokens-head">
-    <h1 class="title">Supported Tokens</h1>
-    <Button
-      click={addToken}
-      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
-      Add Token
-    </Button>
-  </div>
-  <div class="tokens-content">
-    {#await supportedTokens}
-      <Loading />
-    {:then loadedPSTs}
-      {#each loadedPSTs as pst}
-        <a
-          class="token"
-          href="https://viewblock.io/arweave/tx/{pst.id}"
-          target="_blank">
-          <h1 class="short">{pst.ticker}</h1>
-          <div class="info">
-            <h1><span>[PST]</span>{pst.name}</h1>
-            <p><span>ID:</span>{pst.id}</p>
-          </div>
-        </a>
-      {/each}
-    {/await}
-  </div>
-</div>
-<Modal
-  bind:opened={addTokenModalOpened}
-  confirmation={true}
-  onConfirm={confirmAdd}
-  onCancel={cancelAdd}>
-  <h3 style="text-align: center;">Token Contract ID</h3>
-  <input
-    type="text"
-    bind:value={newContractID}
-    class="light contract-id"
-    placeholder="Contract ID" />
-</Modal>
-<Footer />

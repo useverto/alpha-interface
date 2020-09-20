@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-
+  import type { Exchange, Token } from "../../utils/types";
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
   import Arweave from "arweave";
@@ -12,28 +12,10 @@
 
   let exchanges = getLatestExchanges();
 
-  async function getLatestExchanges(): Promise<
-    {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[]
-  > {
+  async function getLatestExchanges(): Promise<Exchange[]> {
     if (!process.browser) return [];
 
-    let exchanges: {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[] = [];
+    let exchanges: Exchange[] = [];
 
     const txs = (
       await query({
@@ -137,12 +119,10 @@
     return exchanges;
   }
 
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
+  async function getSupportedPSTs(): Promise<Token[]> {
     if (!process.browser) return [];
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
+    let psts: Token[] = [];
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -192,6 +172,59 @@
   }
 </script>
 
+<div class="section">
+  <h1 class="title">Trades</h1>
+  <table>
+    <tr>
+      <th>Timestamp</th>
+      <th>Trade</th>
+      <th>Duration</th>
+    </tr>
+    {#await exchanges}
+      {#each Array(5) as _}
+        <tr>
+          <td style="width: 30%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+          <td style="width: 60%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+          <td style="width: 15%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+        </tr>
+      {/each}
+    {:then loadedExchanges}
+      {#if loadedExchanges.length === 0}
+        <p style="position: absolute; left: 50%; transform: translateX(-50%);">
+          No trades found
+        </p>
+        <tr>
+          <td><br /></td>
+          <td></td>
+        </tr>
+        <!-- empty line to push "view-all" down -->
+      {/if}
+      {#each loadedExchanges as exchange}
+        <tr in:fade="{{ duration: 300 }}">
+          <td style="width: 30%">{exchange.timestamp}</td>
+          <td style="width: 45%">
+            {exchange.sent}
+            {'->'}
+            {exchange.received}
+            <span class="status {exchange.status}"></span>
+          </td>
+          <td style="text-transform: uppercase">{exchange.duration}</td>
+        </tr>
+        <tr></tr>
+      {/each}
+    {/await}
+  </table>
+  <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
+</div>
+
+
+
 <!-- prettier-ignore -->
 <style lang="sass">
   
@@ -225,54 +258,3 @@
       color: black
 
 </style>
-
-<div class="section">
-  <h1 class="title">Trades</h1>
-  <table>
-    <tr>
-      <th>Timestamp</th>
-      <th>Trade</th>
-      <th>Duration</th>
-    </tr>
-    {#await exchanges}
-      {#each Array(5) as _}
-        <tr>
-          <td style="width: 30%">
-            <SkeletonLoading style={'width: 100%'} />
-          </td>
-          <td style="width: 60%">
-            <SkeletonLoading style={'width: 100%'} />
-          </td>
-          <td style="width: 15%">
-            <SkeletonLoading style={'width: 100%'} />
-          </td>
-        </tr>
-      {/each}
-    {:then loadedExchanges}
-      {#if loadedExchanges.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">
-          No trades found
-        </p>
-        <tr>
-          <td><br /></td>
-          <td />
-        </tr>
-        <!-- empty line to push "view-all" down -->
-      {/if}
-      {#each loadedExchanges as exchange}
-        <tr in:fade={{ duration: 300 }}>
-          <td style="width: 30%">{exchange.timestamp}</td>
-          <td style="width: 45%">
-            {exchange.sent}
-            {'->'}
-            {exchange.received}
-            <span class="status {exchange.status}" />
-          </td>
-          <td style="text-transform: uppercase">{exchange.duration}</td>
-        </tr>
-        <tr />
-      {/each}
-    {/await}
-  </table>
-  <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
-</div>

@@ -7,7 +7,6 @@
   import { loggedIn, address, balance } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { onMount } from "svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   if (process.browser && !$loggedIn) goto("/");
@@ -18,6 +17,39 @@
     return val.toFixed(7);
   }
 </script>
+
+<svelte:head>
+  <title>Verto — Dashboard</title>
+</svelte:head>
+
+<NavBar />
+<div class="dashboard" in:fade="{{ duration: 300 }}">
+  <div class="section balance">
+    {#if $balance === 0}
+      <p>
+        <SkeletonLoading style="height: 1em; width: 120px" />
+      </p>
+      <h1 class="total-balance">
+        <SkeletonLoading style="height: 1em; width: 300px" />
+      </h1>
+      <p class="wallet">
+        <SkeletonLoading style="height: 1em; width: 400px" />
+      </p>
+    {:else}
+      <p in:fade="{{ duration: 150 }}">Your balance</p>
+      <h1 class="total-balance" in:fade="{{ duration: 150 }}">
+        {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
+      </h1>
+      <p class="wallet" in:fade="{{ duration: 150 }}">Wallet: {$address}</p>
+    {/if}
+  </div>
+  <Assets />
+  <LatestExchanges />
+  <LatestTransactions />
+</div>
+<Footer />
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">
@@ -64,34 +96,3 @@
         font-size: 2.01em
 
 </style>
-
-<svelte:head>
-  <title>Verto — Dashboard</title>
-</svelte:head>
-
-<NavBar />
-<div class="dashboard" in:fade={{ duration: 300 }}>
-  <div class="section balance">
-    {#if $balance === 0}
-      <p>
-        <SkeletonLoading style="height: 1em; width: 120px" />
-      </p>
-      <h1 class="total-balance">
-        <SkeletonLoading style="height: 1em; width: 300px" />
-      </h1>
-      <p class="wallet">
-        <SkeletonLoading style="height: 1em; width: 400px" />
-      </p>
-    {:else}
-      <p in:fade={{ duration: 150 }}>Your balance</p>
-      <h1 class="total-balance" in:fade={{ duration: 150 }}>
-        {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
-      </h1>
-      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
-    {/if}
-  </div>
-  <Assets />
-  <LatestExchanges />
-  <LatestTransactions />
-</div>
-<Footer />
