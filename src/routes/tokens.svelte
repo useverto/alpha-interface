@@ -1,78 +1,28 @@
 <script lang="typescript">
+  import { loggedIn, keyfile } from "../stores/keyfileStore";
+  import { goto } from "@sapper/app";
+  import Verto from "@verto/lib";
+  import Arweave from "arweave";
+  import Community from "community-js";
+  import { pstContract } from "../utils/constants";
+  import { notification } from "../stores/notificationStore";
+  import { NotificationType } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
-  import Footer from "../components/Footer.svelte";
+  import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
-  import type { Token } from "../utils/types";
-  import { NotificationType } from "../utils/types";
-  import { notification } from "../stores/notificationStore.ts";
-  import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
-  import { goto } from "@sapper/app";
-  import { fade } from "svelte/transition";
-  import { query } from "../api-client";
-  import tokensQuery from "../queries/tokens.gql";
-  import Arweave from "arweave";
-  import Community from "community-js";
-  import { pstContract, exchangeWallet } from "../utils/constants";
+  import Footer from "../components/Footer.svelte";
 
   if (process.browser && !$loggedIn) goto("/");
 
-  let supportedTokens = getSupportedPSTs();
+  const client = new Verto();
+  let supportedTokens: Promise<
+    { id: string; name: string; ticker: string }[]
+  > = client.getTokens();
+
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
-
-  async function getSupportedPSTs(): Promise<Token[]> {
-    if (!process.browser) return [];
-
-    let psts: Token[] = [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let txIds = [];
-    const _txIds = (
-      await query({
-        query: tokensQuery,
-        variables: {
-          owners: [exchangeWallet],
-          contractSrc: pstContract,
-        },
-      })
-    ).data.transactions.edges;
-    _txIds.map(({ node }) => {
-      txIds.push(node.id);
-    });
-
-    for (const id of txIds) {
-      try {
-        const contractId = (
-          await client.transactions.getData(id, { decode: true, string: true })
-        ).toString();
-        const contractData = JSON.parse(
-          (
-            await client.transactions.getData(contractId, {
-              decode: true,
-              string: true,
-            })
-          ).toString()
-        );
-        psts.push({
-          id: contractId,
-          name: contractData["name"],
-          ticker: contractData["ticker"],
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return psts;
-  }
 
   async function addToken() {
     addTokenModalOpened = true;
@@ -131,12 +81,6 @@
   function cancelAdd() {
     addTokenModalOpened = false;
     newContractID = "";
-  }
-
-  function roundCurrency(val: number | string): string {
-    if (val === "?") return val;
-    if (typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
   }
 </script>
 
