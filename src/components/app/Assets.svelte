@@ -1,107 +1,19 @@
 <script lang="ts">
-  import { keyfile } from "../../stores/keyfileStore.ts";
+  import Verto from "@verto/lib";
+  import { address } from "../../stores/keyfileStore";
   import Loading from "../../components/Loading.svelte";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
-  import { query } from "../../api-client";
-  import tokensQuery from "../../queries/tokens.gql";
-  import Arweave from "arweave";
-  import { interactRead } from "smartweave";
-  import { pstContract, exchangeWallet } from "../../utils/constants";
-  import type { Token } from "../../utils/types";
   import Pie from "svelte-chartjs/src/Pie.svelte";
 
-  let balances = getTokenBalances();
+  const client = new Verto();
+  let balances: Promise<
+    { id: string; ticker: string; balance: number }[]
+  > = client.getAssets($address);
   let options = {
     responsive: true,
   };
   let noelements = false;
   let balanceChart = populateChart();
-
-  async function getSupportedPSTs(): Promise<Token[]> {
-    if (!process.browser) return [];
-
-    let psts: Token[] = [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let txIds = [];
-    const _txIds = (
-      await query({
-        query: tokensQuery,
-        variables: {
-          owners: [exchangeWallet],
-          contractSrc: pstContract,
-        },
-      })
-    ).data.transactions.edges;
-    _txIds.map(({ node }) => {
-      txIds.push(node.id);
-    });
-
-    for (const id of txIds) {
-      try {
-        const contractId = (
-          await client.transactions.getData(id, { decode: true, string: true })
-        ).toString();
-        const contractData = JSON.parse(
-          (
-            await client.transactions.getData(contractId, {
-              decode: true,
-              string: true,
-            })
-          ).toString()
-        );
-        psts.push({
-          id: contractId,
-          name: contractData["name"],
-          ticker: contractData["ticker"],
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return psts;
-  }
-
-  async function getTokenBalances() {
-    if (!process.browser) return [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-    const supportedPSTs = await getSupportedPSTs();
-    let tokenBalances = [];
-
-    for (let i = 0; i < supportedPSTs.length; i++) {
-      let pstContract = await interactRead(
-        client,
-        JSON.parse($keyfile),
-        supportedPSTs[i].id,
-        {
-          function: "unlockedBalance",
-        }
-      );
-      if (pstContract.balance > 0) {
-        tokenBalances.push({
-          token: supportedPSTs[i].name,
-          ticker: supportedPSTs[i].ticker,
-          balance: pstContract.balance,
-        });
-      }
-    }
-
-    if (tokenBalances.length === 0) noelements = true;
-    return tokenBalances;
-  }
 
   async function populateChart() {
     let data = await balances;
@@ -172,7 +84,7 @@
         {/if}
         {#each loadedBalances as balance}
           <tr>
-            <td>{balance.token}</td>
+            <td>{balance.id}</td>
             <td>
               {roundCurrency(balance.balance)}
               <span class="currency">{balance.ticker}</span>
