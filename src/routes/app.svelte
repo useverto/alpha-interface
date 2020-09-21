@@ -8,7 +8,6 @@
   import { loggedIn, address, balance } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { onMount } from "svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   if (process.browser && !$loggedIn) goto("/");

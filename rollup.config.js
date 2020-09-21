@@ -142,9 +142,8 @@ export default {
     onwarn,
   },
 
-  // we don't need typescript for the service worker
   serviceworker: {
-    input: config.serviceworker.input(),
+    input: config.serviceworker.input().replace(/\.js$/, ".ts"),
     output: config.serviceworker.output(),
     plugins: [
       resolve(),
@@ -153,6 +152,7 @@ export default {
         "process.env.NODE_ENV": JSON.stringify(mode),
       }),
       commonjs(),
+      typescript({ sourceMap: dev }),
       !dev && terser(),
     ],
 

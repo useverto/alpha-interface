@@ -12,17 +12,10 @@
   import moment from "moment";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
   import Loading from "../../components/Loading.svelte";
+  import type { Exchange } from "../../utils/types";
 
   let client, element, windowHeight, y;
-  let exchanges: {
-    id: string;
-    timestamp: string;
-    type: string;
-    sent: string;
-    received: string;
-    status: string;
-    duration: string;
-  }[] = [];
+  let exchanges: Exchange[] = [];
   let lastCursor = "";
   let hasNext = true,
     loadedExchanges = false,
@@ -34,15 +27,7 @@
     if (!process.browser) return;
     if (!hasNext) return;
 
-    let _exchanges: {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[] = [];
+    let _exchanges: Exchange[] = [];
     loading = true;
 
     const txsQuery = (
@@ -221,25 +206,13 @@
   }
 </script>
 
-<!-- prettier-ignore -->
-<style lang="sass">
-
-  @import "../../styles/tables.sass"
-  @import "../../styles/general.sass"
-
-  .all-exchanges
-    @include page
-    @include table 
-
-</style>
-
 <svelte:head>
   <title>Verto — All Exchanges</title>
 </svelte:head>
 
-<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
+<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
 <NavBar />
-<div class="all-exchanges" in:fade={{ duration: 300 }}>
+<div class="all-exchanges" in:fade="{{ duration: 300 }}">
   <h1 class="title">All Trades</h1>
   <table>
     <tr>
@@ -251,47 +224,47 @@
       {#each Array(10) as _}
         <tr>
           <td style="width: 30%">
-            <SkeletonLoading style={'width: 100%'} />
+            <SkeletonLoading style="{'width: 100%'}" />
           </td>
           <td style="width: 60%">
-            <SkeletonLoading style={'width: 100%'} />
+            <SkeletonLoading style="{'width: 100%'}" />
           </td>
           <td style="width: 15%">
-            <SkeletonLoading style={'width: 100%'} />
+            <SkeletonLoading style="{'width: 100%'}" />
           </td>
         </tr>
       {/each}
     {:else if exchanges.length === 0}
       <p
-        in:fade={{ duration: 150 }}
+        in:fade="{{ duration: 150 }}"
         style="position: absolute; left: 50%; transform: translateX(-50%);">
         No trades found
       </p>
       <tr>
         <td><br /></td>
-        <td />
+        <td></td>
       </tr>
       <!-- empty line to push "view-all" down -->
     {:else}
       {#each exchanges as exchange}
-        <tr in:fade={{ duration: 300 }}>
+        <tr in:fade="{{ duration: 300 }}">
           <td style="width: 30%">{exchange.timestamp}</td>
           <td style="width: 45%">
             {exchange.sent}
             {'->'}
             {exchange.received}
-            <span class="status {exchange.status}" />
+            <span class="status {exchange.status}"></span>
           </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
-        <tr />
+        <tr></tr>
       {/each}
       {#if loading}
         <!-- if the site is loading, but there are transactions already loaded  -->
         <Loading style="position: absolute; left: 50%;" />
         <tr>
           <td><br /></td>
-          <td />
+          <td></td>
         </tr>
         <!-- empty line to push "view-all" down -->
       {/if}
@@ -299,4 +272,18 @@
   </table>
 </div>
 <Footer />
-<span style="width: 100%; height: 1px" bind:this={element} />
+<span style="width: 100%; height: 1px" bind:this="{element}"></span>
+
+
+
+<!-- prettier-ignore -->
+<style lang="sass">
+
+  @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
+
+  .all-exchanges
+    @include page
+    @include table 
+
+</style>
