@@ -67,6 +67,99 @@
   }
 </script>
 
+
+<div class="watchlist">
+  <h1 class="title">
+    Watchlist
+    <div>
+      {#if editMode}
+        <img
+          src="{addIcon}"
+          alt="add"
+          on:click="{() => {
+            openAddModal();
+          }}"
+          in:fade />
+        <img
+          src="{closeIcon}"
+          alt="close"
+          on:click="{() => {
+            editMode = !editMode;
+          }}"
+          in:fade />
+      {:else}
+        <img
+          src="{editIcon}"
+          alt="edit"
+          on:click="{() => {
+            editMode = !editMode;
+          }}"
+          in:fade />
+      {/if}
+    </div>
+  </h1>
+  {#if $watchlist.length === 0}
+    <p>No PSTs watched.</p>
+  {:else}
+    <div class="psts">
+      {#each $watchlist as pst}
+        <div
+          class="pst"
+          in:fade="{{ duration: 500 }}"
+          out:scale="{{ duration: 250 }}">
+          <div class="graph-container{editMode ? ' edit' : ''}">
+            {#if editMode}
+              <img
+                src="{closeIcon}"
+                alt="close"
+                on:click="{() => {
+                  remove(pst);
+                }}"
+                in:fade />
+            {/if}
+            <!-- TODO @johnletey -->
+            <!-- Don't forget to change the color too :) -->
+            <!-- Color depends on increase or decrease (decrease: #FF375D, increase: #00D46E) -->
+            <!-- Make sure to change both the borderColor and the pointBackgroundColor, but not the backgroundColor in the graph -->
+            <!-- Change the color of the increase/decrease percentage too -->
+            <div class="pst-info">
+              <h1>{pst.pst}</h1>
+              <div class="pst-price">
+                <h1>0.0577<span>Ar</span></h1>
+                <span class="percentage" style="color: #FF375D">-6.04%</span>
+              </div>
+            </div>
+            <Line
+              data="{{ labels: ['test', 'fd', 'fdfd', 'tgffgf'], datasets: [{ data: [10, 20, 10, 40, 60, 80, 100, 61, 50, 70, 80, 60, 90], backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}"
+              options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
+          </div>
+        </div>
+      {/each}
+    </div>
+  {/if}
+</div>
+<Modal bind:opened="{addModalOpened}" confirmation="{true}" onConfirm="{add}">
+  <h1 style="text-align: center; font-weight: 600; margin-top: 0;">
+    Add to watchlist
+  </h1>
+  <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">PST</h2>
+  <select
+    bind:value="{addPst}"
+    style="display: block; color: #fff; width: 100%; background-color: transparent; outline: none; border: 1px solid #fff; border-radius: 4px; font-size: 1.4em; padding: 0.18em 0.6em;">
+    {#each addPsts as pst}
+      <option value="{pst}" style="background-color: #000;">{pst}</option>
+    {/each}
+  </select>
+  <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">
+    Period (hours)
+  </h2>
+  <input
+    type="number"
+    class="light"
+    style="width: calc(100% - 1.2em);"
+    bind:value="{addPeriod}" />
+</Modal>
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -165,95 +258,3 @@
               box-shadow: 0 0 9px 8px rgba(0, 0, 0, .1)
 
 </style>
-
-<div class="watchlist">
-  <h1 class="title">
-    Watchlist
-    <div>
-      {#if editMode}
-        <img
-          src={addIcon}
-          alt="add"
-          on:click={() => {
-            openAddModal();
-          }}
-          in:fade />
-        <img
-          src={closeIcon}
-          alt="close"
-          on:click={() => {
-            editMode = !editMode;
-          }}
-          in:fade />
-      {:else}
-        <img
-          src={editIcon}
-          alt="edit"
-          on:click={() => {
-            editMode = !editMode;
-          }}
-          in:fade />
-      {/if}
-    </div>
-  </h1>
-  {#if $watchlist.length === 0}
-    <p>No PSTs watched.</p>
-  {:else}
-    <div class="psts">
-      {#each $watchlist as pst}
-        <div
-          class="pst"
-          in:fade={{ duration: 500 }}
-          out:scale={{ duration: 250 }}>
-          <div class="graph-container{editMode ? ' edit' : ''}">
-            {#if editMode}
-              <img
-                src={closeIcon}
-                alt="close"
-                on:click={() => {
-                  remove(pst);
-                }}
-                in:fade />
-            {/if}
-            <!-- TODO @johnletey -->
-            <!-- Don't forget to change the color too :) -->
-            <!-- Color depends on increase or decrease (decrease: #FF375D, increase: #00D46E) -->
-            <!-- Make sure to change both the borderColor and the pointBackgroundColor, but not the backgroundColor in the graph -->
-            <!-- Change the color of the increase/decrease percentage too -->
-            <div class="pst-info">
-              <h1>{pst.pst}</h1>
-              <div class="pst-price">
-                <h1>0.0577<span>Ar</span></h1>
-                <span class="percentage" style="color: #FF375D">-6.04%</span>
-              </div>
-            </div>
-            <Line
-              data={{ labels: ['test', 'fd', 'fdfd', 'tgffgf'], datasets: [{ data: [10, 20, 10, 40, 60, 80, 100, 61, 50, 70, 80, 60, 90], backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}
-              options={{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }} />
-          </div>
-        </div>
-      {/each}
-    </div>
-  {/if}
-</div>
-<Modal bind:opened={addModalOpened} confirmation={true} onConfirm={add}>
-  <h1 style="text-align: center; font-weight: 600; margin-top: 0;">
-    Add to watchlist
-  </h1>
-  <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">PST</h2>
-  <select
-    bind:value={addPst}
-    style="display: block; color: #fff; width: 100%; background-color: transparent; outline: none; border: 1px solid #fff; border-radius: 4px; font-size: 1.4em; padding: 0.18em 0.6em;">
-    {#each addPsts as pst}
-      <option value={pst} style="background-color: #000;">{pst}</option>
-    {/each}
-  </select>
-  <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">
-    Period (hours)
-  </h2>
-  <input
-    type="number"
-    class="light"
-    style="width: calc(100% - 1.2em);"
-    bind:value={addPeriod} />
-</Modal>

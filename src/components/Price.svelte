@@ -228,6 +228,40 @@
   }
 </script>
 
+<div class="price">
+  <div class="title-section">
+    <h1 class="title">Price</h1>
+    <select bind:value="{selected}" on:change="{() => (price = getPrice())}">
+      {#await tokens then loadedTokens}
+        {#each loadedTokens as token}
+          <option value="{token.ticker}">{token.ticker}</option>
+        {/each}
+      {/await}
+    </select>
+  </div>
+  {#await price}
+    <Loading />
+  {:then loadedPrice}
+    {#if loadedPrice[0].every((price) => isNaN(price))}
+      <p>No price data.</p>
+    {:else}
+      <Line
+        data="{{ labels: loadedPrice[1], datasets: [{ data: loadedPrice[0], fill: false, borderColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              }, pointBackgroundColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              } }] }}"
+        options="{{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }}" />
+    {/if}
+  {/await}
+</div>
+
 <style lang="sass">
 
   .price
@@ -281,37 +315,3 @@
         opacity: .8
 
 </style>
-
-<div class="price">
-  <div class="title-section">
-    <h1 class="title">Price</h1>
-    <select bind:value={selected} on:change={() => (price = getPrice())}>
-      {#await tokens then loadedTokens}
-        {#each loadedTokens as token}
-          <option value={token.ticker}>{token.ticker}</option>
-        {/each}
-      {/await}
-    </select>
-  </div>
-  {#await price}
-    <Loading />
-  {:then loadedPrice}
-    {#if loadedPrice[0].every((price) => isNaN(price))}
-      <p>No price data.</p>
-    {:else}
-      <Line
-        data={{ labels: loadedPrice[1], datasets: [{ data: loadedPrice[0], fill: false, borderColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              }, pointBackgroundColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              } }] }}
-        options={{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }} />
-    {/if}
-  {/await}
-</div>
