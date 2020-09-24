@@ -286,6 +286,23 @@
       loading = false;
       return;
     } else if (mode === "buy") {
+      let sum = 0;
+      for (const order of c) {
+        if (order.type === "Sell") {
+          sum += order.amnt / order.rate;
+        }
+      }
+      if (buyAmount > sum) {
+        notification.notify(
+          "Error",
+          "You're buying more than the orderbook allows.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
+
       let txFees =
         (await getFee(await initiateBuy())) +
         (await getFee(await initiateExchangeFee()));
