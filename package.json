@@ -11,7 +11,7 @@
     "fmt:check": "prettier --check ."
   },
   "dependencies": {
-    "@verto/lib": "^0.1.0-alpha.2",
+    "@verto/lib": "^0.1.0-alpha.3",
     "arweave": "^1.9.1",
     "community-js": "^1.0.14",
     "compression": "^1.7.1",
