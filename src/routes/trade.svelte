@@ -232,6 +232,7 @@
     let a = await latestOpenExchanges;
     let b = await latestClosedExchanges;
     let c = await orderBook;
+
     if ($address === selectedPost) {
       notification.notify(
         "Error",
@@ -244,38 +245,24 @@
     }
 
     if (mode === "sell") {
-      let arCost =
-        (await getFee(await initiateSell())) +
-        (await getFee(await initiateTradingPostFee())) +
-        (await getFee(await initiateVRTHolderFee()));
-      let pstCost =
-        Math.ceil(sellAmount) + (await getTradingPostFee()) + getVRTHolderFee();
-      const token = (await supportedPSTs).find(
-        (pst) => pst.ticker === sellToken
+      const order = await client.createOrder(
+        "sell",
+        sellAmount,
+        (await client.getTokens()).find((pst) => pst.ticker === sellToken).id,
+        selectedPost,
+        sellRate
       );
-      const amount = (await balances).find(
-        (amount) =>
-          amount.token === token.name && amount.ticker === token.ticker
-      );
-      if (!amount) {
+
+      if (order === "pst") {
         notification.notify(
           "Error",
-          "You don't have that token.",
+          "You don't have the sufficient amount of tokens.",
           NotificationType.error,
           5000
         );
         loading = false;
         return;
-      } else if (pstCost > amount.balance) {
-        notification.notify(
-          "Error",
-          "You don't have that many tokens.",
-          NotificationType.error,
-          5000
-        );
-        loading = false;
-        return;
-      } else if (arCost > $balance) {
+      } else if (order === "ar") {
         notification.notify(
           "Error",
           "You don't have enough AR.",
@@ -285,7 +272,8 @@
         loading = false;
         return;
       }
-      confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
+
+      confirmModalText = `You're sending ${order.pst} ${sellToken} + ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
       return;
