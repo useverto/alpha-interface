@@ -37,6 +37,7 @@
   );
 
   const client = new Verto(JSON.parse($keyfile));
+  let order;
 
   let selectedPost;
   let buyAmount: number = 1;
@@ -245,7 +246,7 @@
     }
 
     if (mode === "sell") {
-      const order = await client.createOrder(
+      order = await client.createOrder(
         "sell",
         sellAmount,
         (await client.getTokens()).find((pst) => pst.ticker === sellToken).id,
@@ -294,8 +295,8 @@
         loading = false;
         return;
       }
-      
-      const order = await client.createOrder(
+
+      order = await client.createOrder(
         "buy",
         buyAmount,
         (await client.getTokens()).find((pst) => pst.ticker === buyToken).id,
@@ -393,82 +394,44 @@
   }
 
   async function confirmTrade() {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
+    // const client = new Arweave({
+    //   host: "arweave.dev",
+    //   port: 443,
+    //   protocol: "https",
+    //   timeout: 200000,
+    // });
 
-    await posts;
+    // await posts;
 
-    const txId = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges[0]?.node.id;
+    // const txId = (
+    //   await query({
+    //     query: galleryQuery,
+    //     variables: {
+    //       owners: [selectedPost],
+    //       recipients: [exchangeWallet],
+    //     },
+    //   })
+    // ).data.transactions.edges[0]?.node.id;
 
-    const config = JSON.parse(
-      (
-        await client.transactions.getData(txId, { decode: true, string: true })
-      ).toString()
-    );
+    // const config = JSON.parse(
+    //   (
+    //     await client.transactions.getData(txId, { decode: true, string: true })
+    //   ).toString()
+    // );
 
-    try {
-      let url = config["publicURL"].startsWith("https://")
-        ? config["publicURL"]
-        : "https://" + config["publicURL"];
-      const endpoint = url.endsWith("/") ? "ping" : "/ping";
-      await fetch(url + endpoint);
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
-    }
+    // try {
+    //   let url = config["publicURL"].startsWith("https://")
+    //     ? config["publicURL"]
+    //     : "https://" + config["publicURL"];
+    //   const endpoint = url.endsWith("/") ? "ping" : "/ping";
+    //   await fetch(url + endpoint);
+    // } catch (err) {
+    //   notification.notify("Error", err, NotificationType.error, 5000);
+    //   return;
+    // }
 
-    let tx = mode === "buy" ? await initiateBuy() : await initiateSell();
-
-    if (mode === "buy") {
-      let tipExchange = await initiateExchangeFee();
-
-      try {
-        await client.transactions.sign(tipExchange, JSON.parse($keyfile));
-        await client.transactions.post(tipExchange);
-      } catch (err) {
-        notification.notify("Error", err, NotificationType.error, 5000);
-        return;
-      }
-    } else {
-      let tipTradingPost = await initiateTradingPostFee();
-      let tipVRTHolder = await initiateVRTHolderFee();
-
-      try {
-        await client.transactions.sign(tipVRTHolder, JSON.parse($keyfile));
-        await client.transactions.post(tipVRTHolder);
-      } catch (err) {
-        notification.notify("Error", err, NotificationType.error, 5000);
-        return;
-      }
-
-      try {
-        await client.transactions.sign(tipTradingPost, JSON.parse($keyfile));
-        await client.transactions.post(tipTradingPost);
-      } catch (err) {
-        notification.notify("Error", err, NotificationType.error, 5000);
-        return;
-      }
-    }
-
-    try {
-      await client.transactions.sign(tx, JSON.parse($keyfile));
-      await client.transactions.post(tx);
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
-    }
+    console.log(order.txs);
+    await client.sendOrder(order.txs);
 
     notification.notify(
       "Sent",
