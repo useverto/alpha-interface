@@ -27,12 +27,16 @@
   import { notification } from "../stores/notificationStore.ts";
   import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
 
+  import Verto from "@verto/lib";
+
   notification.notify(
     "Warning",
     "Verto is currently in Alpha. Use at your own risk.",
     NotificationType.warning,
     10000
   );
+
+  const client = new Verto(JSON.parse($keyfile));
 
   let selectedPost;
   let buyAmount: number = 1;
@@ -286,11 +290,14 @@
       loading = false;
       return;
     } else if (mode === "buy") {
-      let txFees =
-        (await getFee(await initiateBuy())) +
-        (await getFee(await initiateExchangeFee()));
-      let arCost = txFees + buyAmount + getExchangeFee();
-      if (arCost > $balance) {
+      const order = await client.createOrder(
+        "buy",
+        buyAmount,
+        (await client.getTokens()).find((pst) => pst.ticker === buyToken).id,
+        selectedPost
+      );
+
+      if (order === "ar") {
         notification.notify(
           "Error",
           "You don't have enough AR.",
@@ -309,7 +316,8 @@
         loading = false;
         return;
       }
-      confirmModalText = `You're sending ${arCost} AR`;
+
+      confirmModalText = `You're sending ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
       return;
