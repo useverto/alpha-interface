@@ -295,7 +295,7 @@
       if (buyAmount > sum) {
         notification.notify(
           "Error",
-          "You're buying too much.",
+          "You're buying more than the orderbook allows.",
           NotificationType.error,
           5000
         );
