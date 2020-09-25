@@ -15,6 +15,9 @@
   import { pstContract, exchangeWallet } from "../utils/constants";
   import { interactRead } from "smartweave";
 
+  import Verto from "@verto/lib";
+  const client = new Verto();
+
   let activeMenu: string = "transactions";
   let addr: string = "";
 
@@ -176,86 +179,15 @@
   let supportedTokens = getSupportedTokens();
 
   async function getSupportedTokens(): Promise<Token[]> {
-    if (!process.browser) return [];
-
-    let tokenList: Token[] = [];
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    const supported = (
-      await query({
-        query: postTokensQuery,
-        variables: {
-          owners: [addr],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges;
-
-    // @ts-ignore
-    const txData = JSON.parse(
-      await client.transactions.getData(supported[0].node.id, {
-        decode: true,
-        string: true,
-      })
-    );
-    for (let x = 0; x < txData.acceptedTokens.length; x++) {
-      // @ts-ignore
-      let pstInfo = JSON.parse(
-        await client.transactions.getData(txData.acceptedTokens[x], {
-          decode: true,
-          string: true,
-        })
-      );
-      tokenList.push({
-        id: txData.acceptedTokens[x],
-        name: pstInfo.name,
-        ticker: pstInfo.ticker,
-      });
-    }
-
-    return tokenList;
+    return await client.getTPTokens(addr);
   }
 
   let balances = getTokenBalances();
 
-  async function getTokenBalances() {
-    if (!process.browser) return [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    const tokens = await supportedTokens;
-
-    let tokenBalances = [];
-    for (let i = 0; i < tokens.length; i++) {
-      let pstContract = await interactRead(
-        client,
-        JSON.parse($keyfile),
-        tokens[i].id,
-        {
-          function: "unlockedBalance",
-          target: addr,
-        }
-      );
-      if (pstContract.balance > 0) {
-        tokenBalances.push({
-          token: tokens[i].name,
-          ticker: tokens[i].ticker,
-          balance: pstContract.balance,
-        });
-      }
-    }
-
-    return tokenBalances;
+  async function getTokenBalances(): Promise<
+    { id: string; ticker: string; balance: number }[]
+  > {
+    return await client.getAssets(addr);
   }
 </script>
 
@@ -360,7 +292,7 @@
             {/if}
             {#each loadedBalances as balance}
               <tr>
-                <td>{balance.token}</td>
+                <td>{balance.id}</td>
                 <td>
                   {roundCurrency(balance.balance)}
                   <span class="currency">{balance.ticker}</span>
