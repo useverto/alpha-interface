@@ -60,62 +60,11 @@
   let posts = client.getTradingPosts();
   let psts = client.getTokens();
   let supportedPSTs = getTradingPostSupportedTokens();
-  let balances = getTokenBalances();
+  let balances: Promise<
+    { id: string; ticker: string; balance: number }[]
+  > = client.getAssets($address);
 
-  let exchangeTX;
   let loading: boolean = false;
-
-  async function getExchangeSupportedTokens(): Promise<Token[]> {
-    if (!process.browser) return [];
-
-    let psts: Token[] = [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let txIds = [];
-    const _txIds = (
-      await query({
-        query: tokensQuery,
-        variables: {
-          owners: [exchangeWallet],
-          contractSrc: pstContract,
-        },
-      })
-    ).data.transactions.edges;
-    _txIds.map(({ node }) => {
-      txIds.push(node.id);
-    });
-
-    for (const id of txIds) {
-      try {
-        const contractId = (
-          await client.transactions.getData(id, { decode: true, string: true })
-        ).toString();
-        const contractData = JSON.parse(
-          (
-            await client.transactions.getData(contractId, {
-              decode: true,
-              string: true,
-            })
-          ).toString()
-        );
-        psts.push({
-          id: contractId,
-          name: contractData["name"],
-          ticker: contractData["ticker"],
-        });
-      } catch (error) {
-        notification.notify("Error", error, NotificationType.error, 5000);
-      }
-    }
-
-    return psts;
-  }
 
   async function getTradingPostSupportedTokens(): Promise<Token[]> {
     if (!process.browser) return [];
@@ -164,37 +113,6 @@
     }
 
     return tokenList;
-  }
-
-  async function getTokenBalances() {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-    const supportedPSTs = await psts;
-    let tokenBalances = [];
-
-    for (let i = 0; i < supportedPSTs.length; i++) {
-      let pstContract = await interactRead(
-        client,
-        JSON.parse($keyfile),
-        supportedPSTs[i].id,
-        {
-          function: "unlockedBalance",
-        }
-      );
-      if (pstContract.balance > 0) {
-        tokenBalances.push({
-          token: supportedPSTs[i].name,
-          ticker: supportedPSTs[i].ticker,
-          balance: pstContract.balance,
-        });
-      }
-    }
-
-    return tokenBalances;
   }
 
   function roundCurrency(val: number | string): string {
@@ -627,7 +545,7 @@
         {/if}
         {#each loadedBalances as balance}
           <tr>
-            <td style="width: 40%">{balance.token}</td>
+            <td style="width: 40%">{balance.id}</td>
             <td style="width: 60%">
               {roundCurrency(balance.balance)}
               <span class="currency">{balance.ticker}</span>
