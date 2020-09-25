@@ -57,38 +57,13 @@
     if (params.get("post")) selectedPost = params.get("post");
   }
 
-  let posts = getTradingPosts();
-  let psts = getExchangeSupportedTokens();
+  let posts = client.getTradingPosts();
+  let psts = client.getTokens();
   let supportedPSTs = getTradingPostSupportedTokens();
   let balances = getTokenBalances();
 
   let exchangeTX;
   let loading: boolean = false;
-
-  async function getTradingPosts(): Promise<string[]> {
-    if (!process.browser) return [];
-
-    let posts: string[] = [];
-
-    const _posts = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges;
-
-    _posts.map(({ node }) => {
-      posts.push(node.owner.address);
-    });
-
-    posts = [...new Set(posts)]; // remove duplicates
-    if (selectedPost === undefined || selectedPost === "Loading...")
-      selectedPost = posts[0]; // set initial post if it is not selected in the URL already
-
-    return posts;
-  }
 
   async function getExchangeSupportedTokens(): Promise<Token[]> {
     if (!process.browser) return [];
@@ -153,7 +128,8 @@
       timeout: 20000,
     });
 
-    await posts;
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
     const supported = (
       await query({
@@ -229,6 +205,9 @@
 
   // open confirmation modal
   async function exchange() {
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
+
     loading = true;
     let a = await latestOpenExchanges;
     let b = await latestClosedExchanges;
@@ -351,7 +330,8 @@
       timeout: 200000,
     });
 
-    await posts;
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
     const txId = (
       await query({
@@ -577,7 +557,8 @@
       timeout: 200000,
     });
 
-    await posts;
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
     const txId = (
       await query({
