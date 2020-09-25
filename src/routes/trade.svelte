@@ -1,33 +1,19 @@
 <script lang="typescript">
+  import { balance, address, keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
+  import { notification } from "../stores/notificationStore";
+  import { NotificationType } from "../utils/types";
+  import Verto from "@verto/lib";
+  import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
-  import Footer from "../components/Footer.svelte";
-  import {
-    balance,
-    address,
-    keyfile,
-    loggedIn,
-  } from "../stores/keyfileStore.ts";
-  import Button from "../components/Button.svelte";
-  import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
+  import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
-  import { NotificationType } from "../utils/types";
-  import type { Token, TokenInstance, LatestExchange } from "../utils/types";
-  import { query } from "../api-client";
-  import galleryQuery from "../queries/gallery.gql";
-  import tokensQuery from "../queries/tokens.gql";
-  import postTokensQuery from "../queries/postTokens.gql";
-  import exchangesQuery from "../queries/exchanges.gql";
-  import Arweave from "arweave";
-  import { interactRead } from "smartweave";
-  import Community from "community-js";
-  import Transaction from "arweave/node/lib/transaction";
-  import { notification } from "../stores/notificationStore.ts";
-  import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
+  import Modal from "../components/Modal.svelte";
+  import Footer from "../components/Footer.svelte";
 
-  import Verto from "@verto/lib";
+  if (process.browser && !$loggedIn) goto("/");
 
   notification.notify(
     "Warning",
@@ -49,8 +35,6 @@
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
-
-  if (process.browser && !$loggedIn) goto("/");
 
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
