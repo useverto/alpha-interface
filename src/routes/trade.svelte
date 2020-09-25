@@ -127,9 +127,7 @@
       selectedPost = (await posts)[0];
 
     loading = true;
-    let a = await latestOpenExchanges;
-    let b = await latestClosedExchanges;
-    let c = await orderBook;
+    let orders = await orderBook;
 
     if ($address === selectedPost) {
       notification.notify(
@@ -177,7 +175,7 @@
       return;
     } else if (mode === "buy") {
       let sum = 0;
-      for (const order of c) {
+      for (const order of orders) {
         if (order.type === "Sell") {
           sum += order.amnt / order.rate;
         }
@@ -209,7 +207,7 @@
         );
         loading = false;
         return;
-      } else if (c.find((o) => o.type === "Sell") === undefined) {
+      } else if (orders.find((o) => o.type === "Sell") === undefined) {
         notification.notify(
           "Error",
           "There aren't any sell orders open. You cannot buy tokens if no sell orders are open.",
@@ -239,33 +237,10 @@
   let orderBook = getOrderBook();
 
   async function getOrderBook(): Promise<TokenInstance[]> {
-    if (!process.browser) return [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
     if (selectedPost === undefined || selectedPost === "Loading...")
       selectedPost = (await posts)[0];
 
-    const txId = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges[0]?.node.id;
-
-    const config = JSON.parse(
-      (
-        await client.transactions.getData(txId, { decode: true, string: true })
-      ).toString()
-    );
+    const config = await client.getConfig(selectedPost);
 
     try {
       let url = config["publicURL"].startsWith("https://")
@@ -292,43 +267,22 @@
   }
 
   async function confirmTrade() {
-    // const client = new Arweave({
-    //   host: "arweave.dev",
-    //   port: 443,
-    //   protocol: "https",
-    //   timeout: 200000,
-    // });
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
-    // await posts;
+    const config = await client.getConfig(selectedPost);
 
-    // const txId = (
-    //   await query({
-    //     query: galleryQuery,
-    //     variables: {
-    //       owners: [selectedPost],
-    //       recipients: [exchangeWallet],
-    //     },
-    //   })
-    // ).data.transactions.edges[0]?.node.id;
+    try {
+      let url = config["publicURL"].startsWith("https://")
+        ? config["publicURL"]
+        : "https://" + config["publicURL"];
+      const endpoint = url.endsWith("/") ? "ping" : "/ping";
+      await fetch(url + endpoint);
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
 
-    // const config = JSON.parse(
-    //   (
-    //     await client.transactions.getData(txId, { decode: true, string: true })
-    //   ).toString()
-    // );
-
-    // try {
-    //   let url = config["publicURL"].startsWith("https://")
-    //     ? config["publicURL"]
-    //     : "https://" + config["publicURL"];
-    //   const endpoint = url.endsWith("/") ? "ping" : "/ping";
-    //   await fetch(url + endpoint);
-    // } catch (err) {
-    //   notification.notify("Error", err, NotificationType.error, 5000);
-    //   return;
-    // }
-
-    console.log(order.txs);
     await client.sendOrder(order.txs);
 
     notification.notify(
@@ -345,153 +299,14 @@
     confirmModalText = "Loading...";
   }
 
-  let latestExchanges = getLatestExchanges();
-
-  async function getLatestExchanges(): Promise<LatestExchange[]> {
-    if (!process.browser) return [];
-    let loadedPsts = await psts;
-    let exchanges: LatestExchange[] = [];
-
-    const txs = (
-      await query({
-        query: exchangesQuery,
-        variables: {
-          recipients: [selectedPost],
-        },
-      })
-    ).data.transactions.edges;
-    txs.map(({ node }) => {
-      const tradeType = node.tags.find((tag) => tag.name === "Type")?.value;
-      if (tradeType) {
-        const tokenTag = tradeType === "Buy" ? "Token" : "Contract";
-        const token = node.tags.find((tag: any) => tag.name === tokenTag)
-          ?.value!;
-        const ticker = loadedPsts.find((pst) => pst.id === token)?.ticker;
-
-        const sent =
-          tradeType === "Buy"
-            ? node.quantity.ar + " AR"
-            : JSON.parse(
-                node.tags.find((tag: any) => tag.name === "Input")?.value!
-              )["qty"] +
-              " " +
-              ticker;
-        const received = "??? " + (tradeType === "Buy" ? ticker : "AR");
-
-        const rate = node.tags.find((tag: any) => tag.name === "Rate")?.value!;
-
-        exchanges.push({
-          id: node.id,
-          type: tradeType,
-          sent,
-          received,
-          rate,
-          ticker,
-          matched: false,
-        });
-      }
-    });
-
-    for (let i = 0; i < exchanges.length; i++) {
-      const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
-
-      const match = (
-        await query({
-          query: `
-          query {
-            transactions(
-              tags: [
-                { name: "Exchange", values: "Verto" }
-                { name: "Type", values: "Confirmation" }
-                { name: "Match", values: "${exchanges[i].id}" }
-              ]
-            ) {
-              edges {
-                node {
-                  block {
-                    timestamp
-                  }
-                  tags {
-                    name
-                    value
-                  }
-                }
-              }
-            }
-          }
-        `,
-        })
-      ).data.transactions.edges;
-
-      if (match[0]) {
-        exchanges[i].matched = true;
-
-        const receivedTag = match[0].node.tags.find(
-          (tag: any) => tag.name === "Received"
-        );
-        if (receivedTag) {
-          exchanges[i].received = receivedTag.value;
-        }
-      }
-    }
-    return exchanges;
-  }
-
-  let openTrades = latestOpenExchanges();
-
-  async function latestOpenExchanges(): Promise<LatestExchange[]> {
-    let txs = await latestExchanges;
-
-    let openExchanges = [];
-    for (let i = 0; i < txs.length; i++) {
-      if (txs[i].matched === false) {
-        openExchanges.push(txs[i]);
-      }
-    }
-    return openExchanges;
-  }
-
-  let closedTrades = latestClosedExchanges();
-
-  async function latestClosedExchanges(): Promise<LatestExchange[]> {
-    let txs = await latestExchanges;
-
-    let closedExchanges = [];
-    for (let i = 0; i < txs.length; i++) {
-      if (txs[i].matched === true) closedExchanges.push(txs[i]);
-    }
-
-    return closedExchanges;
-  }
-
   let tradingPostFeePercent = getTradingPostFeePercent();
 
   async function getTradingPostFeePercent(): Promise<number> {
-    if (!process.browser) return;
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
     if (selectedPost === undefined || selectedPost === "Loading...")
       selectedPost = (await posts)[0];
 
-    const txId = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges[0]?.node.id;
-    const config = JSON.parse(
-      (
-        await client.transactions.getData(txId, { decode: true, string: true })
-      ).toString()
-    );
+    const config = await client.getConfig(selectedPost);
+
     return parseFloat(config["tradeFee"]) * 100;
   }
 </script>
@@ -581,9 +396,7 @@
                 style="width: 100%"
                 on:change="{() => {
                   supportedPSTs = getTradingPostSupportedTokens();
-                  latestExchanges = getLatestExchanges();
-                  openTrades = latestOpenExchanges();
-                  closedTrades = latestClosedExchanges();
+                  orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                 }}">
                 {#await posts}
@@ -694,9 +507,7 @@
                 style="width: 100%"
                 on:change="{() => {
                   supportedPSTs = getTradingPostSupportedTokens();
-                  latestExchanges = getLatestExchanges();
-                  openTrades = latestOpenExchanges();
-                  closedTrades = latestClosedExchanges();
+                  orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                 }}">
                 {#await posts}
