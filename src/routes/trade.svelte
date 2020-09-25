@@ -58,8 +58,7 @@
   }
 
   let posts = client.getTradingPosts();
-  let psts = client.getTokens();
-  let supportedPSTs = getTradingPostSupportedTokens();
+  let psts = getTradingPostSupportedTokens();
   let balances: Promise<
     { id: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
@@ -67,52 +66,10 @@
   let loading: boolean = false;
 
   async function getTradingPostSupportedTokens(): Promise<Token[]> {
-    if (!process.browser) return [];
-
-    let tokenList: Token[] = [];
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
     if (selectedPost === undefined || selectedPost === "Loading...")
       selectedPost = (await posts)[0];
 
-    const supported = (
-      await query({
-        query: postTokensQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges;
-
-    // @ts-ignore
-    const txData = JSON.parse(
-      await client.transactions.getData(supported[0].node.id, {
-        decode: true,
-        string: true,
-      })
-    );
-    for (let x = 0; x < txData.acceptedTokens.length; x++) {
-      // @ts-ignore
-      let pstInfo = JSON.parse(
-        await client.transactions.getData(txData.acceptedTokens[x], {
-          decode: true,
-          string: true,
-        })
-      );
-      tokenList.push({
-        id: txData.acceptedTokens[x],
-        name: pstInfo.name,
-        ticker: pstInfo.ticker,
-      });
-    }
-
-    return tokenList;
+    return await client.getTPTokens(selectedPost);
   }
 
   function roundCurrency(val: number | string): string {
@@ -249,7 +206,7 @@
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
       let res = await (await fetch(url + endpoint)).clone().json();
-      let loadedPSTs = await supportedPSTs;
+      let loadedPSTs = await psts;
       const token = loadedPSTs.find(
         (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
       )?.id;
@@ -395,7 +352,7 @@
                 bind:value="{selectedPost}"
                 style="width: 100%"
                 on:change="{() => {
-                  supportedPSTs = getTradingPostSupportedTokens();
+                  psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                 }}">
@@ -439,7 +396,7 @@
                   pattern="\d+"
                   bind:value="{sellAmount}"
                   min="{1}" />
-                {#await supportedPSTs}
+                {#await psts}
                   <SkeletonLoading style="width: 35px; height: 38px" />
                 {:then loadedPSTs}
                   <select
@@ -506,7 +463,7 @@
                 bind:value="{selectedPost}"
                 style="width: 100%"
                 on:change="{() => {
-                  supportedPSTs = getTradingPostSupportedTokens();
+                  psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                 }}">
@@ -557,7 +514,7 @@
             <div style="width: 47%; margin-left: 3%">
               <p>Receive</p>
               <div class="input">
-                {#await supportedPSTs}
+                {#await psts}
                   <SkeletonLoading
                     style="width: 100% !important; height: 100% !important" />
                 {:then loadedPSTs}
