@@ -7,9 +7,9 @@
   onMount(async () => {
     const res = await (await fetch("http://ip-api.com/json")).json();
 
-    // if (res.countryCode !== "US") {
-    //   goto("/app");
-    // }
+    if (res.countryCode !== "US") {
+      goto("/app");
+    }
 
     if (!$loggedIn) {
       goto("/");
