@@ -27,6 +27,16 @@
   import { notification } from "../stores/notificationStore.ts";
   import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
 
+  import { onMount } from "svelte";
+
+  onMount(async () => {
+    const res = await (await fetch("http://ip-api.com/json")).json();
+
+    if (res.countryCode === "US") {
+      console.log("hey there!");
+    }
+  });
+
   notification.notify(
     "Warning",
     "Verto is currently in Alpha. Use at your own risk.",
