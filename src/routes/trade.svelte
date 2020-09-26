@@ -33,7 +33,7 @@
     const res = await (await fetch("http://ip-api.com/json")).json();
 
     if (res.countryCode === "US") {
-      console.log("hey there!");
+      goto("/usa");
     }
   });
 
