@@ -1,5 +1,15 @@
 <script lang="typescript">
+  import { onMount } from "svelte";
+  import { goto } from "@sapper/app";
   import NavBar from "../components/NavBar.svelte";
+
+  onMount(async () => {
+    const res = await (await fetch("http://ip-api.com/json")).json();
+
+    if (res.countryCode !== "US") {
+      goto("/app");
+    }
+  });
 </script>
 
 <svelte:head>
