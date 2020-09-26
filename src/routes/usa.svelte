@@ -62,9 +62,9 @@
       line-height: 2rem
   
   img.emoji
-    height: 1em;
-    width: 1em;
-    margin: 0 .05em 0 .1em;
-    vertical-align: -0.1em;
+    height: 1em
+    width: 1em
+    margin: 0 .05em 0 .1em
+    vertical-align: -0.1em
 
 </style>
