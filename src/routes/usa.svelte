@@ -7,9 +7,9 @@
   onMount(async () => {
     const res = await (await fetch("http://ip-api.com/json")).json();
 
-    if (res.countryCode !== "US") {
-      goto("/app");
-    }
+    // if (res.countryCode !== "US") {
+    //   goto("/app");
+    // }
 
     if (!$loggedIn) {
       goto("/");
@@ -26,15 +26,12 @@
   <div class="container">
     <div class="text">
       <h1>
-        <img
-          src="https://twemoji.maxcdn.com/v/latest/svg/1f44b.svg"
-          class="emoji"
-          draggable="false" />
-        <img
+        4 <img
           src="https://twemoji.maxcdn.com/v/latest/svg/1f1fa-1f1f8.svg"
           class="emoji"
-          draggable="false" />
+          draggable="false" /> 3
       </h1>
+      <h2>ACCESS DENIED</h2>
       <p>Looks like you're in the US.</p>
       <p>At the moment, we unfortunately can't allow trading from the US.</p>
     </div>
@@ -54,8 +51,20 @@
       transform: translate(-50%, -50%)
     
     h1
-      font-family: "Inter", sans-serif
-      font-size: 2.3em
+      font-size: 8em
+      font-weight: bold
+      margin-block-start: 0em
+      margin-block-end: 0em
+      
+      @media screen and (max-width: 720px)
+        font-size: 4em
+    
+    h2
+      font-size: 3em
+      margin-block-start: 0em
+
+      @media screen and (max-width: 720px)
+        font-size: 2.3em
     
     p
       font-size: 1.1em
