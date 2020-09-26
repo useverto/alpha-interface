@@ -1,6 +1,7 @@
 <script lang="typescript">
   import { onMount } from "svelte";
   import { goto } from "@sapper/app";
+  import { loggedIn } from "../stores/keyfileStore";
   import NavBar from "../components/NavBar.svelte";
 
   onMount(async () => {
@@ -8,6 +9,10 @@
 
     if (res.countryCode !== "US") {
       goto("/app");
+    }
+
+    if (!$loggedIn) {
+      goto("/");
     }
   });
 </script>
@@ -20,7 +25,16 @@
 <div class="usa">
   <div class="container">
     <div class="text">
-      <h1>Hey there ...</h1>
+      <h1>
+        <img
+          src="https://twemoji.maxcdn.com/v/latest/svg/1f44b.svg"
+          class="emoji"
+          draggable="false" />
+        <img
+          src="https://twemoji.maxcdn.com/v/latest/svg/1f1fa-1f1f8.svg"
+          class="emoji"
+          draggable="false" />
+      </h1>
       <p>Looks like you're in the US.</p>
       <p>At the moment, we unfortunately can't allow trading from the US.</p>
     </div>
@@ -46,5 +60,11 @@
     p
       font-size: 1.1em
       line-height: 2rem
+  
+  img.emoji
+    height: 1em;
+    width: 1em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
 
 </style>
