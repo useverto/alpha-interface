@@ -236,7 +236,7 @@
       {/each}
     </table>
   {:else if exchanges.length === 0}
-    <p>No trades found</p>
+    <p>No trades found.</p>
   {:else}
     <table>
       <tr>
