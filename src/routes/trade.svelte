@@ -44,7 +44,7 @@
   let posts = client.getTradingPosts();
   let psts = getTradingPostSupportedTokens();
   let balances: Promise<
-    { id: string; ticker: string; balance: number }[]
+    { id: string; name: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
 
   let loading: boolean = false;
@@ -279,37 +279,50 @@
   </div>
   <div class="assets">
     <h1 class="title">Assets</h1>
-    <table>
-      {#await balances}
-        {#each Array(5) as _}
-          <tr>
-            <td style="width: 40%">
-              <SkeletonLoading style="width: 100%" />
-            </td>
-            <td style="width: 60%">
-              <SkeletonLoading style="width: 100%" />
-            </td>
-          </tr>
-        {/each}
-      {:then loadedBalances}
-        <tr>
-          <th style="width: 40%">Token</th>
-          <th style="width: 60%">Amount</th>
+    {#await balances}
+      <table>
+        <tr style="width: 100%">
+          <th>Name</th>
+          <th>ID</th>
+          <th>Amount</th>
         </tr>
-        {#if loadedBalances.length === 0}
-          <p>You don't have any tokens!</p>
-        {/if}
-        {#each loadedBalances as balance}
+        {#each Array(4) as _}
           <tr>
-            <td style="width: 40%">{balance.id}</td>
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
             <td style="width: 60%">
-              {roundCurrency(balance.balance)}
-              <span class="currency">{balance.ticker}</span>
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
             </td>
           </tr>
         {/each}
-      {/await}
-    </table>
+      </table>
+    {:then loadedBalances}
+      {#if loadedBalances.length === 0}
+        <p>You don't have any tokens!</p>
+      {:else}
+        <table>
+          <tr style="width: 100%">
+            <th>Name</th>
+            <th>ID</th>
+            <th>Amount</th>
+          </tr>
+          {#each loadedBalances as balance}
+            <tr>
+              <td style="width: 20%">{balance.name}</td>
+              <td style="width: 60%">{balance.id}</td>
+              <td style="width: 20%">
+                {balance.balance}
+                <span class="currency">{balance.ticker}</span>
+              </td>
+            </tr>
+          {/each}
+        </table>
+      {/if}
+    {/await}
   </div>
   <div class="menu">
     <button

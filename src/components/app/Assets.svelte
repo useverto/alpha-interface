@@ -6,10 +6,10 @@
 
   const client = new Verto();
   let balances: Promise<
-    { id: string; ticker: string; balance: number }[]
+    { id: string; name: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
 
-  let transferPSTOpened: boolean = true;
+  let transferPSTOpened: boolean = false;
 
   const transfer = () => {};
   const cancel = () => {
@@ -20,15 +20,19 @@
 <div class="section">
   <div class="assets-table">
     <h1 class="title">Assets</h1>
-    <table>
-      <tr style="width: 100%">
-        <th>Token</th>
-        <th>Amount</th>
-      </tr>
-      {#await balances}
+    {#await balances}
+      <table>
+        <tr style="width: 100%">
+          <th>Name</th>
+          <th>ID</th>
+          <th>Amount</th>
+        </tr>
         {#each Array(4) as _}
           <tr>
-            <td style="width: 80%">
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+            <td style="width: 60%">
               <SkeletonLoading style="width: 100%;" />
             </td>
             <td style="width: 20%">
@@ -36,24 +40,30 @@
             </td>
           </tr>
         {/each}
-      {:then loadedBalances}
-        {#if loadedBalances.length === 0}
-          <p
-            style="position: absolute; top: 1.8em; left: 0; right: 0; text-align: center;">
-            You don't have any tokens!
-          </p>
-        {/if}
-        {#each loadedBalances as balance}
-          <tr>
-            <td>{balance.id}</td>
-            <td>
-              {balance.balance}
-              <span class="currency">{balance.ticker}</span>
-            </td>
+      </table>
+    {:then loadedBalances}
+      {#if loadedBalances.length === 0}
+        <p>You don't have any tokens!</p>
+      {:else}
+        <table>
+          <tr style="width: 100%">
+            <th>Name</th>
+            <th>ID</th>
+            <th>Amount</th>
           </tr>
-        {/each}
-      {/await}
-    </table>
+          {#each loadedBalances as balance}
+            <tr>
+              <td style="width: 20%">{balance.name}</td>
+              <td style="width: 60%">{balance.id}</td>
+              <td style="width: 20%">
+                {balance.balance}
+                <span class="currency">{balance.ticker}</span>
+              </td>
+            </tr>
+          {/each}
+        </table>
+      {/if}
+    {/await}
   </div>
 </div>
 <Modal
