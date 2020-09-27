@@ -1,21 +1,16 @@
 <script lang="typescript">
-  import NavBar from "../components/NavBar.svelte";
-  import Footer from "../components/Footer.svelte";
-  import Button from "../components/Button.svelte";
-  import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
-  import { fade } from "svelte/transition";
+  import Verto from "@verto/lib";
+  import { loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
-  import SkeletonLoading from "../components/SkeletonLoading.svelte";
-  import type { Transaction, Token } from "../utils/types";
-  import { query } from "../api-client";
-  import latestTransactionsQuery from "../queries/latestTransactions.gql";
-  import postTokensQuery from "../queries/postTokens.gql";
   import Arweave from "arweave";
   import Community from "community-js";
-  import { pstContract, exchangeWallet } from "../utils/constants";
-  import { interactRead } from "smartweave";
+  import { pstContract } from "../utils/constants";
+  import NavBar from "../components/NavBar.svelte";
+  import { fade } from "svelte/transition";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
+  import Button from "../components/Button.svelte";
+  import Footer from "../components/Footer.svelte";
 
-  import Verto from "@verto/lib";
   const client = new Verto();
 
   let activeMenu: string = "transactions";
@@ -35,9 +30,12 @@
     return val.toFixed(7);
   }
 
-  let transactions = getLatestTransactions();
+  let balance = getPostBalance();
+  let stake = getPostStake();
+  let timeStaked = getTimeStaked();
+  let reputation = getReputation();
 
-  async function getLatestTransactions(): Promise<
+  let transactions: Promise<
     {
       id: string;
       amount: number;
@@ -45,11 +43,30 @@
       status: string;
       timestamp: number;
     }[]
-  > {
-    return await client.getTransactions(addr);
-  }
+  > = client.getTransactions(addr);
+  let balances: Promise<
+    { id: string; name: string; ticker: string; balance: number }[]
+  > = client.getAssets(addr);
+  let supportedTokens: Promise<
+    {
+      id: string;
+      name: string;
+      ticker: string;
+    }[]
+  > = client.getTPTokens(addr);
 
-  let stake = getPostStake();
+  async function getPostBalance(): Promise<string> {
+    if (!process.browser) return "";
+
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    });
+
+    return client.ar.winstonToAr(await client.wallets.getBalance(addr));
+  }
 
   async function getPostStake(): Promise<number> {
     if (!process.browser) return 0;
@@ -67,8 +84,6 @@
     return await community.getVaultBalance(addr);
   }
 
-  let timeStaked = getTimeStaked();
-
   async function getTimeStaked(): Promise<number> {
     const client = new Arweave({
       host: "arweave.dev",
@@ -85,29 +100,12 @@
     let vaults = (await community.getState()).vault[addr];
     for (const vault of vaults) {
       if (vault.end > currentHeight) {
-        return vault.end - vault.start;
+        return currentHeight - vault.start;
       }
     }
 
     return 0;
   }
-
-  let balance = getPostBalance();
-
-  async function getPostBalance(): Promise<string> {
-    if (!process.browser) return "";
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    return client.ar.winstonToAr(await client.wallets.getBalance(addr));
-  }
-
-  let reputation = getReputation();
 
   async function getReputation(): Promise<number> {
     // Reputation determined from this diagram:
@@ -120,20 +118,6 @@
     return parseFloat(
       (stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3)
     );
-  }
-
-  let supportedTokens = getSupportedTokens();
-
-  async function getSupportedTokens(): Promise<Token[]> {
-    return await client.getTPTokens(addr);
-  }
-
-  let balances = getTokenBalances();
-
-  async function getTokenBalances(): Promise<
-    { id: string; name: string; ticker: string; balance: number }[]
-  > {
-    return await client.getAssets(addr);
   }
 </script>
 
