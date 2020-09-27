@@ -3,6 +3,7 @@
   import { goto } from "@sapper/app";
   import { loggedIn } from "../stores/keyfileStore";
   import NavBar from "../components/NavBar.svelte";
+  import usa from "../assets/usa.svg";
 
   onMount(async () => {
     const res = await (await fetch("http://ip-api.com/json")).json();
@@ -25,12 +26,7 @@
 <div class="usa">
   <div class="container">
     <div class="text">
-      <h1>
-        4 <img
-          src="https://twemoji.maxcdn.com/v/latest/svg/1f1fa-1f1f8.svg"
-          class="emoji"
-          draggable="false" /> 3
-      </h1>
+      <h1>4 <img src="{usa}" class="emoji" draggable="false" /> 3</h1>
       <h2>ACCESS DENIED</h2>
       <p>Looks like you're in the US.</p>
       <p>At the moment, we unfortunately can't allow trading from the US.</p>
