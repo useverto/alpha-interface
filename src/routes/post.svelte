@@ -37,70 +37,16 @@
 
   let transactions = getLatestTransactions();
 
-  async function getLatestTransactions(): Promise<Transaction[]> {
-    if (!process.browser) return [];
-
-    let txs: Transaction[] = [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    const outTxs = (
-        await query({
-          query: latestTransactionsQuery,
-          variables: {
-            recipients: null,
-            owners: [addr],
-          },
-        })
-      ).data.transactions.edges,
-      inTxs = (
-        await query({
-          query: latestTransactionsQuery,
-          variables: {
-            recipients: [addr],
-            owners: null,
-          },
-        })
-      ).data.transactions.edges;
-
-    outTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "out",
-        status: "",
-        timestamp: node.block.timestamp,
-      });
-    });
-    inTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "in",
-        status: "",
-        timestamp: node.block.timestamp,
-      });
-    });
-
-    txs.sort((a, b) => b.timestamp - a.timestamp);
-    txs = txs.slice(0, 5);
-
-    for (let i = 0; i < txs.length; i++) {
-      try {
-        let res = await client.transactions.getStatus(txs[i].id);
-        if (res.status === 200) txs[i].status = "success";
-        else txs[i].status = "pending";
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return txs;
+  async function getLatestTransactions(): Promise<
+    {
+      id: string;
+      amount: number;
+      type: string;
+      status: string;
+      timestamp: number;
+    }[]
+  > {
+    return await client.getTransactions(addr);
   }
 
   let stake = getPostStake();
@@ -185,7 +131,7 @@
   let balances = getTokenBalances();
 
   async function getTokenBalances(): Promise<
-    { id: string; ticker: string; balance: number }[]
+    { id: string; name: string; ticker: string; balance: number }[]
   > {
     return await client.getAssets(addr);
   }
@@ -242,9 +188,7 @@
         </h1>
       {:then loadedStake}
         <p>total stake</p>
-        <h1>
-          {roundCurrency(loadedStake.toString())}<span class="currency">VRT</span>
-        </h1>
+        <h1>{loadedStake}<span class="currency">VRT</span></h1>
       {/await}
     </div>
   </div>
@@ -270,15 +214,19 @@
     </div>
     <div class="content">
       {#if activeMenu === 'assets'}
-        <table in:fade="{{ duration: 400 }}">
-          <tr>
-            <th>Token</th>
-            <th>Amount</th>
-          </tr>
-          {#await balances}
-            {#each Array(5) as _}
+        {#await balances}
+          <table>
+            <tr style="width: 100%">
+              <th>Name</th>
+              <th>ID</th>
+              <th>Amount</th>
+            </tr>
+            {#each Array(4) as _}
               <tr>
-                <td style="width: 80%">
+                <td style="width: 20%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 60%">
                   <SkeletonLoading style="width: 100%;" />
                 </td>
                 <td style="width: 20%">
@@ -286,21 +234,30 @@
                 </td>
               </tr>
             {/each}
-          {:then loadedBalances}
-            {#if loadedBalances.length === 0}
-              <p>This trading post doesn't have any tokens!</p>
-            {/if}
-            {#each loadedBalances as balance}
-              <tr>
-                <td>{balance.id}</td>
-                <td>
-                  {roundCurrency(balance.balance)}
-                  <span class="currency">{balance.ticker}</span>
-                </td>
+          </table>
+        {:then loadedBalances}
+          {#if loadedBalances.length === 0}
+            <p>You don't have any tokens!</p>
+          {:else}
+            <table>
+              <tr style="width: 100%">
+                <th>Name</th>
+                <th>ID</th>
+                <th>Amount</th>
               </tr>
-            {/each}
-          {/await}
-        </table>
+              {#each loadedBalances as balance}
+                <tr>
+                  <td style="width: 20%">{balance.name}</td>
+                  <td style="width: 60%">{balance.id}</td>
+                  <td style="width: 20%">
+                    {balance.balance}
+                    <span class="currency">{balance.ticker}</span>
+                  </td>
+                </tr>
+              {/each}
+            </table>
+          {/if}
+        {/await}
       {:else if activeMenu === 'transactions'}
         <table in:fade="{{ duration: 400 }}">
           {#await transactions}
@@ -384,9 +341,6 @@
 </div>
 <Footer />
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../styles/tables.sass"

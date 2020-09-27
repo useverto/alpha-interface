@@ -1,86 +1,23 @@
 <script lang="typescript">
-  import { address } from "../../stores/keyfileStore.ts";
-  import moment from "moment";
-  import Loading from "../Loading.svelte";
+  import Verto from "@verto/lib";
+  import { address } from "../../stores/keyfileStore";
   import SkeletonLoading from "../SkeletonLoading.svelte";
-  import { fade } from "svelte/transition";
-  import latestTransactionsQuery from "../../queries/latestTransactions.gql";
-  import { query } from "../../api-client";
-  import Arweave from "arweave";
-  import type { Transaction } from "../../utils/types";
 
-  let transactions = getLatestTransactions();
+  const client = new Verto();
+  let transactions: Promise<
+    {
+      id: string;
+      amount: number;
+      type: string;
+      status: string;
+      timestamp: number;
+    }[]
+  > = client.getTransactions($address);
 
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
     if (typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
-  }
-
-  async function getLatestTransactions(): Promise<Transaction[]> {
-    if (!process.browser) return [];
-
-    let txs: Transaction[] = [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    const outTxs = (
-        await query({
-          query: latestTransactionsQuery,
-          variables: {
-            recipients: null,
-            owners: [$address],
-          },
-        })
-      ).data.transactions.edges,
-      inTxs = (
-        await query({
-          query: latestTransactionsQuery,
-          variables: {
-            recipients: [$address],
-            owners: null,
-          },
-        })
-      ).data.transactions.edges;
-
-    outTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "out",
-        status: "",
-        timestamp: node.block.timestamp,
-      });
-    });
-    inTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "in",
-        status: "",
-        timestamp: node.block.timestamp,
-      });
-    });
-
-    txs.sort((a, b) => b.timestamp - a.timestamp);
-    txs = txs.slice(0, 5);
-
-    for (let i = 0; i < txs.length; i++) {
-      try {
-        let res = await client.transactions.getStatus(txs[i].id);
-        if (res.status === 200) txs[i].status = "success";
-        else txs[i].status = "pending";
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return txs;
   }
 </script>
 
@@ -114,7 +51,7 @@
         <!-- empty line to push "view-all" down -->
       {/if}
       {#each loadedTxs as tx}
-        <tr in:fade="{{ duration: 300 }}">
+        <tr>
           <td style="width: 70%">
             <a
               href="https://viewblock.io/arweave/tx/{tx.id}"
@@ -133,9 +70,6 @@
   <a href="/app/all-transactions" class="view-all">View all {'->'}</a>
 </div>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../../styles/tables.sass"
