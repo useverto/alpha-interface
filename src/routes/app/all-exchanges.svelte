@@ -56,7 +56,7 @@
 
         const sent =
           tradeType === "Buy"
-            ? node.quantity.ar + " AR"
+            ? parseFloat(node.quantity.ar) + " AR"
             : JSON.parse(
                 node.tags.find((tag: any) => tag.name === "Input")?.value!
               )["qty"] +
@@ -68,7 +68,7 @@
           id: node.id,
           timestamp: node.block
             ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
-            : "NOT MINED YET",
+            : "not mined yet",
           type: tradeType,
           sent,
           received,
@@ -121,7 +121,7 @@
 
           _exchanges[i].duration = duration.humanize();
         } else {
-          _exchanges[i].duration = "NOT MINED YET";
+          _exchanges[i].duration = "not mined yet";
         }
 
         const receivedTag = match[0].node.tags.find(
@@ -214,38 +214,36 @@
 <NavBar />
 <div class="all-exchanges" in:fade="{{ duration: 300 }}">
   <h1 class="title">All Trades</h1>
-  <table>
-    <tr>
-      <th>Timestamp</th>
-      <th>Trade</th>
-      <th>Duration</th>
-    </tr>
-    {#if !loadedExchanges}
+  {#if !loadedExchanges}
+    <table>
+      <tr>
+        <th>Timestamp</th>
+        <th>Trade</th>
+        <th>Duration</th>
+      </tr>
       {#each Array(10) as _}
         <tr>
           <td style="width: 30%">
             <SkeletonLoading style="{'width: 100%'}" />
           </td>
-          <td style="width: 60%">
+          <td style="width: 45%">
             <SkeletonLoading style="{'width: 100%'}" />
           </td>
-          <td style="width: 15%">
+          <td style="width: 25%">
             <SkeletonLoading style="{'width: 100%'}" />
           </td>
         </tr>
       {/each}
-    {:else if exchanges.length === 0}
-      <p
-        in:fade="{{ duration: 150 }}"
-        style="position: absolute; left: 50%; transform: translateX(-50%);">
-        No trades found
-      </p>
+    </table>
+  {:else if exchanges.length === 0}
+    <p>No trades found</p>
+  {:else}
+    <table>
       <tr>
-        <td><br /></td>
-        <td></td>
+        <th>Timestamp</th>
+        <th>Trade</th>
+        <th>Duration</th>
       </tr>
-      <!-- empty line to push "view-all" down -->
-    {:else}
       {#each exchanges as exchange}
         <tr in:fade="{{ duration: 300 }}">
           <td style="width: 30%">{exchange.timestamp}</td>
@@ -257,26 +255,17 @@
           </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
-        <tr></tr>
       {/each}
-      {#if loading}
-        <!-- if the site is loading, but there are transactions already loaded  -->
-        <Loading style="position: absolute; left: 50%;" />
-        <tr>
-          <td><br /></td>
-          <td></td>
-        </tr>
-        <!-- empty line to push "view-all" down -->
-      {/if}
+    </table>
+    {#if loading}
+      <Loading style="position: absolute; left: 50%;" />
+      <br />
     {/if}
-  </table>
+  {/if}
 </div>
 <Footer />
 <span style="width: 100%; height: 1px" bind:this="{element}"></span>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../../styles/tables.sass"

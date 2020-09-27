@@ -13,12 +13,6 @@
       timestamp: number;
     }[]
   > = client.getTransactions($address);
-
-  function roundCurrency(val: number | string): string {
-    if (val === "?") return val;
-    if (typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
-  }
 </script>
 
 <div class="section">
@@ -40,16 +34,6 @@
         </tr>
       {/each}
     {:then loadedTxs}
-      {#if loadedTxs.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">
-          No transactions found
-        </p>
-        <tr>
-          <td><br /></td>
-          <td></td>
-        </tr>
-        <!-- empty line to push "view-all" down -->
-      {/if}
       {#each loadedTxs as tx}
         <tr>
           <td style="width: 70%">
@@ -61,9 +45,8 @@
             </a>
             <span class="status {tx.status}"></span>
           </td>
-          <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+          <td style="width: 20%">{tx.amount} AR</td>
         </tr>
-        <tr></tr>
       {/each}
     {/await}
   </table>

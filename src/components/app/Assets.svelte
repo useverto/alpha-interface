@@ -2,7 +2,7 @@
   import Verto from "@verto/lib";
   import { address } from "../../stores/keyfileStore";
   import SkeletonLoading from "../SkeletonLoading.svelte";
-  
+
   const client = new Verto();
   let balances: Promise<
     { id: string; name: string; ticker: string; balance: number }[]
