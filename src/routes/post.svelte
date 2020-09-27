@@ -244,6 +244,10 @@
         {/await}
       {:else if activeMenu === 'transactions'}
         <table in:fade="{{ duration: 400 }}">
+          <tr>
+            <th style="text-transform: none">TxID</th>
+            <th>Amount</th>
+          </tr>
           {#await transactions}
             {#each Array(5) as _}
               <tr>
@@ -256,18 +260,8 @@
               </tr>
             {/each}
           {:then loadedTxs}
-            <tr>
-              <th style="text-transform: none; width: 70%">TxID</th>
-              <th style="width: 20%">Amount</th>
-            </tr>
-            {#if loadedTxs.length === 0}
-              <p
-                style="position: absolute; left: 50%; transform: translateX(-50%);">
-                No transactions found
-              </p>
-            {/if}
             {#each loadedTxs as tx}
-              <tr in:fade="{{ duration: 300 }}">
+              <tr>
                 <td style="width: 70%">
                   <a
                     href="https://viewblock.io/arweave/tx/{tx.id}"
@@ -277,7 +271,7 @@
                   </a>
                   <span class="status {tx.status}"></span>
                 </td>
-                <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+                <td style="width: 20%">{tx.amount} AR</td>
               </tr>
             {/each}
           {/await}
