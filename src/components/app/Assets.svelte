@@ -1,12 +1,20 @@
 <script lang="ts">
   import Verto from "@verto/lib";
   import { address } from "../../stores/keyfileStore";
-  import SkeletonLoading from "../../components/SkeletonLoading.svelte";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import Modal from "../../components/Modal.svelte";
 
   const client = new Verto();
   let balances: Promise<
     { id: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
+
+  let transferPSTOpened: boolean = true;
+
+  const transfer = () => {};
+  const cancel = () => {
+    transferPSTOpened = false;
+  };
 </script>
 
 <div class="section">
@@ -48,10 +56,14 @@
     </table>
   </div>
 </div>
+<Modal
+  bind:opened="{transferPSTOpened}"
+  confirmation="{true}"
+  onConfirm="{transfer}"
+  onCancel="{cancel}">
+  <h3 style="text-align: center;">PST Transfer</h3>
+</Modal>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
   
   @import "../../styles/tables.sass"
