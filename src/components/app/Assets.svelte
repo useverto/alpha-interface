@@ -1,17 +1,32 @@
 <script lang="ts">
   import Verto from "@verto/lib";
   import { address } from "../../stores/keyfileStore";
+  import Button from "../../components/Button.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
+  import Modal from "../../components/Modal.svelte";
 
   const client = new Verto();
   let balances: Promise<
     { id: string; name: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
+
+  let transferPSTOpened: boolean = false;
+
+  const transfer = () => {};
+  const cancel = () => {
+    transferPSTOpened = false;
+  };
 </script>
 
 <div class="section">
   <div class="assets-table">
     <h1 class="title">Assets</h1>
+    <Button
+      click="{() => {
+        transferPSTOpened = true;
+      }}">
+      Transfer
+    </Button>
     {#await balances}
       <table>
         <tr style="width: 100%">
@@ -58,6 +73,13 @@
     {/await}
   </div>
 </div>
+<Modal
+  bind:opened="{transferPSTOpened}"
+  confirmation="{true}"
+  onConfirm="{transfer}"
+  onCancel="{cancel}">
+  <h3 style="text-align: center;">PST Transfer</h3>
+</Modal>
 
 <style lang="sass">
   
