@@ -25,12 +25,6 @@
     loading = false;
   let y: number, windowHeight: number;
 
-  function roundCurrency(val: number | string): string {
-    if (val === "?") return val;
-    if (typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
-  }
-
   onMount(() => loadMoreTransactions());
 
   async function loadMoreTransactions() {
@@ -85,7 +79,7 @@
         lastCursorOut = cursor;
         _transactions.push({
           id: node.id,
-          amount: node.quantity.ar,
+          amount: parseFloat(node.quantity.ar),
           type: "out",
           status: "",
           timestamp: node.block.timestamp,
@@ -97,7 +91,7 @@
         lastCursorIn = cursor;
         _transactions.push({
           id: node.id,
-          amount: node.quantity.ar,
+          amount: parseFloat(node.quantity.ar),
           type: "in",
           status: "",
           timestamp: node.block.timestamp,
@@ -160,17 +154,6 @@
           </td>
         </tr>
       {/each}
-    {:else if transactions.length === 0}
-      <p
-        in:fade="{{ duration: 150 }}"
-        style="position: absolute; left: 50%; transform: translateX(-50%);">
-        No transactions found
-      </p>
-      <tr>
-        <td><br /></td>
-        <td></td>
-      </tr>
-      <!-- empty line to push "view-all" down -->
     {:else}
       {#each transactions as tx}
         <tr in:fade="{{ duration: 150 }}">
@@ -181,17 +164,12 @@
             </a>
             <span class="status {tx.status}"></span>
           </td>
-          <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+          <td style="width: 20%">{tx.amount} AR</td>
         </tr>
       {/each}
       {#if loading}
-        <!-- if the site is loading, but there are transactions already loaded  -->
         <Loading style="position: absolute; left: 50%;" />
-        <tr>
-          <td><br /></td>
-          <td></td>
-        </tr>
-        <!-- empty line to push "view-all" down -->
+        <br />
       {/if}
     {/if}
   </table>
@@ -199,9 +177,6 @@
 <Footer />
 <span style="width: 100%; height: 1px" bind:this="{element}"></span>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../../styles/tables.sass"
