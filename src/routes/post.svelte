@@ -1,19 +1,17 @@
 <script lang="typescript">
-  import NavBar from "../components/NavBar.svelte";
-  import Footer from "../components/Footer.svelte";
-  import Button from "../components/Button.svelte";
-  import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
-  import { fade } from "svelte/transition";
+  import Verto from "@verto/lib";
+  import { loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
-  import SkeletonLoading from "../components/SkeletonLoading.svelte";
-  import type { Transaction, Token } from "../utils/types";
-  import { query } from "../api-client";
-  import latestTransactionsQuery from "../queries/latestTransactions.gql";
-  import postTokensQuery from "../queries/postTokens.gql";
   import Arweave from "arweave";
   import Community from "community-js";
-  import { pstContract, exchangeWallet } from "../utils/constants";
-  import { interactRead } from "smartweave";
+  import { pstContract } from "../utils/constants";
+  import NavBar from "../components/NavBar.svelte";
+  import { fade } from "svelte/transition";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
+  import Button from "../components/Button.svelte";
+  import Footer from "../components/Footer.svelte";
+
+  const client = new Verto();
 
   let activeMenu: string = "transactions";
   let addr: string = "";
@@ -32,12 +30,33 @@
     return val.toFixed(7);
   }
 
-  let transactions = getLatestTransactions();
+  let balance = getPostBalance();
+  let stake = getPostStake();
+  let timeStaked = getTimeStaked();
+  let reputation = getReputation();
 
-  async function getLatestTransactions(): Promise<Transaction[]> {
-    if (!process.browser) return [];
+  let transactions: Promise<
+    {
+      id: string;
+      amount: number;
+      type: string;
+      status: string;
+      timestamp: number;
+    }[]
+  > = client.getTransactions(addr);
+  let balances: Promise<
+    { id: string; name: string; ticker: string; balance: number }[]
+  > = client.getAssets(addr);
+  let supportedTokens: Promise<
+    {
+      id: string;
+      name: string;
+      ticker: string;
+    }[]
+  > = client.getTPTokens(addr);
 
-    let txs: Transaction[] = [];
+  async function getPostBalance(): Promise<string> {
+    if (!process.browser) return "";
 
     const client = new Arweave({
       host: "arweave.dev",
@@ -46,61 +65,8 @@
       timeout: 20000,
     });
 
-    const outTxs = (
-        await query({
-          query: latestTransactionsQuery,
-          variables: {
-            recipients: null,
-            owners: [addr],
-          },
-        })
-      ).data.transactions.edges,
-      inTxs = (
-        await query({
-          query: latestTransactionsQuery,
-          variables: {
-            recipients: [addr],
-            owners: null,
-          },
-        })
-      ).data.transactions.edges;
-
-    outTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "out",
-        status: "",
-        timestamp: node.block.timestamp,
-      });
-    });
-    inTxs.map(({ node }) => {
-      txs.push({
-        id: node.id,
-        amount: node.quantity.ar,
-        type: "in",
-        status: "",
-        timestamp: node.block.timestamp,
-      });
-    });
-
-    txs.sort((a, b) => b.timestamp - a.timestamp);
-    txs = txs.slice(0, 5);
-
-    for (let i = 0; i < txs.length; i++) {
-      try {
-        let res = await client.transactions.getStatus(txs[i].id);
-        if (res.status === 200) txs[i].status = "success";
-        else txs[i].status = "pending";
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return txs;
+    return client.ar.winstonToAr(await client.wallets.getBalance(addr));
   }
-
-  let stake = getPostStake();
 
   async function getPostStake(): Promise<number> {
     if (!process.browser) return 0;
@@ -118,8 +84,6 @@
     return await community.getVaultBalance(addr);
   }
 
-  let timeStaked = getTimeStaked();
-
   async function getTimeStaked(): Promise<number> {
     const client = new Arweave({
       host: "arweave.dev",
@@ -136,29 +100,12 @@
     let vaults = (await community.getState()).vault[addr];
     for (const vault of vaults) {
       if (vault.end > currentHeight) {
-        return vault.end - vault.start;
+        return currentHeight - vault.start;
       }
     }
 
     return 0;
   }
-
-  let balance = getPostBalance();
-
-  async function getPostBalance(): Promise<string> {
-    if (!process.browser) return "";
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    return client.ar.winstonToAr(await client.wallets.getBalance(addr));
-  }
-
-  let reputation = getReputation();
 
   async function getReputation(): Promise<number> {
     // Reputation determined from this diagram:
@@ -171,91 +118,6 @@
     return parseFloat(
       (stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3)
     );
-  }
-
-  let supportedTokens = getSupportedTokens();
-
-  async function getSupportedTokens(): Promise<Token[]> {
-    if (!process.browser) return [];
-
-    let tokenList: Token[] = [];
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    const supported = (
-      await query({
-        query: postTokensQuery,
-        variables: {
-          owners: [addr],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges;
-
-    // @ts-ignore
-    const txData = JSON.parse(
-      await client.transactions.getData(supported[0].node.id, {
-        decode: true,
-        string: true,
-      })
-    );
-    for (let x = 0; x < txData.acceptedTokens.length; x++) {
-      // @ts-ignore
-      let pstInfo = JSON.parse(
-        await client.transactions.getData(txData.acceptedTokens[x], {
-          decode: true,
-          string: true,
-        })
-      );
-      tokenList.push({
-        id: txData.acceptedTokens[x],
-        name: pstInfo.name,
-        ticker: pstInfo.ticker,
-      });
-    }
-
-    return tokenList;
-  }
-
-  let balances = getTokenBalances();
-
-  async function getTokenBalances() {
-    if (!process.browser) return [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    const tokens = await supportedTokens;
-
-    let tokenBalances = [];
-    for (let i = 0; i < tokens.length; i++) {
-      let pstContract = await interactRead(
-        client,
-        JSON.parse($keyfile),
-        tokens[i].id,
-        {
-          function: "unlockedBalance",
-          target: addr,
-        }
-      );
-      if (pstContract.balance > 0) {
-        tokenBalances.push({
-          token: tokens[i].name,
-          ticker: tokens[i].ticker,
-          balance: pstContract.balance,
-        });
-      }
-    }
-
-    return tokenBalances;
   }
 </script>
 
@@ -310,9 +172,7 @@
         </h1>
       {:then loadedStake}
         <p>total stake</p>
-        <h1>
-          {roundCurrency(loadedStake.toString())}<span class="currency">VRT</span>
-        </h1>
+        <h1>{loadedStake}<span class="currency">VRT</span></h1>
       {/await}
     </div>
   </div>
@@ -338,15 +198,19 @@
     </div>
     <div class="content">
       {#if activeMenu === 'assets'}
-        <table in:fade="{{ duration: 400 }}">
-          <tr>
-            <th>Token</th>
-            <th>Amount</th>
-          </tr>
-          {#await balances}
-            {#each Array(5) as _}
+        {#await balances}
+          <table>
+            <tr style="width: 100%">
+              <th>Name</th>
+              <th>ID</th>
+              <th>Amount</th>
+            </tr>
+            {#each Array(4) as _}
               <tr>
-                <td style="width: 80%">
+                <td style="width: 20%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 60%">
                   <SkeletonLoading style="width: 100%;" />
                 </td>
                 <td style="width: 20%">
@@ -354,23 +218,36 @@
                 </td>
               </tr>
             {/each}
-          {:then loadedBalances}
-            {#if loadedBalances.length === 0}
-              <p>This trading post doesn't have any tokens!</p>
-            {/if}
-            {#each loadedBalances as balance}
-              <tr>
-                <td>{balance.token}</td>
-                <td>
-                  {roundCurrency(balance.balance)}
-                  <span class="currency">{balance.ticker}</span>
-                </td>
+          </table>
+        {:then loadedBalances}
+          {#if loadedBalances.length === 0}
+            <p>You don't have any tokens!</p>
+          {:else}
+            <table>
+              <tr style="width: 100%">
+                <th>Name</th>
+                <th>ID</th>
+                <th>Amount</th>
               </tr>
-            {/each}
-          {/await}
-        </table>
+              {#each loadedBalances as balance}
+                <tr>
+                  <td style="width: 20%">{balance.name}</td>
+                  <td style="width: 60%">{balance.id}</td>
+                  <td style="width: 20%">
+                    {balance.balance}
+                    <span class="currency">{balance.ticker}</span>
+                  </td>
+                </tr>
+              {/each}
+            </table>
+          {/if}
+        {/await}
       {:else if activeMenu === 'transactions'}
         <table in:fade="{{ duration: 400 }}">
+          <tr>
+            <th style="text-transform: none">TxID</th>
+            <th>Amount</th>
+          </tr>
           {#await transactions}
             {#each Array(5) as _}
               <tr>
@@ -383,18 +260,8 @@
               </tr>
             {/each}
           {:then loadedTxs}
-            <tr>
-              <th style="text-transform: none; width: 70%">TxID</th>
-              <th style="width: 20%">Amount</th>
-            </tr>
-            {#if loadedTxs.length === 0}
-              <p
-                style="position: absolute; left: 50%; transform: translateX(-50%);">
-                No transactions found
-              </p>
-            {/if}
             {#each loadedTxs as tx}
-              <tr in:fade="{{ duration: 300 }}">
+              <tr>
                 <td style="width: 70%">
                   <a
                     href="https://viewblock.io/arweave/tx/{tx.id}"
@@ -404,7 +271,7 @@
                   </a>
                   <span class="status {tx.status}"></span>
                 </td>
-                <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+                <td style="width: 20%">{tx.amount} AR</td>
               </tr>
             {/each}
           {/await}
@@ -452,9 +319,6 @@
 </div>
 <Footer />
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../styles/tables.sass"

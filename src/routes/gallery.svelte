@@ -113,7 +113,7 @@
     let vaults = (await community.getState()).vault[addr];
     for (const vault of vaults) {
       if (vault.end > currentHeight) {
-        return vault.end - vault.start;
+        return currentHeight - vault.start;
       }
     }
 

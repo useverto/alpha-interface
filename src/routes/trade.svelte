@@ -1,31 +1,20 @@
 <script lang="typescript">
+  import { onMount } from "svelte";
+  import { balance, address, keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
+  import { notification } from "../stores/notificationStore";
+  import { NotificationType } from "../utils/types";
+  import Verto from "@verto/lib";
+  import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
-  import Footer from "../components/Footer.svelte";
-  import {
-    balance,
-    address,
-    keyfile,
-    loggedIn,
-  } from "../stores/keyfileStore.ts";
-  import Button from "../components/Button.svelte";
-  import Modal from "../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
+  import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
-  import { NotificationType } from "../utils/types";
-  import type { Token, TokenInstance, LatestExchange } from "../utils/types";
-  import { query } from "../api-client";
-  import galleryQuery from "../queries/gallery.gql";
-  import tokensQuery from "../queries/tokens.gql";
-  import postTokensQuery from "../queries/postTokens.gql";
-  import exchangesQuery from "../queries/exchanges.gql";
-  import Arweave from "arweave";
-  import { interactRead } from "smartweave";
-  import Community from "community-js";
-  import Transaction from "arweave/node/lib/transaction";
-  import { notification } from "../stores/notificationStore.ts";
-  import { exchangeWallet, pstContract, exchangeFee } from "../utils/constants";
+  import Modal from "../components/Modal.svelte";
+  import Footer from "../components/Footer.svelte";
+
+  if (process.browser && !$loggedIn) goto("/");
 
   import { onMount } from "svelte";
 
@@ -44,6 +33,12 @@
     10000
   );
 
+  let client = new Verto();
+  onMount(async () => {
+    client = new Verto(JSON.parse($keyfile));
+  });
+  let order;
+
   let selectedPost;
   let buyAmount: number = 1;
   let sellAmount: number = 1;
@@ -55,175 +50,24 @@
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
 
-  if (process.browser && !$loggedIn) goto("/");
-
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
     if (params.get("post")) selectedPost = params.get("post");
   }
 
-  let posts = getTradingPosts();
-  let psts = getExchangeSupportedTokens();
-  let supportedPSTs = getTradingPostSupportedTokens();
-  let balances = getTokenBalances();
+  let posts = client.getTradingPosts();
+  let psts = getTradingPostSupportedTokens();
+  let balances: Promise<
+    { id: string; name: string; ticker: string; balance: number }[]
+  > = client.getAssets($address);
 
-  let exchangeTX;
   let loading: boolean = false;
 
-  async function getTradingPosts(): Promise<string[]> {
-    if (!process.browser) return [];
-
-    let posts: string[] = [];
-
-    const _posts = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges;
-
-    _posts.map(({ node }) => {
-      posts.push(node.owner.address);
-    });
-
-    posts = [...new Set(posts)]; // remove duplicates
-    if (selectedPost === undefined || selectedPost === "Loading...")
-      selectedPost = posts[0]; // set initial post if it is not selected in the URL already
-
-    return posts;
-  }
-
-  async function getExchangeSupportedTokens(): Promise<Token[]> {
-    if (!process.browser) return [];
-
-    let psts: Token[] = [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let txIds = [];
-    const _txIds = (
-      await query({
-        query: tokensQuery,
-        variables: {
-          owners: [exchangeWallet],
-          contractSrc: pstContract,
-        },
-      })
-    ).data.transactions.edges;
-    _txIds.map(({ node }) => {
-      txIds.push(node.id);
-    });
-
-    for (const id of txIds) {
-      try {
-        const contractId = (
-          await client.transactions.getData(id, { decode: true, string: true })
-        ).toString();
-        const contractData = JSON.parse(
-          (
-            await client.transactions.getData(contractId, {
-              decode: true,
-              string: true,
-            })
-          ).toString()
-        );
-        psts.push({
-          id: contractId,
-          name: contractData["name"],
-          ticker: contractData["ticker"],
-        });
-      } catch (error) {
-        notification.notify("Error", error, NotificationType.error, 5000);
-      }
-    }
-
-    return psts;
-  }
-
   async function getTradingPostSupportedTokens(): Promise<Token[]> {
-    if (!process.browser) return [];
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
-    let tokenList: Token[] = [];
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    await posts;
-
-    const supported = (
-      await query({
-        query: postTokensQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges;
-
-    // @ts-ignore
-    const txData = JSON.parse(
-      await client.transactions.getData(supported[0].node.id, {
-        decode: true,
-        string: true,
-      })
-    );
-    for (let x = 0; x < txData.acceptedTokens.length; x++) {
-      // @ts-ignore
-      let pstInfo = JSON.parse(
-        await client.transactions.getData(txData.acceptedTokens[x], {
-          decode: true,
-          string: true,
-        })
-      );
-      tokenList.push({
-        id: txData.acceptedTokens[x],
-        name: pstInfo.name,
-        ticker: pstInfo.ticker,
-      });
-    }
-
-    return tokenList;
-  }
-
-  async function getTokenBalances() {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-    const supportedPSTs = await psts;
-    let tokenBalances = [];
-
-    for (let i = 0; i < supportedPSTs.length; i++) {
-      let pstContract = await interactRead(
-        client,
-        JSON.parse($keyfile),
-        supportedPSTs[i].id,
-        {
-          function: "unlockedBalance",
-        }
-      );
-      if (pstContract.balance > 0) {
-        tokenBalances.push({
-          token: supportedPSTs[i].name,
-          ticker: supportedPSTs[i].ticker,
-          balance: pstContract.balance,
-        });
-      }
-    }
-
-    return tokenBalances;
+    return await client.getTPTokens(selectedPost);
   }
 
   function roundCurrency(val: number | string): string {
@@ -234,10 +78,12 @@
 
   // open confirmation modal
   async function exchange() {
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
+
     loading = true;
-    let a = await latestOpenExchanges;
-    let b = await latestClosedExchanges;
-    let c = await orderBook;
+    let orders = await orderBook;
+
     if ($address === selectedPost) {
       notification.notify(
         "Error",
@@ -250,38 +96,24 @@
     }
 
     if (mode === "sell") {
-      let arCost =
-        (await getFee(await initiateSell())) +
-        (await getFee(await initiateTradingPostFee())) +
-        (await getFee(await initiateVRTHolderFee()));
-      let pstCost =
-        Math.ceil(sellAmount) + (await getTradingPostFee()) + getVRTHolderFee();
-      const token = (await supportedPSTs).find(
-        (pst) => pst.ticker === sellToken
+      order = await client.createOrder(
+        "sell",
+        sellAmount,
+        (await client.getTokens()).find((pst) => pst.ticker === sellToken).id,
+        selectedPost,
+        sellRate
       );
-      const amount = (await balances).find(
-        (amount) =>
-          amount.token === token.name && amount.ticker === token.ticker
-      );
-      if (!amount) {
+
+      if (order === "pst") {
         notification.notify(
           "Error",
-          "You don't have that token.",
+          "You don't have the sufficient amount of tokens.",
           NotificationType.error,
           5000
         );
         loading = false;
         return;
-      } else if (pstCost > amount.balance) {
-        notification.notify(
-          "Error",
-          "You don't have that many tokens.",
-          NotificationType.error,
-          5000
-        );
-        loading = false;
-        return;
-      } else if (arCost > $balance) {
+      } else if (order === "ar") {
         notification.notify(
           "Error",
           "You don't have enough AR.",
@@ -291,13 +123,14 @@
         loading = false;
         return;
       }
-      confirmModalText = `You're sending ${pstCost} ${sellToken} + ${arCost} AR`;
+
+      confirmModalText = `You're sending ${order.pst} ${sellToken} + ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
       return;
     } else if (mode === "buy") {
       let sum = 0;
-      for (const order of c) {
+      for (const order of orders) {
         if (order.type === "Sell") {
           sum += order.amnt / order.rate;
         }
@@ -313,11 +146,14 @@
         return;
       }
 
-      let txFees =
-        (await getFee(await initiateBuy())) +
-        (await getFee(await initiateExchangeFee()));
-      let arCost = txFees + buyAmount + getExchangeFee();
-      if (arCost > $balance) {
+      order = await client.createOrder(
+        "buy",
+        buyAmount,
+        (await client.getTokens()).find((pst) => pst.ticker === buyToken).id,
+        selectedPost
+      );
+
+      if (order === "ar") {
         notification.notify(
           "Error",
           "You don't have enough AR.",
@@ -326,7 +162,7 @@
         );
         loading = false;
         return;
-      } else if (c.find((o) => o.type === "Sell") === undefined) {
+      } else if (orders.find((o) => o.type === "Sell") === undefined) {
         notification.notify(
           "Error",
           "There aren't any sell orders open. You cannot buy tokens if no sell orders are open.",
@@ -336,7 +172,8 @@
         loading = false;
         return;
       }
-      confirmModalText = `You're sending ${arCost} AR`;
+
+      confirmModalText = `You're sending ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
       return;
@@ -355,32 +192,10 @@
   let orderBook = getOrderBook();
 
   async function getOrderBook(): Promise<TokenInstance[]> {
-    if (!process.browser) return [];
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    await posts;
-
-    const txId = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges[0]?.node.id;
-
-    const config = JSON.parse(
-      (
-        await client.transactions.getData(txId, { decode: true, string: true })
-      ).toString()
-    );
+    const config = await client.getConfig(selectedPost);
 
     try {
       let url = config["publicURL"].startsWith("https://")
@@ -389,7 +204,7 @@
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
       let res = await (await fetch(url + endpoint)).clone().json();
-      let loadedPSTs = await supportedPSTs;
+      let loadedPSTs = await psts;
       const token = loadedPSTs.find(
         (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
       )?.id;
@@ -407,30 +222,10 @@
   }
 
   async function confirmTrade() {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
-    await posts;
-
-    const txId = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges[0]?.node.id;
-
-    const config = JSON.parse(
-      (
-        await client.transactions.getData(txId, { decode: true, string: true })
-      ).toString()
-    );
+    const config = await client.getConfig(selectedPost);
 
     try {
       let url = config["publicURL"].startsWith("https://")
@@ -443,46 +238,7 @@
       return;
     }
 
-    let tx = mode === "buy" ? await initiateBuy() : await initiateSell();
-
-    if (mode === "buy") {
-      let tipExchange = await initiateExchangeFee();
-
-      try {
-        await client.transactions.sign(tipExchange, JSON.parse($keyfile));
-        await client.transactions.post(tipExchange);
-      } catch (err) {
-        notification.notify("Error", err, NotificationType.error, 5000);
-        return;
-      }
-    } else {
-      let tipTradingPost = await initiateTradingPostFee();
-      let tipVRTHolder = await initiateVRTHolderFee();
-
-      try {
-        await client.transactions.sign(tipVRTHolder, JSON.parse($keyfile));
-        await client.transactions.post(tipVRTHolder);
-      } catch (err) {
-        notification.notify("Error", err, NotificationType.error, 5000);
-        return;
-      }
-
-      try {
-        await client.transactions.sign(tipTradingPost, JSON.parse($keyfile));
-        await client.transactions.post(tipTradingPost);
-      } catch (err) {
-        notification.notify("Error", err, NotificationType.error, 5000);
-        return;
-      }
-    }
-
-    try {
-      await client.transactions.sign(tx, JSON.parse($keyfile));
-      await client.transactions.post(tx);
-    } catch (err) {
-      notification.notify("Error", err, NotificationType.error, 5000);
-      return;
-    }
+    await client.sendOrder(order.txs);
 
     notification.notify(
       "Sent",
@@ -498,386 +254,15 @@
     confirmModalText = "Loading...";
   }
 
-  async function getFee(tx: Transaction): Promise<number> {
-    await selectedPost;
-    await posts;
-
-    let fee, txSize, recipient;
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    txSize = parseFloat(tx.data_size);
-    recipient = tx.target;
-    fee = await client.transactions.getPrice(txSize, recipient);
-
-    return parseFloat(client.ar.winstonToAr(fee));
-  }
-
-  let latestExchanges = getLatestExchanges();
-
-  async function getLatestExchanges(): Promise<LatestExchange[]> {
-    if (!process.browser) return [];
-    let loadedPsts = await psts;
-    let exchanges: LatestExchange[] = [];
-
-    const txs = (
-      await query({
-        query: exchangesQuery,
-        variables: {
-          recipients: [selectedPost],
-        },
-      })
-    ).data.transactions.edges;
-    txs.map(({ node }) => {
-      const tradeType = node.tags.find((tag) => tag.name === "Type")?.value;
-      if (tradeType) {
-        const tokenTag = tradeType === "Buy" ? "Token" : "Contract";
-        const token = node.tags.find((tag: any) => tag.name === tokenTag)
-          ?.value!;
-        const ticker = loadedPsts.find((pst) => pst.id === token)?.ticker;
-
-        const sent =
-          tradeType === "Buy"
-            ? node.quantity.ar + " AR"
-            : JSON.parse(
-                node.tags.find((tag: any) => tag.name === "Input")?.value!
-              )["qty"] +
-              " " +
-              ticker;
-        const received = "??? " + (tradeType === "Buy" ? ticker : "AR");
-
-        const rate = node.tags.find((tag: any) => tag.name === "Rate")?.value!;
-
-        exchanges.push({
-          id: node.id,
-          type: tradeType,
-          sent,
-          received,
-          rate,
-          ticker,
-          matched: false,
-        });
-      }
-    });
-
-    for (let i = 0; i < exchanges.length; i++) {
-      const inverseTradeType = exchanges[i].type === "Buy" ? "Sell" : "Buy";
-
-      const match = (
-        await query({
-          query: `
-          query {
-            transactions(
-              tags: [
-                { name: "Exchange", values: "Verto" }
-                { name: "Type", values: "Confirmation" }
-                { name: "Match", values: "${exchanges[i].id}" }
-              ]
-            ) {
-              edges {
-                node {
-                  block {
-                    timestamp
-                  }
-                  tags {
-                    name
-                    value
-                  }
-                }
-              }
-            }
-          }
-        `,
-        })
-      ).data.transactions.edges;
-
-      if (match[0]) {
-        exchanges[i].matched = true;
-
-        const receivedTag = match[0].node.tags.find(
-          (tag: any) => tag.name === "Received"
-        );
-        if (receivedTag) {
-          exchanges[i].received = receivedTag.value;
-        }
-      }
-    }
-    return exchanges;
-  }
-
-  let openTrades = latestOpenExchanges();
-
-  async function latestOpenExchanges(): Promise<LatestExchange[]> {
-    let txs = await latestExchanges;
-
-    let openExchanges = [];
-    for (let i = 0; i < txs.length; i++) {
-      if (txs[i].matched === false) {
-        openExchanges.push(txs[i]);
-      }
-    }
-    return openExchanges;
-  }
-
-  let closedTrades = latestClosedExchanges();
-
-  async function latestClosedExchanges(): Promise<LatestExchange[]> {
-    let txs = await latestExchanges;
-
-    let closedExchanges = [];
-    for (let i = 0; i < txs.length; i++) {
-      if (txs[i].matched === true) closedExchanges.push(txs[i]);
-    }
-
-    return closedExchanges;
-  }
-
-  async function initiateBuy(): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    const ticker = buyToken;
-    const supportedPSTs = await psts;
-    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
-
-    const tags = {
-      Exchange: "Verto",
-      Type: "Buy",
-      Token: pstTxId,
-    };
-
-    const tx = await client.createTransaction(
-      {
-        target: selectedPost,
-        quantity: client.ar.arToWinston(buyAmount.toString()),
-      },
-      JSON.parse($keyfile)
-    );
-
-    for (const [key, value] of Object.entries(tags)) {
-      tx.addTag(key, value);
-    }
-    return tx;
-  }
-
-  async function initiateSell(): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    const ticker = sellToken;
-    const supportedPSTs = await psts;
-    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
-
-    const tags = {
-      Exchange: "Verto",
-      Type: "Sell",
-      "App-Name": "SmartWeaveAction",
-      "App-Version": "0.3.0",
-      Contract: pstTxId,
-      Rate: 1 / sellRate,
-      Input: `{"function":"transfer","target":"${selectedPost}","qty":${Math.ceil(
-        sellAmount
-      )}}`,
-    };
-
-    const tx = await client.createTransaction(
-      {
-        target: selectedPost,
-        data: Math.random().toString().slice(-4),
-      },
-      JSON.parse($keyfile)
-    );
-
-    for (const [key, value] of Object.entries(tags)) {
-      // @ts-ignore
-      tx.addTag(key, value);
-    }
-    return tx;
-  }
-
-  async function initiateExchangeFee(): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    const tags = {
-      Exchange: "Verto",
-      Type: "Fee-Exchange",
-    };
-
-    const fee = getExchangeFee();
-
-    const tx = await client.createTransaction(
-      {
-        target: exchangeWallet,
-        quantity: client.ar.arToWinston(fee.toString()),
-      },
-      JSON.parse($keyfile)
-    );
-
-    for (const [key, value] of Object.entries(tags)) {
-      tx.addTag(key, value);
-    }
-    return tx;
-  }
-
-  async function initiateTradingPostFee(): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    const ticker = sellToken;
-    const supportedPSTs = await psts;
-    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
-
-    const tradingPostFee = await getTradingPostFee();
-
-    const tags = {
-      Exchange: "Verto",
-      Type: "Fee-Trading-Post",
-      "App-Name": "SmartWeaveAction",
-      "App-Version": "0.3.0",
-      Contract: pstTxId,
-      Input: `{"function":"transfer","target":"${selectedPost}","qty":${tradingPostFee}}`,
-    };
-
-    const tx = await client.createTransaction(
-      {
-        target: selectedPost,
-        data: Math.random().toString().slice(-4),
-      },
-      JSON.parse($keyfile)
-    );
-
-    for (const [key, value] of Object.entries(tags)) {
-      // @ts-ignore
-      tx.addTag(key, value);
-    }
-    return tx;
-  }
-
-  async function initiateVRTHolderFee(): Promise<Transaction> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    const ticker = sellToken;
-    const supportedPSTs = await psts;
-    const pstTxId = supportedPSTs.find((pst) => pst.ticker === ticker).id;
-
-    const tipReceiver = await community.selectWeightedHolder();
-    const fee = getVRTHolderFee();
-
-    const tags = {
-      Exchange: "Verto",
-      Type: "Fee-VRT-Holder",
-      "App-Name": "SmartWeaveAction",
-      "App-Version": "0.3.0",
-      Contract: pstTxId,
-      Input: `{"function":"transfer","target":"${tipReceiver}","qty":${fee}}`,
-    };
-
-    const tx = await client.createTransaction(
-      {
-        target: tipReceiver,
-        data: Math.random().toString().slice(-4),
-      },
-      JSON.parse($keyfile)
-    );
-
-    for (const [key, value] of Object.entries(tags)) {
-      // @ts-ignore
-      tx.addTag(key, value);
-    }
-    return tx;
-  }
-
-  function getExchangeFee(): number {
-    return buyAmount * exchangeFee;
-  }
-
-  async function getTradingPostFee(): Promise<number> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-
-    const txId = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges[0]?.node.id;
-
-    const config = JSON.parse(
-      (
-        await client.transactions.getData(txId, { decode: true, string: true })
-      ).toString()
-    );
-
-    return Math.ceil(Math.ceil(sellAmount) * config["tradeFee"]);
-  }
-
   let tradingPostFeePercent = getTradingPostFeePercent();
 
   async function getTradingPostFeePercent(): Promise<number> {
-    if (!process.browser) return;
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
+    if (selectedPost === undefined || selectedPost === "Loading...")
+      selectedPost = (await posts)[0];
 
-    await posts;
+    const config = await client.getConfig(selectedPost);
 
-    const txId = (
-      await query({
-        query: galleryQuery,
-        variables: {
-          owners: [selectedPost],
-          recipients: [exchangeWallet],
-        },
-      })
-    ).data.transactions.edges[0]?.node.id;
-    const config = JSON.parse(
-      (
-        await client.transactions.getData(txId, { decode: true, string: true })
-      ).toString()
-    );
     return parseFloat(config["tradeFee"]) * 100;
-  }
-
-  function getVRTHolderFee(): number {
-    return Math.ceil(Math.ceil(sellAmount) * exchangeFee);
   }
 </script>
 
@@ -908,37 +293,50 @@
   </div>
   <div class="assets">
     <h1 class="title">Assets</h1>
-    <table>
-      {#await balances}
-        {#each Array(5) as _}
-          <tr>
-            <td style="width: 40%">
-              <SkeletonLoading style="width: 100%" />
-            </td>
-            <td style="width: 60%">
-              <SkeletonLoading style="width: 100%" />
-            </td>
-          </tr>
-        {/each}
-      {:then loadedBalances}
-        <tr>
-          <th style="width: 40%">Token</th>
-          <th style="width: 60%">Amount</th>
+    {#await balances}
+      <table>
+        <tr style="width: 100%">
+          <th>Name</th>
+          <th>ID</th>
+          <th>Amount</th>
         </tr>
-        {#if loadedBalances.length === 0}
-          <p>You don't have any tokens!</p>
-        {/if}
-        {#each loadedBalances as balance}
+        {#each Array(4) as _}
           <tr>
-            <td style="width: 40%">{balance.token}</td>
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
             <td style="width: 60%">
-              {roundCurrency(balance.balance)}
-              <span class="currency">{balance.ticker}</span>
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
             </td>
           </tr>
         {/each}
-      {/await}
-    </table>
+      </table>
+    {:then loadedBalances}
+      {#if loadedBalances.length === 0}
+        <p>You don't have any tokens!</p>
+      {:else}
+        <table>
+          <tr style="width: 100%">
+            <th>Name</th>
+            <th>ID</th>
+            <th>Amount</th>
+          </tr>
+          {#each loadedBalances as balance}
+            <tr>
+              <td style="width: 20%">{balance.name}</td>
+              <td style="width: 60%">{balance.id}</td>
+              <td style="width: 20%">
+                {balance.balance}
+                <span class="currency">{balance.ticker}</span>
+              </td>
+            </tr>
+          {/each}
+        </table>
+      {/if}
+    {/await}
   </div>
   <div class="menu">
     <button
@@ -965,10 +363,8 @@
                 bind:value="{selectedPost}"
                 style="width: 100%"
                 on:change="{() => {
-                  supportedPSTs = getTradingPostSupportedTokens();
-                  latestExchanges = getLatestExchanges();
-                  openTrades = latestOpenExchanges();
-                  closedTrades = latestClosedExchanges();
+                  psts = getTradingPostSupportedTokens();
+                  orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                 }}">
                 {#await posts}
@@ -1011,7 +407,7 @@
                   pattern="\d+"
                   bind:value="{sellAmount}"
                   min="{1}" />
-                {#await supportedPSTs}
+                {#await psts}
                   <SkeletonLoading style="width: 35px; height: 38px" />
                 {:then loadedPSTs}
                   <select
@@ -1078,10 +474,8 @@
                 bind:value="{selectedPost}"
                 style="width: 100%"
                 on:change="{() => {
-                  supportedPSTs = getTradingPostSupportedTokens();
-                  latestExchanges = getLatestExchanges();
-                  openTrades = latestOpenExchanges();
-                  closedTrades = latestClosedExchanges();
+                  psts = getTradingPostSupportedTokens();
+                  orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                 }}">
                 {#await posts}
@@ -1131,7 +525,7 @@
             <div style="width: 47%; margin-left: 3%">
               <p>Receive</p>
               <div class="input">
-                {#await supportedPSTs}
+                {#await psts}
                   <SkeletonLoading
                     style="width: 100% !important; height: 100% !important" />
                 {:then loadedPSTs}
