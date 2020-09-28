@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { onMount } from "svelte";
   import { balance, address, keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
@@ -22,7 +23,10 @@
     10000
   );
 
-  const client = new Verto(JSON.parse($keyfile));
+  let client = new Verto();
+  onMount(async () => {
+    client = new Verto(JSON.parse($keyfile));
+  });
   let order;
 
   let selectedPost;
