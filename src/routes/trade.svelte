@@ -16,8 +16,6 @@
 
   if (process.browser && !$loggedIn) goto("/");
 
-  import { onMount } from "svelte";
-
   onMount(async () => {
     const res = await (await fetch("http://ip-api.com/json")).json();
 
