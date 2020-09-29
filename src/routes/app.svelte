@@ -5,6 +5,8 @@
   import LatestExchanges from "../components/app/LatestExchanges.svelte";
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
   import { loggedIn, address, balance } from "../stores/keyfileStore.ts";
+  import { theme } from "../stores/themeStore";
+  import { Theme } from "../utils/types"
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
@@ -36,7 +38,14 @@
         <SkeletonLoading style="height: 1em; width: 400px" />
       </p>
     {:else}
-      <p in:fade="{{ duration: 150 }}">Your balance</p>
+      <p in:fade="{{ duration: 150 }}">
+        Your balance
+        <select class="theme-picker" bind:value={$theme}>
+          {#each Object.values(Theme) as themeOption}
+            <option value={themeOption}>{themeOption}</option>
+          {/each}
+        </select>
+      </p>
       <h1 class="total-balance" in:fade="{{ duration: 150 }}">
         {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
       </h1>
@@ -69,11 +78,36 @@
 
     .balance
       p
+        display: flex
+        align-items: center
+        justify-content: space-between
         color: rgba(#000, .3)
         text-transform: uppercase
         font-size: .9em
         margin: 0
         font-weight: 600
+
+        .theme-picker
+          $sidePadding: .65em
+          color: #fff
+          background-color: #000
+          text-transform: uppercase
+          font-size: 1em
+          padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
+          cursor: pointer
+          border-radius: .3em
+          outline: none
+          border: none
+          -webkit-appearance: none
+          -moz-appearance: none
+          background-image: url(/down-arrow.svg)
+          background-position: calc(100% - #{$sidePadding}) center
+          background-repeat: no-repeat
+          background-size: $sidePadding * 1.35
+          transition: all .3s
+
+          &:hover
+            opacity: .85
 
         &.wallet
           text-transform: none
