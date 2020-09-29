@@ -6,7 +6,7 @@
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
   import { loggedIn, address, balance } from "../stores/keyfileStore.ts";
   import { theme } from "../stores/themeStore";
-  import { Theme } from "../utils/types"
+  import { Theme } from "../utils/types";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
@@ -30,9 +30,9 @@
     {#if $balance === 0}
       <p>
         <SkeletonLoading style="height: 1em; width: 120px" />
-        <select class="theme-picker" bind:value={$theme}>
+        <select class="theme-picker" bind:value="{$theme}">
           {#each Object.values(Theme) as themeOption}
-            <option value={themeOption}>{themeOption}</option>
+            <option value="{themeOption}">{themeOption}</option>
           {/each}
         </select>
       </p>
@@ -44,10 +44,9 @@
       </p>
     {:else}
       <p in:fade="{{ duration: 150 }}">
-        Your balance
-        <select class="theme-picker" bind:value={$theme}>
+        Your balance <select class="theme-picker" bind:value="{$theme}">
           {#each Object.values(Theme) as themeOption}
-            <option value={themeOption}>{themeOption}</option>
+            <option value="{themeOption}">{themeOption}</option>
           {/each}
         </select>
       </p>

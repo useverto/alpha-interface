@@ -71,10 +71,10 @@ export interface TokenInstance {
 export enum Theme {
   Light = "Light",
   Dark = "Dark",
-  Auto = "Auto"
+  Auto = "Auto",
 }
 
 export enum DisplayTheme {
   Light = "Light",
-  Dark = "Dark"
+  Dark = "Dark",
 }
