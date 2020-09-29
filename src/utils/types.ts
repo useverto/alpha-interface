@@ -73,3 +73,8 @@ export enum Theme {
   Dark = "Dark",
   Auto = "Auto"
 }
+
+export enum DisplayTheme {
+  Light = "Light",
+  Dark = "Dark"
+}

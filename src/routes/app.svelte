@@ -30,6 +30,11 @@
     {#if $balance === 0}
       <p>
         <SkeletonLoading style="height: 1em; width: 120px" />
+        <select class="theme-picker" bind:value={$theme}>
+          {#each Object.values(Theme) as themeOption}
+            <option value={themeOption}>{themeOption}</option>
+          {/each}
+        </select>
       </p>
       <h1 class="total-balance">
         <SkeletonLoading style="height: 1em; width: 300px" />

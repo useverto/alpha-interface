@@ -1,5 +1,5 @@
-import { writable } from "svelte/store";
-import { Theme } from "../utils/types";
+import { writable, derived } from "svelte/store";
+import { Theme, DisplayTheme } from "../utils/types";
 
 export const theme = createThemeStore();
 
@@ -21,3 +21,20 @@ function createThemeStore () {
     subscribe
   }
 }
+
+export const displayTheme = derived(
+  theme,
+  $theme => {
+    let returnTheme = DisplayTheme.Light;
+    switch ($theme) {
+      case Theme.Dark:
+        returnTheme = DisplayTheme.Dark;
+        break;
+      case Theme.Auto:
+        // @ts-ignore
+        if(process.browser && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) returnTheme = DisplayTheme.Dark;
+        break;
+    }
+    return returnTheme;
+  }
+);
