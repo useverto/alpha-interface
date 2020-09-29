@@ -28,8 +28,8 @@ export const displayTheme = derived(theme, ($theme) => {
       returnTheme = DisplayTheme.Dark;
       break;
     case Theme.Auto:
-      // @ts-ignore
       if (
+        // @ts-ignore
         process.browser &&
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
