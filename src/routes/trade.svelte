@@ -16,6 +16,14 @@
 
   if (process.browser && !$loggedIn) goto("/");
 
+  onMount(async () => {
+    const res = await (await fetch("http://ip-api.com/json")).json();
+
+    if (res.countryCode === "US") {
+      goto("/usa");
+    }
+  });
+
   notification.notify(
     "Warning",
     "Verto is currently in Alpha. Use at your own risk.",
