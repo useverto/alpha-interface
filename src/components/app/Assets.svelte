@@ -20,13 +20,17 @@
 
 <div class="section">
   <div class="assets-table">
-    <h1 class="title">Assets</h1>
-    <Button
-      click="{() => {
-        transferPSTOpened = true;
-      }}">
-      Transfer
-    </Button>
+    <div class="menu">
+      <h1 class="title">Assets</h1>
+      <div>
+        <Button
+          click="{() => {
+            transferPSTOpened = true;
+          }}">
+          Transfer
+        </Button>
+      </div>
+    </div>
     {#await balances}
       <table>
         <tr style="width: 100%">
@@ -100,6 +104,16 @@
     .assets-table
       width: 100%
       transition: all .3s
+
+      .menu
+        position: relative
+        display: flex
+
+        @media screen and (min-width: 720px)
+          justify-content: space-between
+
+        div
+          padding-top: 1.8em
 
       a.view-all
         display: block
