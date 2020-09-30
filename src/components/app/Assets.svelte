@@ -12,6 +12,11 @@
 
   let transferPSTOpened: boolean = false;
 
+  let pst: string;
+  let amnt: string;
+  let max: string;
+  let target: string;
+
   const transfer = () => {};
   const cancel = () => {
     transferPSTOpened = false;
@@ -83,6 +88,23 @@
   onConfirm="{transfer}"
   onCancel="{cancel}">
   <h3 style="text-align: center;">PST Transfer</h3>
+  {#await balances}
+    <SkeletonLoading style="width: 35px; height: 38px" />
+  {:then loadedBalances}
+    <select
+      bind:value="{pst}"
+      on:change="{() => {
+        console.log(pst);
+      }}">
+      {#each loadedBalances.map((balance) => balance.ticker) as ticker}
+        <option value="{ticker}">{ticker}</option>
+      {/each}
+    </select>
+  {/await}
+  <!-- TODO(@johnletey): Add a max -->
+  <input type="number" bind:value="{amnt}" step="{1}" min="{1}" />
+
+  <input type="string" bind:value="{target}" />
 </Modal>
 
 <style lang="sass">
