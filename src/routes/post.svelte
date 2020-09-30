@@ -3,8 +3,6 @@
   import { loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import Arweave from "arweave";
-  import Community from "community-js";
-  import { pstContract } from "../utils/constants";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
@@ -31,7 +29,7 @@
   }
 
   let balance = getPostBalance();
-  let stake = getPostStake();
+  let stake = client.getPostStake(addr);
   let reputation = client.getReputation(addr);
 
   let transactions: Promise<
@@ -65,22 +63,6 @@
     });
 
     return client.ar.winstonToAr(await client.wallets.getBalance(addr));
-  }
-
-  async function getPostStake(): Promise<number> {
-    if (!process.browser) return 0;
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    return await community.getVaultBalance(addr);
   }
 </script>
 

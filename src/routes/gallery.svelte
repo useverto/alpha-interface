@@ -10,8 +10,7 @@
   import { query } from "../api-client";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
-  import { exchangeWallet, pstContract } from "../utils/constants";
-  import Community from "community-js";
+  import { exchangeWallet } from "../utils/constants";
 
   import Verto from "@verto/lib";
   const client = new Verto();
@@ -56,18 +55,15 @@
 
     for (const post of _posts.edges) {
       let node = post.node;
-      console.log(node.owner.address);
-      const balance = arweave.ar.winstonToAr(
-        await arweave.wallets.getBalance(node.owner.address)
-      );
-      const stake = await getPostStake(node.owner.address);
-
       lastCursor = post.cursor;
+
       posts.push({
         addr: node.owner.address,
         reputation: await client.getReputation(node.owner.address),
-        balance,
-        stake,
+        balance: arweave.ar.winstonToAr(
+          await arweave.wallets.getBalance(node.owner.address)
+        ),
+        stake: await client.getPostStake(node.owner.address),
       });
     }
 
@@ -76,22 +72,6 @@
 
     loadedFirstPosts = true;
     setTimeout(() => (loading = false), 400); // wait for animation and latency to complete (needed for the scroll)
-  }
-
-  async function getPostStake(addr: string): Promise<number> {
-    if (!process.browser) return 0;
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    return await community.getVaultBalance(addr);
   }
 
   $: {
