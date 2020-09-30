@@ -32,8 +32,7 @@
 
   let balance = getPostBalance();
   let stake = getPostStake();
-  let timeStaked = getTimeStaked();
-  let reputation = getReputation();
+  let reputation = client.getReputation(addr);
 
   let transactions: Promise<
     {
@@ -82,42 +81,6 @@
     await community.setCommunityTx(pstContract);
 
     return await community.getVaultBalance(addr);
-  }
-
-  async function getTimeStaked(): Promise<number> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    let currentHeight = (await client.network.getInfo()).height;
-
-    let vaults = (await community.getState()).vault[addr];
-    for (const vault of vaults) {
-      if (vault.end > currentHeight) {
-        return currentHeight - vault.start;
-      }
-    }
-
-    return 0;
-  }
-
-  async function getReputation(): Promise<number> {
-    // Reputation determined from this diagram:
-    // https://github.com/useverto/trading-post/blob/master/diagrams/reputation_calculation/reputation_calculation.png
-
-    let stakeWeighted = ((await stake) * 1) / 2,
-      timeStakedWeighted = ((await timeStaked) * 1) / 3,
-      balanceWeighted = (parseFloat(await balance) * 1) / 6;
-
-    return parseFloat(
-      (stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3)
-    );
   }
 </script>
 
