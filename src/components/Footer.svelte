@@ -38,14 +38,14 @@
 
   .Footer
     width: 80%
-    border-top: 5px solid black
+    border-top: 5px solid var(--text-color)
     margin: 0 auto
 
     @media screen and (max-width: 720px)
       margin-bottom: 4em
   
     .FooterContent
-      margin: 30px auto
+      padding: 30px 0
   
       div
         width: 32%

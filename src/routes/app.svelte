@@ -93,8 +93,8 @@
 
         .theme-picker
           $sidePadding: .65em
-          color: #fff
-          background-color: #000
+          color: var(--background-color)
+          background-color: var(--text-color)
           text-transform: uppercase
           font-size: 1em
           padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding

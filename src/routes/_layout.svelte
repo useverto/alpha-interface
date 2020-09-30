@@ -11,6 +11,16 @@
 <GoogleAnalytics stores="{stores}" id="{ga_measurment_id}" />
 <Notification />
 <main
-  style="--text-color: {$displayTheme === DisplayTheme.Dark ? '#fff' : '#000'}; --background-color: {$displayTheme === DisplayTheme.Dark ? '#000' : '#fff'}">
+  style="
+    --text-color: {$displayTheme === DisplayTheme.Dark ? '#fff' : '#000'};
+    --background-color: {$displayTheme === DisplayTheme.Dark ? '#000' : '#fff'};
+  ">
   <slot />
 </main>
+
+<style global lang="sass">
+
+  main
+    background-color: var(--background-color)
+
+</style>
