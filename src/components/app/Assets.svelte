@@ -89,22 +89,26 @@
   onCancel="{cancel}">
   <h3 style="text-align: center;">PST Transfer</h3>
   {#await balances}
-    <SkeletonLoading style="width: 35px; height: 38px" />
+    <SkeletonLoading />
   {:then loadedBalances}
-    <select
-      bind:value="{pst}"
-      on:change="{() => {
-        console.log(pst);
-      }}">
-      {#each loadedBalances.map((balance) => balance.ticker) as ticker}
-        <option value="{ticker}">{ticker}</option>
-      {/each}
-    </select>
-  {/await}
-  <!-- TODO(@johnletey): Add a max -->
-  <input type="number" bind:value="{amnt}" step="{1}" min="{1}" />
+    {#if loadedBalances.length === 0}
+      <p>Sorry, you don't have any tokens to transfer.</p>
+    {:else}
+      <select
+        bind:value="{pst}"
+        on:change="{() => {
+          console.log(pst);
+        }}">
+        {#each loadedBalances.map((balance) => balance.ticker) as ticker}
+          <option value="{ticker}">{ticker}</option>
+        {/each}
+      </select>
+      <!-- TODO(@johnletey): Add a max -->
+      <input type="number" bind:value="{amnt}" step="{1}" min="{1}" />
 
-  <input type="string" bind:value="{target}" />
+      <input type="string" bind:value="{target}" />
+    {/if}
+  {/await}
 </Modal>
 
 <style lang="sass">
