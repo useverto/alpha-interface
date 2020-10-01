@@ -1,6 +1,9 @@
 <script lang="ts">
   import Verto from "@verto/lib";
-  import { address } from "../../stores/keyfileStore";
+  import { address, keyfile } from "../../stores/keyfileStore";
+  import Arweave from "arweave";
+  import { notification } from "../../stores/notificationStore";
+  import { NotificationType } from "../../utils/types";
   import Button from "../../components/Button.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import Modal from "../../components/Modal.svelte";
@@ -17,7 +20,52 @@
   let max: string;
   let target: string;
 
-  const transfer = () => {};
+  const transfer = async () => {
+    const arweave = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+    });
+
+    const tokens: {
+      id: string;
+      name: string;
+      ticker: string;
+    }[] = await client.getTokens();
+
+    const tags = {
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      Contract: tokens.find((token) => token.ticker === pst).id,
+      Input: JSON.stringify({
+        function: "transfer",
+        target,
+        qty: amnt,
+      }),
+    };
+
+    const tx = await arweave.createTransaction(
+      {
+        target,
+        data: Math.random().toString().slice(-4),
+      },
+      JSON.parse($keyfile)
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value);
+    }
+
+    await arweave.transactions.sign(tx, JSON.parse($keyfile));
+    await arweave.transactions.post(tx);
+
+    notification.notify(
+      "Sent",
+      "You've sent tokens! This may take a few minutes.",
+      NotificationType.success,
+      5000
+    );
+  };
   const cancel = () => {
     transferPSTOpened = false;
   };
