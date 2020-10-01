@@ -72,8 +72,9 @@
     transferPSTOpened = false;
   };
   $: {
-    if(amnt > max) amnt = max;
-    if(amnt < 1) amnt = 1;
+    if (amnt > max) amnt = max;
+    if (amnt < 1) amnt = 1;
+    if (amnt % 1 !== 0) amnt = Math.round(amnt);
   }
 </script>
 
