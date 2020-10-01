@@ -71,6 +71,10 @@
   const cancel = () => {
     transferPSTOpened = false;
   };
+  $: {
+    if(amnt > max) amnt = max;
+    if(amnt < 1) amnt = 1;
+  }
 </script>
 
 <div class="section">
