@@ -12,7 +12,7 @@
   const client = new Verto();
   let balances: Promise<
     { id: string; name: string; ticker: string; balance: number }[]
-  > = client.getAssets("aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A");
+  > = client.getAssets($address);
 
   let loading: boolean = false;
   let transferPSTOpened: boolean = false;
