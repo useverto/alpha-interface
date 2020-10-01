@@ -44,7 +44,9 @@
   class:hero
   in:fade="{{ duration: 750 }}">
   <a href="{$loggedIn ? '/app' : '/'}" class="title">
-    <img src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}" alt="v" />
+    <img
+      src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}"
+      alt="v" />
     <span class="beta">alpha</span>
   </a>
   <div class="menu">
@@ -61,9 +63,14 @@
   {#if $loggedIn}
     <a href="/trade"><object data="{tradeLogo}" type="image/svg+xml"></object></a>
     <a href="/gallery"><object data="{postsLogo}" type="image/svg+xml"></object></a>
-    <a href="/app"><img class="verto" src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}" alt="v" /></a>
+    <a href="/app"><img
+        class="verto"
+        src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}"
+        alt="v" /></a>
     <a href="/tokens"><object data="{tokensLogo}" type="image/svg+xml"></object></a>
-    <a href="/" on:click="{mobileLogOut}"><object data="{logoutLogo}" type="image/svg+xml"></object></a>
+    <a href="/" on:click="{mobileLogOut}"><object
+        data="{logoutLogo}"
+        type="image/svg+xml"></object></a>
   {/if}
 </div>
 <Modal
