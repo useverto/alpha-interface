@@ -10,8 +10,10 @@
   import { query } from "../api-client";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
-  import { exchangeWallet, pstContract } from "../utils/constants";
-  import Community from "community-js";
+  import { exchangeWallet } from "../utils/constants";
+
+  import Verto from "@verto/lib";
+  const client = new Verto();
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -33,7 +35,7 @@
     loading = true;
     let posts: TradingPost[] = [];
 
-    const client = new Arweave({
+    const arweave = new Arweave({
       host: "arweave.dev",
       port: 443,
       protocol: "https",
@@ -53,24 +55,15 @@
 
     for (const post of _posts.edges) {
       let node = post.node;
-      const balance = client.ar.winstonToAr(
-        await client.wallets.getBalance(node.owner.address)
-      );
-      const stake = await getPostStake(node.owner.address);
-      const timeStaked = await getTimeStaked(node.owner.address);
-
-      let stakeWeighted = ((await stake) * 1) / 2,
-        timeStakedWeighted = ((await timeStaked) * 1) / 3,
-        balanceWeighted = (parseFloat(await balance) * 1) / 6;
-
       lastCursor = post.cursor;
+
       posts.push({
         addr: node.owner.address,
-        reputation: parseFloat(
-          (stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3)
+        reputation: await client.getReputation(node.owner.address),
+        balance: arweave.ar.winstonToAr(
+          await arweave.wallets.getBalance(node.owner.address)
         ),
-        balance,
-        stake,
+        stake: await client.getPostStake(node.owner.address),
       });
     }
 
@@ -79,45 +72,6 @@
 
     loadedFirstPosts = true;
     setTimeout(() => (loading = false), 400); // wait for animation and latency to complete (needed for the scroll)
-  }
-
-  async function getPostStake(addr: string): Promise<number> {
-    if (!process.browser) return 0;
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    return await community.getVaultBalance(addr);
-  }
-
-  async function getTimeStaked(addr: string): Promise<number> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    let currentHeight = (await client.network.getInfo()).height;
-
-    let vaults = (await community.getState()).vault[addr];
-    for (const vault of vaults) {
-      if (vault.end > currentHeight) {
-        return currentHeight - vault.start;
-      }
-    }
-
-    return 0;
   }
 
   $: {
@@ -187,9 +141,6 @@
 <Footer />
 <span style="width: 100%; height: 1px" bind:this="{element}"></span>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../styles/general.sass"
