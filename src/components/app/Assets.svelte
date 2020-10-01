@@ -12,14 +12,14 @@
   const client = new Verto();
   let balances: Promise<
     { id: string; name: string; ticker: string; balance: number }[]
-  > = client.getAssets($address);
+  > = client.getAssets("aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A");
 
   let loading: boolean = false;
   let transferPSTOpened: boolean = false;
 
   let pst: string;
-  let amnt: string;
-  let max: string;
+  let amnt: number;
+  let max: number;
   let target: string;
 
   const transfer = async () => {
@@ -88,6 +88,8 @@
                 loading = false;
                 return;
               } else {
+                pst = loadedBalances[0].ticker;
+                max = loadedBalances[0].balance;
                 loading = false;
                 transferPSTOpened = true;
               }
@@ -151,26 +153,19 @@
   onConfirm="{transfer}"
   onCancel="{cancel}">
   <h3 style="text-align: center;">PST Transfer</h3>
-  {#await balances}
-    <SkeletonLoading />
-  {:then loadedBalances}
-    {#if loadedBalances.length === 0}
-      <p>Sorry, you don't have any tokens to transfer.</p>
-    {:else}
-      <select
-        bind:value="{pst}"
-        on:change="{() => {
-          console.log(pst);
-        }}">
-        {#each loadedBalances.map((balance) => balance.ticker) as ticker}
-          <option value="{ticker}">{ticker}</option>
-        {/each}
-      </select>
-      <!-- TODO(@johnletey): Add a max -->
-      <input type="number" bind:value="{amnt}" step="{1}" min="{1}" />
+  {#await balances then loadedBalances}
+    <select
+      bind:value="{pst}"
+      on:change="{() => {
+        max = loadedBalances.find((balance) => balance.ticker === pst).balance;
+      }}">
+      {#each loadedBalances.map((balance) => balance.ticker) as ticker}
+        <option value="{ticker}">{ticker}</option>
+      {/each}
+    </select>
+    <input type="number" bind:value="{amnt}" step="{1}" min="{1}" max="{max}" />
 
-      <input type="string" bind:value="{target}" />
-    {/if}
+    <input type="string" bind:value="{target}" />
   {/await}
 </Modal>
 
