@@ -22,11 +22,6 @@
   > = getTokens();
 
   async function getTokens() {
-    const _tokens: {
-      id: string;
-      name: string;
-      ticker: string;
-    }[] = await client.getTokens();
     const tokens: {
       id: string;
       name: string;
@@ -34,7 +29,7 @@
       volume: number;
     }[] = [];
 
-    for (const token of _tokens) {
+    for (const token of await client.getTokens()) {
       const volume = (await client.volume(token.id)).volume.reduce(
         (a, b) => a + b,
         0
