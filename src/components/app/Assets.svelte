@@ -5,6 +5,7 @@
   import { notification } from "../../stores/notificationStore";
   import { NotificationType } from "../../utils/types";
   import Button from "../../components/Button.svelte";
+  import Loading from "../Loading.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import Modal from "../../components/Modal.svelte";
 
@@ -13,6 +14,7 @@
     { id: string; name: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
 
+  let loading: boolean = false;
   let transferPSTOpened: boolean = false;
 
   let pst: string;
@@ -76,12 +78,25 @@
     <div class="menu">
       <h1 class="title">Assets</h1>
       <div>
-        <Button
-          click="{() => {
-            transferPSTOpened = true;
-          }}">
-          Transfer
-        </Button>
+        {#if !loading}
+          <Button
+            click="{async () => {
+              loading = true;
+              const loadedBalances = await balances;
+              if (loadedBalances.length === 0) {
+                notification.notify('Sorry', "You don't have any tokens to transfer.", NotificationType.error, 5000);
+                loading = false;
+                return;
+              } else {
+                loading = false;
+                transferPSTOpened = true;
+              }
+            }}">
+            Transfer
+          </Button>
+        {:else}
+          <Loading />
+        {/if}
       </div>
     </div>
     {#await balances}
