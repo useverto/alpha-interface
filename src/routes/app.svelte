@@ -85,7 +85,7 @@
         display: flex
         align-items: center
         justify-content: space-between
-        color: rgba(#000, .3)
+        color: var(--secondary-text-color)
         text-transform: uppercase
         font-size: .9em
         margin: 0
@@ -94,7 +94,7 @@
         .theme-picker
           $sidePadding: .65em
           color: var(--background-color)
-          background-color: var(--text-color)
+          background-color: var(--inverted-elements-color)
           text-transform: uppercase
           font-size: 1em
           padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
@@ -118,7 +118,7 @@
 
       h1.total-balance
         font-size: 2.3em
-        color: #000
+        color: var(--primary-text-color)
         font-weight: 400
         margin: .14em 0
 

@@ -38,11 +38,11 @@
 
   .Footer
     width: 80%
-    border-top: 5px solid var(--text-color)
+    border-top: 5px solid var(--inverted-elements-color)
     margin: 0 auto
 
     @media screen and (max-width: 720px)
-      margin-bottom: 4em
+      padding-bottom: 4em
   
     .FooterContent
       padding: 30px 0
@@ -60,10 +60,9 @@
           text-decoration: none
           width: 100% !important
           transition: color linear 0.1s
-          color: black
+          color: var(--primary-text-color)
         
           &:hover
-            transition: color linear 0.1s
             color: #B075CD
 
 </style>

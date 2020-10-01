@@ -8,7 +8,8 @@
   import postsLogo from "../assets/nav/posts.svg";
   import logoutLogo from "../assets/nav/logout.svg";
   import Modal from "../components/Modal.svelte";
-  import { NotificationType } from "../utils/types.ts";
+  import { NotificationType, DisplayTheme } from "../utils/types";
+  import { displayTheme } from "../stores/themeStore";
 
   export let hero: boolean = false;
   let y: number;
@@ -43,7 +44,7 @@
   class:hero
   in:fade="{{ duration: 750 }}">
   <a href="{$loggedIn ? '/app' : '/'}" class="title">
-    <img src="/logo_light.svg" alt="v" />
+    <img src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}" alt="v" />
     <span class="beta">alpha</span>
   </a>
   <div class="menu">
@@ -58,13 +59,11 @@
 <div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"></div>
 <div class="mobile-nav">
   {#if $loggedIn}
-    <a href="/trade"><img src="{tradeLogo}" alt="trade" /></a>
-    <a href="/gallery"><img src="{postsLogo}" alt="gallery" /></a>
-    <a href="/app"><img class="verto" src="/logo_light.svg" alt="v" /></a>
-    <a href="/tokens"><img src="{tokensLogo}" alt="tokens" /></a>
-    <a href="/" on:click="{mobileLogOut}"><img
-        src="{logoutLogo}"
-        alt="logout" /></a>
+    <a href="/trade"><object data="{tradeLogo}" type="image/svg+xml"></object></a>
+    <a href="/gallery"><object data="{postsLogo}" type="image/svg+xml"></object></a>
+    <a href="/app"><img class="verto" src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}" alt="v" /></a>
+    <a href="/tokens"><object data="{tokensLogo}" type="image/svg+xml"></object></a>
+    <a href="/" on:click="{mobileLogOut}"><object data="{logoutLogo}" type="image/svg+xml"></object></a>
   {/if}
 </div>
 <Modal
@@ -102,7 +101,7 @@
     a.title
       font-family: "Inter", sans-serif
       text-decoration: none
-      color: #000
+      color: var(--primary-text-color)
       font-size: 1.75em
       font-weight: 600
       margin: 0
@@ -117,9 +116,9 @@
       span.beta
         margin-left: 4px
         font-size: .3em
-        color: #fff
+        color: var(--background-color)
         padding: 1px 3px
-        background-color: #000
+        background-color: var(--inverted-elements-color)
         border-radius: 2px
         text-transform: uppercase
 
@@ -133,7 +132,7 @@
 
       a
         $sideMargin: 5px
-        color: #000
+        color: var(--primary-text-color)
         position: relative
         text-decoration: none
         font-size: 16px
@@ -157,7 +156,7 @@
           height: 2px
           width: 0
           opacity: 0
-          background-color: #000
+          background-color: var(--inverted-elements-color)
           transition: all .18s
 
           @media screen and (max-width: 720px)
@@ -188,13 +187,13 @@
       @media screen and (max-width: 720px)
         .menu
           a
-            color: #fff
+            color: var(--background-color)
 
     &.scrolled
-      background-color: rgba(#fff, .7)
+      background-color: var(--nav-scrolled)
       backdrop-filter: blur(5px)
       -webkit-backdrop-filter: blur(5px)
-      border-color: rgba(#000, .075)
+      border-color: var(--nav-border)
 
       a.title
         opacity: 1
@@ -220,16 +219,16 @@
     justify-content: space-between
     z-index: 1000
     padding: .24em 2em
-    background-color: rgba(#fff, .7)
+    background-color: var(--nav-scrolled)
     backdrop-filter: blur(5px)
     -webkit-backdrop-filter: blur(5px)
-    border-top: 1px solid rgba(#000, .075)
+    border-top: 1px solid var(--nav-border)
 
     @media screen and (max-width: 720px)
       display: flex
 
     a
-      color: #000
+      color: var(--primary-text-color)
       text-decoration: none
       transition: all .3s
       -webkit-tap-highlight-color: transparent
@@ -237,7 +236,10 @@
       &:hover
         opacity: .85
 
-      img
+      object
+        filter: var(--svg-color)
+
+      object, img
         height: 1.435em
 
         &.verto

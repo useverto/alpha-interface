@@ -75,6 +75,9 @@
       width: 100vw - $mobileSidePadding * 2
       overflow-x: auto
 
+    p
+      color: var(--primary-text-color)
+
     .assets-table
       width: 100%
       transition: all .3s
@@ -82,7 +85,7 @@
       a.view-all
         display: block
         text-align: center
-        color: rgba(#000, .5)
+        color: var(--darker-secondary-text-color)
         font-weight: 500
         padding: .8em 0
         transition: all .3s
