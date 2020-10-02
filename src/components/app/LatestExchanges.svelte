@@ -1,6 +1,7 @@
 <script lang="ts">
   import Verto from "@verto/lib";
   import { address } from "../../stores/keyfileStore";
+  import Button from "../Button.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
 
   const client = new Verto();
@@ -14,7 +15,7 @@
       status: string;
       duration: string;
     }[]
-  > = client.getExchanges($address);
+  > = client.getExchanges("aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A");
 </script>
 
 <div class="section">
@@ -62,6 +63,9 @@
             <td style="width: 25%; text-transform: uppercase">
               {exchange.duration}
             </td>
+            {#if exchange.status === 'pending'}
+              <Button>Cancel</Button>
+            {/if}
           </tr>
         {/each}
       </table>
