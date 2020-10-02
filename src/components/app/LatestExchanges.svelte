@@ -1,8 +1,8 @@
 <script lang="ts">
   import Verto from "@verto/lib";
   import { address } from "../../stores/keyfileStore";
-  import Button from "../Button.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
+  import Button from "../Button.svelte";
 
   const client = new Verto();
   let exchanges: Promise<
@@ -15,7 +15,7 @@
       status: string;
       duration: string;
     }[]
-  > = client.getExchanges("aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A");
+  > = client.getExchanges($address);
 </script>
 
 <div class="section">
