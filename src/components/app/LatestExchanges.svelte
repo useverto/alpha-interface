@@ -1,8 +1,13 @@
 <script lang="ts">
   import Verto from "@verto/lib";
-  import { address } from "../../stores/keyfileStore";
+  import { address, keyfile } from "../../stores/keyfileStore";
+  import Arweave from "arweave";
+  import { notification } from "../../stores/notificationStore";
+  import { NotificationType } from "../../utils/types";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import Button from "../Button.svelte";
+  import Loading from "../Loading.svelte";
+  import Modal from "../../components/Modal.svelte";
 
   const client = new Verto();
   let exchanges: Promise<
@@ -16,6 +21,54 @@
       duration: string;
     }[]
   > = client.getExchanges($address);
+
+  let tx;
+  let loading: boolean = false;
+  let openModal: boolean = false;
+  const createCancel = async (order: string) => {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+    });
+
+    const tags = {
+      Exchange: "Verto",
+      Type: "Cancel",
+      Order: order,
+    };
+
+    tx = await client.createTransaction(
+      {
+        data: Math.random().toString().slice(-4),
+      },
+      JSON.parse($keyfile)
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value.toString());
+    }
+
+    console.log(tags, tx);
+  };
+  const sendCancel = async () => {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+    });
+
+    await client.transactions.sign(tx, JSON.parse($keyfile));
+    await client.transactions.post(tx);
+
+    openModal = false;
+    notification.notify(
+      "Cancelled",
+      "You've successfully cancelled your order. ",
+      NotificationType.success,
+      5000
+    );
+  };
 </script>
 
 <div class="section">
@@ -64,7 +117,19 @@
               {exchange.duration}
             </td>
             {#if exchange.status === 'pending'}
-              <Button>Cancel</Button>
+              {#if !loading}
+                <Button
+                  click="{async () => {
+                    loading = true;
+                    await createCancel(exchange.id);
+                    openModal = true;
+                    loading = false;
+                  }}">
+                  Cancel
+                </Button>
+              {:else}
+                <Loading />
+              {/if}
             {/if}
           </tr>
         {/each}
@@ -73,6 +138,13 @@
   {/await}
   <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
 </div>
+<Modal
+  bind:opened="{openModal}"
+  confirmation="{true}"
+  onConfirm="{sendCancel}"
+  onCancel="{() => (openModal = false)}">
+  <p>Are you sure you want to cancel this order?</p>
+</Modal>
 
 <style lang="sass">
   
