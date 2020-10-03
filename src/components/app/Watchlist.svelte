@@ -173,11 +173,13 @@
                 {/await}
               </div>
             </div>
-            {#await load(pst.id, pst.period) then loaded}
-              <Line
-                data="{{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}"
-                options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
-            {/await}
+            <div class="graph-wrapper">
+              {#await load(pst.id, pst.period) then loaded}
+                <Line
+                  data="{{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}"
+                  options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
+              {/await}
+            </div>
           </div>
         </div>
       {/each}
@@ -247,18 +249,21 @@
           order: 1
 
         .graph-container
-          width: calc(75% - .75em)
+          width: calc(90% - .75em)
           position: relative
           padding-right: .75em
           border-radius: 3px
           margin: 0 auto
           transition: all .3s
 
+          .graph-wrapper
+            padding-top: 2em
+
           .pst-info
             position: absolute
-            top: 0
-            left: 0
-            right: 0
+            top: .3em
+            left: .7em
+            right: .7em
             display: flex
             align-items: flex-start
             justify-content: space-between
@@ -278,7 +283,7 @@
 
               h1
                 text-align: right
-                margin-bottom: .38em
+                margin-bottom: .16em
 
               span.percentage
                 text-transform: uppercase
