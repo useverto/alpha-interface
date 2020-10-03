@@ -31,7 +31,7 @@
   let editMode = false;
   let addModalOpened = false;
   let addPst;
-  let addPeriod: number = 24;
+  let addPeriod: number = 7;
 
   function add() {
     const element = tokens.find((token) => token.ticker === addPst);
@@ -82,6 +82,34 @@
       return;
     }
     addModalOpened = true;
+  }
+
+  async function load(token: string, period: number) {
+    const returnedPrices = await client.price(token);
+    const length = returnedPrices.prices.length - 1;
+
+    const dates = returnedPrices.dates.slice(length - period, length);
+    const prices = returnedPrices.prices.slice(length - period, length);
+
+    const start = prices[0];
+    const end = prices[prices.length - 1];
+    let color;
+    let percentage = (end - start) / start;
+    if (end >= start) {
+      color = "#00D46E";
+      percentage = "+" + percentage.toFixed(2) + "%";
+    } else {
+      color = "#FF375D";
+      percentage = percentage.toFixed(2) + "%";
+    }
+
+    return {
+      dates,
+      prices,
+      latestPrice: end.toFixed(4),
+      color,
+      percentage,
+    };
   }
 </script>
 
@@ -134,23 +162,20 @@
                 }}"
                 in:fade />
             {/if}
-            <!-- TODO @johnletey -->
-            <!-- Don't forget to change the color too :) -->
-            <!-- Color depends on increase or decrease (decrease: #FF375D, increase: #00D46E) -->
-            <!-- Make sure to change both the borderColor and the pointBackgroundColor, but not the backgroundColor in the graph -->
-            <!-- Change the color of the increase/decrease percentage too -->
             <div class="pst-info">
               <h1>{pst.ticker}</h1>
               <div class="pst-price">
-                {#await client.latestPrice(pst.id) then latestPrice}
-                  <h1>{latestPrice.toFixed(4)}<span> Ar</span></h1>
+                {#await load(pst.id, pst.period) then loaded}
+                  <h1>{loaded.latestPrice} <span>AR</span></h1>
+                  <span
+                    class="percentage"
+                    style="{`color: ${loaded.color}`}">{loaded.percentage}</span>
                 {/await}
-                <span class="percentage" style="color: #FF375D">-6.04%</span>
               </div>
             </div>
-            {#await client.price(pst.id) then price}
+            {#await load(pst.id, pst.period) then loaded}
               <Line
-                data="{{ labels: price.dates, datasets: [{ data: price.prices, backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}"
+                data="{{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}"
                 options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
             {/await}
           </div>
@@ -174,7 +199,7 @@
     {/each}
   </select>
   <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">
-    Period (hours)
+    Period (days)
   </h2>
   <input
     type="number"
