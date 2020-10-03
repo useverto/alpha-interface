@@ -166,18 +166,26 @@
               <h1>{pst.ticker}</h1>
               <div class="pst-price">
                 {#await load(pst.id, pst.period) then loaded}
-                  <h1>{loaded.latestPrice} <span>AR</span></h1>
-                  <span
-                    class="percentage"
-                    style="{`color: ${loaded.color}`}">{loaded.percentage}</span>
+                  {#if loaded.prices.every((price) => isNaN(price))}
+                    <h1>--- <span>AR</span></h1>
+                  {:else}
+                    <h1>{loaded.latestPrice} <span>AR</span></h1>
+                    <span
+                      class="percentage"
+                      style="{`color: ${loaded.color}`}">{loaded.percentage}</span>
+                  {/if}
                 {/await}
               </div>
             </div>
             <div class="graph-wrapper">
               {#await load(pst.id, pst.period) then loaded}
-                <Line
-                  data="{{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}"
-                  options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
+                {#if loaded.prices.every((price) => isNaN(price))}
+                  <p>no data</p>
+                {:else}
+                  <Line
+                    data="{{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}"
+                    options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
+                {/if}
               {/await}
             </div>
           </div>
