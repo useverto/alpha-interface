@@ -23,6 +23,17 @@
   let target: string;
 
   const transfer = async () => {
+    const re = /[a-z0-9_-]{43}/i;
+    if (!re.test(target)) {
+      notification.notify(
+        "Invalid",
+        "You've entered an invalid Arweave address.",
+        NotificationType.error,
+        5000
+      );
+      return;
+    }
+
     const arweave = new Arweave({
       host: "arweave.dev",
       port: 443,
