@@ -157,20 +157,32 @@
   confirmation="{true}"
   onConfirm="{transfer}"
   onCancel="{cancel}">
-  <h3 style="text-align: center;">PST Transfer</h3>
+  <h1 class="title" style="text-align: center; margin-top: 0;">PST Transfer</h1>
   {#await balances then loadedBalances}
-    <select
-      bind:value="{pst}"
-      on:change="{() => {
-        max = loadedBalances.find((balance) => balance.ticker === pst).balance;
-      }}">
-      {#each loadedBalances.map((balance) => balance.ticker) as ticker}
-        <option value="{ticker}">{ticker}</option>
-      {/each}
-    </select>
-    <input type="number" bind:value="{amnt}" step="{1}" min="{1}" max="{max}" />
-
-    <input type="string" bind:value="{target}" />
+    <p style="margin-bottom: .3em;">PST Amount</p>
+    <div
+      style="display: flex; align-items: center; border-radius: 4px; overflow: hidden; border: 1px solid #fff; margin-bottom: 1em;">
+      <input
+        type="number"
+        bind:value="{amnt}"
+        step="{1}"
+        min="{1}"
+        max="{max}"
+        class="light"
+        style="border: none; width: 67%;" />
+      <select
+        style="height: 100%; display: block; outline: none; border: none; background-color: #fff; color: #000; width: 33%; font-size: 1.4em; padding: 0.18em 0.6em;"
+        bind:value="{pst}"
+        on:change="{() => {
+          max = loadedBalances.find((balance) => balance.ticker === pst).balance;
+        }}">
+        {#each loadedBalances.map((balance) => balance.ticker) as ticker}
+          <option value="{ticker}">{ticker}</option>
+        {/each}
+      </select>
+    </div>
+    <p style="margin-bottom: .3em;">PST Target</p>
+    <input type="string" bind:value="{target}" class="light" />
   {/await}
 </Modal>
 
