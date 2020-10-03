@@ -19,7 +19,6 @@
   }
 </script>
 
-
 <svelte:head>
   <title>Verto — Dashboard</title>
 </svelte:head>
@@ -52,7 +51,6 @@
 </div>
 <Footer />
 
-<!-- prettier-ignore -->
 <style lang="sass">
 
   @import "../styles/tables.sass"

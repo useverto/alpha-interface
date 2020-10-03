@@ -67,7 +67,6 @@
   }
 </script>
 
-
 <div class="watchlist">
   <h1 class="title">
     Watchlist
@@ -160,7 +159,6 @@
     bind:value="{addPeriod}" />
 </Modal>
 
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .watchlist
