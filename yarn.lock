@@ -1163,6 +1163,17 @@
     "@typescript-eslint/types" "4.0.1"
     eslint-visitor-keys "^2.0.0"
 
+"@verto/lib@^0.3.0-alpha.1":
+  version "0.3.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.3.0-alpha.1.tgz#dca6d7bf2ffebc9d237e883e657aa3323a374048"
+  integrity sha512-4qkntok9aHlZkeUdCN9Upa+Umjb22R0cQoh/vI8OhahsQdUC4RkpIHI1yiIfJffi/rhKPS/WJCpAOolApRKi1g==
+  dependencies:
+    arweave "^1.9.1"
+    community-js "^1.0.15"
+    moment "^2.28.0"
+    node-fetch "^2.6.1"
+    smartweave "^0.3.6"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -1734,6 +1745,15 @@ community-js@^1.0.14:
   dependencies:
     arweave "^1.9.1"
     smartweave "^0.3.5"
+    tiny-worker "^2.3.0"
+
+community-js@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.0.15.tgz#06a0b144735f8215ae78d9de7d3eec540a9aef49"
+  integrity sha512-RzlgUym2HkaPwW9Z0qV3GBAOHL82SqffXf0ZA+3QeXFlIXK4Zst6/8cHfSC97bm7+vFFTOhPNWI2rmR5Iomfyw==
+  dependencies:
+    arweave "^1.9.1"
+    smartweave "^0.3.6"
     tiny-worker "^2.3.0"
 
 compressible@~2.0.16:
@@ -3148,6 +3168,11 @@ moment@^2.10.2, moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
 
+moment@^2.28.0:
+  version "2.28.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.28.0.tgz#cdfe73ce01327cee6537b0fafac2e0f21a237d75"
+  integrity sha512-Z5KOjYmnHyd/ukynmFd/WwyXHd7L4J9vTI/nn5Ap9AVUgaAE15VvQ9MOGmJJygEUklupqIrFnor/tjTwRU+tQw==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -3187,6 +3212,11 @@ no-case@^3.0.3:
   dependencies:
     lower-case "^2.0.1"
     tslib "^1.10.0"
+
+node-fetch@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-gyp@^3.8.0:
   version "3.8.0"
