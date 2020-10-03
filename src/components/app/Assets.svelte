@@ -157,7 +157,6 @@
   confirmation="{true}"
   onConfirm="{transfer}"
   onCancel="{cancel}">
-  <h1 class="title" style="text-align: center; margin-top: 0;">PST Transfer</h1>
   {#await balances then loadedBalances}
     <p style="margin-bottom: .3em;">PST Amount</p>
     <div
