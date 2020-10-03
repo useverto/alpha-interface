@@ -245,6 +245,7 @@
 
       object
         filter: var(--svg-color)
+        pointer-events: none
 
       object, img
         height: 1.435em
