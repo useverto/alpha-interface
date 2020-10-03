@@ -10,51 +10,81 @@
   import { notification } from "../../stores/notificationStore.ts";
   import { NotificationType } from "../../utils/types.ts";
 
+  import { onMount } from "svelte";
+
+  import Verto from "@verto/lib";
+  const client = new Verto();
+
+  let tokens;
+  onMount(async () => {
+    tokens = await client.getTokens();
+    for (const element of $watchlist) {
+      const index = tokens.indexOf(
+        tokens.find((token) => token.ticker === element.ticker)
+      );
+      if (index > -1) {
+        tokens.splice(index, 1);
+      }
+    }
+  });
+
   let editMode = false;
   let addModalOpened = false;
+  let addPst;
   let addPeriod: number = 24;
   let psts: string[] = ["LUM", "VRT", "ART"];
 
-  $: addPsts = psts.filter(
-    (pst) =>
-      $watchlist.filter((wEl: IWatchlistElement) => wEl.pst === pst).length ===
-      0
-  );
-  $: addPst = addPsts.length === 0 ? null : addPsts[0];
+  // $: addPsts = psts.filter(
+  //   (pst) =>
+  //     $watchlist.filter((wEl: IWatchlistElement) => wEl.pst === pst).length ===
+  //     0
+  // );
+  // $: addPst = addPsts.length === 0 ? null : addPsts[0];
 
   function add() {
-    if (addPst === null) {
-      notification.notify(
-        "Error",
-        `No more PSTs available to add. Refresh the page!`,
-        NotificationType.error,
-        3000
-      );
-      return;
-    }
+    console.log(addPst);
+    const element = tokens.find((token) => token.ticker === addPst);
+    console.log(element);
+    const index = tokens.indexOf(element);
+    console.log(index);
+    tokens.splice(index, 1);
 
-    watchlist.addPst({ pst: addPst, period: addPeriod });
+    watchlist.addPst({
+      id: element.id,
+      name: element.name,
+      ticker: element.ticker,
+      period: addPeriod,
+    });
+
     addPeriod = 24;
     notification.notify(
       "Added",
-      `Added ${addPst} to watchlist.`,
+      `Added ${element.ticker} to watchlist.`,
       NotificationType.success,
       2000
     );
+
+    addPst = tokens[0] && tokens[0].ticker;
+    console.log(addPst);
   }
 
   function remove(pst: IWatchlistElement) {
-    watchlist.removePst(pst.pst);
+    tokens.push({
+      id: pst.id,
+      name: pst.name,
+      ticker: pst.ticker,
+    });
+    watchlist.removePst(pst.ticker);
     notification.notify(
       "Removed",
-      `Removed ${pst.pst} from watchlist.`,
+      `Removed ${pst.ticker} from watchlist.`,
       NotificationType.error,
       2000
     );
   }
 
   function openAddModal() {
-    if (addPsts.length === 0) {
+    if (tokens.length === 0) {
       notification.notify(
         "Error",
         `No more PSTs available to add.`,
@@ -122,7 +152,7 @@
             <!-- Make sure to change both the borderColor and the pointBackgroundColor, but not the backgroundColor in the graph -->
             <!-- Change the color of the increase/decrease percentage too -->
             <div class="pst-info">
-              <h1>{pst.pst}</h1>
+              <h1>{pst.ticker}</h1>
               <div class="pst-price">
                 <h1>0.0577<span>Ar</span></h1>
                 <span class="percentage" style="color: #FF375D">-6.04%</span>
@@ -145,8 +175,10 @@
   <select
     bind:value="{addPst}"
     style="display: block; color: #fff; width: 100%; background-color: transparent; outline: none; border: 1px solid #fff; border-radius: 4px; font-size: 1.4em; padding: 0.18em 0.6em;">
-    {#each addPsts as pst}
-      <option value="{pst}" style="background-color: #000;">{pst}</option>
+    {#each tokens as pst}
+      <option value="{pst.ticker}" style="background-color: #000;">
+        {pst.ticker}
+      </option>
     {/each}
   </select>
   <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">

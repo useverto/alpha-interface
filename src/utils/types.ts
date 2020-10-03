@@ -8,7 +8,9 @@ export enum NotificationType {
 }
 
 export interface IWatchlistElement {
-  pst: string;
+  id: string;
+  name: string;
+  ticker: string;
   period: number; // the last x hours (for e.g. 24h)
 }
 

@@ -23,9 +23,9 @@ function createWatchListStore() {
   }
 
   return {
-    addPst({ pst, period }: IWatchlistElement) {
+    addPst({ id, name, ticker, period }: IWatchlistElement) {
       update((curr: IWatchlistElement[]) => {
-        curr.push({ pst, period });
+        curr.push({ id, name, ticker, period });
         localStorage.setItem("watchlist", JSON.stringify(curr));
         return curr;
       });
@@ -33,7 +33,7 @@ function createWatchListStore() {
     removePst(pstName: string) {
       update((curr: IWatchlistElement[]) => {
         const updatedList = curr.filter(
-          (el: IWatchlistElement) => el.pst !== pstName
+          (el: IWatchlistElement) => el.ticker !== pstName
         );
         localStorage.setItem("watchlist", JSON.stringify(updatedList));
         return updatedList;
