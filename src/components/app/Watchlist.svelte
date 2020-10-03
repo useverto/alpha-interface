@@ -32,21 +32,10 @@
   let addModalOpened = false;
   let addPst;
   let addPeriod: number = 24;
-  let psts: string[] = ["LUM", "VRT", "ART"];
-
-  // $: addPsts = psts.filter(
-  //   (pst) =>
-  //     $watchlist.filter((wEl: IWatchlistElement) => wEl.pst === pst).length ===
-  //     0
-  // );
-  // $: addPst = addPsts.length === 0 ? null : addPsts[0];
 
   function add() {
-    console.log(addPst);
     const element = tokens.find((token) => token.ticker === addPst);
-    console.log(element);
     const index = tokens.indexOf(element);
-    console.log(index);
     tokens.splice(index, 1);
 
     watchlist.addPst({
@@ -65,7 +54,6 @@
     );
 
     addPst = tokens[0] && tokens[0].ticker;
-    console.log(addPst);
   }
 
   function remove(pst: IWatchlistElement) {
@@ -154,13 +142,17 @@
             <div class="pst-info">
               <h1>{pst.ticker}</h1>
               <div class="pst-price">
-                <h1>0.0577<span>Ar</span></h1>
+                {#await client.latestPrice(pst.id) then latestPrice}
+                  <h1>{latestPrice.toFixed(4)}<span> Ar</span></h1>
+                {/await}
                 <span class="percentage" style="color: #FF375D">-6.04%</span>
               </div>
             </div>
-            <Line
-              data="{{ labels: ['test', 'fd', 'fdfd', 'tgffgf'], datasets: [{ data: [10, 20, 10, 40, 60, 80, 100, 61, 50, 70, 80, 60, 90], backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}"
-              options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
+            {#await client.price(pst.id) then price}
+              <Line
+                data="{{ labels: price.dates, datasets: [{ data: price.prices, backgroundColor: 'transparent', borderColor: '#FF375D', pointBackgroundColor: '#FF375D' }] }}"
+                options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
+            {/await}
           </div>
         </div>
       {/each}
