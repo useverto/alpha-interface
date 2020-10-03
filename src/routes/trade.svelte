@@ -13,7 +13,6 @@
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Loading from "../components/Loading.svelte";
-  import Price from "../components/Price.svelte";
   import { NotificationType } from "../utils/types";
   import type { Token, TokenInstance, LatestExchange } from "../utils/types";
   import { query } from "../api-client";
@@ -914,7 +913,6 @@
       {/await}
     </table>
   </div>
-  <Price />
   <div class="menu">
     <button
       class:active="{mode === 'buy'}"
