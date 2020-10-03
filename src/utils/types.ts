@@ -7,6 +7,11 @@ export enum NotificationType {
   success = "success",
 }
 
+export interface IWatchlistElement {
+  pst: string;
+  period: number; // the last x hours (for e.g. 24h)
+}
+
 export interface GraphqlQuery {
   query: DocumentNode | string;
   variables: Record<string, any> | null;
