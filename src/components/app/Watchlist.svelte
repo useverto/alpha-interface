@@ -53,6 +53,7 @@
     );
 
     addPst = tokens[0] && tokens[0].ticker;
+    addPeriod = undefined;
   }
 
   function remove(pst: IWatchlistElement) {
