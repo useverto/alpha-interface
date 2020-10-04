@@ -277,9 +277,19 @@
     const contract = (await psts).find((pst) => pst.ticker === ticker).id;
 
     if (selectedMetric === "price") {
-      return await client.price("usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A");
+      const data = await client.price(contract);
+      data.empty = false;
+      if (data.prices.every((price) => isNaN(price))) {
+        data.empty = true;
+      }
+      return data;
     } else {
-      return await client.volume("usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A");
+      const data = await client.volume(contract);
+      data.empty = false;
+      if (data.volume.length === 0 && data.dates.length === 0) {
+        data.empty = true;
+      }
+      return data;
     }
   }
 </script>
@@ -325,24 +335,32 @@
     {#await metricData}
       <Loading />
     {:then loadedMetrics}
-      <Line
-        data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
-                gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
-                return gradient;
-              }, borderColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              }, pointBackgroundColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              } }] }}"
-        options="{{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }}" />
+      {#if loadedMetrics.empty}
+        {#if selectedMetric === 'price'}
+          <p>no price data.</p>
+        {:else}
+          <p>no trading volume.</p>
+        {/if}
+      {:else}
+        <Line
+          data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
+                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                  gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
+                  gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
+                  return gradient;
+                }, borderColor: function (context) {
+                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                  gradient.addColorStop(0, '#E698E8');
+                  gradient.addColorStop(1, '#8D5FBC');
+                  return gradient;
+                }, pointBackgroundColor: function (context) {
+                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                  gradient.addColorStop(0, '#E698E8');
+                  gradient.addColorStop(1, '#8D5FBC');
+                  return gradient;
+                } }] }}"
+          options="{{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }}" />
+      {/if}
     {/await}
   </div>
   <div class="menu">
@@ -351,12 +369,14 @@
       on:click="{() => {
         mode = 'buy';
         orderBook = getOrderBook();
+        metricData = getMetrics();
       }}">Buy</button>
     <button
       class:active="{mode === 'sell'}"
       on:click="{() => {
         mode = 'sell';
         orderBook = getOrderBook();
+        metricData = getMetrics();
       }}">Sell</button>
   </div>
   <div class="trade-container">
@@ -373,6 +393,7 @@
                   psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
+                  metricData = getMetrics();
                 }}">
                 {#await posts}
                   <option disabled>Loading...</option>
@@ -421,6 +442,7 @@
                     bind:value="{sellToken}"
                     on:change="{() => {
                       orderBook = getOrderBook();
+                      metricData = getMetrics();
                     }}">
                     {#each loadedPSTs as pst}
                       <option value="{pst.ticker}">{pst.ticker}</option>
@@ -484,6 +506,7 @@
                   psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
+                  metricData = getMetrics();
                 }}">
                 {#await posts}
                   <option disabled>Loading...</option>
@@ -541,6 +564,7 @@
                     style="width: 100% !important;"
                     on:change="{() => {
                       orderBook = getOrderBook();
+                      metricData = getMetrics();
                     }}">
                     {#each loadedPSTs as pst}
                       <option value="{pst.ticker}">{pst.ticker}</option>
