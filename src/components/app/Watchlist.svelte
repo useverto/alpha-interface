@@ -31,7 +31,7 @@
   let editMode = false;
   let addModalOpened = false;
   let addPst;
-  let addPeriod: number = 7;
+  let addPeriod;
 
   function add() {
     const element = tokens.find((token) => token.ticker === addPst);
@@ -45,7 +45,6 @@
       period: addPeriod,
     });
 
-    addPeriod = 24;
     notification.notify(
       "Added",
       `Added ${element.ticker} to watchlist.`,
@@ -195,9 +194,6 @@
   {/if}
 </div>
 <Modal bind:opened="{addModalOpened}" confirmation="{true}" onConfirm="{add}">
-  <h1 style="text-align: center; font-weight: 600; margin-top: 0;">
-    Add to watchlist
-  </h1>
   <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">PST</h2>
   <select
     bind:value="{addPst}"
@@ -216,6 +212,7 @@
     class="light"
     style="width: calc(100% - 1.2em);"
     bind:value="{addPeriod}" />
+  <small style="margin-top: 5em">Leave blank for over all time.</small>
 </Modal>
 
 <style lang="sass">
