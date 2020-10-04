@@ -93,13 +93,14 @@
     const start = prices[0];
     const end = prices[prices.length - 1];
     let color;
-    let percentage = (end - start) / start * 100;
+    const percentage = ((end - start) / start) * 100;
+    let percentageDisplay: string;
     if (end >= start) {
       color = "#00D46E";
-      percentage = "+" + percentage.toFixed(2) + "%";
+      percentageDisplay = "+" + percentage.toFixed(2) + "%";
     } else {
       color = "#FF375D";
-      percentage = percentage.toFixed(2) + "%";
+      percentageDisplay = percentage.toFixed(2) + "%";
     }
 
     return {
@@ -107,7 +108,7 @@
       prices,
       latestPrice: end.toFixed(4),
       color,
-      percentage,
+      percentage: percentageDisplay,
     };
   }
 </script>
@@ -117,13 +118,7 @@
     Watchlist
     <div>
       {#if editMode}
-        <img
-          src="{addIcon}"
-          alt="add"
-          on:click="{() => {
-            openAddModal();
-          }}"
-          in:fade />
+        <img src="{addIcon}" alt="add" on:click="{openAddModal}" in:fade />
         <img
           src="{closeIcon}"
           alt="close"
@@ -242,7 +237,6 @@
 
       .pst
         width: 33%
-        height: 10em
         margin-bottom: 1em
         transition: all .3s
 
@@ -261,8 +255,11 @@
           margin: 0 auto
           transition: all .3s
 
+          @media screen and (max-width: 720px)
+            margin-bottom: 3em
+
           .graph-wrapper
-            padding-top: 2em
+            padding-top: 3.25em
 
           .pst-info
             position: absolute
@@ -288,7 +285,6 @@
 
               h1
                 text-align: right
-                margin-bottom: .16em
 
               span.percentage
                 text-transform: uppercase
