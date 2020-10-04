@@ -319,7 +319,7 @@
       <p class="wallet" in:fade="{{ duration: 150 }}">Wallet: {$address}</p>
     {/if}
   </div>
-  <div class="assets">
+  <div class="assets" style="margin-bottom: -1.2em">
     <Assets />
   </div>
   <div class="metrics">
@@ -342,24 +342,26 @@
           <p>no trading volume.</p>
         {/if}
       {:else}
-        <Line
-          data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
-                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                  gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
-                  gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
-                  return gradient;
-                }, borderColor: function (context) {
-                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                  gradient.addColorStop(0, '#E698E8');
-                  gradient.addColorStop(1, '#8D5FBC');
-                  return gradient;
-                }, pointBackgroundColor: function (context) {
-                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                  gradient.addColorStop(0, '#E698E8');
-                  gradient.addColorStop(1, '#8D5FBC');
-                  return gradient;
-                } }] }}"
-          options="{{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }}" />
+        <div style="height: 39vh; position: relative; width: 100%;">
+          <Line
+            data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
+                    gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
+                    return gradient;
+                  }, borderColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, '#E698E8');
+                    gradient.addColorStop(1, '#8D5FBC');
+                    return gradient;
+                  }, pointBackgroundColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, '#E698E8');
+                    gradient.addColorStop(1, '#8D5FBC');
+                    return gradient;
+                  } }] }}"
+            options="{{ maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }}" />
+        </div>
       {/if}
     {/await}
   </div>
@@ -737,6 +739,17 @@
     .assets
       margin: 2.45em 0
 
+    .metrics
+      margin: 0 0 2em
+
+      h1
+        margin-top: 0
+
+      .title-section
+        display: flex
+        align-items: center
+        justify-content: space-between
+
     .recommended-post
       display: flex
       align-items: flex-end
@@ -893,11 +906,5 @@
       @media screen and (max-width: 720px)
         right: unset
         left: 0
-  
-  .metrics
-    .title-section
-      display: flex
-      align-items: center
-      justify-content: space-between
 
 </style>
