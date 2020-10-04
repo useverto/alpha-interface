@@ -8,6 +8,7 @@
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
+  import Assets from "../components/app/Assets.svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
@@ -55,9 +56,6 @@
 
   let posts = client.getTradingPosts();
   let psts = getTradingPostSupportedTokens();
-  let balances: Promise<
-    { id: string; name: string; ticker: string; balance: number }[]
-  > = client.getAssets($address);
 
   let loading: boolean = false;
 
@@ -290,51 +288,7 @@
     {/if}
   </div>
   <div class="assets">
-    <h1 class="title">Assets</h1>
-    {#await balances}
-      <table>
-        <tr style="width: 100%">
-          <th>Name</th>
-          <th>ID</th>
-          <th>Amount</th>
-        </tr>
-        {#each Array(4) as _}
-          <tr>
-            <td style="width: 20%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-            <td style="width: 60%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-            <td style="width: 20%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-          </tr>
-        {/each}
-      </table>
-    {:then loadedBalances}
-      {#if loadedBalances.length === 0}
-        <p>You don't have any tokens!</p>
-      {:else}
-        <table>
-          <tr style="width: 100%">
-            <th>Name</th>
-            <th>ID</th>
-            <th>Amount</th>
-          </tr>
-          {#each loadedBalances as balance}
-            <tr>
-              <td style="width: 20%">{balance.name}</td>
-              <td style="width: 60%">{balance.id}</td>
-              <td style="width: 20%">
-                {balance.balance}
-                <span class="currency">{balance.ticker}</span>
-              </td>
-            </tr>
-          {/each}
-        </table>
-      {/if}
-    {/await}
+    <Assets />
   </div>
   <div class="menu">
     <button
