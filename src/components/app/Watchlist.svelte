@@ -87,8 +87,12 @@
     const returnedPrices = await client.price(token);
     const length = returnedPrices.prices.length - 1;
 
-    const dates = returnedPrices.dates.slice(length - period, length);
-    const prices = returnedPrices.prices.slice(length - period, length);
+    let dates = returnedPrices.dates;
+    let prices = returnedPrices.prices;
+    if (period && period < length) {
+      dates = dates.slice(length - period, length);
+      prices = prices.slice(length - period, length);
+    }
 
     const start = prices[0];
     const end = prices[prices.length - 1];
