@@ -93,7 +93,7 @@
     const start = prices[0];
     const end = prices[prices.length - 1];
     let color;
-    let percentage = (end - start) / start * 100;
+    let percentage = ((end - start) / start) * 100;
     if (end >= start) {
       color = "#00D46E";
       percentage = "+" + percentage.toFixed(2) + "%";
