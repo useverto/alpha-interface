@@ -14,6 +14,7 @@
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
+  import Line from "svelte-chartjs/src/Line.svelte";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -260,6 +261,27 @@
 
     return parseFloat(config["tradeFee"]) * 100;
   }
+
+  let selectedMetric;
+  let metricData = getMetrics();
+  async function getMetrics() {
+    if (!selectedMetric) {
+      selectedMetric = "price";
+    }
+
+    let ticker = mode === "buy" ? buyToken : sellToken;
+    if (!ticker) {
+      ticker = (await psts)[0].ticker;
+    }
+
+    const contract = (await psts).find((pst) => pst.ticker === ticker).id;
+
+    if (selectedMetric === "price") {
+      return await client.price("usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A");
+    } else {
+      return await client.volume("usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A");
+    }
+  }
 </script>
 
 <svelte:head>
@@ -289,6 +311,39 @@
   </div>
   <div class="assets">
     <Assets />
+  </div>
+  <div class="metrics">
+    <div class="title-section">
+      <h1 class="title">Metrics</h1>
+      <select
+        bind:value="{selectedMetric}"
+        on:change="{() => (metricData = getMetrics())}">
+        <option value="price">Price</option>
+        <option value="volume">Volume</option>
+      </select>
+    </div>
+    {#await metricData}
+      <Loading />
+    {:then loadedMetrics}
+      <Line
+        data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
+                gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
+                return gradient;
+              }, borderColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              }, pointBackgroundColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              } }] }}"
+        options="{{ legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18, labelString: selected }, gridLines: { display: false } }] } }}" />
+    {/await}
   </div>
   <div class="menu">
     <button
@@ -814,5 +869,11 @@
       @media screen and (max-width: 720px)
         right: unset
         left: 0
+  
+  .metrics
+    .title-section
+      display: flex
+      align-items: center
+      justify-content: space-between
 
 </style>
