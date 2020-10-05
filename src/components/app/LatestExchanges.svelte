@@ -2,6 +2,7 @@
   import Verto from "@verto/lib";
   import { address, keyfile } from "../../stores/keyfileStore";
   import Arweave from "arweave";
+  import { query } from "../../api-client";
   import { notification } from "../../stores/notificationStore";
   import { NotificationType } from "../../utils/types";
   import SkeletonLoading from "../SkeletonLoading.svelte";
@@ -38,8 +39,24 @@
       Order: order,
     };
 
+    const target = (
+      await query({
+        query: `
+          query($txID: ID!) {
+            transaction(id: $txID) {
+              recipient
+            }
+          }
+        `,
+        variables: {
+          txID: order,
+        },
+      })
+    ).data.transaction.recipient;
+
     tx = await client.createTransaction(
       {
+        target,
         data: Math.random().toString().slice(-4),
       },
       JSON.parse($keyfile)
@@ -48,8 +65,6 @@
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value.toString());
     }
-
-    console.log(tags, tx);
   };
   const sendCancel = async () => {
     const client = new Arweave({
