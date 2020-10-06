@@ -8,6 +8,7 @@
   import Loading from "../Loading.svelte";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import Modal from "../../components/Modal.svelte";
+  import { fade } from "svelte/transition";
 
   const client = new Verto();
   let balances: Promise<
@@ -93,7 +94,7 @@
   <div class="assets-table">
     <div class="menu">
       <h1 class="title">Assets</h1>
-      <div>
+      <div in:fade="{{ duration: 100 }}">
         {#if !loading}
           <Button
             click="{async () => {
@@ -118,7 +119,7 @@
       </div>
     </div>
     {#await balances}
-      <table>
+      <table in:fade="{{ duration: 100 }}">
         <tr style="width: 100%">
           <th>Name</th>
           <th>ID</th>
@@ -140,9 +141,9 @@
       </table>
     {:then loadedBalances}
       {#if loadedBalances.length === 0}
-        <p>You don't have any tokens!</p>
+        <p in:fade="{{ duration: 300 }}">You don't have any tokens!</p>
       {:else}
-        <table>
+        <table in:fade="{{ duration: 300 }}">
           <tr style="width: 100%">
             <th>Name</th>
             <th>ID</th>
