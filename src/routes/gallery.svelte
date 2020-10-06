@@ -57,14 +57,17 @@
       let node = post.node;
       lastCursor = post.cursor;
 
-      posts.push({
-        addr: node.owner.address,
-        reputation: await client.getReputation(node.owner.address),
-        balance: arweave.ar.winstonToAr(
-          await arweave.wallets.getBalance(node.owner.address)
-        ),
-        stake: await client.getPostStake(node.owner.address),
-      });
+      const stake = await client.getPostStake(node.owner.address);
+      if (stake > 0) {
+        posts.push({
+          addr: node.owner.address,
+          reputation: await client.getReputation(node.owner.address),
+          balance: arweave.ar.winstonToAr(
+            await arweave.wallets.getBalance(node.owner.address)
+          ),
+          stake,
+        });
+      }
     }
 
     tradingPosts = tradingPosts.concat(posts);
