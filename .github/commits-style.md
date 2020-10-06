@@ -1,7 +1,7 @@
 # Commit style guide
 
 ## Why?
-We value transparency and readability. Maintaining a consistant and clear structure of commits is a priority for us.
+We value transparency and readability. Maintaining a consistent and clear structure of commits is a priority for us.
 
 ## How?
 You can create a commit like this:
