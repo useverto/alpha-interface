@@ -152,13 +152,13 @@
           out:fade="{{ duration: 250 }}">
           <div class="graph-container{editMode ? ' edit' : ''}">
             {#if editMode}
-              <div class="close-hover" in:fade="{{ duration: 150 }}" on:click="{() => {
-                remove(pst);
-              }}">
-                <img
-                  src="{closeIcon}"
-                  alt="close"
-                  in:fade />
+              <div
+                class="close-hover"
+                in:fade="{{ duration: 150 }}"
+                on:click="{() => {
+                  remove(pst);
+                }}">
+                <img src="{closeIcon}" alt="close" in:fade />
               </div>
             {/if}
             <div class="pst-info">
@@ -168,7 +168,10 @@
                   {#if loaded.prices.every((price) => isNaN(price))}
                     <h1 in:fade="{{ duration: 150 }}">--- <span>AR</span></h1>
                   {:else}
-                    <h1 in:fade="{{ duration: 150 }}">{loaded.latestPrice} <span>AR</span></h1>
+                    <h1 in:fade="{{ duration: 150 }}">
+                      {loaded.latestPrice}
+                      <span>AR</span>
+                    </h1>
                     <span
                       in:fade="{{ duration: 150 }}"
                       class="percentage"
