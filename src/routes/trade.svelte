@@ -8,11 +8,13 @@
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
+  import Assets from "../components/app/Assets.svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
+  import Line from "svelte-chartjs/src/Line.svelte";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -55,9 +57,6 @@
 
   let posts = client.getTradingPosts();
   let psts = getTradingPostSupportedTokens();
-  let balances: Promise<
-    { id: string; name: string; ticker: string; balance: number }[]
-  > = client.getAssets($address);
 
   let loading: boolean = false;
 
@@ -262,6 +261,37 @@
 
     return parseFloat(config["tradeFee"]) * 100;
   }
+
+  let selectedMetric;
+  let metricData = getMetrics();
+  async function getMetrics() {
+    if (!selectedMetric) {
+      selectedMetric = "price";
+    }
+
+    let ticker = mode === "buy" ? buyToken : sellToken;
+    if (!ticker) {
+      ticker = (await psts)[0].ticker;
+    }
+
+    const contract = (await psts).find((pst) => pst.ticker === ticker).id;
+
+    if (selectedMetric === "price") {
+      const data = await client.price(contract);
+      data.empty = false;
+      if (data.prices.every((price) => isNaN(price))) {
+        data.empty = true;
+      }
+      return data;
+    } else {
+      const data = await client.volume(contract);
+      data.empty = false;
+      if (data.volume.length === 0 && data.dates.length === 0) {
+        data.empty = true;
+      }
+      return data;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -289,50 +319,49 @@
       <p class="wallet" in:fade="{{ duration: 150 }}">Wallet: {$address}</p>
     {/if}
   </div>
-  <div class="assets">
-    <h1 class="title">Assets</h1>
-    {#await balances}
-      <table>
-        <tr style="width: 100%">
-          <th>Name</th>
-          <th>ID</th>
-          <th>Amount</th>
-        </tr>
-        {#each Array(4) as _}
-          <tr>
-            <td style="width: 20%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-            <td style="width: 60%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-            <td style="width: 20%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-          </tr>
-        {/each}
-      </table>
-    {:then loadedBalances}
-      {#if loadedBalances.length === 0}
-        <p>You don't have any tokens!</p>
+  <div class="assets" style="margin-bottom: -1.2em">
+    <Assets />
+  </div>
+  <div class="metrics">
+    <div class="title-section">
+      <h1 class="title">Metrics</h1>
+      <select
+        bind:value="{selectedMetric}"
+        on:change="{() => (metricData = getMetrics())}">
+        <option value="price">Price</option>
+        <option value="volume">Volume</option>
+      </select>
+    </div>
+    {#await metricData}
+      <Loading />
+    {:then loadedMetrics}
+      {#if loadedMetrics.empty}
+        {#if selectedMetric === 'price'}
+          <p>no price data.</p>
+        {:else}
+          <p>no trading volume.</p>
+        {/if}
       {:else}
-        <table>
-          <tr style="width: 100%">
-            <th>Name</th>
-            <th>ID</th>
-            <th>Amount</th>
-          </tr>
-          {#each loadedBalances as balance}
-            <tr>
-              <td style="width: 20%">{balance.name}</td>
-              <td style="width: 60%">{balance.id}</td>
-              <td style="width: 20%">
-                {balance.balance}
-                <span class="currency">{balance.ticker}</span>
-              </td>
-            </tr>
-          {/each}
-        </table>
+        <div style="height: 39vh; position: relative; width: 100%;">
+          <Line
+            data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
+                    gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
+                    return gradient;
+                  }, borderColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, '#E698E8');
+                    gradient.addColorStop(1, '#8D5FBC');
+                    return gradient;
+                  }, pointBackgroundColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, '#E698E8');
+                    gradient.addColorStop(1, '#8D5FBC');
+                    return gradient;
+                  } }] }}"
+            options="{{ maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }}" />
+        </div>
       {/if}
     {/await}
   </div>
@@ -342,12 +371,14 @@
       on:click="{() => {
         mode = 'buy';
         orderBook = getOrderBook();
+        metricData = getMetrics();
       }}">Buy</button>
     <button
       class:active="{mode === 'sell'}"
       on:click="{() => {
         mode = 'sell';
         orderBook = getOrderBook();
+        metricData = getMetrics();
       }}">Sell</button>
   </div>
   <div class="trade-container">
@@ -364,6 +395,7 @@
                   psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
+                  metricData = getMetrics();
                 }}">
                 {#await posts}
                   <option disabled>Loading...</option>
@@ -412,6 +444,7 @@
                     bind:value="{sellToken}"
                     on:change="{() => {
                       orderBook = getOrderBook();
+                      metricData = getMetrics();
                     }}">
                     {#each loadedPSTs as pst}
                       <option value="{pst.ticker}">{pst.ticker}</option>
@@ -475,6 +508,7 @@
                   psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
+                  metricData = getMetrics();
                 }}">
                 {#await posts}
                   <option disabled>Loading...</option>
@@ -532,6 +566,7 @@
                     style="width: 100% !important;"
                     on:change="{() => {
                       orderBook = getOrderBook();
+                      metricData = getMetrics();
                     }}">
                     {#each loadedPSTs as pst}
                       <option value="{pst.ticker}">{pst.ticker}</option>
@@ -703,6 +738,17 @@
 
     .assets
       margin: 2.45em 0
+
+    .metrics
+      margin: 0 0 2em
+
+      h1
+        margin-top: 0
+
+      .title-section
+        display: flex
+        align-items: center
+        justify-content: space-between
 
     .recommended-post
       display: flex
