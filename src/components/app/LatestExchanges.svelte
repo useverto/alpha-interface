@@ -9,6 +9,7 @@
   import Button from "../Button.svelte";
   import Loading from "../Loading.svelte";
   import Modal from "../../components/Modal.svelte";
+  import { fade } from "svelte/transition";
 
   const client = new Verto();
   let exchanges: Promise<
@@ -89,21 +90,25 @@
 <div class="section">
   <h1 class="title">Trades</h1>
   {#await exchanges}
-    <table>
+    <table in:fade="{{ duration: 100 }}">
       <tr>
         <th>Timestamp</th>
         <th>Trade</th>
         <th>Duration</th>
+        <th></th>
       </tr>
       {#each Array(5) as _}
         <tr>
           <td style="width: 30%">
             <SkeletonLoading style="{'width: 100%'}" />
           </td>
-          <td style="width: 45%">
+          <td style="width: 42%">
             <SkeletonLoading style="{'width: 100%'}" />
           </td>
-          <td style="width: 25%">
+          <td style="width: 22%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+          <td style="width: 6%">
             <SkeletonLoading style="{'width: 100%'}" />
           </td>
         </tr>
@@ -111,27 +116,28 @@
     </table>
   {:then loadedExchanges}
     {#if loadedExchanges.length === 0}
-      <p>No trades found.</p>
+      <p in:fade="{{ duration: 300 }}">No trades found.</p>
     {:else}
-      <table>
+      <table in:fade="{{ duration: 300 }}">
         <tr>
           <th>Timestamp</th>
           <th>Trade</th>
           <th>Duration</th>
+          <th></th>
         </tr>
         {#each loadedExchanges as exchange}
           <tr>
             <td style="width: 30%">{exchange.timestamp}</td>
-            <td style="width: 45%">
+            <td style="width: 42%">
               {exchange.sent}
               {'->'}
               {exchange.received}
               <span class="status {exchange.status}"></span>
             </td>
-            <td style="width: 25%; text-transform: uppercase">
+            <td style="width: 22%; text-transform: uppercase">
               {exchange.duration}
             </td>
-            {#if exchange.status === 'pending'}
+            <td style="width: 6%">
               {#if !loading}
                 <Button
                   click="{async () => {
@@ -139,13 +145,21 @@
                     await createCancel(exchange.id);
                     openModal = true;
                     loading = false;
-                  }}">
+                  }}"
+                  disabled="{exchange.status !== 'pending'}"
+                  style="
+                    font-size: .8em;
+                    padding: .1em .4em;
+                    width: auto;
+                    min-width: unset;
+                    border-radius: 4px;
+                  ">
                   Cancel
                 </Button>
               {:else}
                 <Loading />
               {/if}
-            {/if}
+            </td>
           </tr>
         {/each}
       </table>
