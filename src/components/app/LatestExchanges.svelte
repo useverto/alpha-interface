@@ -22,8 +22,7 @@
       status: string;
       duration: string;
     }[]
-    //> = client.getExchanges($address);
-  > = client.getExchanges("pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls");
+  > = client.getExchanges($address);
 
   let currentCancel = "";
   let tx;
@@ -159,7 +158,7 @@
                   Cancel
                 </Button>
               {:else}
-                <Loading style="height: 1em; width: 1em;" />
+                <Loading style="height: 1.5em; width: 1.5em;" />
               {/if}
             </td>
           </tr>
