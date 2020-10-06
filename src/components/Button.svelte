@@ -5,10 +5,16 @@
   export let target: string = undefined;
   export let click: Function = () => {}; // click event
   export let style: string = undefined;
+  export let disabled: boolean = false;
 
   // don't let malicious links override the content of the site
   // https://web.dev/external-anchors-use-rel-noopener/
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
+
+  function handleClick(e) {
+    if (disabled) e.preventDefault();
+    else click();
+  }
 </script>
 
 <a
@@ -16,10 +22,11 @@
   target="{target}"
   rel="{rel}"
   class="Button"
-  on:click="{click}"
+  on:click="{handleClick}"
   style="{style}"
   class:clear
-  class:reverse>
+  class:reverse
+  class:disabled>
   <slot />
 </a>
 
@@ -50,11 +57,15 @@
     @media screen and (max-width: 720px)
       min-width: 140px
 
-    &:hover
+    &.disabled
+      cursor: not-allowed
+      opacity: .6
+
+    &:hover:not(.disabled)
       background-color: transparent
       color: #000
 
-    &.clear
+    &.clear:not(.disabled)
       background-color: transparent
       color: #000
 
@@ -67,7 +78,7 @@
       background-color: #fff
       color: #000
 
-      &:hover
+      &:hover:not(.disabled)
         background-color: transparent
         color: #fff
 
@@ -75,14 +86,14 @@
       background-color: transparent
       color: #000
 
-      &:hover
+      &:hover:not(.disabled)
         background-color: #000
         color: #fff     
 
       &.reverse
         color: #fff
 
-        &:hover
+        &:hover:not(.disabled)
           background-color: #fff
           color: #000   
 
