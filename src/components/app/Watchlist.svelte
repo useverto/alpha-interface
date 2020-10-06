@@ -9,10 +9,9 @@
   import Modal from "../Modal.svelte";
   import { notification } from "../../stores/notificationStore.ts";
   import { NotificationType } from "../../utils/types.ts";
-
   import { onMount } from "svelte";
-
   import Verto from "@verto/lib";
+
   const client = new Verto();
 
   let tokens;
@@ -118,7 +117,7 @@
   }
 </script>
 
-<div class="watchlist">
+<div class="watchlist" in:fade="{{ duration: 150 }}">
   <h1 class="title">
     Watchlist
     <div>
@@ -150,16 +149,18 @@
         <div
           class="pst"
           in:fade="{{ duration: 500 }}"
-          out:scale="{{ duration: 250 }}">
+          out:fade="{{ duration: 250 }}">
           <div class="graph-container{editMode ? ' edit' : ''}">
             {#if editMode}
-              <img
-                src="{closeIcon}"
-                alt="close"
-                on:click="{() => {
-                  remove(pst);
-                }}"
-                in:fade />
+              <div class="close-hover" in:fade="{{ duration: 150 }}">
+                <img
+                  src="{closeIcon}"
+                  alt="close"
+                  on:click="{() => {
+                    remove(pst);
+                  }}"
+                  in:fade />
+              </div>
             {/if}
             <div class="pst-info">
               <h1>{pst.ticker}</h1>
@@ -265,6 +266,7 @@
 
           .graph-wrapper
             padding-top: 3.25em
+            height: 8em
 
           .pst-info
             position: absolute
@@ -297,22 +299,35 @@
                 text-align: right  
 
           &.edit
-            position: relative
             cursor: pointer
+            border-radius: 5px
+            overflow: hidden
 
-            img
+            .close-hover
               position: absolute
-              top: -0.7em
-              right: -0.7em
-              width: 1em
-              height: 1em
-              padding: .2em
-              z-index: 100
-              border-radius: 100%
-              background-color: #fff
-              box-shadow: 0 0 4px 4px rgba(0, 0, 0, .1)
+              top: 0
+              left: 0
+              right: 0
+              bottom: 0
+              background-color: rgba(#fff, .57)
+              backdrop-filter: blur(0)
+              -webkit-backdrop-filter: blur(0)
+              z-index: 70
+              cursor: pointer
+              opacity: 0
+              transition: all .3s
+
+              img
+                position: absolute
+                top: 50%
+                left: 50%
+                transform: translate(-50%, -50%)
+                height: 2em
 
             &:hover
-              box-shadow: 0 0 9px 8px rgba(0, 0, 0, .1)
+              .close-hover
+                opacity: 1
+                backdrop-filter: blur(4px)
+                -webkit-backdrop-filter: blur(4px)
 
 </style>
