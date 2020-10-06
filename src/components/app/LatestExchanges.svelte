@@ -148,7 +148,7 @@
                     openModal = true;
                     currentCancel = '';
                   }}"
-                  disabled="{exchange.status !== 'pending'}"
+                  disabled="{exchange.status !== 'pending' || exchange.timestamp === 'not mined yet'}"
                   style="
                     font-size: .8em;
                     padding: .1em .4em;
