@@ -7,6 +7,13 @@ export enum NotificationType {
   success = "success",
 }
 
+export interface IWatchlistElement {
+  id: string;
+  name: string;
+  ticker: string;
+  period: number; // the last x hours (for e.g. 24h)
+}
+
 export interface GraphqlQuery {
   query: DocumentNode | string;
   variables: Record<string, any> | null;

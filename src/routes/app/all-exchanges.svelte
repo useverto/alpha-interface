@@ -131,6 +131,33 @@
           _exchanges[i].received = receivedTag.value;
         }
       }
+
+      const cancel = (
+        await query({
+          query: `
+          query {
+            transactions(
+              tags: [
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "Cancel" }
+                { name: "Order", values: "${_exchanges[i].id}" }
+              ]
+            ) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        `,
+        })
+      ).data.transactions.edges;
+
+      if (cancel[0]) {
+        exchanges[i].status = "failed";
+        exchanges[i].duration = "cancelled";
+      }
     }
 
     exchanges = exchanges.concat(_exchanges);

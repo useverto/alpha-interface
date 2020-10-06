@@ -2,6 +2,7 @@
   import Verto from "@verto/lib";
   import { address } from "../../stores/keyfileStore";
   import SkeletonLoading from "../SkeletonLoading.svelte";
+  import { fade } from "svelte/transition";
 
   const client = new Verto();
   let transactions: Promise<
@@ -24,7 +25,7 @@
     </tr>
     {#await transactions}
       {#each Array(5) as _}
-        <tr>
+        <tr in:fade="{{ duration: 100 }}">
           <td style="width: 70%">
             <SkeletonLoading style="{'width: 100%'}" />
           </td>
@@ -35,7 +36,7 @@
       {/each}
     {:then loadedTxs}
       {#each loadedTxs as tx}
-        <tr>
+        <tr in:fade="{{ duration: 300 }}">
           <td style="width: 70%">
             <a
               href="https://viewblock.io/arweave/tx/{tx.id}"
