@@ -22,8 +22,10 @@
       status: string;
       duration: string;
     }[]
-  > = client.getExchanges($address);
+    //> = client.getExchanges($address);
+  > = client.getExchanges("pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls");
 
+  let currentCancel = "";
   let tx;
   let loading: boolean = false;
   let openModal: boolean = false;
@@ -138,13 +140,13 @@
               {exchange.duration}
             </td>
             <td style="width: 6%">
-              {#if !loading}
+              {#if currentCancel !== exchange.id}
                 <Button
                   click="{async () => {
-                    loading = true;
+                    currentCancel = exchange.id;
                     await createCancel(exchange.id);
                     openModal = true;
-                    loading = false;
+                    currentCancel = '';
                   }}"
                   disabled="{exchange.status !== 'pending'}"
                   style="
@@ -157,7 +159,7 @@
                   Cancel
                 </Button>
               {:else}
-                <Loading />
+                <Loading style="height: 1em; width: 1em;" />
               {/if}
             </td>
           </tr>
