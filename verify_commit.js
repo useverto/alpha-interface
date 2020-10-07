@@ -1,6 +1,6 @@
 const fs = require("fs"),
   commitMessage = fs.readFileSync(process.env.GIT_PARAMS, "utf-8"),
-  validCommitRegex = /(feat|fix|remove|refactor|chore|release)\((.+)\)(: )(.{1,50})/;
+  validCommitRegex = /(feat|fix|remove|refactor|chore|release|merge)\((.+)\)(: )(.{1,50})/;
 
 if (validCommitRegex.test(commitMessage)) {
   console.log(
