@@ -11,7 +11,7 @@
     "fmt:check": "prettier --check ."
   },
   "gitHooks": {
-    "pre-commit": "prettier --write .",
+    "pre-commit": "prettier --write . && git add -A",
     "commit-msg": "node verify_commit.js"
   },
   "dependencies": {
