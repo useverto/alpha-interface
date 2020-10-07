@@ -28,7 +28,7 @@
   .Loading
     display: block
     line-height: 1
-    color: #000
+    color: var(--inverted-elements-color)
     animation: spinnerParentAnimation 1.4s linear infinite
     margin: 0 auto
 

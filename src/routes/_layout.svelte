@@ -28,8 +28,10 @@
 
   main
     background-color: var(--background-color)
+    transition: all .3s
 
   \:global(h1.title)
     color: var(--primary-text-color)
+    transition: all .3s
 
 </style>
