@@ -1,16 +1,18 @@
 <script lang="typescript">
-  import { watchlist } from "../../stores/watchlistStore.ts";
+  import { watchlist } from "../../stores/watchlistStore";
   import editIcon from "../../assets/edit.svg";
   import closeIcon from "../../assets/close.svg";
   import addIcon from "../../assets/add.svg";
   import Line from "svelte-chartjs/src/Line.svelte";
   import { fade, scale } from "svelte/transition";
-  import type { IWatchlistElement } from "../../utils/types.ts";
+  import type { IWatchlistElement } from "../../utils/types";
   import Modal from "../Modal.svelte";
-  import { notification } from "../../stores/notificationStore.ts";
-  import { NotificationType } from "../../utils/types.ts";
+  import { notification } from "../../stores/notificationStore";
+  import { NotificationType } from "../../utils/types";
   import { onMount } from "svelte";
   import Verto from "@verto/lib";
+  import { displayTheme } from "../../stores/themeStore";
+  import { DisplayTheme } from "../../utils/types";
 
   const client = new Verto();
 
@@ -144,7 +146,9 @@
   {#if $watchlist.length === 0}
     <p>No PSTs watched.</p>
   {:else}
-    <div class="psts">
+    <div
+      class="psts"
+      style="--hover-edit-color: {$displayTheme === DisplayTheme.Dark ? 'rgba(0, 0, 0, .35)' : 'rgba(255, 255, 255, .57)'};">
       {#each $watchlist as pst}
         <div
           class="pst"
@@ -233,6 +237,8 @@
       img
         height: .57em
         cursor: pointer
+        filter: var(--svg-color)
+
     p
       display: block
       text-align: center
@@ -317,7 +323,7 @@
               left: 0
               right: 0
               bottom: 0
-              background-color: rgba(#fff, .57)
+              background-color: var(--hover-edit-color)
               backdrop-filter: blur(0)
               -webkit-backdrop-filter: blur(0)
               z-index: 70
@@ -331,6 +337,7 @@
                 left: 50%
                 transform: translate(-50%, -50%)
                 height: 2em
+                filter: var(--svg-color)
 
             &:hover
               .close-hover
