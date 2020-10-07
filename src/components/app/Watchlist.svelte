@@ -222,7 +222,6 @@
 <style lang="sass">
 
   .watchlist
-
     h1.title
       font-family: "Inter", sans-serif
       font-size: 2.3em
@@ -234,7 +233,6 @@
       img
         height: .57em
         cursor: pointer
-
     p
       display: block
       text-align: center
@@ -271,6 +269,9 @@
             padding-top: 3.25em
             height: 8em
 
+            p
+              color: var(--primary-text-color)
+
             @media screen and (max-width: 720px)
               height: 11.5em
 
@@ -285,7 +286,7 @@
 
             h1
               font-size: 1.3em
-              color: #000
+              color: var(--primary-text-color)
               font-weight: 600
               text-transform: uppercase
               margin: 0
@@ -298,6 +299,7 @@
 
               h1
                 text-align: right
+                color: var(--primary-text-color)
 
               span.percentage
                 text-transform: uppercase
