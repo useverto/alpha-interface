@@ -6,6 +6,11 @@
   import { DisplayTheme } from "../utils/types";
 
   const ga_measurment_id = "UA-177614485-1";
+
+  $: backgroundColor = $displayTheme === DisplayTheme.Dark ? "#000" : "#fff";
+  $: {
+    if (process.browser) document.body.style.backgroundColor = backgroundColor;
+  }
 </script>
 
 <GoogleAnalytics stores="{stores}" id="{ga_measurment_id}" />
@@ -19,7 +24,7 @@
     --nav-scrolled: {$displayTheme === DisplayTheme.Dark ? 'rgba(0, 0, 0, .73)' : 'rgba(255, 255, 255, .7)'};
     --nav-border: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .2)' : 'rgba(0, 0, 0, .075)'};
     --svg-color: {$displayTheme === DisplayTheme.Dark ? 'invert(90%)' : 'unset'};
-    --background-color: {$displayTheme === DisplayTheme.Dark ? '#000' : '#fff'};
+    --background-color: {backgroundColor};
   ">
   <slot />
 </main>
