@@ -27,7 +27,13 @@
 <div class="usa">
   <div class="container">
     <div class="text">
-      <h1>4 <img src="{usa}" class="emoji" draggable="false" alt="american flag" /> 3</h1>
+      <h1>
+        4 <img
+          src="{usa}"
+          class="emoji"
+          draggable="false"
+          alt="american flag" /> 3
+      </h1>
       <h2>ACCESS DENIED</h2>
       <p>Looks like you're in the US.</p>
       <p>At the moment, we unfortunately can't allow trading from the US.</p>
