@@ -7,7 +7,7 @@
   import Verto from "@verto/lib";
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
-  import { fade } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
   import Assets from "../components/app/Assets.svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Button from "../components/Button.svelte";
@@ -15,6 +15,7 @@
   import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
+  import { cubicIn } from "svelte/easing";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -383,7 +384,7 @@
   </div>
   <div class="trade-container">
     {#if mode === 'sell'}
-      <div>
+      <div in:fly="{{ y: 20, duration: 350, easing: cubicIn }}">
         <div class="trade-section" in:fade="{{ duration: 300 }}">
           <div class="long-content">
             <div style="width: 100%">
@@ -496,7 +497,7 @@
         </div>
       </div>
     {:else if mode === 'buy'}
-      <div>
+      <div in:fly="{{ y: 20, duration: 350, easing: cubicIn }}">
         <div class="trade-section" in:fade="{{ duration: 300 }}">
           <div class="long-content">
             <div style="width: 100%">
@@ -718,7 +719,7 @@
 
     .balance
       p
-        color: rgba(#000, .3)
+        color: var(--secondary-text-color)
         text-transform: uppercase
         font-size: .9em
         margin: 0
@@ -729,7 +730,7 @@
 
       h1.total-balance
         font-size: 2.3em
-        color: #000
+        color: var(--primary-text-color)
         font-weight: 400
         margin: .14em 0
 
@@ -741,6 +742,9 @@
 
     .metrics
       margin: 0 0 2em
+
+      p
+        color: var(--secondary-text-color)
 
       h1
         margin-top: 0
@@ -789,7 +793,7 @@
 
         .short-content, .long-content
           p
-            color: rgba(#000, .3)
+            color: var(--secondary-text-color)
             font-weight: 600
             font-size: .95em
             margin: 0
@@ -805,8 +809,11 @@
             background-image: none !important
             padding-right: 0 !important
 
+          input
+            color: var(--primary-text-color)
+
           .input
-            border: 2px solid #000
+            border: 2px solid var(--inverted-elements-color)
             display: flex
             border-radius: .3em
             overflow: hidden
@@ -822,8 +829,8 @@
     select
       $sidePadding: .65em
       position: relative
-      color: #fff
-      background-color: #000
+      color: var(--background-color)
+      background-color: var(--inverted-elements-color)
       font-size: 1em
       padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
       cursor: pointer
@@ -832,14 +839,11 @@
       border: none
       -webkit-appearance: none
       -moz-appearance: none
-      transition: all .3s
-    
-    select
-      $sidePadding: .65em
       background-image: url(/down-arrow.svg)
       background-position: calc(100% - #{$sidePadding}) center
       background-repeat: no-repeat
       background-size: $sidePadding * 1.35
+      transition: all .3s
 
       &:hover
         opacity: .8
@@ -871,13 +875,13 @@
       font-family: "JetBrainsMono", monospace
       text-transform: uppercase
       font-weight: 600
-      color: #000
+      color: var(--primary-text-color)
       background-color: transparent
       border: none
       font-size: 1.15em
       outline: none
-        text-align: center
-        cursor: pointer
+      text-align: center
+      cursor: pointer
 
       @media screen and (max-width: 720px)
         padding: .18em .14em
@@ -891,7 +895,7 @@
         width: 100%
         height: 0
         opacity: 0
-        background-color: #000
+        background-color: var(--inverted-elements-color)
         transition: all .2s
 
       &.active::after
