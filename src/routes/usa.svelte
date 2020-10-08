@@ -6,9 +6,10 @@
   import usa from "../assets/usa.svg";
 
   onMount(async () => {
-    const res = await (await fetch("http://ip-api.com/json")).json();
+    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
+    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
 
-    if (res.countryCode !== "US") {
+    if (res.country !== "US") {
       goto("/app");
     }
 
@@ -26,7 +27,13 @@
 <div class="usa">
   <div class="container">
     <div class="text">
-      <h1>4 <img src="{usa}" class="emoji" draggable="false" /> 3</h1>
+      <h1>
+        4 <img
+          src="{usa}"
+          class="emoji"
+          draggable="false"
+          alt="american flag" /> 3
+      </h1>
       <h2>ACCESS DENIED</h2>
       <p>Looks like you're in the US.</p>
       <p>At the moment, we unfortunately can't allow trading from the US.</p>
