@@ -10,10 +10,6 @@
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check ."
   },
-  "gitHooks": {
-    "pre-commit": "prettier --write . && git add -A",
-    "commit-msg": "node verify_commit.js"
-  },
   "dependencies": {
     "@verto/lib": "^0.3.0-alpha.5",
     "arweave": "^1.9.1",
