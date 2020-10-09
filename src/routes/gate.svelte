@@ -1,7 +1,7 @@
 <script lang="typescript">
   import { goto } from "@sapper/app";
 
-  import { loggedIn } from "../stores/keyfileStore";
+  import { loggedIn } from "../stores/keyfileStore.ts";
   import Button from "../components/Button.svelte";
 
   if (process.browser && $loggedIn) {
@@ -9,6 +9,23 @@
     goto("/app");
   }
 </script>
+
+<svelte:head>
+  <title>Verto — Gate</title>
+</svelte:head>
+
+<div class="gate">
+  <div class="container">
+    <div class="text">
+      <h1>You aren't eligible...</h1>
+      <p>
+        Verto is in testing and only open to early permaweb adopters right now.
+      </p>
+      <p>We look forward to welcoming you when you become an Arweaver.</p>
+      <Button click="{() => goto('/')}">Go Back</Button>
+    </div>
+  </div>
+</div>
 
 <style lang="sass">
     
@@ -31,20 +48,3 @@
       line-height: 2rem
 
 </style>
-
-<svelte:head>
-  <title>Verto — Gate</title>
-</svelte:head>
-
-<div class="gate">
-  <div class="container">
-    <div class="text">
-      <h1>You aren't eligible...</h1>
-      <p>
-        Verto is in testing and only open to early permaweb adopters right now.
-      </p>
-      <p>We look forward to welcoming you when you become an Arweaver.</p>
-      <Button click={() => goto('/')}>Go Back</Button>
-    </div>
-  </div>
-</div>

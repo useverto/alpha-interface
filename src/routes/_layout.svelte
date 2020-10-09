@@ -6,7 +6,7 @@
   const ga_measurment_id = "UA-177614485-1";
 </script>
 
-<GoogleAnalytics {stores} id={ga_measurment_id} />
+<GoogleAnalytics stores="{stores}" id="{ga_measurment_id}" />
 <Notification />
 <main>
   <slot />

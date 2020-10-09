@@ -12,7 +12,7 @@
 
 ## About
 
-This is the front-end/app for the PST exchange service. It is built in Svelte(Sapper), JS and TS. We use the export feature of Sapper to create an arweave-deployable app.
+This is the front-end/app for the PST exchange service. It is built in Svelte(Sapper) and TypeScript. We use the export feature of Sapper to create an arweave-deployable app.
 
 You can access the code for trading posts [here](https://github.com/useverto/trading-post).
 
@@ -25,7 +25,7 @@ Below, you will see the available commands to test/build the project.
 
 ### Libraries
 
-We use the arweave-js library with Svelte/Sapper. You can read more about these in their github repos.
+We use the [arweave-js](https://github.com/ArweaveTeam/arweave-js) library with [Svelte/Sapper](https://github.com/sveltejs/sapper). You can read more about these in their github repos.
 
 ### Debug
 
@@ -51,11 +51,7 @@ yarn export
 
 ## How to deploy
 
-Since Sapper needs to know the exact path it will be served from, and when you deploy on arweave, you don't know the path until after you've deployed, a workaround is needed.
-
-Sapper has to be given a string to be served from (for e.g. `FAKEROOTPATH`), that can be searched and replaced later in the build output with `./`.
-
-To keep the routings, a [custom build](https://github.com/aidanok/arweave-deploy/tree/feature/path-indexes) of arweave-deploy is also needed, that adds extra mappings. (for e.g. for `foo/bar/` mapping to `foo/bar/index.html`)
+To deploy the app on Arweave, the [@verto/deploy](https://github.com/useverto/deploy) is needed. See the docs there.
 
 ## License
 

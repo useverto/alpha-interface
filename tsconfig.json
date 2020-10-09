@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": ["src/**/*", "src/node_modules/**/*", "typings/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "static/*", "public/*"],
+  "compilerOptions": {
+    "target": "ESNEXT",
+    "module": "ESNEXT",
+    "allowJs": true,
+    "checkJs": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "lib": ["DOM", "ES2017", "WebWorker"],
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+    "sourceMap": true,
+    "types": ["svelte"]
+  }
+}

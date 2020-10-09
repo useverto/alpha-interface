@@ -1,16 +1,14 @@
 <script lang="typescript">
   import { fade } from "svelte/transition";
-  import { loggedIn, logOut } from "../stores/keyfileStore.js";
-  import {
-    notification,
-    NotificationType,
-  } from "../stores/notificationStore.js";
+  import { loggedIn, logOut } from "../stores/keyfileStore.ts";
+  import { notification } from "../stores/notificationStore.ts";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";
   import postsLogo from "../assets/nav/posts.svg";
   import logoutLogo from "../assets/nav/logout.svg";
   import Modal from "../components/Modal.svelte";
+  import { NotificationType } from "../utils/types.ts";
 
   export let hero: boolean = false;
   let y: number;
@@ -37,6 +35,46 @@
     confirmModalOpened = true;
   }
 </script>
+
+<svelte:window bind:scrollY="{y}" />
+<div
+  class="NavBar {$loggedIn ? '' : 'logged-out'}"
+  class:scrolled="{y > 20}"
+  class:hero
+  in:fade="{{ duration: 750 }}">
+  <a href="{$loggedIn ? '/app' : '/'}" class="title">
+    <img src="/logo_light.svg" alt="v" />
+    <span class="beta">alpha</span>
+  </a>
+  <div class="menu">
+    {#if $loggedIn}
+      <a href="/trade">Trade</a>
+      <a href="/gallery">Posts</a>
+      <a href="/tokens">Tokens</a>
+      <a href="/" on:click="{_logOut}">Sign Out</a>
+    {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
+  </div>
+</div>
+<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"></div>
+<div class="mobile-nav">
+  {#if $loggedIn}
+    <a href="/trade"><img src="{tradeLogo}" alt="trade" /></a>
+    <a href="/gallery"><img src="{postsLogo}" alt="gallery" /></a>
+    <a href="/app"><img class="verto" src="/logo_light.svg" alt="v" /></a>
+    <a href="/tokens"><img src="{tokensLogo}" alt="tokens" /></a>
+    <a href="/" on:click="{mobileLogOut}"><img
+        src="{logoutLogo}"
+        alt="logout" /></a>
+  {/if}
+</div>
+<Modal
+  bind:opened="{confirmModalOpened}"
+  confirmation="{true}"
+  onConfirm="{_logOut}">
+  <p style="text-align: center">Are you sure you want to log out?</p>
+</Modal>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">
@@ -206,36 +244,3 @@
           height: 2.17em
 
 </style>
-
-<svelte:window bind:scrollY={y} />
-<div
-  class="NavBar {$loggedIn ? '' : 'logged-out'}"
-  class:scrolled={y > 20}
-  class:hero
-  in:fade={{ duration: 750 }}>
-  <a href={$loggedIn ? '/app' : '/'} class="title">
-    <img src="/logo_light.svg" alt="v" />
-    <span class="beta">alpha</span>
-  </a>
-  <div class="menu">
-    {#if $loggedIn}
-      <a href="/trade">Trade</a>
-      <a href="/gallery">Posts</a>
-      <a href="/tokens">Tokens</a>
-      <a href="/" on:click={_logOut}>Sign Out</a>
-    {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
-  </div>
-</div>
-<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}" />
-<div class="mobile-nav">
-  {#if $loggedIn}
-    <a href="/trade"><img src={tradeLogo} alt="trade" /></a>
-    <a href="/gallery"><img src={postsLogo} alt="gallery" /></a>
-    <a href="/app"><img class="verto" src="/logo_light.svg" alt="v" /></a>
-    <a href="/tokens"><img src={tokensLogo} alt="tokens" /></a>
-    <a href="/" on:click={mobileLogOut}><img src={logoutLogo} alt="logout" /></a>
-  {/if}
-</div>
-<Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={_logOut}>
-  <p style="text-align: center">Are you sure you want to log out?</p>
-</Modal>

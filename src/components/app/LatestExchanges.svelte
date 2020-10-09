@@ -1,18 +1,18 @@
 <script lang="ts">
+  import Verto from "@verto/lib";
+  import { address, keyfile } from "../../stores/keyfileStore";
+  import Arweave from "arweave";
+  import { query } from "../../api-client";
+  import { notification } from "../../stores/notificationStore";
+  import { NotificationType } from "../../utils/types";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import Button from "../Button.svelte";
+  import Loading from "../Loading.svelte";
+  import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
 
-  import { query } from "../../api-client";
-  import exchangesQuery from "../../queries/exchanges.gql";
-  import Arweave from "arweave";
-  import tokensQuery from "../../queries/tokens.gql";
-  import { exchangeWallet, pstContract } from "../../utils/constants";
-  import moment from "moment";
-  import SkeletonLoading from "../SkeletonLoading.svelte";
-  import { address } from "../../stores/keyfileStore";
-
-  let exchanges = getLatestExchanges();
-
-  async function getLatestExchanges(): Promise<
+  const client = new Verto();
+  let exchanges: Promise<
     {
       id: string;
       timestamp: string;
@@ -22,177 +22,160 @@
       status: string;
       duration: string;
     }[]
-  > {
-    if (!process.browser) return [];
+  > = client.getExchanges($address);
 
-    let exchanges: {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[] = [];
-
-    const txs = (
-      await query({
-        query: exchangesQuery,
-        variables: {
-          owners: [$address],
-          num: 5,
-        },
-      })
-    ).data.transactions.edges;
-
-    const psts = await getSupportedPSTs();
-
-    txs.map(({ node }) => {
-      const tradeType = node.tags.find((tag) => tag.name === "Type")?.value;
-      if (tradeType) {
-        const tokenTag = tradeType === "Buy" ? "Token" : "Contract";
-        const token = node.tags.find((tag: any) => tag.name === tokenTag)
-          ?.value!;
-        const ticker = psts.find((pst) => pst.id === token)?.ticker;
-
-        const sent =
-          tradeType === "Buy"
-            ? node.quantity.ar + " AR"
-            : JSON.parse(
-                node.tags.find((tag: any) => tag.name === "Input")?.value!
-              )["qty"] +
-              " " +
-              ticker;
-        const received = "??? " + (tradeType === "Buy" ? ticker : "AR");
-
-        exchanges.push({
-          id: node.id,
-          timestamp: node.block
-            ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
-            : "NOT MINED YET",
-          type: tradeType,
-          sent,
-          received,
-          status: "pending",
-          duration: "not completed",
-        });
-      }
-    });
-
-    for (let i = 0; i < exchanges.length; i++) {
-      const match = (
-        await query({
-          query: `
-          query {
-            transactions(
-              tags: [
-                { name: "Exchange", values: "Verto" }
-                { name: "Type", values: "Confirmation" }
-                { name: "Match", values: "${exchanges[i].id}" }
-              ]
-            ) {
-              edges {
-                node {
-                  block {
-                    timestamp
-                  }
-                  tags {
-                    name
-                    value
-                  }
-                }
-              }
-            }
-          }
-        `,
-        })
-      ).data.transactions.edges;
-
-      if (match[0]) {
-        exchanges[i].status = "success";
-
-        if (match[0].node.block) {
-          const start = moment(exchanges[i].timestamp);
-          const end = moment(
-            moment
-              .unix(match[0].node.block.timestamp)
-              .format("YYYY-MM-DD hh:mm:ss")
-          );
-          const duration = moment.duration(end.diff(start));
-
-          exchanges[i].duration = duration.humanize();
-        } else {
-          exchanges[i].duration = "NOT MINED YET";
-        }
-
-        const receivedTag = match[0].node.tags.find(
-          (tag: any) => tag.name === "Received"
-        );
-        if (receivedTag) {
-          exchanges[i].received = receivedTag.value;
-        }
-      }
-    }
-
-    return exchanges;
-  }
-
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
-    if (!process.browser) return [];
-
-    let psts: { id: string; name: string; ticker: string }[] = [];
-
+  let currentCancel = "";
+  let tx;
+  let loading: boolean = false;
+  let openModal: boolean = false;
+  const createCancel = async (order: string) => {
     const client = new Arweave({
       host: "arweave.dev",
       port: 443,
       protocol: "https",
-      timeout: 20000,
     });
 
-    let txIds = [];
-    const _txIds = (
+    const tags = {
+      Exchange: "Verto",
+      Type: "Cancel",
+      Order: order,
+    };
+
+    const target = (
       await query({
-        query: tokensQuery,
+        query: `
+          query($txID: ID!) {
+            transaction(id: $txID) {
+              recipient
+            }
+          }
+        `,
         variables: {
-          owners: [exchangeWallet],
-          contractSrc: pstContract,
+          txID: order,
         },
       })
-    ).data.transactions.edges;
-    _txIds.map(({ node }) => {
-      txIds.push(node.id);
+    ).data.transaction.recipient;
+
+    tx = await client.createTransaction(
+      {
+        target,
+        data: Math.random().toString().slice(-4),
+      },
+      JSON.parse($keyfile)
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value.toString());
+    }
+  };
+  const sendCancel = async () => {
+    const client = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
     });
 
-    for (const id of txIds) {
-      try {
-        const contractId = (
-          await client.transactions.getData(id, { decode: true, string: true })
-        ).toString();
-        const contractData = JSON.parse(
-          (
-            await client.transactions.getData(contractId, {
-              decode: true,
-              string: true,
-            })
-          ).toString()
-        );
-        psts.push({
-          id: contractId,
-          name: contractData["name"],
-          ticker: contractData["ticker"],
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    await client.transactions.sign(tx, JSON.parse($keyfile));
+    await client.transactions.post(tx);
 
-    return psts;
-  }
+    openModal = false;
+    notification.notify(
+      "Cancelled",
+      "You've successfully cancelled your order. ",
+      NotificationType.success,
+      5000
+    );
+  };
 </script>
 
-<!-- prettier-ignore -->
+<div class="section">
+  <h1 class="title">Trades</h1>
+  {#await exchanges}
+    <table in:fade="{{ duration: 100 }}">
+      <tr>
+        <th>Timestamp</th>
+        <th>Trade</th>
+        <th>Duration</th>
+        <th></th>
+      </tr>
+      {#each Array(5) as _}
+        <tr>
+          <td style="width: 30%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+          <td style="width: 42%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+          <td style="width: 22%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+          <td style="width: 6%">
+            <SkeletonLoading style="{'width: 100%'}" />
+          </td>
+        </tr>
+      {/each}
+    </table>
+  {:then loadedExchanges}
+    {#if loadedExchanges.length === 0}
+      <p in:fade="{{ duration: 300 }}">No trades found.</p>
+    {:else}
+      <table in:fade="{{ duration: 300 }}">
+        <tr>
+          <th>Timestamp</th>
+          <th>Trade</th>
+          <th>Duration</th>
+          <th></th>
+        </tr>
+        {#each loadedExchanges as exchange}
+          <tr>
+            <td style="width: 30%">{exchange.timestamp}</td>
+            <td style="width: 42%">
+              {exchange.sent}
+              {'->'}
+              {exchange.received}
+              <span class="status {exchange.status}"></span>
+            </td>
+            <td style="width: 22%; text-transform: uppercase">
+              {exchange.duration}
+            </td>
+            <td style="width: 6%">
+              {#if currentCancel !== exchange.id}
+                <Button
+                  click="{async () => {
+                    currentCancel = exchange.id;
+                    await createCancel(exchange.id);
+                    openModal = true;
+                    currentCancel = '';
+                  }}"
+                  disabled="{exchange.status !== 'pending' || exchange.timestamp === 'not mined yet'}"
+                  style="
+                    font-size: .8em;
+                    padding: .1em .4em;
+                    width: auto;
+                    min-width: unset;
+                    border-radius: 4px;
+                  ">
+                  Cancel
+                </Button>
+              {:else}
+                <Loading style="height: 1.5em; width: 1.5em;" />
+              {/if}
+            </td>
+          </tr>
+        {/each}
+      </table>
+    {/if}
+  {/await}
+  <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
+</div>
+<Modal
+  bind:opened="{openModal}"
+  confirmation="{true}"
+  onConfirm="{sendCancel}"
+  onCancel="{() => (openModal = false)}">
+  <p>Are you sure you want to cancel this order?</p>
+</Modal>
+
 <style lang="sass">
   
   @import "../../styles/tables.sass"
@@ -225,54 +208,3 @@
       color: black
 
 </style>
-
-<div class="section">
-  <h1 class="title">Trades</h1>
-  <table>
-    <tr>
-      <th>Timestamp</th>
-      <th>Trade</th>
-      <th>Duration</th>
-    </tr>
-    {#await exchanges}
-      {#each Array(5) as _}
-        <tr>
-          <td style="width: 30%">
-            <SkeletonLoading style={'width: 100%'} />
-          </td>
-          <td style="width: 60%">
-            <SkeletonLoading style={'width: 100%'} />
-          </td>
-          <td style="width: 15%">
-            <SkeletonLoading style={'width: 100%'} />
-          </td>
-        </tr>
-      {/each}
-    {:then loadedExchanges}
-      {#if loadedExchanges.length === 0}
-        <p style="position: absolute; left: 50%; transform: translateX(-50%);">
-          No trades found
-        </p>
-        <tr>
-          <td><br /></td>
-          <td />
-        </tr>
-        <!-- empty line to push "view-all" down -->
-      {/if}
-      {#each loadedExchanges as exchange}
-        <tr in:fade={{ duration: 300 }}>
-          <td style="width: 30%">{exchange.timestamp}</td>
-          <td style="width: 45%">
-            {exchange.sent}
-            {'->'}
-            {exchange.received}
-            <span class="status {exchange.status}" />
-          </td>
-          <td style="text-transform: uppercase">{exchange.duration}</td>
-        </tr>
-        <tr />
-      {/each}
-    {/await}
-  </table>
-  <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
-</div>

@@ -3,17 +3,15 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile, loggedIn, address } from "../stores/keyfileStore.js";
-  import {
-    notification,
-    NotificationType,
-  } from "../stores/notificationStore.js";
+  import { keyfile, loggedIn, address } from "../stores/keyfileStore.ts";
+  import { notification } from "../stores/notificationStore.ts";
+  import { NotificationType } from "../utils/types.ts";
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
 
   let isDragOver = false;
-  let files: FileList = [];
+  let files: File[] = [];
   let client;
 
   if (process.browser && $loggedIn) goto("/app");
@@ -78,6 +76,69 @@
     isDragOver = true;
   }
 </script>
+
+<svelte:head>
+  <title>Verto — Sign In</title>
+  <meta
+    name="description"
+    content="Token Exchange System for Arweave Profit Sharing Tokens" />
+  <meta content="Verto" property="og:title" />
+  <meta
+    content="Token Exchange System for Arweave Profit Sharing Tokens"
+    property="og:description" />
+  <!--<meta property="og:image" content="https://image">
+  <meta name="twitter:card" content="summary_large_image">-->
+  <meta name="twitter:title" content="Verto" />
+  <meta
+    name="twitter:description"
+    content="Token Exchange System for Arweave Profit Sharing Tokens" />
+  <!--<meta name="twitter:image" content="https://iimage">-->
+</svelte:head>
+
+<input
+  type="file"
+  class="FileInput"
+  class:default="{!isDragOver}"
+  accept=".json,application/json"
+  on:drop="{drop}"
+  on:dragover="{drag}"
+  on:dragleave="{drop}"
+  bind:files />
+{#if isDragOver}
+  <div
+    class="drag-overlay"
+    in:fade="{{ duration: 350 }}"
+    out:fade="{{ duration: 160 }}">
+    <h1>Drop your keyfile here</h1>
+  </div>
+{/if}
+<div class="Login">
+  <div class="instructions">
+    <div class="content">
+      <h1>
+        Sign in to <span class="verto-name"><a href="/">Verto</a></span><span
+          class="beta">alpha</span>
+      </h1>
+      <p>
+        To sign in, just drag and drop your Arweave Keyfile on this page. <br /><br />If
+        you don’t yet have a keyfile, you can get one by creating an <a
+          href="https://www.arweave.org/wallet">Arweave Wallet</a>.
+      </p>
+      <p class="notice">Your Arweave Keyfile does not leave your system.</p>
+    </div>
+  </div>
+  <div class="arweave-login">
+    <h1>Sign in with your Arweave Keyfile</h1>
+    <img src="{stroke}" alt="stroke" class="Stroke" draggable="{false}" />
+    <img src="{keyfileSVG}" alt="keyfile" class="Keyfile" draggable="{false}" />
+    <p>
+      If you don’t yet have a keyfile, you can get one by creating an <a
+        href="https://www.arweave.org/wallet">Arweave Wallet</a>.
+    </p>
+  </div>
+</div>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">
@@ -229,64 +290,3 @@
         bottom: 5vh
 
 </style>
-
-<svelte:head>
-  <title>Verto — Sign In</title>
-  <meta
-    name="description"
-    content="Token Exchange System for Arweave Profit Sharing Tokens" />
-  <meta content="Verto" property="og:title" />
-  <meta
-    content="Token Exchange System for Arweave Profit Sharing Tokens"
-    property="og:description" />
-  <!--<meta property="og:image" content="https://image">
-  <meta name="twitter:card" content="summary_large_image">-->
-  <meta name="twitter:title" content="Verto" />
-  <meta
-    name="twitter:description"
-    content="Token Exchange System for Arweave Profit Sharing Tokens" />
-  <!--<meta name="twitter:image" content="https://iimage">-->
-</svelte:head>
-
-<input
-  type="file"
-  class="FileInput"
-  class:default={!isDragOver}
-  accept=".json,application/json"
-  on:drop={drop}
-  on:dragover={drag}
-  on:dragleave={drop}
-  bind:files />
-{#if isDragOver}
-  <div
-    class="drag-overlay"
-    in:fade={{ duration: 350 }}
-    out:fade={{ duration: 160 }}>
-    <h1>Drop your keyfile here</h1>
-  </div>
-{/if}
-<div class="Login">
-  <div class="instructions">
-    <div class="content">
-      <h1>
-        Sign in to <span class="verto-name"><a href="/">Verto</a></span><span
-          class="beta">alpha</span>
-      </h1>
-      <p>
-        To sign in, just drag and drop your Arweave Keyfile on this page. <br /><br />If
-        you don’t yet have a keyfile, you can get one by creating an <a
-          href="https://www.arweave.org/wallet">Arweave Wallet</a>.
-      </p>
-      <p class="notice">Your Arweave Keyfile does not leave your system.</p>
-    </div>
-  </div>
-  <div class="arweave-login">
-    <h1>Sign in with your Arweave Keyfile</h1>
-    <img src={stroke} alt="stroke" class="Stroke" draggable={false} />
-    <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false} />
-    <p>
-      If you don’t yet have a keyfile, you can get one by creating an <a
-        href="https://www.arweave.org/wallet">Arweave Wallet</a>.
-    </p>
-  </div>
-</div>

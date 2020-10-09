@@ -18,6 +18,10 @@
       "destination": "https://raw.githubusercontent.com/useverto/trading-post/master/install/linux.sh"
     },
     {
+      "source": "/chat",
+      "destination": "https://discord.gg/sNgJkMg"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }

@@ -2,26 +2,23 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Loading from "../components/Loading.svelte";
-  import { loggedIn } from "../stores/keyfileStore.js";
+  import { loggedIn } from "../stores/keyfileStore.ts";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
-
-  import { query } from "../api-client.js";
+  import type { TradingPost } from "../utils/types";
+  import { query } from "../api-client";
   import Arweave from "arweave";
   import galleryQuery from "../queries/gallery.gql";
-  import { exchangeWallet, pstContract } from "../utils/constants";
-  import Community from "community-js";
+  import { exchangeWallet } from "../utils/constants";
+
+  import Verto from "@verto/lib";
+  const client = new Verto();
 
   if (process.browser && !$loggedIn) goto("/");
 
   let sortingType: string;
-  let tradingPosts: {
-    addr: string;
-    reputation: number;
-    balance: string;
-    stake: number;
-  }[] = [];
+  let tradingPosts: TradingPost[] = [];
   let lastCursor = "",
     hasNext = true,
     loadedFirstPosts = false,
@@ -36,14 +33,9 @@
     if (!hasNext) return;
 
     loading = true;
-    let posts: {
-      addr: string;
-      reputation: number;
-      balance: string;
-      stake: number;
-    }[] = [];
+    let posts: TradingPost[] = [];
 
-    const client = new Arweave({
+    const arweave = new Arweave({
       host: "arweave.dev",
       port: 443,
       protocol: "https",
@@ -63,25 +55,19 @@
 
     for (const post of _posts.edges) {
       let node = post.node;
-      const balance = client.ar.winstonToAr(
-        await client.wallets.getBalance(node.owner.address)
-      );
-      const stake = await getPostStake(node.owner.address);
-      const timeStaked = await getTimeStaked(node.owner.address);
-
-      let stakeWeighted = ((await stake) * 1) / 2,
-        timeStakedWeighted = ((await timeStaked) * 1) / 3,
-        balanceWeighted = (parseFloat(await balance) * 1) / 6;
-
       lastCursor = post.cursor;
-      posts.push({
-        addr: node.owner.address,
-        reputation: parseFloat(
-          (stakeWeighted + timeStakedWeighted + balanceWeighted).toFixed(3)
-        ),
-        balance,
-        stake,
-      });
+
+      const stake = await client.getPostStake(node.owner.address);
+      if (stake > 0) {
+        posts.push({
+          addr: node.owner.address,
+          reputation: await client.getReputation(node.owner.address),
+          balance: arweave.ar.winstonToAr(
+            await arweave.wallets.getBalance(node.owner.address)
+          ),
+          stake,
+        });
+      }
     }
 
     tradingPosts = tradingPosts.concat(posts);
@@ -89,45 +75,6 @@
 
     loadedFirstPosts = true;
     setTimeout(() => (loading = false), 400); // wait for animation and latency to complete (needed for the scroll)
-  }
-
-  async function getPostStake(addr: string): Promise<number> {
-    if (!process.browser) return 0;
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    return await community.getVaultBalance(addr);
-  }
-
-  async function getTimeStaked(addr: string): Promise<number> {
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let community = new Community(client);
-    await community.setCommunityTx(pstContract);
-
-    let currentHeight = (await client.network.getInfo()).height;
-
-    let vaults = (await community.getState()).vault[addr];
-    for (const vault of vaults) {
-      if (vault.end > currentHeight) {
-        return vault.end - vault.start;
-      }
-    }
-
-    return 0;
   }
 
   $: {
@@ -144,7 +91,59 @@
   }
 </script>
 
-<!-- prettier-ignore -->
+<svelte:head>
+  <title>Verto — Gallery</title>
+</svelte:head>
+
+<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
+<NavBar />
+<div class="gallery" in:fade="{{ duration: 300 }}">
+  <div class="gallery-head">
+    <h1 class="title">Trading Posts</h1>
+    <!-- TODO: MPV2 -->
+    <!--<div class="sorting">
+      <p>Sort by
+        <select bind:value={sortingType}>
+          <option value="reputation">Reputation</option>
+          <option value="balance">Balance</option>
+          <option value="stake">Stake</option>
+        </select>
+      </p>
+    </div>-->
+  </div>
+  <div class="gallery-content">
+    {#if !loadedFirstPosts}
+      <Loading />
+    {:else if tradingPosts.length === 0}
+      <p in:fade="{{ duration: 150 }}">No posts found</p>
+    {:else}
+      <div class="reputation-title">
+        <p>Reputation</p>
+      </div>
+      {#each tradingPosts as post}
+        <a class="post" href="/post?addr={post.addr}">
+          <div class="post-info">
+            <h1>{post.addr}</h1>
+            <div class="other-info">
+              <p>
+                <span>Balance</span>{post.balance}<span class="ar">ar</span>
+              </p>
+              <p><span>Stake</span>{post.stake}<span class="ar">VRT</span></p>
+            </div>
+          </div>
+          <h1 class="reputation">{post.reputation}</h1>
+        </a>
+      {/each}
+      {#if loading}
+        <!-- if the site is loading, but there are posts already loaded  -->
+        <Loading />
+      {/if}
+    {/if}
+  </div>
+</div>
+<Footer />
+<span style="width: 100%; height: 1px" bind:this="{element}"></span>
+
 <style lang="sass">
 
   @import "../styles/general.sass"
@@ -275,56 +274,3 @@
                   font-size: .75em
 
 </style>
-
-<svelte:head>
-  <title>Verto — Gallery</title>
-</svelte:head>
-
-<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
-<NavBar />
-<div class="gallery" in:fade={{ duration: 300 }}>
-  <div class="gallery-head">
-    <h1 class="title">Trading Posts</h1>
-    <!-- TODO: MPV2 -->
-    <!--<div class="sorting">
-      <p>Sort by
-        <select bind:value={sortingType}>
-          <option value="reputation">Reputation</option>
-          <option value="balance">Balance</option>
-          <option value="stake">Stake</option>
-        </select>
-      </p>
-    </div>-->
-  </div>
-  <div class="gallery-content">
-    {#if !loadedFirstPosts}
-      <Loading />
-    {:else if tradingPosts.length === 0}
-      <p in:fade={{ duration: 150 }}>No posts found</p>
-    {:else}
-      <div class="reputation-title">
-        <p>Reputation</p>
-      </div>
-      {#each tradingPosts as post}
-        <a class="post" href="/post?addr={post.addr}">
-          <div class="post-info">
-            <h1>{post.addr}</h1>
-            <div class="other-info">
-              <p>
-                <span>Balance</span>{post.balance}<span class="ar">ar</span>
-              </p>
-              <p><span>Stake</span>{post.stake}<span class="ar">VRT</span></p>
-            </div>
-          </div>
-          <h1 class="reputation">{post.reputation}</h1>
-        </a>
-      {/each}
-      {#if loading}
-        <!-- if the site is loading, but there are posts already loaded  -->
-        <Loading />
-      {/if}
-    {/if}
-  </div>
-</div>
-<Footer />
-<span style="width: 100%; height: 1px" bind:this={element} />
