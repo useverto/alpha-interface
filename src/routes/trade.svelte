@@ -126,22 +126,22 @@
       loading = false;
       return;
     } else if (mode === "buy") {
-      let sum = 0;
-      for (const order of orders) {
-        if (order.type === "Sell") {
-          sum += order.amnt / order.rate;
-        }
-      }
-      if (buyAmount > sum) {
-        notification.notify(
-          "Error",
-          "You're buying more than the orderbook allows.",
-          NotificationType.error,
-          5000
-        );
-        loading = false;
-        return;
-      }
+      // let sum = 0;
+      // for (const order of orders) {
+      //   if (order.type === "Sell") {
+      //     sum += order.amnt / order.rate;
+      //   }
+      // }
+      // if (buyAmount > sum) {
+      //   notification.notify(
+      //     "Error",
+      //     "You're buying more than the orderbook allows.",
+      //     NotificationType.error,
+      //     5000
+      //   );
+      //   loading = false;
+      //   return;
+      // }
 
       order = await client.createOrder(
         "buy",
@@ -159,15 +159,15 @@
         );
         loading = false;
         return;
-      } else if (orders.find((o) => o.type === "Sell") === undefined) {
-        notification.notify(
-          "Error",
-          "There aren't any sell orders open. You cannot buy tokens if no sell orders are open.",
-          NotificationType.error,
-          10000
-        );
-        loading = false;
-        return;
+      // } else if (orders.find((o) => o.type === "Sell") === undefined) {
+      //   notification.notify(
+      //     "Error",
+      //     "There aren't any sell orders open. You cannot buy tokens if no sell orders are open.",
+      //     NotificationType.error,
+      //     10000
+      //   );
+      //   loading = false;
+      //   return;
       }
 
       confirmModalText = `You're sending ${order.ar} AR`;
