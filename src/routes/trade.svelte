@@ -18,13 +18,13 @@
 
   if (process.browser && !$loggedIn) goto("/");
 
-  onMount(async () => {
-    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
-    if (res.country === "US") {
-      goto("/usa");
-    }
-  });
+  // onMount(async () => {
+  //   const ip = await (await fetch("https://api.ipify.org?format=json")).json();
+  //   const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
+  //   if (res.country === "US") {
+  //     goto("/usa");
+  //   }
+  // });
 
   notification.notify(
     "Warning",
