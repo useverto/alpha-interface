@@ -1,0 +1,38 @@
+$selectSidePadding: .65em
+
+@mixin select-style
+  position: relative
+  color: var(--background-color)
+  background-color: var(--inverted-elements-color)
+  font-size: 1em
+  padding: .34em ($selectSidePadding * 3 + .3em) .34em $selectSidePadding
+  cursor: pointer
+  border-radius: .3em
+  outline: none
+  border: none
+  -webkit-appearance: none
+  -moz-appearance: none
+  transition: all .3s
+  
+.select-container
+  position: relative
+  transition: all .3s
+
+  select
+    @include select-style
+
+  svg, img, object
+    filter: var(--svg-color)
+    position: absolute
+    z-index: 8
+    width: $selectSidePadding * 1.35
+    top: 50%
+    right: $selectSidePadding
+    transform: translateY(-50%)
+
+  &:hover
+    opacity: .8
+
+.fake-select
+  @include select-style
+  padding-right: selectSidePadding

@@ -16,6 +16,7 @@
   import Footer from "../components/Footer.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
   import { cubicIn } from "svelte/easing";
+  import downArrowIcon from "../assets/down-arrow.svg";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -326,12 +327,15 @@
   <div class="metrics">
     <div class="title-section">
       <h1 class="title">Metrics</h1>
-      <select
-        bind:value={selectedMetric}
-        on:change={() => (metricData = getMetrics())}>
-        <option value="price">Price</option>
-        <option value="volume">Volume</option>
-      </select>
+      <div class="select-container">
+        <select
+          bind:value={selectedMetric}
+          on:change={() => (metricData = getMetrics())}>
+          <option value="price">Price</option>
+          <option value="volume">Volume</option>
+        </select>
+        <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
+      </div>
     </div>
     {#await metricData}
       <Loading />
@@ -389,28 +393,34 @@
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
-              <select
-                bind:value={selectedPost}
-                style="width: 100%"
-                on:change={() => {
-                  psts = getTradingPostSupportedTokens();
-                  orderBook = getOrderBook();
-                  tradingPostFeePercent = getTradingPostFeePercent();
-                  metricData = getMetrics();
-                }}>
-                {#await posts}
-                  <option disabled>Loading...</option>
-                {:then loadedPosts}
-                  {#if loadedPosts.length === 0}
-                    <option disabled>No posts found</option>
-                  {/if}
-                  {#each loadedPosts as post}
-                    <option value={post} selected={post === selectedPost}>
-                      {post}
-                    </option>
-                  {/each}
-                {/await}
-              </select>
+              <div class="select-container">
+                <select
+                  bind:value={selectedPost}
+                  style="width: 100%"
+                  on:change={() => {
+                    psts = getTradingPostSupportedTokens();
+                    orderBook = getOrderBook();
+                    tradingPostFeePercent = getTradingPostFeePercent();
+                    metricData = getMetrics();
+                  }}>
+                  {#await posts}
+                    <option disabled>Loading...</option>
+                  {:then loadedPosts}
+                    {#if loadedPosts.length === 0}
+                      <option disabled>No posts found</option>
+                    {/if}
+                    {#each loadedPosts as post}
+                      <option value={post} selected={post === selectedPost}>
+                        {post}
+                      </option>
+                    {/each}
+                  {/await}
+                </select>
+                <object
+                  data={downArrowIcon}
+                  type="image/svg+xml"
+                  title="select-icon" />
+              </div>
             </div>
           </div>
           <div class="short-content">
@@ -441,16 +451,22 @@
                 {#await psts}
                   <SkeletonLoading style="width: 35px; height: 38px" />
                 {:then loadedPSTs}
-                  <select
-                    bind:value={sellToken}
-                    on:change={() => {
-                      orderBook = getOrderBook();
-                      metricData = getMetrics();
-                    }}>
-                    {#each loadedPSTs as pst}
-                      <option value={pst.ticker}>{pst.ticker}</option>
-                    {/each}
-                  </select>
+                  <div class="select-container">
+                    <select
+                      bind:value={sellToken}
+                      on:change={() => {
+                        orderBook = getOrderBook();
+                        metricData = getMetrics();
+                      }}>
+                      {#each loadedPSTs as pst}
+                        <option value={pst.ticker}>{pst.ticker}</option>
+                      {/each}
+                    </select>
+                    <object
+                      data={downArrowIcon}
+                      type="image/svg+xml"
+                      title="select-icon" />
+                  </div>
                 {/await}
               </div>
             </div>
@@ -499,28 +515,34 @@
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
-              <select
-                bind:value={selectedPost}
-                style="width: 100%"
-                on:change={() => {
-                  psts = getTradingPostSupportedTokens();
-                  orderBook = getOrderBook();
-                  tradingPostFeePercent = getTradingPostFeePercent();
-                  metricData = getMetrics();
-                }}>
-                {#await posts}
-                  <option disabled>Loading...</option>
-                {:then loadedPosts}
-                  {#if loadedPosts.length === 0}
-                    <option disabled>No posts found</option>
-                  {/if}
-                  {#each loadedPosts as post}
-                    <option value={post} selected={post === selectedPost}>
-                      {post}
-                    </option>
-                  {/each}
-                {/await}
-              </select>
+              <div class="select-container">
+                <select
+                  bind:value={selectedPost}
+                  style="width: 100%"
+                  on:change={() => {
+                    psts = getTradingPostSupportedTokens();
+                    orderBook = getOrderBook();
+                    tradingPostFeePercent = getTradingPostFeePercent();
+                    metricData = getMetrics();
+                  }}>
+                  {#await posts}
+                    <option disabled>Loading...</option>
+                  {:then loadedPosts}
+                    {#if loadedPosts.length === 0}
+                      <option disabled>No posts found</option>
+                    {/if}
+                    {#each loadedPosts as post}
+                      <option value={post} selected={post === selectedPost}>
+                        {post}
+                      </option>
+                    {/each}
+                  {/await}
+                </select>
+                <object
+                  data={downArrowIcon}
+                  type="image/svg+xml"
+                  title="select-icon" />
+              </div>
             </div>
           </div>
           <div class="short-content">
@@ -559,17 +581,23 @@
                   <SkeletonLoading
                     style="width: 100% !important; height: 100% !important" />
                 {:then loadedPSTs}
-                  <select
-                    bind:value={buyToken}
-                    style="width: 100% !important;"
-                    on:change={() => {
-                      orderBook = getOrderBook();
-                      metricData = getMetrics();
-                    }}>
-                    {#each loadedPSTs as pst}
-                      <option value={pst.ticker}>{pst.ticker}</option>
-                    {/each}
-                  </select>
+                  <div class="select-container">
+                    <select
+                      bind:value={buyToken}
+                      style="width: 100% !important;"
+                      on:change={() => {
+                        orderBook = getOrderBook();
+                        metricData = getMetrics();
+                      }}>
+                      {#each loadedPSTs as pst}
+                        <option value={pst.ticker}>{pst.ticker}</option>
+                      {/each}
+                    </select>
+                    <object
+                      data={downArrowIcon}
+                      type="image/svg+xml"
+                      title="select-icon" />
+                  </div>
                 {/await}
               </div>
             </div>
@@ -702,6 +730,7 @@
 
   @import "../styles/tables.sass"
   @import "../styles/general.sass"
+  @import "../styles/selects.sass"
 
   .trade
     @include table
@@ -751,17 +780,6 @@
         align-items: center
         justify-content: space-between
 
-    .recommended-post
-      display: flex
-      align-items: flex-end
-
-      select, .select-fake
-        width: 100%
-        font-size: 1.2em
-        padding:
-          top: calc(.3em + 2px) // border + padding of the button
-          bottom: calc(.3em + 2px) // border + padding of the button
-
       p
         color: rgba(#000, .3)
         font-weight: 600
@@ -803,8 +821,6 @@
 
           .fake-select
             opacity: 1 !important
-            background-image: none !important
-            padding-right: 0 !important
 
           input
             color: var(--primary-text-color)
@@ -822,28 +838,6 @@
             select
               width: 30% !important
               border-radius: 0
-
-    select
-      $sidePadding: .65em
-      position: relative
-      color: var(--background-color)
-      background-color: var(--inverted-elements-color)
-      font-size: 1em
-      padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
-      cursor: pointer
-      border-radius: .3em
-      outline: none
-      border: none
-      -webkit-appearance: none
-      -moz-appearance: none
-      background-image: url(/down-arrow.svg)
-      background-position: calc(100% - #{$sidePadding}) center
-      background-repeat: no-repeat
-      background-size: $sidePadding * 1.35
-      transition: all .3s
-
-      &:hover
-        opacity: .8
 
     .select-fake
       span

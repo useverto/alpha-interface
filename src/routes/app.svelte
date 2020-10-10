@@ -11,6 +11,7 @@
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
+  import downArrowIcon from "../assets/down-arrow.svg";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -29,14 +30,20 @@
 <div class="dashboard" in:fade={{ duration: 300 }}>
   <div class="section balance">
     {#if $balance === 0}
-      <p>
+      <div>
         <SkeletonLoading style="height: 1em; width: 120px" />
-        <select class="theme-picker" bind:value={$theme}>
-          {#each Object.values(Theme) as themeOption}
-            <option value={themeOption}>{themeOption}</option>
-          {/each}
-        </select>
-      </p>
+        <div class="select-container">
+          <select class="theme-picker" bind:value={$theme}>
+            {#each Object.values(Theme) as themeOption}
+              <option value={themeOption}>{themeOption}</option>
+            {/each}
+          </select>
+          <object
+            data={downArrowIcon}
+            type="image/svg+xml"
+            title="select-icon" />
+        </div>
+      </div>
       <h1 class="total-balance">
         <SkeletonLoading style="height: 1em; width: 300px" />
       </h1>
@@ -44,13 +51,20 @@
         <SkeletonLoading style="height: 1em; width: 400px" />
       </p>
     {:else}
-      <p in:fade={{ duration: 150 }}>
-        Your balance <select class="theme-picker" bind:value={$theme}>
-          {#each Object.values(Theme) as themeOption}
-            <option value={themeOption}>{themeOption}</option>
-          {/each}
-        </select>
-      </p>
+      <div in:fade={{ duration: 150 }}>
+        Your balance
+        <div class="select-container">
+          <select class="theme-picker" bind:value={$theme}>
+            {#each Object.values(Theme) as themeOption}
+              <option value={themeOption}>{themeOption}</option>
+            {/each}
+          </select>
+          <object
+            data={downArrowIcon}
+            type="image/svg+xml"
+            title="select-icon" />
+        </div>
+      </div>
       <h1 class="total-balance" in:fade={{ duration: 150 }}>
         {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
       </h1>
@@ -68,6 +82,7 @@
 
   @import "../styles/tables.sass"
   @import "../styles/general.sass"
+  @import "../styles/selects.sass"
 
   .dashboard
     @include page
@@ -80,7 +95,7 @@
       padding-bottom: 2.5em
 
     .balance
-      p
+      p, div
         display: flex
         align-items: center
         justify-content: space-between
@@ -90,27 +105,8 @@
         margin: 0
         font-weight: 600
 
-        .theme-picker
-          $sidePadding: .65em
-          color: var(--background-color)
-          background-color: var(--inverted-elements-color)
-          text-transform: uppercase
-          font-size: 1em
-          padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
-          cursor: pointer
-          border-radius: .3em
-          outline: none
-          border: none
-          -webkit-appearance: none
-          -moz-appearance: none
-          background-image: url(/down-arrow.svg)
-          background-position: calc(100% - #{$sidePadding}) center
-          background-repeat: no-repeat
-          background-size: $sidePadding * 1.35
-          transition: all .3s
-
-          &:hover
-            opacity: .85
+        .select-container
+          display: inline-block
 
         &.wallet
           text-transform: none

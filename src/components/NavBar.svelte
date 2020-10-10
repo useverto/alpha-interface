@@ -61,16 +61,26 @@
 <div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}" />
 <div class="mobile-nav">
   {#if $loggedIn}
-    <a href="/trade"><object data={tradeLogo} type="image/svg+xml" /></a>
-    <a href="/gallery"><object data={postsLogo} type="image/svg+xml" /></a>
+    <a href="/trade"><object
+        data={tradeLogo}
+        type="image/svg+xml"
+        title="nav-icon" /></a>
+    <a href="/gallery"><object
+        data={postsLogo}
+        type="image/svg+xml"
+        title="nav-icon" /></a>
     <a href="/app"><img
         class="verto"
         src={$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}
         alt="v" /></a>
-    <a href="/tokens"><object data={tokensLogo} type="image/svg+xml" /></a>
+    <a href="/tokens"><object
+        data={tokensLogo}
+        type="image/svg+xml"
+        title="nav-icon" /></a>
     <a href="/" on:click={mobileLogOut}><object
         data={logoutLogo}
-        type="image/svg+xml" /></a>
+        type="image/svg+xml"
+        title="nav-icon" /></a>
   {/if}
 </div>
 <Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={_logOut}>
