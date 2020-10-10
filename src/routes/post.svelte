@@ -299,7 +299,7 @@
             text-align: left
 
       h1
-        color: #000
+        color: var(--primary-text-color)
         font-size: 1.25em
         margin: 0
 
@@ -336,7 +336,7 @@
               opacity: 0
 
       p
-        color: rgba(#000, .3)
+        color: var(--secondary-text-color)
         font-weight: 600
         font-size: .9em
         margin: 0 0 .8em 0
@@ -376,7 +376,7 @@
           font-family: "JetBrainsMono", monospace
           text-transform: uppercase
           font-weight: 600
-          color: #000
+          color: var(--primary-text-color)
           background-color: transparent
           border: none
           font-size: 1.15em
@@ -396,7 +396,7 @@
             width: 100%
             height: 0
             opacity: 0
-            background-color: #000
+            background-color: var(--inverted-elements-color)
             transition: all .2s
 
           &.active::after
