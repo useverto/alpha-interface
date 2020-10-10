@@ -851,6 +851,10 @@
     @include table
     @include page
 
+    .content
+      p
+        color: var(--secondary-text-color)
+
   .menu
     position: relative
     display: flex

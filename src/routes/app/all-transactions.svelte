@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { address, loggedIn } from "../../stores/keyfileStore.ts";
+  import { address, loggedIn } from "../../stores/keyfileStore";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import Loading from "../../components/Loading.svelte";

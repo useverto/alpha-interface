@@ -5,7 +5,7 @@
   import Assets from "../components/app/Assets.svelte";
   import LatestExchanges from "../components/app/LatestExchanges.svelte";
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
-  import { loggedIn, address, balance } from "../stores/keyfileStore.ts";
+  import { loggedIn, address, balance } from "../stores/keyfileStore";
   import { theme } from "../stores/themeStore";
   import { Theme } from "../utils/types";
   import { goto } from "@sapper/app";

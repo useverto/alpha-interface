@@ -1,7 +1,7 @@
 <script lang="typescript">
   import { goto } from "@sapper/app";
 
-  import { loggedIn } from "../stores/keyfileStore.ts";
+  import { loggedIn } from "../stores/keyfileStore";
   import Button from "../components/Button.svelte";
 
   if (process.browser && $loggedIn) {

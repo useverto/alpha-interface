@@ -1,6 +1,6 @@
 <script>
-  import { notification } from "../stores/notificationStore.ts";
-  import { NotificationType } from "../utils/types.ts";
+  import { notification } from "../stores/notificationStore";
+  import { NotificationType } from "../utils/types";
   import { cubicIn } from "svelte/easing";
   import { fly, scale, fade } from "svelte/transition";
   import errorIcon from "../assets/notification/error.svg";
