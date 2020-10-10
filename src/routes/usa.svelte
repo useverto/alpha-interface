@@ -50,6 +50,7 @@
       transform: translate(-50%, -50%)
     
     h1
+      color: var(--primary-text-color)
       font-size: 8em
       font-weight: bold
       margin-block-start: 0em
@@ -59,6 +60,7 @@
         font-size: 4em
     
     h2
+      color: var(--primary-text-color)
       font-size: 3em
       margin-block-start: 0em
 
@@ -66,6 +68,7 @@
         font-size: 2.3em
     
     p
+      color: var(--primary-text-color)
       font-size: 1.1em
       line-height: 2rem
   
