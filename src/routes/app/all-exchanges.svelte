@@ -300,6 +300,9 @@
 
   .all-exchanges
     @include page
-    @include table 
+    @include table
+
+    p
+      color: var(--secondary-text-color)
 
 </style>

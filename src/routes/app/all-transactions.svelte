@@ -186,13 +186,12 @@
     @include page
     @include table 
 
-    .pagination
-      margin-top: 1.3em
-      @include pagination
+    p
+      color: var(--secondary-text-color)
 
     td
       a
         text-decoration: none
-        color: black
+        color: var(--primary-text-color)
 
 </style>
