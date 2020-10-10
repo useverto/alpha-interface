@@ -202,7 +202,7 @@
 
         p
           font-size: 1.2em
-          color: rgba(#000, .3)
+          color: var(--secondary-text-color)
           font-weight: 600
           margin: 0
           text-transform: uppercase

@@ -9,7 +9,6 @@ import { Theme } from "../utils/types";
 
 export const keyfile = createCustomStore("keyfile");
 export const address = createCustomStore("address");
-// export const client = createArweaveClientStore();
 
 // this is a custom store
 // it enables saving to local storage
