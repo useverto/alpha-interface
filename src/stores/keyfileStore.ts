@@ -85,28 +85,3 @@ export function logOut() {
   theme.set(Theme.Light);
   localStorage.clear();
 }
-
-/*
-
-// the client store
-// used to connect to arweave
-function createArweaveClientStore () {
-  const { subscribe, set } = writable({});
-  if(process.browser) {
-    set(new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    }));
-  }
-  return { set, subscribe };
-}
-
-export async function logIn (keyfile) {
-  if(!process.browser) return;
-  let address, balance;
-  await $client.wallets.jwkToAddress(JSON.parse(keyfile)).then(_address => address = _address);
-  await $client.wallets.getBalance(address).then(_balance => balance = $client.ar.winstonToAr(_balance));
-  console.log(address, balance);
-}*/
