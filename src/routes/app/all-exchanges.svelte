@@ -237,9 +237,9 @@
   <title>Verto — All Exchanges</title>
 </svelte:head>
 
-<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
-<div class="all-exchanges" in:fade="{{ duration: 300 }}">
+<div class="all-exchanges" in:fade={{ duration: 300 }}>
   <h1 class="title">All Trades</h1>
   {#if !loadedExchanges}
     <table>
@@ -251,13 +251,13 @@
       {#each Array(10) as _}
         <tr>
           <td style="width: 30%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
           <td style="width: 45%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
           <td style="width: 25%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
         </tr>
       {/each}
@@ -272,13 +272,13 @@
         <th>Duration</th>
       </tr>
       {#each exchanges as exchange}
-        <tr in:fade="{{ duration: 300 }}">
+        <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
           <td style="width: 45%">
             {exchange.sent}
             {'->'}
             {exchange.received}
-            <span class="status {exchange.status}"></span>
+            <span class="status {exchange.status}" />
           </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
@@ -291,7 +291,7 @@
   {/if}
 </div>
 <Footer />
-<span style="width: 100%; height: 1px" bind:this="{element}"></span>
+<span style="width: 100%; height: 1px" bind:this={element} />
 
 <style lang="sass">
 

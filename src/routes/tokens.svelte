@@ -116,12 +116,12 @@
 </svelte:head>
 
 <NavBar />
-<div class="tokens" in:fade="{{ duration: 300 }}">
+<div class="tokens" in:fade={{ duration: 300 }}>
   <div class="tokens-head">
     <h1 class="title">Supported Tokens</h1>
     <Button
-      click="{addToken}"
-      style="{"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}">
+      click={addToken}
+      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
       Add Token
     </Button>
   </div>
@@ -145,14 +145,14 @@
   </div>
 </div>
 <Modal
-  bind:opened="{addTokenModalOpened}"
-  confirmation="{true}"
-  onConfirm="{confirmAdd}"
-  onCancel="{cancelAdd}">
+  bind:opened={addTokenModalOpened}
+  confirmation={true}
+  onConfirm={confirmAdd}
+  onCancel={cancelAdd}>
   <h3 style="text-align: center;">Token Contract ID</h3>
   <input
     type="text"
-    bind:value="{newContractID}"
+    bind:value={newContractID}
     class="light contract-id"
     placeholder="Contract ID" />
 </Modal>

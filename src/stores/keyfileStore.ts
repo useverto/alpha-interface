@@ -1,5 +1,7 @@
 import { writable, derived } from "svelte/store";
 import Arweave from "arweave";
+import { theme } from "./themeStore";
+import { Theme } from "../utils/types";
 
 // We store the arweave keyfile here.
 // It gets saved to the local stroage of the browser
@@ -80,6 +82,7 @@ export const loggedIn = derived(
 // this removes the keyfile from local stroage
 export function logOut() {
   keyfile.reset();
+  theme.set(Theme.Light);
   localStorage.clear();
 }
 

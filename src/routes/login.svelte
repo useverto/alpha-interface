@@ -98,17 +98,17 @@
 <input
   type="file"
   class="FileInput"
-  class:default="{!isDragOver}"
+  class:default={!isDragOver}
   accept=".json,application/json"
-  on:drop="{drop}"
-  on:dragover="{drag}"
-  on:dragleave="{drop}"
+  on:drop={drop}
+  on:dragover={drag}
+  on:dragleave={drop}
   bind:files />
 {#if isDragOver}
   <div
     class="drag-overlay"
-    in:fade="{{ duration: 350 }}"
-    out:fade="{{ duration: 160 }}">
+    in:fade={{ duration: 350 }}
+    out:fade={{ duration: 160 }}>
     <h1>Drop your keyfile here</h1>
   </div>
 {/if}
@@ -129,8 +129,8 @@
   </div>
   <div class="arweave-login">
     <h1>Sign in with your Arweave Keyfile</h1>
-    <img src="{stroke}" alt="stroke" class="Stroke" draggable="{false}" />
-    <img src="{keyfileSVG}" alt="keyfile" class="Keyfile" draggable="{false}" />
+    <img src={stroke} alt="stroke" class="Stroke" draggable={false} />
+    <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false} />
     <p>
       If you don’t yet have a keyfile, you can get one by creating an <a
         href="https://www.arweave.org/wallet">Arweave Wallet</a>.

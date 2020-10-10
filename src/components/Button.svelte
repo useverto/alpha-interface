@@ -18,12 +18,12 @@
 </script>
 
 <a
-  href="{href}"
-  target="{target}"
-  rel="{rel}"
+  {href}
+  {target}
+  {rel}
   class="Button"
-  on:click="{handleClick}"
-  style="{style}"
+  on:click={handleClick}
+  {style}
   class:clear
   class:reverse
   class:disabled>

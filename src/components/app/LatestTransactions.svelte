@@ -25,18 +25,18 @@
     </tr>
     {#await transactions}
       {#each Array(5) as _}
-        <tr in:fade="{{ duration: 100 }}">
+        <tr in:fade={{ duration: 100 }}>
           <td style="width: 70%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
           <td style="width: 20%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
         </tr>
       {/each}
     {:then loadedTxs}
       {#each loadedTxs as tx}
-        <tr in:fade="{{ duration: 300 }}">
+        <tr in:fade={{ duration: 300 }}>
           <td style="width: 70%">
             <a
               href="https://viewblock.io/arweave/tx/{tx.id}"
@@ -44,7 +44,7 @@
               <span class="direction">{tx.type}</span>
               {tx.id}
             </a>
-            <span class="status {tx.status}"></span>
+            <span class="status {tx.status}" />
           </td>
           <td style="width: 20%">{tx.amount} AR</td>
         </tr>

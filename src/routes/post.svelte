@@ -71,7 +71,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="post" in:fade="{{ duration: 300 }}">
+<div class="post" in:fade={{ duration: 300 }}>
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>
@@ -101,8 +101,8 @@
           <SkeletonLoading style="height: 1em; width: 300px" />
         </h1>
       {:then loadedBalance}
-        <p in:fade="{{ duration: 150 }}">total balance</p>
-        <h1 in:fade="{{ duration: 150 }}">
+        <p in:fade={{ duration: 150 }}>total balance</p>
+        <h1 in:fade={{ duration: 150 }}>
           {roundCurrency(loadedBalance)}<span class="currency">AR</span>
         </h1>
       {/await}
@@ -125,18 +125,18 @@
   <div class="information">
     <div class="menu">
       <button
-        class:active="{activeMenu === 'transactions'}"
-        on:click="{() => (activeMenu = 'transactions')}">Transactions</button>
+        class:active={activeMenu === 'transactions'}
+        on:click={() => (activeMenu = 'transactions')}>Transactions</button>
       <button
-        class:active="{activeMenu === 'assets'}"
-        on:click="{() => (activeMenu = 'assets')}">Assets</button>
+        class:active={activeMenu === 'assets'}
+        on:click={() => (activeMenu = 'assets')}>Assets</button>
       <button
-        class:active="{activeMenu === 'supported'}"
-        on:click="{() => (activeMenu = 'supported')}">Supported Assets</button>
+        class:active={activeMenu === 'supported'}
+        on:click={() => (activeMenu = 'supported')}>Supported Assets</button>
       <div class="trade">
         <Button
           href="/trade?post={addr}"
-          style="{"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}">
+          style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
           Trade now
         </Button>
       </div>
@@ -188,7 +188,7 @@
           {/if}
         {/await}
       {:else if activeMenu === 'transactions'}
-        <table in:fade="{{ duration: 400 }}">
+        <table in:fade={{ duration: 400 }}>
           <tr>
             <th style="text-transform: none">TxID</th>
             <th>Amount</th>
@@ -197,10 +197,10 @@
             {#each Array(5) as _}
               <tr>
                 <td style="width: 70%">
-                  <SkeletonLoading style="{'width: 100%'}" />
+                  <SkeletonLoading style={'width: 100%'} />
                 </td>
                 <td style="width: 20%">
-                  <SkeletonLoading style="{'width: 100%'}" />
+                  <SkeletonLoading style={'width: 100%'} />
                 </td>
               </tr>
             {/each}
@@ -214,7 +214,7 @@
                     <span class="direction">{tx.type}</span>
                     {tx.id}
                   </a>
-                  <span class="status {tx.status}"></span>
+                  <span class="status {tx.status}" />
                 </td>
                 <td style="width: 20%">{tx.amount} AR</td>
               </tr>
@@ -222,18 +222,18 @@
           {/await}
         </table>
       {:else if activeMenu === 'supported'}
-        <table in:fade="{{ duration: 400 }}">
+        <table in:fade={{ duration: 400 }}>
           {#await supportedTokens}
             {#each Array(5) as _}
               <tr>
                 <td style="width: 30%">
-                  <SkeletonLoading style="{'width: 100%'}" />
+                  <SkeletonLoading style={'width: 100%'} />
                 </td>
                 <td style="width: 20%">
-                  <SkeletonLoading style="{'width: 100%'}" />
+                  <SkeletonLoading style={'width: 100%'} />
                 </td>
                 <td style="width: 50%">
-                  <SkeletonLoading style="{'width: 100%'}" />
+                  <SkeletonLoading style={'width: 100%'} />
                 </td>
               </tr>
             {/each}

@@ -300,7 +300,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="trade" in:fade="{{ duration: 300 }}">
+<div class="trade" in:fade={{ duration: 300 }}>
   <div class="balance">
     {#if $balance === 0}
       <p>
@@ -313,11 +313,11 @@
         <SkeletonLoading style="height: 1em; width: 400px" />
       </p>
     {:else}
-      <p in:fade="{{ duration: 150 }}">Your balance</p>
-      <h1 class="total-balance" in:fade="{{ duration: 150 }}">
+      <p in:fade={{ duration: 150 }}>Your balance</p>
+      <h1 class="total-balance" in:fade={{ duration: 150 }}>
         {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
       </h1>
-      <p class="wallet" in:fade="{{ duration: 150 }}">Wallet: {$address}</p>
+      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
     {/if}
   </div>
   <div class="assets" style="margin-bottom: -1.2em">
@@ -327,8 +327,8 @@
     <div class="title-section">
       <h1 class="title">Metrics</h1>
       <select
-        bind:value="{selectedMetric}"
-        on:change="{() => (metricData = getMetrics())}">
+        bind:value={selectedMetric}
+        on:change={() => (metricData = getMetrics())}>
         <option value="price">Price</option>
         <option value="volume">Volume</option>
       </select>
@@ -345,7 +345,7 @@
       {:else}
         <div style="height: 39vh; position: relative; width: 100%;">
           <Line
-            data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
+            data={{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
                     let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
                     gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
                     gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
@@ -360,44 +360,44 @@
                     gradient.addColorStop(0, '#E698E8');
                     gradient.addColorStop(1, '#8D5FBC');
                     return gradient;
-                  } }] }}"
-            options="{{ maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }}" />
+                  } }] }}
+            options={{ maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
         </div>
       {/if}
     {/await}
   </div>
   <div class="menu">
     <button
-      class:active="{mode === 'buy'}"
-      on:click="{() => {
+      class:active={mode === 'buy'}
+      on:click={() => {
         mode = 'buy';
         orderBook = getOrderBook();
         metricData = getMetrics();
-      }}">Buy</button>
+      }}>Buy</button>
     <button
-      class:active="{mode === 'sell'}"
-      on:click="{() => {
+      class:active={mode === 'sell'}
+      on:click={() => {
         mode = 'sell';
         orderBook = getOrderBook();
         metricData = getMetrics();
-      }}">Sell</button>
+      }}>Sell</button>
   </div>
   <div class="trade-container">
     {#if mode === 'sell'}
-      <div in:fly="{{ y: 20, duration: 350, easing: cubicIn }}">
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+      <div in:fly={{ y: 20, duration: 350, easing: cubicIn }}>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
               <select
-                bind:value="{selectedPost}"
+                bind:value={selectedPost}
                 style="width: 100%"
-                on:change="{() => {
+                on:change={() => {
                   psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                   metricData = getMetrics();
-                }}">
+                }}>
                 {#await posts}
                   <option disabled>Loading...</option>
                 {:then loadedPosts}
@@ -405,7 +405,7 @@
                     <option disabled>No posts found</option>
                   {/if}
                   {#each loadedPosts as post}
-                    <option value="{post}" selected="{post === selectedPost}">
+                    <option value={post} selected={post === selectedPost}>
                       {post}
                     </option>
                   {/each}
@@ -427,7 +427,7 @@
             </div>
           </div>
         </div>
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 47%; margin-right: 3%">
               <p>Amount</p>
@@ -436,19 +436,19 @@
                   type="number"
                   step="1"
                   pattern="\d+"
-                  bind:value="{sellAmount}"
-                  min="{1}" />
+                  bind:value={sellAmount}
+                  min={1} />
                 {#await psts}
                   <SkeletonLoading style="width: 35px; height: 38px" />
                 {:then loadedPSTs}
                   <select
-                    bind:value="{sellToken}"
-                    on:change="{() => {
+                    bind:value={sellToken}
+                    on:change={() => {
                       orderBook = getOrderBook();
                       metricData = getMetrics();
-                    }}">
+                    }}>
                     {#each loadedPSTs as pst}
-                      <option value="{pst.ticker}">{pst.ticker}</option>
+                      <option value={pst.ticker}>{pst.ticker}</option>
                     {/each}
                   </select>
                 {/await}
@@ -457,10 +457,7 @@
             <div style="width: 47%; margin-left: 3%">
               <p>Rate</p>
               <div class="input">
-                <input
-                  type="number"
-                  bind:value="{sellRate}"
-                  min="{0.0000001}" />
+                <input type="number" bind:value={sellRate} min={0.0000001} />
                 <select class="fake-select" disabled>
                   {#if sellToken === undefined}
                     <option>...</option>
@@ -473,12 +470,12 @@
           </div>
           <div class="short-content">
             <p><br /></p>
-            <p></p>
+            <p />
             <div class="input" style="border: none">
               {#if !loading}
                 <Button
-                  click="{exchange}"
-                  style="{`
+                  click={exchange}
+                  style={`
                     font-family: 'JetBrainsMono', monospace; 
                     text-transform: uppercase; 
                     width: 100%;
@@ -486,7 +483,7 @@
                     padding-left: 0;
                     padding-right: 0;
                     height: 100%;
-                  `}">
+                  `}>
                   {mode}
                 </Button>
               {:else}
@@ -497,20 +494,20 @@
         </div>
       </div>
     {:else if mode === 'buy'}
-      <div in:fly="{{ y: 20, duration: 350, easing: cubicIn }}">
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+      <div in:fly={{ y: 20, duration: 350, easing: cubicIn }}>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
               <select
-                bind:value="{selectedPost}"
+                bind:value={selectedPost}
                 style="width: 100%"
-                on:change="{() => {
+                on:change={() => {
                   psts = getTradingPostSupportedTokens();
                   orderBook = getOrderBook();
                   tradingPostFeePercent = getTradingPostFeePercent();
                   metricData = getMetrics();
-                }}">
+                }}>
                 {#await posts}
                   <option disabled>Loading...</option>
                 {:then loadedPosts}
@@ -518,7 +515,7 @@
                     <option disabled>No posts found</option>
                   {/if}
                   {#each loadedPosts as post}
-                    <option value="{post}" selected="{post === selectedPost}">
+                    <option value={post} selected={post === selectedPost}>
                       {post}
                     </option>
                   {/each}
@@ -540,7 +537,7 @@
             </div>
           </div>
         </div>
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 47%; margin-right: 3%">
               <p>Send</p>
@@ -548,8 +545,8 @@
                 <input
                   type="number"
                   pattern="\d+"
-                  bind:value="{buyAmount}"
-                  min="{0.000001}" />
+                  bind:value={buyAmount}
+                  min={0.000001} />
                 <select class="fake-select" disabled>
                   <option>AR</option>
                 </select>
@@ -563,14 +560,14 @@
                     style="width: 100% !important; height: 100% !important" />
                 {:then loadedPSTs}
                   <select
-                    bind:value="{buyToken}"
+                    bind:value={buyToken}
                     style="width: 100% !important;"
-                    on:change="{() => {
+                    on:change={() => {
                       orderBook = getOrderBook();
                       metricData = getMetrics();
-                    }}">
+                    }}>
                     {#each loadedPSTs as pst}
-                      <option value="{pst.ticker}">{pst.ticker}</option>
+                      <option value={pst.ticker}>{pst.ticker}</option>
                     {/each}
                   </select>
                 {/await}
@@ -579,12 +576,12 @@
           </div>
           <div class="short-content">
             <p><br /></p>
-            <p></p>
+            <p />
             <div class="input" style="border: none">
               {#if !loading}
                 <Button
-                  click="{exchange}"
-                  style="{`
+                  click={exchange}
+                  style={`
                     font-family: 'JetBrainsMono', monospace; 
                     text-transform: uppercase; 
                     width: 100%;
@@ -592,7 +589,7 @@
                     padding-left: 0;
                     padding-right: 0;
                     height: 100%;
-                  `}">
+                  `}>
                   {mode}
                 </Button>
               {:else}
@@ -609,8 +606,8 @@
   <div class="information">
     <div class="menu">
       <button
-        class:active="{activeMenu === 'open'}"
-        on:click="{() => (activeMenu = 'open')}">Open Orders</button>
+        class:active={activeMenu === 'open'}
+        on:click={() => (activeMenu = 'open')}>Open Orders</button>
       <!-- <button
         class:active={activeMenu === 'closed'}
         on:click={() => (activeMenu = 'closed')}>Closed Orders</button> -->
@@ -618,7 +615,7 @@
   </div>
   <div class="content">
     {#if activeMenu === 'open'}
-      <table in:fade="{{ duration: 400 }}">
+      <table in:fade={{ duration: 400 }}>
         {#await orderBook}
           {#each Array(5) as _}
             <tr>
@@ -676,10 +673,10 @@
   </div>
 </div>
 <Modal
-  bind:opened="{confirmModalOpened}"
-  confirmation="{true}"
-  onConfirm="{confirmTrade}"
-  onCancel="{cancelTrade}">
+  bind:opened={confirmModalOpened}
+  confirmation={true}
+  onConfirm={confirmTrade}
+  onCancel={cancelTrade}>
   <p style="text-align: center;">
     {#if mode === 'buy'}
       Buying {buyAmount} AR's worth of {buyToken}

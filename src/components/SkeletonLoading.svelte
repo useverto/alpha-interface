@@ -8,9 +8,9 @@
 
 <div
   class="skeleton-loading"
-  style="{style + (style.endsWith(';') ? '' : ';') + '--skeleton-background-color: ' + ($displayTheme === DisplayTheme.Dark ? '#131313' : '#f0f0f0') + ';' + '--skeleton-secondary-color: ' + ($displayTheme === DisplayTheme.Dark ? '#0f0f0f' : '#e0e0e0')}"
-  in:fade="{{ duration: 100 }}"
-  out:fade="{{ duration: 70 }}"></div>
+  style={style + (style.endsWith(';') ? '' : ';') + '--skeleton-background-color: ' + ($displayTheme === DisplayTheme.Dark ? '#131313' : '#f0f0f0') + ';' + '--skeleton-secondary-color: ' + ($displayTheme === DisplayTheme.Dark ? '#0f0f0f' : '#e0e0e0')}
+  in:fade={{ duration: 100 }}
+  out:fade={{ duration: 70 }} />
 
 
 

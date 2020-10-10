@@ -37,15 +37,15 @@
   }
 </script>
 
-<svelte:window bind:scrollY="{y}" />
+<svelte:window bind:scrollY={y} />
 <div
   class="NavBar {$loggedIn ? '' : 'logged-out'}"
-  class:scrolled="{y > 20}"
+  class:scrolled={y > 20}
   class:hero
-  in:fade="{{ duration: 750 }}">
-  <a href="{$loggedIn ? '/app' : '/'}" class="title">
+  in:fade={{ duration: 750 }}>
+  <a href={$loggedIn ? '/app' : '/'} class="title">
     <img
-      src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}"
+      src={$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}
       alt="v" />
     <span class="beta">alpha</span>
   </a>
@@ -54,29 +54,26 @@
       <a href="/trade">Trade</a>
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>
-      <a href="/" on:click="{_logOut}">Sign Out</a>
+      <a href="/" on:click={_logOut}>Sign Out</a>
     {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
   </div>
 </div>
-<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"></div>
+<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}" />
 <div class="mobile-nav">
   {#if $loggedIn}
-    <a href="/trade"><object data="{tradeLogo}" type="image/svg+xml"></object></a>
-    <a href="/gallery"><object data="{postsLogo}" type="image/svg+xml"></object></a>
+    <a href="/trade"><object data={tradeLogo} type="image/svg+xml" /></a>
+    <a href="/gallery"><object data={postsLogo} type="image/svg+xml" /></a>
     <a href="/app"><img
         class="verto"
-        src="{$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}"
+        src={$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}
         alt="v" /></a>
-    <a href="/tokens"><object data="{tokensLogo}" type="image/svg+xml"></object></a>
-    <a href="/" on:click="{mobileLogOut}"><object
-        data="{logoutLogo}"
-        type="image/svg+xml"></object></a>
+    <a href="/tokens"><object data={tokensLogo} type="image/svg+xml" /></a>
+    <a href="/" on:click={mobileLogOut}><object
+        data={logoutLogo}
+        type="image/svg+xml" /></a>
   {/if}
 </div>
-<Modal
-  bind:opened="{confirmModalOpened}"
-  confirmation="{true}"
-  onConfirm="{_logOut}">
+<Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={_logOut}>
   <p style="text-align: center">Are you sure you want to log out?</p>
 </Modal>
 

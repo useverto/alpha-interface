@@ -91,40 +91,40 @@
 <div class="section">
   <h1 class="title">Trades</h1>
   {#await exchanges}
-    <table in:fade="{{ duration: 100 }}">
+    <table in:fade={{ duration: 100 }}>
       <tr>
         <th>Timestamp</th>
         <th>Trade</th>
         <th>Duration</th>
-        <th></th>
+        <th />
       </tr>
       {#each Array(5) as _}
         <tr>
           <td style="width: 30%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
           <td style="width: 42%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
           <td style="width: 22%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
           <td style="width: 6%">
-            <SkeletonLoading style="{'width: 100%'}" />
+            <SkeletonLoading style={'width: 100%'} />
           </td>
         </tr>
       {/each}
     </table>
   {:then loadedExchanges}
     {#if loadedExchanges.length === 0}
-      <p in:fade="{{ duration: 300 }}">No trades found.</p>
+      <p in:fade={{ duration: 300 }}>No trades found.</p>
     {:else}
-      <table in:fade="{{ duration: 300 }}">
+      <table in:fade={{ duration: 300 }}>
         <tr>
           <th>Timestamp</th>
           <th>Trade</th>
           <th>Duration</th>
-          <th></th>
+          <th />
         </tr>
         {#each loadedExchanges as exchange}
           <tr>
@@ -133,7 +133,7 @@
               {exchange.sent}
               {'->'}
               {exchange.received}
-              <span class="status {exchange.status}"></span>
+              <span class="status {exchange.status}" />
             </td>
             <td style="width: 22%; text-transform: uppercase">
               {exchange.duration}
@@ -141,13 +141,13 @@
             <td style="width: 6%">
               {#if currentCancel !== exchange.id}
                 <Button
-                  click="{async () => {
+                  click={async () => {
                     currentCancel = exchange.id;
                     await createCancel(exchange.id);
                     openModal = true;
                     currentCancel = '';
-                  }}"
-                  disabled="{exchange.status !== 'pending' || exchange.timestamp === 'not mined yet'}"
+                  }}
+                  disabled={exchange.status !== 'pending' || exchange.timestamp === 'not mined yet'}
                   style="
                     font-size: .8em;
                     padding: .1em .4em;
@@ -169,10 +169,10 @@
   <a href="/app/all-exchanges" class="view-all">View all {'->'}</a>
 </div>
 <Modal
-  bind:opened="{openModal}"
-  confirmation="{true}"
-  onConfirm="{sendCancel}"
-  onCancel="{() => (openModal = false)}">
+  bind:opened={openModal}
+  confirmation={true}
+  onConfirm={sendCancel}
+  onCancel={() => (openModal = false)}>
   <p>Are you sure you want to cancel this order?</p>
 </Modal>
 

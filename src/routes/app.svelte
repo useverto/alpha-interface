@@ -26,14 +26,14 @@
 </svelte:head>
 
 <NavBar />
-<div class="dashboard" in:fade="{{ duration: 300 }}">
+<div class="dashboard" in:fade={{ duration: 300 }}>
   <div class="section balance">
     {#if $balance === 0}
       <p>
         <SkeletonLoading style="height: 1em; width: 120px" />
-        <select class="theme-picker" bind:value="{$theme}">
+        <select class="theme-picker" bind:value={$theme}>
           {#each Object.values(Theme) as themeOption}
-            <option value="{themeOption}">{themeOption}</option>
+            <option value={themeOption}>{themeOption}</option>
           {/each}
         </select>
       </p>
@@ -44,17 +44,17 @@
         <SkeletonLoading style="height: 1em; width: 400px" />
       </p>
     {:else}
-      <p in:fade="{{ duration: 150 }}">
-        Your balance <select class="theme-picker" bind:value="{$theme}">
+      <p in:fade={{ duration: 150 }}>
+        Your balance <select class="theme-picker" bind:value={$theme}>
           {#each Object.values(Theme) as themeOption}
-            <option value="{themeOption}">{themeOption}</option>
+            <option value={themeOption}>{themeOption}</option>
           {/each}
         </select>
       </p>
-      <h1 class="total-balance" in:fade="{{ duration: 150 }}">
+      <h1 class="total-balance" in:fade={{ duration: 150 }}>
         {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
       </h1>
-      <p class="wallet" in:fade="{{ duration: 150 }}">Wallet: {$address}</p>
+      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
     {/if}
   </div>
   <Watchlist />

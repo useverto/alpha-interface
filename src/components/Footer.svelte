@@ -16,12 +16,12 @@
   }
 </script>
 
-<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
-<div bind:this="{element}">
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
+<div bind:this={element}>
   {#if shown}
     <div
       class="Footer"
-      in:fade="{{ duration: 1100, delay: 411, easing: backOut }}">
+      in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
       <div class="FooterContent">
         <div><a href="https://discord.gg/RnWbc8Y">chat</a></div>
         <div><a href="https://github.com/useverto/verto">code</a></div>

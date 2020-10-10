@@ -95,9 +95,9 @@
   <title>Verto — Gallery</title>
 </svelte:head>
 
-<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
-<div class="gallery" in:fade="{{ duration: 300 }}">
+<div class="gallery" in:fade={{ duration: 300 }}>
   <div class="gallery-head">
     <h1 class="title">Trading Posts</h1>
     <!-- TODO: MPV2 -->
@@ -115,7 +115,7 @@
     {#if !loadedFirstPosts}
       <Loading />
     {:else if tradingPosts.length === 0}
-      <p in:fade="{{ duration: 150 }}">No posts found</p>
+      <p in:fade={{ duration: 150 }}>No posts found</p>
     {:else}
       <div class="reputation-title">
         <p>Reputation</p>
@@ -142,7 +142,7 @@
   </div>
 </div>
 <Footer />
-<span style="width: 100%; height: 1px" bind:this="{element}"></span>
+<span style="width: 100%; height: 1px" bind:this={element} />
 
 <style lang="sass">
 

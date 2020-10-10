@@ -8,7 +8,7 @@
 <div
   class="Loading"
   style="width: {size}px; height: {size}px; {style}"
-  in:fade="{{ duration: 140 }}">
+  in:fade={{ duration: 140 }}>
   <svg viewBox="22 22 44 44">
     <circle
       class="spinner"
@@ -16,7 +16,7 @@
       cy="44"
       r="20.2"
       fill="none"
-      stroke-width="3.6"></circle>
+      stroke-width="3.6" />
   </svg>
 </div>
 

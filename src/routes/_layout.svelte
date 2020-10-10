@@ -13,7 +13,7 @@
   }
 </script>
 
-<GoogleAnalytics stores="{stores}" id="{ga_measurment_id}" />
+<GoogleAnalytics {stores} id={ga_measurment_id} />
 <Notification />
 <main
   style="

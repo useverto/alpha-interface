@@ -119,26 +119,26 @@
   }
 </script>
 
-<div class="watchlist" in:fade="{{ duration: 150 }}">
+<div class="watchlist" in:fade={{ duration: 150 }}>
   <h1 class="title">
     Watchlist
     <div>
       {#if editMode}
-        <img src="{addIcon}" alt="add" on:click="{openAddModal}" in:fade />
+        <img src={addIcon} alt="add" on:click={openAddModal} in:fade />
         <img
-          src="{closeIcon}"
+          src={closeIcon}
           alt="close"
-          on:click="{() => {
+          on:click={() => {
             editMode = !editMode;
-          }}"
+          }}
           in:fade />
       {:else}
         <img
-          src="{editIcon}"
+          src={editIcon}
           alt="edit"
-          on:click="{() => {
+          on:click={() => {
             editMode = !editMode;
-          }}"
+          }}
           in:fade />
       {/if}
     </div>
@@ -152,17 +152,17 @@
       {#each $watchlist as pst}
         <div
           class="pst"
-          in:fade="{{ duration: 500 }}"
-          out:fade="{{ duration: 250 }}">
+          in:fade={{ duration: 500 }}
+          out:fade={{ duration: 250 }}>
           <div class="graph-container{editMode ? ' edit' : ''}">
             {#if editMode}
               <div
                 class="close-hover"
-                in:fade="{{ duration: 150 }}"
-                on:click="{() => {
+                in:fade={{ duration: 150 }}
+                on:click={() => {
                   remove(pst);
-                }}">
-                <img src="{closeIcon}" alt="close" in:fade />
+                }}>
+                <img src={closeIcon} alt="close" in:fade />
               </div>
             {/if}
             <div class="pst-info">
@@ -170,16 +170,16 @@
               <div class="pst-price">
                 {#await load(pst.id, pst.period) then loaded}
                   {#if loaded.prices.every((price) => isNaN(price))}
-                    <h1 in:fade="{{ duration: 150 }}">--- <span>AR</span></h1>
+                    <h1 in:fade={{ duration: 150 }}>--- <span>AR</span></h1>
                   {:else}
-                    <h1 in:fade="{{ duration: 150 }}">
+                    <h1 in:fade={{ duration: 150 }}>
                       {loaded.latestPrice}
                       <span>AR</span>
                     </h1>
                     <span
-                      in:fade="{{ duration: 150 }}"
+                      in:fade={{ duration: 150 }}
                       class="percentage"
-                      style="{`color: ${loaded.color}`}">{loaded.percentage}</span>
+                      style={`color: ${loaded.color}`}>{loaded.percentage}</span>
                   {/if}
                 {/await}
               </div>
@@ -190,8 +190,8 @@
                   <p>no data</p>
                 {:else}
                   <Line
-                    data="{{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}"
-                    options="{{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }}" />
+                    data={{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}
+                    options={{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }} />
                 {/if}
               {/await}
             </div>
@@ -201,13 +201,13 @@
     </div>
   {/if}
 </div>
-<Modal bind:opened="{addModalOpened}" confirmation="{true}" onConfirm="{add}">
+<Modal bind:opened={addModalOpened} confirmation={true} onConfirm={add}>
   <h2 style="margin-bottom: 0; font-weight: 400; font-size: 1.24em;">PST</h2>
   <select
-    bind:value="{addPst}"
+    bind:value={addPst}
     style="display: block; color: #fff; width: 100%; background-color: transparent; outline: none; border: 1px solid #fff; border-radius: 4px; font-size: 1.4em; padding: 0.18em 0.6em;">
     {#each tokens as pst}
-      <option value="{pst.ticker}" style="background-color: #000;">
+      <option value={pst.ticker} style="background-color: #000;">
         {pst.ticker}
       </option>
     {/each}
@@ -219,7 +219,7 @@
     type="number"
     class="light"
     style="width: calc(100% - 1.2em);"
-    bind:value="{addPeriod}" />
+    bind:value={addPeriod} />
   <small style="margin-top: 5em">Leave blank for over all time.</small>
 </Modal>
 
