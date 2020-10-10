@@ -18,12 +18,12 @@
 </script>
 
 <a
-  href="{href}"
-  target="{target}"
-  rel="{rel}"
+  {href}
+  {target}
+  {rel}
   class="Button"
-  on:click="{handleClick}"
-  style="{style}"
+  on:click={handleClick}
+  {style}
   class:clear
   class:reverse
   class:disabled>
@@ -38,9 +38,9 @@
   .Button
     padding: .3em 1.5em
     position: relative
-    background-color: #000
-    color: #fff
-    border: 2px solid #000
+    background-color: var(--inverted-elements-color)
+    color: var(--background-color)
+    border: 2px solid var(--inverted-elements-color)
     border-radius: 6px
     cursor: pointer
     font-family: "Inter", sans-serif
@@ -63,15 +63,15 @@
 
     &:hover:not(.disabled)
       background-color: transparent
-      color: #000
+      color: var(--primary-text-color)
 
     &.clear:not(.disabled)
       background-color: transparent
-      color: #000
+      color: var(--primary-text-color)
 
       &:hover
-        background-color: #000
-        color: #fff
+        background-color: var(--primary-text-color)
+        color: var(--inverted-elements-color)
 
     &.reverse
       border-color: #fff
@@ -84,11 +84,11 @@
 
     &.clear
       background-color: transparent
-      color: #000
+      color: var(--primary-text-color)
 
       &:hover:not(.disabled)
-        background-color: #000
-        color: #fff     
+        background-color: var(--primary-text-color)
+        color: var(--inverted-elements-color)
 
       &.reverse
         color: #fff

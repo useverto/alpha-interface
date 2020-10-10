@@ -28,11 +28,7 @@
   <div class="container">
     <div class="text">
       <h1>
-        4 <img
-          src="{usa}"
-          class="emoji"
-          draggable="false"
-          alt="american flag" /> 3
+        4 <img src={usa} class="emoji" draggable="false" alt="american flag" /> 3
       </h1>
       <h2>ACCESS DENIED</h2>
       <p>Looks like you're in the US.</p>
@@ -54,6 +50,7 @@
       transform: translate(-50%, -50%)
     
     h1
+      color: var(--primary-text-color)
       font-size: 8em
       font-weight: bold
       margin-block-start: 0em
@@ -63,6 +60,7 @@
         font-size: 4em
     
     h2
+      color: var(--primary-text-color)
       font-size: 3em
       margin-block-start: 0em
 
@@ -70,6 +68,7 @@
         font-size: 2.3em
     
     p
+      color: var(--primary-text-color)
       font-size: 1.1em
       line-height: 2rem
   

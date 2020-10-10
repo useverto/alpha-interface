@@ -1,7 +1,7 @@
 <script lang="typescript">
   import { goto } from "@sapper/app";
 
-  import { loggedIn } from "../stores/keyfileStore.ts";
+  import { loggedIn } from "../stores/keyfileStore";
   import Button from "../components/Button.svelte";
 
   if (process.browser && $loggedIn) {
@@ -22,7 +22,7 @@
         Verto is in testing and only open to early permaweb adopters right now.
       </p>
       <p>We look forward to welcoming you when you become an Arweaver.</p>
-      <Button click="{() => goto('/')}">Go Back</Button>
+      <Button click={() => goto('/')}>Go Back</Button>
     </div>
   </div>
 </div>

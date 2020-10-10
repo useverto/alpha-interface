@@ -20,16 +20,16 @@
 {#if opened}
   <div
     class="modal-overlay"
-    in:fade="{{ duration: 150 }}"
-    out:fade="{{ duration: 100 }}"
-    on:click="{() => {
+    in:fade={{ duration: 150 }}
+    out:fade={{ duration: 100 }}
+    on:click={() => {
       if (!confirmation) close(onClose);
-    }}"></div>
+    }} />
   <div
     class="Modal"
-    in:fade="{{ duration: 240 }}"
-    out:fade="{{ duration: 180 }}"
-    class:cancelled="{canceledClose}">
+    in:fade={{ duration: 240 }}
+    out:fade={{ duration: 180 }}
+    class:cancelled={canceledClose}>
     <div class="content">
       <slot />
     </div>
@@ -37,19 +37,19 @@
       {#if confirmation}
         <button
           class="confirm"
-          on:click="{() => {
+          on:click={() => {
             close(onConfirm);
-          }}">[Confirm]</button>
+          }}>[Confirm]</button>
         <button
           class="cancel"
-          on:click="{() => {
+          on:click={() => {
             close(onCancel);
-          }}">[Cancel]</button>
+          }}>[Cancel]</button>
       {:else}
         <button
-          on:click="{() => {
+          on:click={() => {
             close(onClose);
-          }}">[Ok]</button>
+          }}>[Ok]</button>
       {/if}
     </div>
   </div>
