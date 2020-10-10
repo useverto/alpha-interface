@@ -2,7 +2,7 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Loading from "../components/Loading.svelte";
-  import { loggedIn } from "../stores/keyfileStore.ts";
+  import { loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";

@@ -6,13 +6,14 @@
   import Community from "community-js";
   import { pstContract } from "../utils/constants";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType } from "../utils/types";
+  import { NotificationType, DisplayTheme } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
+  import { displayTheme } from "../stores/themeStore";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -133,7 +134,11 @@
         <a
           class="token"
           href="https://viewblock.io/arweave/tx/{pst.id}"
-          target="_blank">
+          target="_blank"
+          style="
+            --hover-transparency: {$displayTheme === DisplayTheme.Dark ? '.8' : '1'};
+            --hover-background: {$displayTheme === DisplayTheme.Dark ? '#161616' : '#000000'};    
+            ">
           <h1 class="short">{pst.ticker}</h1>
           <div class="info">
             <h1><span>[PST]</span>{pst.name}</h1>
@@ -207,7 +212,8 @@
           margin-bottom: 0
 
         &:hover
-          background-color: #000000
+          background-color: var(--hover-background)
+          opacity: var(--hover-transparency)
 
         h1
           margin: 0
