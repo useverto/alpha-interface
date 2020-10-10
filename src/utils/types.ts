@@ -74,3 +74,14 @@ export interface TokenInstance {
   type: string;
   createdAt: Date;
 }
+
+export enum Theme {
+  Light = "Light",
+  Dark = "Dark",
+  Auto = "Auto",
+}
+
+export enum DisplayTheme {
+  Light = "Light",
+  Dark = "Dark",
+}

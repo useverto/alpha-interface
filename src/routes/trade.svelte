@@ -7,7 +7,7 @@
   import Verto from "@verto/lib";
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
-  import { fade } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
   import Assets from "../components/app/Assets.svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Button from "../components/Button.svelte";
@@ -15,6 +15,8 @@
   import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
+  import { cubicIn } from "svelte/easing";
+  import downArrowIcon from "../assets/down-arrow.svg";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -299,7 +301,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="trade" in:fade="{{ duration: 300 }}">
+<div class="trade" in:fade={{ duration: 300 }}>
   <div class="balance">
     {#if $balance === 0}
       <p>
@@ -312,11 +314,11 @@
         <SkeletonLoading style="height: 1em; width: 400px" />
       </p>
     {:else}
-      <p in:fade="{{ duration: 150 }}">Your balance</p>
-      <h1 class="total-balance" in:fade="{{ duration: 150 }}">
+      <p in:fade={{ duration: 150 }}>Your balance</p>
+      <h1 class="total-balance" in:fade={{ duration: 150 }}>
         {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
       </h1>
-      <p class="wallet" in:fade="{{ duration: 150 }}">Wallet: {$address}</p>
+      <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
     {/if}
   </div>
   <div class="assets" style="margin-bottom: -1.2em">
@@ -325,12 +327,15 @@
   <div class="metrics">
     <div class="title-section">
       <h1 class="title">Metrics</h1>
-      <select
-        bind:value="{selectedMetric}"
-        on:change="{() => (metricData = getMetrics())}">
-        <option value="price">Price</option>
-        <option value="volume">Volume</option>
-      </select>
+      <div class="select-container">
+        <select
+          bind:value={selectedMetric}
+          on:change={() => (metricData = getMetrics())}>
+          <option value="price">Price</option>
+          <option value="volume">Volume</option>
+        </select>
+        <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
+      </div>
     </div>
     {#await metricData}
       <Loading />
@@ -344,7 +349,7 @@
       {:else}
         <div style="height: 39vh; position: relative; width: 100%;">
           <Line
-            data="{{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
+            data={{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: function (context) {
                     let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
                     gradient.addColorStop(0, 'rgba(230,152,323,0.5)');
                     gradient.addColorStop(1, 'rgba(141,95,188,0.5)');
@@ -359,125 +364,142 @@
                     gradient.addColorStop(0, '#E698E8');
                     gradient.addColorStop(1, '#8D5FBC');
                     return gradient;
-                  } }] }}"
-            options="{{ maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }}" />
+                  } }] }}
+            options={{ maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
         </div>
       {/if}
     {/await}
   </div>
   <div class="menu">
     <button
-      class:active="{mode === 'buy'}"
-      on:click="{() => {
+      class:active={mode === 'buy'}
+      on:click={() => {
         mode = 'buy';
         orderBook = getOrderBook();
         metricData = getMetrics();
-      }}">Buy</button>
+      }}>Buy</button>
     <button
-      class:active="{mode === 'sell'}"
-      on:click="{() => {
+      class:active={mode === 'sell'}
+      on:click={() => {
         mode = 'sell';
         orderBook = getOrderBook();
         metricData = getMetrics();
-      }}">Sell</button>
+      }}>Sell</button>
   </div>
   <div class="trade-container">
     {#if mode === 'sell'}
-      <div>
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+      <div in:fly={{ y: 20, duration: 350, easing: cubicIn }}>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
-              <select
-                bind:value="{selectedPost}"
-                style="width: 100%"
-                on:change="{() => {
-                  psts = getTradingPostSupportedTokens();
-                  orderBook = getOrderBook();
-                  tradingPostFeePercent = getTradingPostFeePercent();
-                  metricData = getMetrics();
-                }}">
-                {#await posts}
-                  <option disabled>Loading...</option>
-                {:then loadedPosts}
-                  {#if loadedPosts.length === 0}
-                    <option disabled>No posts found</option>
-                  {/if}
-                  {#each loadedPosts as post}
-                    <option value="{post}" selected="{post === selectedPost}">
-                      {post}
-                    </option>
-                  {/each}
-                {/await}
-              </select>
+              {#await posts}
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
+              {:then loadedPosts}
+                <div class="select-container">
+                  <select
+                    bind:value={selectedPost}
+                    style="width: 100%"
+                    on:change={() => {
+                      psts = getTradingPostSupportedTokens();
+                      orderBook = getOrderBook();
+                      tradingPostFeePercent = getTradingPostFeePercent();
+                      metricData = getMetrics();
+                    }}>
+                    <option disabled>Loading...</option>
+                    {#if loadedPosts.length === 0}
+                      <option disabled>No posts found</option>
+                    {/if}
+                    {#each loadedPosts as post}
+                      <option value={post} selected={post === selectedPost}>
+                        {post}
+                      </option>
+                    {/each}
+                  </select>
+                  <object
+                    data={downArrowIcon}
+                    type="image/svg+xml"
+                    title="select-icon" />
+                </div>
+              {/await}
             </div>
           </div>
           <div class="short-content">
             <div style="width: 100%">
               <p>Fee</p>
               {#await tradingPostFeePercent}
-                <SkeletonLoading
-                  style="width: 100% !important; height: 100% !important" />
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
               {:then feePercent}
-                <select class="fake-select" disabled>
+                <select
+                  class="fake-select"
+                  in:fade={{ duration: 150 }}
+                  disabled>
                   <option>{feePercent}%</option>
                 </select>
               {/await}
             </div>
           </div>
         </div>
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 47%; margin-right: 3%">
               <p>Amount</p>
-              <div class="input">
-                <input
-                  type="number"
-                  step="1"
-                  pattern="\d+"
-                  bind:value="{sellAmount}"
-                  min="{1}" />
-                {#await psts}
-                  <SkeletonLoading style="width: 35px; height: 38px" />
-                {:then loadedPSTs}
-                  <select
-                    bind:value="{sellToken}"
-                    on:change="{() => {
-                      orderBook = getOrderBook();
-                      metricData = getMetrics();
-                    }}">
-                    {#each loadedPSTs as pst}
-                      <option value="{pst.ticker}">{pst.ticker}</option>
-                    {/each}
-                  </select>
-                {/await}
-              </div>
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then loadedPSTs}
+                <div class="input">
+                  <input
+                    type="number"
+                    step="1"
+                    pattern="\d+"
+                    bind:value={sellAmount}
+                    min={1} />
+                  <div class="select-container">
+                    <select
+                      bind:value={sellToken}
+                      on:change={() => {
+                        orderBook = getOrderBook();
+                        metricData = getMetrics();
+                      }}>
+                      {#each loadedPSTs as pst}
+                        <option value={pst.ticker}>{pst.ticker}</option>
+                      {/each}
+                    </select>
+                    <object
+                      data={downArrowIcon}
+                      type="image/svg+xml"
+                      title="select-icon" />
+                  </div>
+                </div>
+              {/await}
             </div>
             <div style="width: 47%; margin-left: 3%">
               <p>Rate</p>
-              <div class="input">
-                <input
-                  type="number"
-                  bind:value="{sellRate}"
-                  min="{0.0000001}" />
-                <select class="fake-select" disabled>
-                  {#if sellToken === undefined}
-                    <option>...</option>
-                  {:else}
+              {#if sellToken === undefined}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:else}
+                <div class="input">
+                  <input type="number" bind:value={sellRate} min={0.0000001} />
+                  <select class="fake-select" disabled>
                     <option>{'AR/' + sellToken}</option>
-                  {/if}
-                </select>
-              </div>
+                  </select>
+                </div>
+              {/if}
             </div>
           </div>
           <div class="short-content">
             <p><br /></p>
-            <p></p>
+            <p />
             <div class="input" style="border: none">
-              {#if !loading}
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then _}
                 <Button
-                  click="{exchange}"
-                  style="{`
+                  click={exchange}
+                  style={`
                     font-family: 'JetBrainsMono', monospace; 
                     text-transform: uppercase; 
                     width: 100%;
@@ -485,105 +507,125 @@
                     padding-left: 0;
                     padding-right: 0;
                     height: 100%;
-                  `}">
+                  `}>
                   {mode}
                 </Button>
-              {:else}
-                <Loading />
-              {/if}
+              {/await}
             </div>
           </div>
         </div>
       </div>
     {:else if mode === 'buy'}
-      <div>
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+      <div in:fly={{ y: 20, duration: 350, easing: cubicIn }}>
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
-              <select
-                bind:value="{selectedPost}"
-                style="width: 100%"
-                on:change="{() => {
-                  psts = getTradingPostSupportedTokens();
-                  orderBook = getOrderBook();
-                  tradingPostFeePercent = getTradingPostFeePercent();
-                  metricData = getMetrics();
-                }}">
-                {#await posts}
-                  <option disabled>Loading...</option>
-                {:then loadedPosts}
-                  {#if loadedPosts.length === 0}
-                    <option disabled>No posts found</option>
-                  {/if}
-                  {#each loadedPosts as post}
-                    <option value="{post}" selected="{post === selectedPost}">
-                      {post}
-                    </option>
-                  {/each}
-                {/await}
-              </select>
+              {#await posts}
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
+              {:then loadedPosts}
+                <div class="select-container" in:fade={{ duration: 150 }}>
+                  <select
+                    bind:value={selectedPost}
+                    style="width: 100%"
+                    on:change={() => {
+                      psts = getTradingPostSupportedTokens();
+                      orderBook = getOrderBook();
+                      tradingPostFeePercent = getTradingPostFeePercent();
+                      metricData = getMetrics();
+                    }}>
+                    {#if loadedPosts.length === 0}
+                      <option disabled>No posts found</option>
+                    {/if}
+                    {#each loadedPosts as post}
+                      <option value={post} selected={post === selectedPost}>
+                        {post}
+                      </option>
+                    {/each}
+                  </select>
+                  <object
+                    data={downArrowIcon}
+                    type="image/svg+xml"
+                    title="select-icon" />
+                </div>
+              {/await}
             </div>
           </div>
           <div class="short-content">
             <div style="width: 100%">
               <p>Fee</p>
               {#await tradingPostFeePercent}
-                <SkeletonLoading
-                  style="width: 100% !important; height: 100% !important" />
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
               {:then percent}
-                <select class="fake-select" disabled>
+                <select
+                  class="fake-select"
+                  in:fade={{ duration: 150 }}
+                  disabled>
                   <option>{percent}%</option>
                 </select>
               {/await}
             </div>
           </div>
         </div>
-        <div class="trade-section" in:fade="{{ duration: 300 }}">
+        <div class="trade-section" in:fade={{ duration: 300 }}>
           <div class="long-content">
             <div style="width: 47%; margin-right: 3%">
               <p>Send</p>
-              <div class="input">
-                <input
-                  type="number"
-                  pattern="\d+"
-                  bind:value="{buyAmount}"
-                  min="{0.000001}" />
-                <select class="fake-select" disabled>
-                  <option>AR</option>
-                </select>
-              </div>
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then _}
+                <div class="input">
+                  <input
+                    type="number"
+                    pattern="\d+"
+                    bind:value={buyAmount}
+                    min={0.000001} />
+                  <select class="fake-select" disabled>
+                    <option>AR</option>
+                  </select>
+                </div>
+              {/await}
             </div>
             <div style="width: 47%; margin-left: 3%">
               <p>Receive</p>
-              <div class="input">
-                {#await psts}
-                  <SkeletonLoading
-                    style="width: 100% !important; height: 100% !important" />
-                {:then loadedPSTs}
-                  <select
-                    bind:value="{buyToken}"
-                    style="width: 100% !important;"
-                    on:change="{() => {
-                      orderBook = getOrderBook();
-                      metricData = getMetrics();
-                    }}">
-                    {#each loadedPSTs as pst}
-                      <option value="{pst.ticker}">{pst.ticker}</option>
-                    {/each}
-                  </select>
-                {/await}
-              </div>
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then loadedPSTs}
+                <div class="input" in:fade={{ duration: 150 }}>
+                  <div class="select-container" style="width: 100% !important">
+                    <select
+                      bind:value={buyToken}
+                      style="width: 100% !important;"
+                      on:change={() => {
+                        orderBook = getOrderBook();
+                        metricData = getMetrics();
+                      }}>
+                      {#each loadedPSTs as pst}
+                        <option value={pst.ticker}>{pst.ticker}</option>
+                      {/each}
+                    </select>
+                    <object
+                      data={downArrowIcon}
+                      type="image/svg+xml"
+                      title="select-icon" />
+                  </div>
+                </div>
+              {/await}
             </div>
           </div>
           <div class="short-content">
             <p><br /></p>
-            <p></p>
+            <p />
             <div class="input" style="border: none">
-              {#if !loading}
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then _}
                 <Button
-                  click="{exchange}"
-                  style="{`
+                  click={exchange}
+                  style={`
                     font-family: 'JetBrainsMono', monospace; 
                     text-transform: uppercase; 
                     width: 100%;
@@ -591,12 +633,10 @@
                     padding-left: 0;
                     padding-right: 0;
                     height: 100%;
-                  `}">
+                  `}>
                   {mode}
                 </Button>
-              {:else}
-                <Loading />
-              {/if}
+              {/await}
             </div>
           </div>
         </div>
@@ -608,8 +648,8 @@
   <div class="information">
     <div class="menu">
       <button
-        class:active="{activeMenu === 'open'}"
-        on:click="{() => (activeMenu = 'open')}">Open Orders</button>
+        class:active={activeMenu === 'open'}
+        on:click={() => (activeMenu = 'open')}>Open Orders</button>
       <!-- <button
         class:active={activeMenu === 'closed'}
         on:click={() => (activeMenu = 'closed')}>Closed Orders</button> -->
@@ -617,7 +657,7 @@
   </div>
   <div class="content">
     {#if activeMenu === 'open'}
-      <table in:fade="{{ duration: 400 }}">
+      <table in:fade={{ duration: 400 }}>
         {#await orderBook}
           {#each Array(5) as _}
             <tr>
@@ -675,10 +715,10 @@
   </div>
 </div>
 <Modal
-  bind:opened="{confirmModalOpened}"
-  confirmation="{true}"
-  onConfirm="{confirmTrade}"
-  onCancel="{cancelTrade}">
+  bind:opened={confirmModalOpened}
+  confirmation={true}
+  onConfirm={confirmTrade}
+  onCancel={cancelTrade}>
   <p style="text-align: center;">
     {#if mode === 'buy'}
       Buying {buyAmount} AR's worth of {buyToken}
@@ -704,6 +744,7 @@
 
   @import "../styles/tables.sass"
   @import "../styles/general.sass"
+  @import "../styles/selects.sass"
 
   .trade
     @include table
@@ -718,7 +759,7 @@
 
     .balance
       p
-        color: rgba(#000, .3)
+        color: var(--secondary-text-color)
         text-transform: uppercase
         font-size: .9em
         margin: 0
@@ -729,7 +770,7 @@
 
       h1.total-balance
         font-size: 2.3em
-        color: #000
+        color: var(--primary-text-color)
         font-weight: 400
         margin: .14em 0
 
@@ -750,19 +791,8 @@
         align-items: center
         justify-content: space-between
 
-    .recommended-post
-      display: flex
-      align-items: flex-end
-
-      select, .select-fake
-        width: 100%
-        font-size: 1.2em
-        padding:
-          top: calc(.3em + 2px) // border + padding of the button
-          bottom: calc(.3em + 2px) // border + padding of the button
-
       p
-        color: rgba(#000, .3)
+        color: var(--secondary-text-color)
         font-weight: 600
         font-size: .95em
         margin: 0
@@ -789,7 +819,7 @@
 
         .short-content, .long-content
           p
-            color: rgba(#000, .3)
+            color: var(--secondary-text-color)
             font-weight: 600
             font-size: .95em
             margin: 0
@@ -802,11 +832,12 @@
 
           .fake-select
             opacity: 1 !important
-            background-image: none !important
-            padding-right: 0 !important
+
+          input
+            color: var(--primary-text-color)
 
           .input
-            border: 2px solid #000
+            border: 2px solid var(--inverted-elements-color)
             display: flex
             border-radius: .3em
             overflow: hidden
@@ -815,34 +846,9 @@
               border: none
               width: 70% !important
 
-            select
+            .select-container, .fake-select
               width: 30% !important
               border-radius: 0
-
-    select
-      $sidePadding: .65em
-      position: relative
-      color: #fff
-      background-color: #000
-      font-size: 1em
-      padding: .34em ($sidePadding * 3 + .3em) .34em $sidePadding
-      cursor: pointer
-      border-radius: .3em
-      outline: none
-      border: none
-      -webkit-appearance: none
-      -moz-appearance: none
-      transition: all .3s
-    
-    select
-      $sidePadding: .65em
-      background-image: url(/down-arrow.svg)
-      background-position: calc(100% - #{$sidePadding}) center
-      background-repeat: no-repeat
-      background-size: $sidePadding * 1.35
-
-      &:hover
-        opacity: .8
 
     .select-fake
       span
@@ -855,6 +861,10 @@
   .exchanges-section
     @include table
     @include page
+
+    .content
+      p
+        color: var(--secondary-text-color)
 
   .menu
     position: relative
@@ -871,13 +881,13 @@
       font-family: "JetBrainsMono", monospace
       text-transform: uppercase
       font-weight: 600
-      color: #000
+      color: var(--primary-text-color)
       background-color: transparent
       border: none
       font-size: 1.15em
       outline: none
-        text-align: center
-        cursor: pointer
+      text-align: center
+      cursor: pointer
 
       @media screen and (max-width: 720px)
         padding: .18em .14em
@@ -891,7 +901,7 @@
         width: 100%
         height: 0
         opacity: 0
-        background-color: #000
+        background-color: var(--inverted-elements-color)
         transition: all .2s
 
       &.active::after

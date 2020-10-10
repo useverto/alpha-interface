@@ -13,6 +13,7 @@ You can create a commit like this:
 This can be any of the following items:
 - feat
 - fix
+- merge
 - remove
 - refactor
 - chore

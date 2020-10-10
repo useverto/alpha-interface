@@ -21,6 +21,7 @@ body {
   margin: 0;
   font-family: "JetBrainsMono", monospace;
   overflow-x: hidden;
+  transition: all 0.3s;
 }
 ::selection {
   background-color: #b075cd;

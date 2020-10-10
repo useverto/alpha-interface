@@ -16,12 +16,12 @@
   }
 </script>
 
-<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
-<div bind:this="{element}">
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
+<div bind:this={element}>
   {#if shown}
     <div
       class="Footer"
-      in:fade="{{ duration: 1100, delay: 411, easing: backOut }}">
+      in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
       <div class="FooterContent">
         <div><a href="https://discord.gg/RnWbc8Y">chat</a></div>
         <div><a href="https://github.com/useverto/verto">code</a></div>
@@ -38,14 +38,14 @@
 
   .Footer
     width: 80%
-    border-top: 5px solid black
+    border-top: 5px solid var(--inverted-elements-color)
     margin: 0 auto
 
     @media screen and (max-width: 720px)
-      margin-bottom: 4em
+      padding-bottom: 4em
   
     .FooterContent
-      margin: 30px auto
+      padding: 30px 0
   
       div
         width: 32%
@@ -60,10 +60,9 @@
           text-decoration: none
           width: 100% !important
           transition: color linear 0.1s
-          color: black
+          color: var(--primary-text-color)
         
           &:hover
-            transition: color linear 0.1s
             color: #B075CD
 
 </style>

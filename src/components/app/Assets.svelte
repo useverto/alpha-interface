@@ -94,10 +94,10 @@
   <div class="assets-table">
     <div class="menu">
       <h1 class="title">Assets</h1>
-      <div in:fade="{{ duration: 100 }}">
+      <div in:fade={{ duration: 100 }}>
         {#if !loading}
           <Button
-            click="{async () => {
+            click={async () => {
               loading = true;
               const loadedBalances = await balances;
               if (loadedBalances.length === 0) {
@@ -110,7 +110,7 @@
                 loading = false;
                 transferPSTOpened = true;
               }
-            }}">
+            }}>
             Transfer
           </Button>
         {:else}
@@ -119,7 +119,7 @@
       </div>
     </div>
     {#await balances}
-      <table in:fade="{{ duration: 100 }}">
+      <table in:fade={{ duration: 100 }}>
         <tr style="width: 100%">
           <th>Name</th>
           <th>ID</th>
@@ -141,9 +141,9 @@
       </table>
     {:then loadedBalances}
       {#if loadedBalances.length === 0}
-        <p in:fade="{{ duration: 300 }}">You don't have any tokens!</p>
+        <p in:fade={{ duration: 300 }}>You don't have any tokens!</p>
       {:else}
-        <table in:fade="{{ duration: 300 }}">
+        <table in:fade={{ duration: 300 }}>
           <tr style="width: 100%">
             <th>Name</th>
             <th>ID</th>
@@ -165,35 +165,35 @@
   </div>
 </div>
 <Modal
-  bind:opened="{transferPSTOpened}"
-  confirmation="{true}"
-  onConfirm="{transfer}"
-  onCancel="{cancel}">
+  bind:opened={transferPSTOpened}
+  confirmation={true}
+  onConfirm={transfer}
+  onCancel={cancel}>
   {#await balances then loadedBalances}
     <p style="margin-bottom: .3em;">PST Amount</p>
     <div
       style="display: flex; align-items: center; border-radius: 4px; overflow: hidden; border: 1px solid #fff; margin-bottom: 1em;">
       <input
         type="number"
-        bind:value="{amnt}"
-        step="{1}"
-        min="{1}"
-        max="{max}"
+        bind:value={amnt}
+        step={1}
+        min={1}
+        {max}
         class="light"
         style="border: none; width: 67%;" />
       <select
         style="height: 100%; display: block; outline: none; border: none; background-color: #fff; color: #000; width: 33%; font-size: 1.4em; padding: 0.18em 0.6em;"
-        bind:value="{pst}"
-        on:change="{() => {
+        bind:value={pst}
+        on:change={() => {
           max = loadedBalances.find((balance) => balance.ticker === pst).balance;
-        }}">
+        }}>
         {#each loadedBalances.map((balance) => balance.ticker) as ticker}
-          <option value="{ticker}">{ticker}</option>
+          <option value={ticker}>{ticker}</option>
         {/each}
       </select>
     </div>
     <p style="margin-bottom: .3em;">PST Target</p>
-    <input type="string" bind:value="{target}" class="light" />
+    <input type="string" bind:value={target} class="light" />
   {/await}
 </Modal>
 
@@ -213,6 +213,9 @@
       width: 100vw - $mobileSidePadding * 2
       overflow-x: auto
 
+    p
+      color: var(--primary-text-color)
+
     .assets-table
       width: 100%
       transition: all .3s
@@ -230,7 +233,7 @@
       a.view-all
         display: block
         text-align: center
-        color: rgba(#000, .5)
+        color: var(--darker-secondary-text-color)
         font-weight: 500
         padding: .8em 0
         transition: all .3s

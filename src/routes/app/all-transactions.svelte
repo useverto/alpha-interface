@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { address, loggedIn } from "../../stores/keyfileStore.ts";
+  import { address, loggedIn } from "../../stores/keyfileStore";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import Loading from "../../components/Loading.svelte";
@@ -134,9 +134,9 @@
   <title>Transactions overview</title>
 </svelte:head>
 
-<svelte:window bind:scrollY="{y}" bind:innerHeight="{windowHeight}" />
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
-<div class="all-transactions" in:fade="{{ duration: 300 }}">
+<div class="all-transactions" in:fade={{ duration: 300 }}>
   <h1 class="title">All Transactions</h1>
   <table>
     <tr>
@@ -156,13 +156,13 @@
       {/each}
     {:else}
       {#each transactions as tx}
-        <tr in:fade="{{ duration: 150 }}">
+        <tr in:fade={{ duration: 150 }}>
           <td style="width: 70%">
             <a href="https://viewblock.io/arweave/tx/{tx.id}">
               <span class="direction">{tx.type}</span>
               {tx.id}
             </a>
-            <span class="status {tx.status}"></span>
+            <span class="status {tx.status}" />
           </td>
           <td style="width: 20%">{tx.amount} AR</td>
         </tr>
@@ -175,7 +175,7 @@
   </table>
 </div>
 <Footer />
-<span style="width: 100%; height: 1px" bind:this="{element}"></span>
+<span style="width: 100%; height: 1px" bind:this={element} />
 
 <style lang="sass">
 
@@ -186,13 +186,12 @@
     @include page
     @include table 
 
-    .pagination
-      margin-top: 1.3em
-      @include pagination
+    p
+      color: var(--secondary-text-color)
 
     td
       a
         text-decoration: none
-        color: black
+        color: var(--primary-text-color)
 
 </style>
