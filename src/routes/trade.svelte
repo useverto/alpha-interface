@@ -393,19 +393,20 @@
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
-              <div class="select-container">
-                <select
-                  bind:value={selectedPost}
-                  style="width: 100%"
-                  on:change={() => {
-                    psts = getTradingPostSupportedTokens();
-                    orderBook = getOrderBook();
-                    tradingPostFeePercent = getTradingPostFeePercent();
-                    metricData = getMetrics();
-                  }}>
-                  {#await posts}
+              {#await posts}
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
+              {:then loadedPosts}
+                <div class="select-container">
+                  <select
+                    bind:value={selectedPost}
+                    style="width: 100%"
+                    on:change={() => {
+                      psts = getTradingPostSupportedTokens();
+                      orderBook = getOrderBook();
+                      tradingPostFeePercent = getTradingPostFeePercent();
+                      metricData = getMetrics();
+                    }}>
                     <option disabled>Loading...</option>
-                  {:then loadedPosts}
                     {#if loadedPosts.length === 0}
                       <option disabled>No posts found</option>
                     {/if}
@@ -414,23 +415,25 @@
                         {post}
                       </option>
                     {/each}
-                  {/await}
-                </select>
-                <object
-                  data={downArrowIcon}
-                  type="image/svg+xml"
-                  title="select-icon" />
-              </div>
+                  </select>
+                  <object
+                    data={downArrowIcon}
+                    type="image/svg+xml"
+                    title="select-icon" />
+                </div>
+              {/await}
             </div>
           </div>
           <div class="short-content">
             <div style="width: 100%">
               <p>Fee</p>
               {#await tradingPostFeePercent}
-                <SkeletonLoading
-                  style="width: 100% !important; height: 100% !important" />
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
               {:then feePercent}
-                <select class="fake-select" disabled>
+                <select
+                  class="fake-select"
+                  in:fade={{ duration: 150 }}
+                  disabled>
                   <option>{feePercent}%</option>
                 </select>
               {/await}
@@ -441,16 +444,17 @@
           <div class="long-content">
             <div style="width: 47%; margin-right: 3%">
               <p>Amount</p>
-              <div class="input">
-                <input
-                  type="number"
-                  step="1"
-                  pattern="\d+"
-                  bind:value={sellAmount}
-                  min={1} />
-                {#await psts}
-                  <SkeletonLoading style="width: 35px; height: 38px" />
-                {:then loadedPSTs}
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then loadedPSTs}
+                <div class="input">
+                  <input
+                    type="number"
+                    step="1"
+                    pattern="\d+"
+                    bind:value={sellAmount}
+                    min={1} />
                   <div class="select-container">
                     <select
                       bind:value={sellToken}
@@ -467,28 +471,32 @@
                       type="image/svg+xml"
                       title="select-icon" />
                   </div>
-                {/await}
-              </div>
+                </div>
+              {/await}
             </div>
             <div style="width: 47%; margin-left: 3%">
               <p>Rate</p>
-              <div class="input">
-                <input type="number" bind:value={sellRate} min={0.0000001} />
-                <select class="fake-select" disabled>
-                  {#if sellToken === undefined}
-                    <option>...</option>
-                  {:else}
+              {#if sellToken === undefined}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:else}
+                <div class="input">
+                  <input type="number" bind:value={sellRate} min={0.0000001} />
+                  <select class="fake-select" disabled>
                     <option>{'AR/' + sellToken}</option>
-                  {/if}
-                </select>
-              </div>
+                  </select>
+                </div>
+              {/if}
             </div>
           </div>
           <div class="short-content">
             <p><br /></p>
             <p />
             <div class="input" style="border: none">
-              {#if !loading}
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then _}
                 <Button
                   click={exchange}
                   style={`
@@ -502,9 +510,7 @@
                   `}>
                   {mode}
                 </Button>
-              {:else}
-                <Loading />
-              {/if}
+              {/await}
             </div>
           </div>
         </div>
@@ -515,19 +521,19 @@
           <div class="long-content">
             <div style="width: 100%">
               <p>Trading post</p>
-              <div class="select-container">
-                <select
-                  bind:value={selectedPost}
-                  style="width: 100%"
-                  on:change={() => {
-                    psts = getTradingPostSupportedTokens();
-                    orderBook = getOrderBook();
-                    tradingPostFeePercent = getTradingPostFeePercent();
-                    metricData = getMetrics();
-                  }}>
-                  {#await posts}
-                    <option disabled>Loading...</option>
-                  {:then loadedPosts}
+              {#await posts}
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
+              {:then loadedPosts}
+                <div class="select-container" in:fade={{ duration: 150 }}>
+                  <select
+                    bind:value={selectedPost}
+                    style="width: 100%"
+                    on:change={() => {
+                      psts = getTradingPostSupportedTokens();
+                      orderBook = getOrderBook();
+                      tradingPostFeePercent = getTradingPostFeePercent();
+                      metricData = getMetrics();
+                    }}>
                     {#if loadedPosts.length === 0}
                       <option disabled>No posts found</option>
                     {/if}
@@ -536,23 +542,25 @@
                         {post}
                       </option>
                     {/each}
-                  {/await}
-                </select>
-                <object
-                  data={downArrowIcon}
-                  type="image/svg+xml"
-                  title="select-icon" />
-              </div>
+                  </select>
+                  <object
+                    data={downArrowIcon}
+                    type="image/svg+xml"
+                    title="select-icon" />
+                </div>
+              {/await}
             </div>
           </div>
           <div class="short-content">
             <div style="width: 100%">
               <p>Fee</p>
               {#await tradingPostFeePercent}
-                <SkeletonLoading
-                  style="width: 100% !important; height: 100% !important" />
+                <SkeletonLoading style="width: 100%; height: 2.35em" />
               {:then percent}
-                <select class="fake-select" disabled>
+                <select
+                  class="fake-select"
+                  in:fade={{ duration: 150 }}
+                  disabled>
                   <option>{percent}%</option>
                 </select>
               {/await}
@@ -563,25 +571,30 @@
           <div class="long-content">
             <div style="width: 47%; margin-right: 3%">
               <p>Send</p>
-              <div class="input">
-                <input
-                  type="number"
-                  pattern="\d+"
-                  bind:value={buyAmount}
-                  min={0.000001} />
-                <select class="fake-select" disabled>
-                  <option>AR</option>
-                </select>
-              </div>
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then _}
+                <div class="input">
+                  <input
+                    type="number"
+                    pattern="\d+"
+                    bind:value={buyAmount}
+                    min={0.000001} />
+                  <select class="fake-select" disabled>
+                    <option>AR</option>
+                  </select>
+                </div>
+              {/await}
             </div>
             <div style="width: 47%; margin-left: 3%">
               <p>Receive</p>
-              <div class="input">
-                {#await psts}
-                  <SkeletonLoading
-                    style="width: 100% !important; height: 100% !important" />
-                {:then loadedPSTs}
-                  <div class="select-container">
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then loadedPSTs}
+                <div class="input" in:fade={{ duration: 150 }}>
+                  <div class="select-container" style="width: 100% !important">
                     <select
                       bind:value={buyToken}
                       style="width: 100% !important;"
@@ -598,15 +611,18 @@
                       type="image/svg+xml"
                       title="select-icon" />
                   </div>
-                {/await}
-              </div>
+                </div>
+              {/await}
             </div>
           </div>
           <div class="short-content">
             <p><br /></p>
             <p />
             <div class="input" style="border: none">
-              {#if !loading}
+              {#await psts}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:then _}
                 <Button
                   click={exchange}
                   style={`
@@ -620,9 +636,7 @@
                   `}>
                   {mode}
                 </Button>
-              {:else}
-                <Loading />
-              {/if}
+              {/await}
             </div>
           </div>
         </div>
@@ -769,9 +783,6 @@
     .metrics
       margin: 0 0 2em
 
-      p
-        color: var(--secondary-text-color)
-
       h1
         margin-top: 0
 
@@ -781,7 +792,7 @@
         justify-content: space-between
 
       p
-        color: rgba(#000, .3)
+        color: var(--secondary-text-color)
         font-weight: 600
         font-size: .95em
         margin: 0
@@ -835,7 +846,7 @@
               border: none
               width: 70% !important
 
-            select
+            .select-container, .fake-select
               width: 30% !important
               border-radius: 0
 

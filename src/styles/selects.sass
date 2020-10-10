@@ -7,7 +7,6 @@ $selectSidePadding: .65em
   font-size: 1em
   padding: .34em ($selectSidePadding * 3 + .3em) .34em $selectSidePadding
   cursor: pointer
-  border-radius: .3em
   outline: none
   border: none
   -webkit-appearance: none
@@ -16,10 +15,13 @@ $selectSidePadding: .65em
   
 .select-container
   position: relative
+  border-radius: .3em
+  overflow: hidden
   transition: all .3s
 
   select
     @include select-style
+    width: 100%
 
   svg, img, object
     filter: var(--svg-color)
@@ -35,4 +37,5 @@ $selectSidePadding: .65em
 
 .fake-select
   @include select-style
-  padding-right: selectSidePadding
+  padding-right: $selectSidePadding
+  border-radius: .3em

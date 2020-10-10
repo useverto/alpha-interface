@@ -242,6 +242,7 @@
     p
       display: block
       text-align: center
+      color: var(--secondary-text-color)
 
     .psts
       width: 100%
