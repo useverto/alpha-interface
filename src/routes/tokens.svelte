@@ -18,35 +18,8 @@
 
   const client = new Verto();
   let supportedTokens: Promise<
-    { id: string; name: string; ticker: string; volume: number }[]
-  > = getTokens();
-
-  async function getTokens() {
-    const tokens: {
-      id: string;
-      name: string;
-      ticker: string;
-      volume: number;
-    }[] = [];
-
-    for (const token of await client.getTokens()) {
-      const volume = (await client.volume(token.id)).volume.reduce(
-        (a, b) => a + b,
-        0
-      );
-
-      tokens.push({
-        ...token,
-        volume,
-      });
-    }
-
-    tokens.sort((a, b) => {
-      return b.volume - a.volume;
-    });
-
-    return tokens;
-  }
+    { id: string; name: string; ticker: string }[]
+  > = client.getTokens();
 
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
