@@ -1,80 +1,56 @@
 <script lang="typescript">
+  import { loggedIn, keyfile } from "../stores/keyfileStore";
+  import { goto } from "@sapper/app";
+  import Verto from "@verto/lib";
+  import Arweave from "arweave";
+  import Community from "community-js";
+  import { pstContract } from "../utils/constants";
+  import { notification } from "../stores/notificationStore";
+  import { NotificationType, DisplayTheme } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
-  import Footer from "../components/Footer.svelte";
+  import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import Modal from "../components/Modal.svelte";
-  import { NotificationType } from "../utils/types.ts";
-  import { notification } from "../stores/notificationStore.ts";
-  import { loggedIn, address, keyfile } from "../stores/keyfileStore.ts";
-  import { goto } from "@sapper/app";
-  import { fade } from "svelte/transition";
-
-  import { query } from "../api-client";
-  import tokensQuery from "../queries/tokens.gql";
-  import Arweave from "arweave";
-  import Community from "community-js";
-  import { pstContract, exchangeWallet } from "../utils/constants";
+  import Footer from "../components/Footer.svelte";
+  import { displayTheme } from "../stores/themeStore";
 
   if (process.browser && !$loggedIn) goto("/");
 
-  let supportedTokens = getSupportedPSTs();
-  let addTokenModalOpened: boolean = false;
-  let newContractID: string;
+  const client = new Verto();
+  let supportedTokens: Promise<
+    { id: string; name: string; ticker: string; volume: number }[]
+  > = getTokens();
 
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
-    if (!process.browser) return [];
+  async function getTokens() {
+    const tokens: {
+      id: string;
+      name: string;
+      ticker: string;
+      volume: number;
+    }[] = [];
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
+    for (const token of await client.getTokens()) {
+      const volume = (await client.volume(token.id)).volume.reduce(
+        (a, b) => a + b,
+        0
+      );
 
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let txIds = [];
-    const _txIds = (
-      await query({
-        query: tokensQuery,
-        variables: {
-          owners: [exchangeWallet],
-          contractSrc: pstContract,
-        },
-      })
-    ).data.transactions.edges;
-    _txIds.map(({ node }) => {
-      txIds.push(node.id);
-    });
-
-    for (const id of txIds) {
-      try {
-        const contractId = (
-          await client.transactions.getData(id, { decode: true, string: true })
-        ).toString();
-        const contractData = JSON.parse(
-          (
-            await client.transactions.getData(contractId, {
-              decode: true,
-              string: true,
-            })
-          ).toString()
-        );
-        psts.push({
-          id: contractId,
-          name: contractData["name"],
-          ticker: contractData["ticker"],
-        });
-      } catch (error) {
-        console.log(error);
-      }
+      tokens.push({
+        ...token,
+        volume,
+      });
     }
 
-    return psts;
+    tokens.sort((a, b) => {
+      return b.volume - a.volume;
+    });
+
+    return tokens;
   }
+
+  let addTokenModalOpened: boolean = false;
+  let newContractID: string;
 
   async function addToken() {
     addTokenModalOpened = true;
@@ -134,15 +110,59 @@
     addTokenModalOpened = false;
     newContractID = "";
   }
-
-  function roundCurrency(val: number | string): string {
-    if (val === "?") return val;
-    if (typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
-  }
 </script>
 
-<!-- prettier-ignore -->
+<svelte:head>
+  <title>Verto — Tokens</title>
+</svelte:head>
+
+<NavBar />
+<div class="tokens" in:fade={{ duration: 300 }}>
+  <div class="tokens-head">
+    <h1 class="title">Supported Tokens</h1>
+    <Button
+      click={addToken}
+      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
+      Add Token
+    </Button>
+  </div>
+  <div class="tokens-content">
+    {#await supportedTokens}
+      <Loading />
+    {:then loadedPSTs}
+      {#each loadedPSTs as pst}
+        <a
+          class="token"
+          href="https://viewblock.io/arweave/tx/{pst.id}"
+          target="_blank"
+          style="
+            --hover-transparency: {$displayTheme === DisplayTheme.Dark ? '.8' : '1'};
+            --hover-background: {$displayTheme === DisplayTheme.Dark ? '#161616' : '#000000'};    
+            ">
+          <h1 class="short">{pst.ticker}</h1>
+          <div class="info">
+            <h1><span>[PST]</span>{pst.name}</h1>
+            <p><span>ID:</span>{pst.id}</p>
+          </div>
+        </a>
+      {/each}
+    {/await}
+  </div>
+</div>
+<Modal
+  bind:opened={addTokenModalOpened}
+  confirmation={true}
+  onConfirm={confirmAdd}
+  onCancel={cancelAdd}>
+  <h3 style="text-align: center;">Token Contract ID</h3>
+  <input
+    type="text"
+    bind:value={newContractID}
+    class="light contract-id"
+    placeholder="Contract ID" />
+</Modal>
+<Footer />
+
 <style lang="sass">
 
   @import "../styles/general.sass"
@@ -192,7 +212,8 @@
           margin-bottom: 0
 
         &:hover
-          background-color: #000000
+          background-color: var(--hover-background)
+          opacity: var(--hover-transparency)
 
         h1
           margin: 0
@@ -269,50 +290,3 @@
         transform: translate3d(4px, 0, 0)
 
 </style>
-
-<svelte:head>
-  <title>Verto — Tokens</title>
-</svelte:head>
-
-<NavBar />
-<div class="tokens" in:fade={{ duration: 300 }}>
-  <div class="tokens-head">
-    <h1 class="title">Supported Tokens</h1>
-    <Button
-      click={addToken}
-      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
-      Add Token
-    </Button>
-  </div>
-  <div class="tokens-content">
-    {#await supportedTokens}
-      <Loading />
-    {:then loadedPSTs}
-      {#each loadedPSTs as pst}
-        <a
-          class="token"
-          href="https://viewblock.io/arweave/tx/{pst.id}"
-          target="_blank">
-          <h1 class="short">{pst.ticker}</h1>
-          <div class="info">
-            <h1><span>[PST]</span>{pst.name}</h1>
-            <p><span>ID:</span>{pst.id}</p>
-          </div>
-        </a>
-      {/each}
-    {/await}
-  </div>
-</div>
-<Modal
-  bind:opened={addTokenModalOpened}
-  confirmation={true}
-  onConfirm={confirmAdd}
-  onCancel={cancelAdd}>
-  <h3 style="text-align: center;">Token Contract ID</h3>
-  <input
-    type="text"
-    bind:value={newContractID}
-    class="light contract-id"
-    placeholder="Contract ID" />
-</Modal>
-<Footer />

@@ -1,152 +1,202 @@
 <script lang="ts">
-  import { keyfile } from "../../stores/keyfileStore.ts";
-  import Loading from "../../components/Loading.svelte";
-  import SkeletonLoading from "../../components/SkeletonLoading.svelte";
-  import { query } from "../../api-client";
-  import tokensQuery from "../../queries/tokens.gql";
+  import Verto from "@verto/lib";
+  import { address, keyfile } from "../../stores/keyfileStore";
   import Arweave from "arweave";
-  import { interactRead } from "smartweave";
-  import { pstContract, exchangeWallet } from "../../utils/constants";
+  import { notification } from "../../stores/notificationStore";
+  import { NotificationType } from "../../utils/types";
+  import Button from "../../components/Button.svelte";
+  import Loading from "../Loading.svelte";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import Modal from "../../components/Modal.svelte";
+  import { fade } from "svelte/transition";
 
-  import Pie from "svelte-chartjs/src/Pie.svelte";
+  const client = new Verto();
+  let balances: Promise<
+    { id: string; name: string; ticker: string; balance: number }[]
+  > = client.getAssets($address);
 
-  let balances = getTokenBalances();
-  let options = {
-    responsive: true,
-  };
-  let noelements = false;
-  let balanceChart = populateChart();
+  let loading: boolean = false;
+  let transferPSTOpened: boolean = false;
 
-  async function getSupportedPSTs(): Promise<
-    { id: string; name: string; ticker: string }[]
-  > {
-    if (!process.browser) return [];
+  let pst: string;
+  let amnt: number;
+  let max: number;
+  let target: string;
 
-    let psts: { id: string; name: string; ticker: string }[] = [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 20000,
-    });
-
-    let txIds = [];
-    const _txIds = (
-      await query({
-        query: tokensQuery,
-        variables: {
-          owners: [exchangeWallet],
-          contractSrc: pstContract,
-        },
-      })
-    ).data.transactions.edges;
-    _txIds.map(({ node }) => {
-      txIds.push(node.id);
-    });
-
-    for (const id of txIds) {
-      try {
-        const contractId = (
-          await client.transactions.getData(id, { decode: true, string: true })
-        ).toString();
-        const contractData = JSON.parse(
-          (
-            await client.transactions.getData(contractId, {
-              decode: true,
-              string: true,
-            })
-          ).toString()
-        );
-        psts.push({
-          id: contractId,
-          name: contractData["name"],
-          ticker: contractData["ticker"],
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    return psts;
-  }
-
-  async function getTokenBalances() {
-    if (!process.browser) return [];
-
-    const client = new Arweave({
-      host: "arweave.dev",
-      port: 443,
-      protocol: "https",
-      timeout: 200000,
-    });
-    const supportedPSTs = await getSupportedPSTs();
-    let tokenBalances = [];
-
-    for (let i = 0; i < supportedPSTs.length; i++) {
-      let pstContract = await interactRead(
-        client,
-        JSON.parse($keyfile),
-        supportedPSTs[i].id,
-        {
-          function: "unlockedBalance",
-        }
+  const transfer = async () => {
+    const re = /[a-z0-9_-]{43}/i;
+    if (!re.test(target)) {
+      notification.notify(
+        "Invalid",
+        "You've entered an invalid Arweave address.",
+        NotificationType.error,
+        5000
       );
-      if (pstContract.balance > 0) {
-        tokenBalances.push({
-          token: supportedPSTs[i].name,
-          ticker: supportedPSTs[i].ticker,
-          balance: pstContract.balance,
-        });
-      }
+      return;
     }
 
-    if (tokenBalances.length === 0) noelements = true;
-    return tokenBalances;
-  }
+    const arweave = new Arweave({
+      host: "arweave.dev",
+      port: 443,
+      protocol: "https",
+    });
 
-  async function populateChart() {
-    let data = await balances;
-    let chart = {
-      labels: [],
-      datasets: [
-        {
-          data: [],
-          backgroundColor: [
-            "#8548a3",
-            "#161616",
-            "#00D46E",
-            "#FFD336",
-            "#ff0000",
-            "#00d4b8",
-          ],
-          hoverBackgroundColor: [
-            "rgba(133,72,163,0.75)",
-            "rgba(22,22,22,0.75)",
-            "rgba(0,212,110,0.75)",
-            "rgba(255,211,54,0.75)",
-            "rgba(255,0,0,0.75)",
-            "rgba(0,212,184,0.75)",
-          ],
-        },
-      ],
+    const tokens: {
+      id: string;
+      name: string;
+      ticker: string;
+    }[] = await client.getTokens();
+
+    const tags = {
+      "App-Name": "SmartWeaveAction",
+      "App-Version": "0.3.0",
+      Contract: tokens.find((token) => token.ticker === pst).id,
+      Input: JSON.stringify({
+        function: "transfer",
+        target,
+        qty: amnt,
+      }),
     };
-    for (let i = 0; i < data.length; i++) {
-      chart.labels.push(data[i].ticker);
-      chart.datasets[0].data.push(data[i].balance);
+
+    const tx = await arweave.createTransaction(
+      {
+        target,
+        data: Math.random().toString().slice(-4),
+      },
+      JSON.parse($keyfile)
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value);
     }
 
-    return chart;
-  }
+    await arweave.transactions.sign(tx, JSON.parse($keyfile));
+    await arweave.transactions.post(tx);
 
-  function roundCurrency(val: number | string): string {
-    if (val === "?") return val;
-    if (typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
+    notification.notify(
+      "Sent",
+      "You've sent tokens! This may take a few minutes.",
+      NotificationType.success,
+      5000
+    );
+  };
+  const cancel = () => {
+    transferPSTOpened = false;
+  };
+  $: {
+    if (amnt > max) amnt = max;
+    if (amnt < 1) amnt = 1;
+    if (amnt % 1 !== 0) amnt = Math.round(amnt);
   }
 </script>
 
-<!-- prettier-ignore -->
+<div class="section">
+  <div class="assets-table">
+    <div class="menu">
+      <h1 class="title">Assets</h1>
+      <div in:fade={{ duration: 100 }}>
+        {#if !loading}
+          <Button
+            click={async () => {
+              loading = true;
+              const loadedBalances = await balances;
+              if (loadedBalances.length === 0) {
+                notification.notify('Sorry', "You don't have any tokens to transfer.", NotificationType.error, 5000);
+                loading = false;
+                return;
+              } else {
+                pst = loadedBalances[0].ticker;
+                max = loadedBalances[0].balance;
+                loading = false;
+                transferPSTOpened = true;
+              }
+            }}>
+            Transfer
+          </Button>
+        {:else}
+          <Loading />
+        {/if}
+      </div>
+    </div>
+    {#await balances}
+      <table in:fade={{ duration: 100 }}>
+        <tr style="width: 100%">
+          <th>Name</th>
+          <th>ID</th>
+          <th>Amount</th>
+        </tr>
+        {#each Array(4) as _}
+          <tr>
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+            <td style="width: 60%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+            <td style="width: 20%">
+              <SkeletonLoading style="width: 100%;" />
+            </td>
+          </tr>
+        {/each}
+      </table>
+    {:then loadedBalances}
+      {#if loadedBalances.length === 0}
+        <p in:fade={{ duration: 300 }}>You don't have any tokens!</p>
+      {:else}
+        <table in:fade={{ duration: 300 }}>
+          <tr style="width: 100%">
+            <th>Name</th>
+            <th>ID</th>
+            <th>Amount</th>
+          </tr>
+          {#each loadedBalances as balance}
+            <tr>
+              <td style="width: 20%">{balance.name}</td>
+              <td style="width: 60%">{balance.id}</td>
+              <td style="width: 20%">
+                {balance.balance}
+                <span class="currency">{balance.ticker}</span>
+              </td>
+            </tr>
+          {/each}
+        </table>
+      {/if}
+    {/await}
+  </div>
+</div>
+<Modal
+  bind:opened={transferPSTOpened}
+  confirmation={true}
+  onConfirm={transfer}
+  onCancel={cancel}>
+  {#await balances then loadedBalances}
+    <p style="margin-bottom: .3em;">PST Amount</p>
+    <div
+      style="display: flex; align-items: center; border-radius: 4px; overflow: hidden; border: 1px solid #fff; margin-bottom: 1em;">
+      <input
+        type="number"
+        bind:value={amnt}
+        step={1}
+        min={1}
+        {max}
+        class="light"
+        style="border: none; width: 67%;" />
+      <select
+        style="height: 100%; display: block; outline: none; border: none; background-color: #fff; color: #000; width: 33%; font-size: 1.4em; padding: 0.18em 0.6em;"
+        bind:value={pst}
+        on:change={() => {
+          max = loadedBalances.find((balance) => balance.ticker === pst).balance;
+        }}>
+        {#each loadedBalances.map((balance) => balance.ticker) as ticker}
+          <option value={ticker}>{ticker}</option>
+        {/each}
+      </select>
+    </div>
+    <p style="margin-bottom: .3em;">PST Target</p>
+    <input type="string" bind:value={target} class="light" />
+  {/await}
+</Modal>
+
 <style lang="sass">
   
   @import "../../styles/tables.sass"
@@ -163,17 +213,27 @@
       width: 100vw - $mobileSidePadding * 2
       overflow-x: auto
 
+    p
+      color: var(--primary-text-color)
+
     .assets-table
-      width: 50%
+      width: 100%
       transition: all .3s
 
-      &.noelements
-        width: 100%
+      .menu
+        position: relative
+        display: flex
+
+        @media screen and (min-width: 720px)
+          justify-content: space-between
+
+        div
+          padding-top: 1.8em
 
       a.view-all
         display: block
         text-align: center
-        color: rgba(#000, .5)
+        color: var(--darker-secondary-text-color)
         font-weight: 500
         padding: .8em 0
         transition: all .3s
@@ -185,58 +245,4 @@
         text-decoration: none
         color: black
 
-    .assets-chart
-      width: 50%
-      transition: all .3s
-
-      &.noelements
-        width: 0%
-
 </style>
-
-<div class="section">
-  <div class="assets-table" class:noelements>
-    <h1 class="title">Assets</h1>
-    <table style={noelements ? 'position: relative' : ''}>
-      <tr style="width: 100%">
-        <th>Token</th>
-        <th>Amount</th>
-      </tr>
-      {#await balances}
-        {#each Array(4) as _}
-          <tr>
-            <td style="width: 80%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-            <td style="width: 20%">
-              <SkeletonLoading style="width: 100%;" />
-            </td>
-          </tr>
-        {/each}
-      {:then loadedBalances}
-        {#if loadedBalances.length === 0}
-          <p
-            style="position: absolute; top: 1.8em; left: 0; right: 0; text-align: center;">
-            You don't have any tokens!
-          </p>
-        {/if}
-        {#each loadedBalances as balance}
-          <tr>
-            <td>{balance.token}</td>
-            <td>
-              {roundCurrency(balance.balance)}
-              <span class="currency">{balance.ticker}</span>
-            </td>
-          </tr>
-        {/each}
-      {/await}
-    </table>
-  </div>
-  <div class="assets-chart" class:noelements>
-    {#await balanceChart}
-      <Loading style="margin: 100px auto;" />
-    {:then data}
-      <Pie {data} {options} />
-    {/await}
-  </div>
-</div>

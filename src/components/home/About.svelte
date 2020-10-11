@@ -18,6 +18,19 @@
   }
 </script>
 
+<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
+<div class="About" bind:this={element} {id}>
+  {#if shown}
+    <div
+      class="about-content"
+      in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
+      <slot />
+    </div>
+  {/if}
+</div>
+
+
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -30,14 +43,3 @@
     text-align: justify
 
 </style>
-
-<svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
-<div class="About" bind:this={element} {id}>
-  {#if shown}
-    <div
-      class="about-content"
-      in:fade={{ duration: 1100, delay: 411, easing: backOut }}>
-      <slot />
-    </div>
-  {/if}
-</div>

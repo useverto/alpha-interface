@@ -1,6 +1,6 @@
 <script>
-  import { notification } from "../stores/notificationStore.ts";
-  import { NotificationType } from "../utils/types.ts";
+  import { notification } from "../stores/notificationStore";
+  import { NotificationType } from "../utils/types";
   import { cubicIn } from "svelte/easing";
   import { fly, scale, fade } from "svelte/transition";
   import errorIcon from "../assets/notification/error.svg";
@@ -24,6 +24,36 @@
       timeout = setTimeout(hide, $notification.timeout);
   }
 </script>
+
+{#if $notification !== null}
+  <div
+    class="notification {notificationClass}"
+    in:fly={{ x: 1000, opacity: 0, easing: cubicIn }}
+    out:scale={{ duration: 200 }}
+    on:click={hide}
+    on:mouseover={() => (hover = true)}
+    on:mouseleave={() => (hover = false)}>
+    {#if hover}
+      <img
+        class="notification-icon"
+        src={closeIcon}
+        alt="close-notification"
+        in:fade={{ duration: 300 }} />
+    {:else}
+      <img
+        class="notification-icon"
+        src={notificationClass === 'error' ? errorIcon : notificationClass === 'warning' ? warningIcon : notificationClass === 'success' ? successIcon : infoIcon}
+        alt={notificationClass}
+        in:fade={{ duration: 300 }} />
+    {/if}
+    <div class="notification-content">
+      <h1 class={notificationClass}>[{$notification.title}]</h1>
+      <p>{$notification.description}</p>
+    </div>
+  </div>
+{/if}
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">
@@ -80,31 +110,3 @@
         font-weight: 400
 
 </style>
-
-{#if $notification !== null}
-  <div
-    class="notification {notificationClass}"
-    in:fly={{ x: 1000, opacity: 0, easing: cubicIn }}
-    out:scale={{ duration: 200 }}
-    on:click={hide}
-    on:mouseover={() => (hover = true)}
-    on:mouseleave={() => (hover = false)}>
-    {#if hover}
-      <img
-        class="notification-icon"
-        src={closeIcon}
-        alt="close-notification"
-        in:fade={{ duration: 300 }} />
-    {:else}
-      <img
-        class="notification-icon"
-        src={notificationClass === 'error' ? errorIcon : notificationClass === 'warning' ? warningIcon : notificationClass === 'success' ? successIcon : infoIcon}
-        alt={notificationClass}
-        in:fade={{ duration: 300 }} />
-    {/if}
-    <div class="notification-content">
-      <h1 class={notificationClass}>[{$notification.title}]</h1>
-      <p>{$notification.description}</p>
-    </div>
-  </div>
-{/if}

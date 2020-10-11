@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { loggedIn, address } from "../../stores/keyfileStore.ts";
+  import { loggedIn, address } from "../../stores/keyfileStore";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import { fade } from "svelte/transition";
@@ -12,17 +12,10 @@
   import moment from "moment";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
   import Loading from "../../components/Loading.svelte";
+  import type { Exchange } from "../../utils/types";
 
   let client, element, windowHeight, y;
-  let exchanges: {
-    id: string;
-    timestamp: string;
-    type: string;
-    sent: string;
-    received: string;
-    status: string;
-    duration: string;
-  }[] = [];
+  let exchanges: Exchange[] = [];
   let lastCursor = "";
   let hasNext = true,
     loadedExchanges = false,
@@ -34,15 +27,7 @@
     if (!process.browser) return;
     if (!hasNext) return;
 
-    let _exchanges: {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[] = [];
+    let _exchanges: Exchange[] = [];
     loading = true;
 
     const txsQuery = (
@@ -71,7 +56,7 @@
 
         const sent =
           tradeType === "Buy"
-            ? node.quantity.ar + " AR"
+            ? parseFloat(node.quantity.ar) + " AR"
             : JSON.parse(
                 node.tags.find((tag: any) => tag.name === "Input")?.value!
               )["qty"] +
@@ -83,7 +68,7 @@
           id: node.id,
           timestamp: node.block
             ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
-            : "NOT MINED YET",
+            : "not mined yet",
           type: tradeType,
           sent,
           received,
@@ -136,7 +121,7 @@
 
           _exchanges[i].duration = duration.humanize();
         } else {
-          _exchanges[i].duration = "NOT MINED YET";
+          _exchanges[i].duration = "not mined yet";
         }
 
         const receivedTag = match[0].node.tags.find(
@@ -145,6 +130,33 @@
         if (receivedTag) {
           _exchanges[i].received = receivedTag.value;
         }
+      }
+
+      const cancel = (
+        await query({
+          query: `
+          query {
+            transactions(
+              tags: [
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "Cancel" }
+                { name: "Order", values: "${_exchanges[i].id}" }
+              ]
+            ) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        `,
+        })
+      ).data.transactions.edges;
+
+      if (cancel[0]) {
+        exchanges[i].status = "failed";
+        exchanges[i].duration = "cancelled";
       }
     }
 
@@ -221,18 +233,6 @@
   }
 </script>
 
-<!-- prettier-ignore -->
-<style lang="sass">
-
-  @import "../../styles/tables.sass"
-  @import "../../styles/general.sass"
-
-  .all-exchanges
-    @include page
-    @include table 
-
-</style>
-
 <svelte:head>
   <title>Verto — All Exchanges</title>
 </svelte:head>
@@ -241,38 +241,36 @@
 <NavBar />
 <div class="all-exchanges" in:fade={{ duration: 300 }}>
   <h1 class="title">All Trades</h1>
-  <table>
-    <tr>
-      <th>Timestamp</th>
-      <th>Trade</th>
-      <th>Duration</th>
-    </tr>
-    {#if !loadedExchanges}
+  {#if !loadedExchanges}
+    <table>
+      <tr>
+        <th>Timestamp</th>
+        <th>Trade</th>
+        <th>Duration</th>
+      </tr>
       {#each Array(10) as _}
         <tr>
           <td style="width: 30%">
             <SkeletonLoading style={'width: 100%'} />
           </td>
-          <td style="width: 60%">
+          <td style="width: 45%">
             <SkeletonLoading style={'width: 100%'} />
           </td>
-          <td style="width: 15%">
+          <td style="width: 25%">
             <SkeletonLoading style={'width: 100%'} />
           </td>
         </tr>
       {/each}
-    {:else if exchanges.length === 0}
-      <p
-        in:fade={{ duration: 150 }}
-        style="position: absolute; left: 50%; transform: translateX(-50%);">
-        No trades found
-      </p>
+    </table>
+  {:else if exchanges.length === 0}
+    <p>No trades found.</p>
+  {:else}
+    <table>
       <tr>
-        <td><br /></td>
-        <td />
+        <th>Timestamp</th>
+        <th>Trade</th>
+        <th>Duration</th>
       </tr>
-      <!-- empty line to push "view-all" down -->
-    {:else}
       {#each exchanges as exchange}
         <tr in:fade={{ duration: 300 }}>
           <td style="width: 30%">{exchange.timestamp}</td>
@@ -284,19 +282,27 @@
           </td>
           <td style="text-transform: uppercase">{exchange.duration}</td>
         </tr>
-        <tr />
       {/each}
-      {#if loading}
-        <!-- if the site is loading, but there are transactions already loaded  -->
-        <Loading style="position: absolute; left: 50%;" />
-        <tr>
-          <td><br /></td>
-          <td />
-        </tr>
-        <!-- empty line to push "view-all" down -->
-      {/if}
+    </table>
+    {#if loading}
+      <Loading style="position: absolute; left: 50%;" />
+      <br />
     {/if}
-  </table>
+  {/if}
 </div>
 <Footer />
 <span style="width: 100%; height: 1px" bind:this={element} />
+
+<style lang="sass">
+
+  @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
+
+  .all-exchanges
+    @include page
+    @include table
+
+    p
+      color: var(--secondary-text-color)
+
+</style>

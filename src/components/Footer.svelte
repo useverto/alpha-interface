@@ -16,41 +16,6 @@
   }
 </script>
 
-<!-- prettier-ignore -->
-<style lang="sass">
-
-  .Footer
-    width: 80%
-    border-top: 5px solid black
-    margin: 0 auto
-
-    @media screen and (max-width: 720px)
-      margin-bottom: 4em
-  
-    .FooterContent
-      margin: 30px auto
-  
-      div
-        width: 32%
-        display: inline-block
-        text-align: center
-  
-        @media screen and (max-width: 720px)
-          display: inline-block
-          width: 30%
-  
-        a
-          text-decoration: none
-          width: 100% !important
-          transition: color linear 0.1s
-          color: black
-        
-          &:hover
-            transition: color linear 0.1s
-            color: #B075CD
-
-</style>
-
 <svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <div bind:this={element}>
   {#if shown}
@@ -65,3 +30,39 @@
     </div>
   {/if}
 </div>
+
+
+
+<!-- prettier-ignore -->
+<style lang="sass">
+
+  .Footer
+    width: 80%
+    border-top: 5px solid var(--inverted-elements-color)
+    margin: 0 auto
+
+    @media screen and (max-width: 720px)
+      padding-bottom: 4em
+  
+    .FooterContent
+      padding: 30px 0
+  
+      div
+        width: 32%
+        display: inline-block
+        text-align: center
+  
+        @media screen and (max-width: 720px)
+          display: inline-block
+          width: 30%
+  
+        a
+          text-decoration: none
+          width: 100% !important
+          transition: color linear 0.1s
+          color: var(--primary-text-color)
+        
+          &:hover
+            color: #B075CD
+
+</style>

@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { address, loggedIn } from "../../stores/keyfileStore.ts";
+  import { address, loggedIn } from "../../stores/keyfileStore";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import Loading from "../../components/Loading.svelte";
@@ -11,17 +11,12 @@
   import { query } from "../../api-client";
   import Arweave from "arweave";
   import allTransactionsQuery from "../../queries/allTransactions.gql";
+  import type { Transaction } from "../../utils/types";
 
   if (process.browser && !$loggedIn) goto("/");
 
   let client, element;
-  let transactions: {
-    id: string;
-    amount: number;
-    type: string;
-    status: string;
-    timestamp: number;
-  }[] = [];
+  let transactions: Transaction[] = [];
   let lastCursorOut = "",
     lastCursorIn = "";
   let hasNextOut = true,
@@ -29,12 +24,6 @@
     loadedTransactions = false,
     loading = false;
   let y: number, windowHeight: number;
-
-  function roundCurrency(val: number | string): string {
-    if (val === "?") return val;
-    if (typeof val === "string") val = parseFloat(val);
-    return val.toFixed(7);
-  }
 
   onMount(() => loadMoreTransactions());
 
@@ -83,20 +72,14 @@
       : false;
     hasNextIn = hasNextIn ? inQuery.transactions.pageInfo.hasNextPage : false;
 
-    let _transactions: {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[] = [];
+    let _transactions: Transaction[] = [];
 
     if (outTxs !== null)
       outTxs.map(({ node, cursor }) => {
         lastCursorOut = cursor;
         _transactions.push({
           id: node.id,
-          amount: node.quantity.ar,
+          amount: parseFloat(node.quantity.ar),
           type: "out",
           status: "",
           timestamp: node.block.timestamp,
@@ -108,7 +91,7 @@
         lastCursorIn = cursor;
         _transactions.push({
           id: node.id,
-          amount: node.quantity.ar,
+          amount: parseFloat(node.quantity.ar),
           type: "in",
           status: "",
           timestamp: node.block.timestamp,
@@ -147,27 +130,6 @@
   }
 </script>
 
-<!-- prettier-ignore -->
-<style lang="sass">
-
-  @import "../../styles/tables.sass"
-  @import "../../styles/general.sass"
-
-  .all-transactions
-    @include page
-    @include table 
-
-    .pagination
-      margin-top: 1.3em
-      @include pagination
-
-    td
-      a
-        text-decoration: none
-        color: black
-
-</style>
-
 <svelte:head>
   <title>Transactions overview</title>
 </svelte:head>
@@ -192,17 +154,6 @@
           </td>
         </tr>
       {/each}
-    {:else if transactions.length === 0}
-      <p
-        in:fade={{ duration: 150 }}
-        style="position: absolute; left: 50%; transform: translateX(-50%);">
-        No transactions found
-      </p>
-      <tr>
-        <td><br /></td>
-        <td />
-      </tr>
-      <!-- empty line to push "view-all" down -->
     {:else}
       {#each transactions as tx}
         <tr in:fade={{ duration: 150 }}>
@@ -213,20 +164,34 @@
             </a>
             <span class="status {tx.status}" />
           </td>
-          <td style="width: 20%">{roundCurrency(tx.amount)} AR</td>
+          <td style="width: 20%">{tx.amount} AR</td>
         </tr>
       {/each}
       {#if loading}
-        <!-- if the site is loading, but there are transactions already loaded  -->
         <Loading style="position: absolute; left: 50%;" />
-        <tr>
-          <td><br /></td>
-          <td />
-        </tr>
-        <!-- empty line to push "view-all" down -->
+        <br />
       {/if}
     {/if}
   </table>
 </div>
 <Footer />
 <span style="width: 100%; height: 1px" bind:this={element} />
+
+<style lang="sass">
+
+  @import "../../styles/tables.sass"
+  @import "../../styles/general.sass"
+
+  .all-transactions
+    @include page
+    @include table 
+
+    p
+      color: var(--secondary-text-color)
+
+    td
+      a
+        text-decoration: none
+        color: var(--primary-text-color)
+
+</style>

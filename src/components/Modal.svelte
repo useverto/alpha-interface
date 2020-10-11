@@ -17,6 +17,46 @@
   }
 </script>
 
+{#if opened}
+  <div
+    class="modal-overlay"
+    in:fade={{ duration: 150 }}
+    out:fade={{ duration: 100 }}
+    on:click={() => {
+      if (!confirmation) close(onClose);
+    }} />
+  <div
+    class="Modal"
+    in:fade={{ duration: 240 }}
+    out:fade={{ duration: 180 }}
+    class:cancelled={canceledClose}>
+    <div class="content">
+      <slot />
+    </div>
+    <div class="confirmation">
+      {#if confirmation}
+        <button
+          class="confirm"
+          on:click={() => {
+            close(onConfirm);
+          }}>[Confirm]</button>
+        <button
+          class="cancel"
+          on:click={() => {
+            close(onCancel);
+          }}>[Cancel]</button>
+      {:else}
+        <button
+          on:click={() => {
+            close(onClose);
+          }}>[Ok]</button>
+      {/if}
+    </div>
+  </div>
+{/if}
+
+
+
 <!-- prettier-ignore -->
 <style lang="sass">
 
@@ -83,41 +123,3 @@
         color: #FF375D
 
 </style>
-
-{#if opened}
-  <div
-    class="modal-overlay"
-    in:fade={{ duration: 150 }}
-    out:fade={{ duration: 100 }}
-    on:click={() => {
-      if (!confirmation) close(onClose);
-    }} />
-  <div
-    class="Modal"
-    in:fade={{ duration: 240 }}
-    out:fade={{ duration: 180 }}
-    class:cancelled={canceledClose}>
-    <div class="content">
-      <slot />
-    </div>
-    <div class="confirmation">
-      {#if confirmation}
-        <button
-          class="confirm"
-          on:click={() => {
-            close(onConfirm);
-          }}>[Confirm]</button>
-        <button
-          class="cancel"
-          on:click={() => {
-            close(onCancel);
-          }}>[Cancel]</button>
-      {:else}
-        <button
-          on:click={() => {
-            close(onClose);
-          }}>[Ok]</button>
-      {/if}
-    </div>
-  </div>
-{/if}

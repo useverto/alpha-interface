@@ -5,11 +5,32 @@
   export let target: string = undefined;
   export let click: Function = () => {}; // click event
   export let style: string = undefined;
+  export let disabled: boolean = false;
 
   // don't let malicious links override the content of the site
   // https://web.dev/external-anchors-use-rel-noopener/
   $: rel = target === "_blank" ? "noopener noreferrer" : undefined;
+
+  function handleClick(e) {
+    if (disabled) e.preventDefault();
+    else click();
+  }
 </script>
+
+<a
+  {href}
+  {target}
+  {rel}
+  class="Button"
+  on:click={handleClick}
+  {style}
+  class:clear
+  class:reverse
+  class:disabled>
+  <slot />
+</a>
+
+
 
 <!-- prettier-ignore -->
 <style lang="sass">
@@ -17,9 +38,9 @@
   .Button
     padding: .3em 1.5em
     position: relative
-    background-color: #000
-    color: #fff
-    border: 2px solid #000
+    background-color: var(--inverted-elements-color)
+    color: var(--background-color)
+    border: 2px solid var(--inverted-elements-color)
     border-radius: 6px
     cursor: pointer
     font-family: "Inter", sans-serif
@@ -36,51 +57,44 @@
     @media screen and (max-width: 720px)
       min-width: 140px
 
-    &:hover
-      background-color: transparent
-      color: #000
+    &.disabled
+      cursor: not-allowed
+      opacity: .6
 
-    &.clear
+    &:hover:not(.disabled)
       background-color: transparent
-      color: #000
+      color: var(--primary-text-color)
+
+    &.clear:not(.disabled)
+      background-color: transparent
+      color: var(--primary-text-color)
 
       &:hover
-        background-color: #000
-        color: #fff
+        background-color: var(--primary-text-color)
+        color: var(--inverted-elements-color)
 
     &.reverse
       border-color: #fff
       background-color: #fff
       color: #000
 
-      &:hover
+      &:hover:not(.disabled)
         background-color: transparent
         color: #fff
 
     &.clear
       background-color: transparent
-      color: #000
+      color: var(--primary-text-color)
 
-      &:hover
-        background-color: #000
-        color: #fff     
+      &:hover:not(.disabled)
+        background-color: var(--primary-text-color)
+        color: var(--inverted-elements-color)
 
       &.reverse
         color: #fff
 
-        &:hover
+        &:hover:not(.disabled)
           background-color: #fff
           color: #000   
 
 </style>
-<a
-  {href}
-  {target}
-  {rel}
-  class="Button"
-  on:click={click}
-  {style}
-  class:clear
-  class:reverse>
-  <slot />
-</a>
