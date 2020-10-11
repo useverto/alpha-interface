@@ -10,10 +10,21 @@
   import Modal from "../components/Modal.svelte";
   import { NotificationType, DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
+  import { onMount } from "svelte";
+  import Verto from "@verto/lib";
+
+  const client = new Verto();
 
   export let hero: boolean = false;
   let y: number;
   let confirmModalOpened: boolean = false;
+  let lastTradeAddrQuery: string = "?post=";
+
+  onMount(async () => {
+    if (!$loggedIn) return;
+    const posts = await client.getTradingPosts();
+    lastTradeAddrQuery += posts[0];
+  });
 
   function _logOut(e?: MouseEvent) {
     if (!process.browser) return;
@@ -51,7 +62,7 @@
   </a>
   <div class="menu">
     {#if $loggedIn}
-      <a href="/trade">Trade</a>
+      <a href="/trade{lastTradeAddrQuery}">Trade</a>
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>
       <a href="/" on:click={_logOut}>Sign Out</a>
@@ -61,7 +72,7 @@
 <div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}" />
 <div class="mobile-nav">
   {#if $loggedIn}
-    <a href="/trade"><object
+    <a href="/trade{lastTradeAddrQuery}"><object
         data={tradeLogo}
         type="image/svg+xml"
         title="nav-icon" /></a>
