@@ -6,6 +6,8 @@
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import downArrowIcon from "../../assets/down-arrow.svg";
 
+  export let showThemeSwitcher: boolean = false;
+
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
     if (typeof val === "string") val = parseFloat(val);
@@ -15,17 +17,22 @@
 
 <div class="balance">
   {#if $balance === 0}
-    <div>
-      <SkeletonLoading style="height: 1em; width: 120px" />
-      <div class="select-container">
-        <select class="theme-picker" bind:value={$theme}>
-          {#each Object.values(Theme) as themeOption}
-            <option value={themeOption}>{themeOption}</option>
-          {/each}
-        </select>
-        <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
+    {#if showThemeSwitcher}
+      <div>
+        <SkeletonLoading style="height: 1em; width: 120px" />
+        <div class="select-container">
+          <select class="theme-picker" bind:value={$theme}>
+            {#each Object.values(Theme) as themeOption}
+              <option value={themeOption}>{themeOption}</option>
+            {/each}
+          </select>
+          <object
+            data={downArrowIcon}
+            type="image/svg+xml"
+            title="select-icon" />
+        </div>
       </div>
-    </div>
+    {/if}
     <h1 class="total-balance">
       <SkeletonLoading style="height: 1em; width: 300px" />
     </h1>
@@ -34,15 +41,19 @@
     </p>
   {:else}
     <div in:fade={{ duration: 150 }}>
-      Your balance
-      <div class="select-container">
-        <select class="theme-picker" bind:value={$theme}>
-          {#each Object.values(Theme) as themeOption}
-            <option value={themeOption}>{themeOption}</option>
-          {/each}
-        </select>
-        <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
-      </div>
+      Total balance {#if showThemeSwitcher}
+        <div class="select-container">
+          <select class="theme-picker" bind:value={$theme}>
+            {#each Object.values(Theme) as themeOption}
+              <option value={themeOption}>{themeOption}</option>
+            {/each}
+          </select>
+          <object
+            data={downArrowIcon}
+            type="image/svg+xml"
+            title="select-icon" />
+        </div>
+      {/if}
     </div>
     <h1 class="total-balance" in:fade={{ duration: 150 }}>
       {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>

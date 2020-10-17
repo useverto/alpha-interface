@@ -1,22 +1,17 @@
 <script lang="typescript">
   import { onMount } from "svelte";
-  import { balance, address, keyfile, loggedIn } from "../stores/keyfileStore";
+  import { address, keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
   import { NotificationType } from "../utils/types";
   import Verto from "@verto/lib";
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
-  import { fade, fly } from "svelte/transition";
-  import Assets from "../components/app/Assets.svelte";
-  import SkeletonLoading from "../components/SkeletonLoading.svelte";
-  import Button from "../components/Button.svelte";
+  import Balance from "../components/app/Balance.svelte";
   import Loading from "../components/Loading.svelte";
-  import Modal from "../components/Modal.svelte";
-  import Footer from "../components/Footer.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
-  import { cubicIn } from "svelte/easing";
   import downArrowIcon from "../assets/down-arrow.svg";
+  import { fade } from "svelte/transition";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -264,7 +259,7 @@
     return parseFloat(config["tradeFee"]) * 100;
   }
 
-  let selectedMetric;
+  let selectedMetric: string;
   let metricData = getMetrics();
   async function getMetrics() {
     if (!selectedMetric) {
@@ -301,6 +296,47 @@
 </svelte:head>
 
 <NavBar />
+<div class="trade">
+  <Balance />
+  <div class="metrics">
+    <div class="select-container">
+      <select
+        bind:value={selectedMetric}
+        on:change={() => (metricData = getMetrics())}>
+        <option value="price">Price</option>
+        <option value="volume">Volume</option>
+      </select>
+      <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
+    </div>
+    {#await metricData}
+      <Loading />
+    {:then loadedMetrics}
+      {#if loadedMetrics.empty}
+        {#if selectedMetric === 'price'}
+          <p>no price data.</p>
+        {:else}
+          <p>no trading volume.</p>
+        {/if}
+      {:else}
+        <div class="graph" in:fade={{ duration: 300 }}>
+          <Line
+            data={{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: 'transparent', borderColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, '#E698E8');
+                    gradient.addColorStop(1, '#8D5FBC');
+                    return gradient;
+                  }, pointBackgroundColor: function (context) {
+                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                    gradient.addColorStop(0, '#E698E8');
+                    gradient.addColorStop(1, '#8D5FBC');
+                    return gradient;
+                  } }] }}
+            options={{ elements: { point: { radius: 0 } }, maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
+        </div>
+      {/if}
+    {/await}
+  </div>
+</div>
 
 <style lang="sass">
 
@@ -314,5 +350,22 @@
 
     @media screen and (max-width: 720px)
       padding-top: 2em
+
+    .metrics
+      position: relative
+      padding-top: 3em
+      
+      .graph
+        position: relative
+        height: 32vh
+
+      .select-container
+        position: absolute
+        top: 0
+        right: 0
+        width: 7em
+
+        select
+          text-transform: uppercase
 
 </style>

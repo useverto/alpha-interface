@@ -19,7 +19,7 @@
 
 <NavBar />
 <div class="dashboard" in:fade={{ duration: 300 }}>
-  <Balance />
+  <Balance showThemeSwitcher={true} />
   <Watchlist />
   <Assets />
   <LatestExchanges />
