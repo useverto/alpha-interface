@@ -1163,13 +1163,13 @@
     "@typescript-eslint/types" "4.0.1"
     eslint-visitor-keys "^2.0.0"
 
-"@verto/lib@^0.3.0-alpha.5":
-  version "0.3.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.3.0-alpha.5.tgz#6266623700dcbd3f11f440d6cbff2b26d49e3cd2"
-  integrity sha512-UNi80GH2x0rgYRpAPAmOgGrBlsWCGecFt1D0S/hWHGFuio+yFLrPdkFbcLd5zQz8NBGXrY04xxILRSEy0+j3cQ==
+"@verto/lib@^0.5.0-beta":
+  version "0.5.0-beta"
+  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.5.0-beta.tgz#b8120063b366121428dd56666eda02c62024efdb"
+  integrity sha512-kc9DlHS6dSYM1BulzNCBBCvTCrzdwhTziRxuucK2G2LOWlomQOZ9vj9Tu0aqSXv2pDnH9Uvy3PCB+hJja+QVbQ==
   dependencies:
     arweave "^1.9.1"
-    community-js "^1.0.15"
+    cacheweave "^1.0.0"
     moment "^2.28.0"
     node-fetch "^2.6.1"
     smartweave "^0.3.6"
@@ -1546,6 +1546,16 @@ bytes@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
   integrity sha1-0ygVQE1olpn4Wk6k+odV3ROpYEg=
+
+cacheweave@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-1.0.0.tgz#bead06f12f621ec70ceabbf75c71083bb04d00c4"
+  integrity sha512-ucak1m7jKARLl24TZx/Owmnb3zgMEfJ6/DyD/iKaOaeopfdHd8SCXyPkuSHnIp4cPgwLcfMXPnA91E2A1VhAUg==
+  dependencies:
+    arweave "^1.9.1"
+    community-js "^1.0.15"
+    node-fetch "^2.6.1"
+    smartweave "^0.3.6"
 
 callsites@^3.0.0:
   version "3.1.0"

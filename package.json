@@ -15,7 +15,7 @@
     "commit-msg": "node verify_commit.js"
   },
   "dependencies": {
-    "@verto/lib": "^0.3.0-alpha.5",
+    "@verto/lib": "^0.5.0-beta",
     "arweave": "^1.9.1",
     "community-js": "^1.0.14",
     "compression": "^1.7.1",

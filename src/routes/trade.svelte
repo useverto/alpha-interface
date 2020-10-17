@@ -493,24 +493,28 @@
             <p><br /></p>
             <p />
             <div class="input" style="border: none">
-              {#await psts}
-                <SkeletonLoading
-                  style="display: flex; width: 100%; height: 2.35em" />
-              {:then _}
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 100%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
-              {/await}
+              {#if !loading}
+                {#await psts}
+                  <SkeletonLoading
+                    style="display: flex; width: 100%; height: 2.35em" />
+                {:then _}
+                  <Button
+                    click={exchange}
+                    style={`
+                      font-family: 'JetBrainsMono', monospace; 
+                      text-transform: uppercase; 
+                      width: 100%;
+                      display: block;
+                      padding-left: 0;
+                      padding-right: 0;
+                      height: 100%;
+                    `}>
+                    {mode}
+                  </Button>
+                {/await}
+              {:else}
+                <Loading />
+              {/if}
             </div>
           </div>
         </div>
@@ -619,24 +623,28 @@
             <p><br /></p>
             <p />
             <div class="input" style="border: none">
-              {#await psts}
-                <SkeletonLoading
-                  style="display: flex; width: 100%; height: 2.35em" />
-              {:then _}
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 100%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
-              {/await}
+              {#if !loading}
+                {#await psts}
+                  <SkeletonLoading
+                    style="display: flex; width: 100%; height: 2.35em" />
+                {:then _}
+                  <Button
+                    click={exchange}
+                    style={`
+                      font-family: 'JetBrainsMono', monospace; 
+                      text-transform: uppercase; 
+                      width: 100%;
+                      display: block;
+                      padding-left: 0;
+                      padding-right: 0;
+                      height: 100%;
+                    `}>
+                    {mode}
+                  </Button>
+                {/await}
+              {:else}
+                <Loading />
+              {/if}
             </div>
           </div>
         </div>

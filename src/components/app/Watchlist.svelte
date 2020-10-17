@@ -4,7 +4,7 @@
   import closeIcon from "../../assets/close.svg";
   import addIcon from "../../assets/add.svg";
   import Line from "svelte-chartjs/src/Line.svelte";
-  import { fade, scale } from "svelte/transition";
+  import { fade } from "svelte/transition";
   import type { IWatchlistElement } from "../../utils/types";
   import Modal from "../Modal.svelte";
   import { notification } from "../../stores/notificationStore";
@@ -13,6 +13,8 @@
   import Verto from "@verto/lib";
   import { displayTheme } from "../../stores/themeStore";
   import { DisplayTheme } from "../../utils/types";
+  import SkeletonLoading from "../SkeletonLoading.svelte";
+  import Loading from "../Loading.svelte";
 
   const client = new Verto();
 
@@ -166,9 +168,21 @@
               </div>
             {/if}
             <div class="pst-info">
-              <h1>{pst.ticker}</h1>
-              <div class="pst-price">
-                {#await load(pst.id, pst.period) then loaded}
+              {#await load(pst.id, pst.period)}
+                <h1>
+                  <SkeletonLoading style="height: 1em; width: 4.6em;" />
+                </h1>
+                <div class="pst-price">
+                  <h1 in:fade={{ duration: 100 }}>
+                    <SkeletonLoading style="height: 1em; width: 5.5em;" />
+                  </h1>
+                  <span class="percentage">
+                    <SkeletonLoading style="height: 1em; width: 4.2em;" />
+                  </span>
+                </div>
+              {:then loaded}
+                <h1 in:fade={{ duration: 150 }}>{pst.ticker}</h1>
+                <div class="pst-price">
                   {#if loaded.prices.every((price) => isNaN(price))}
                     <h1 in:fade={{ duration: 150 }}>--- <span>AR</span></h1>
                   {:else}
@@ -181,13 +195,19 @@
                       class="percentage"
                       style={`color: ${loaded.color}`}>{loaded.percentage}</span>
                   {/if}
-                {/await}
-              </div>
+                </div>
+              {/await}
             </div>
             <div class="graph-wrapper">
-              {#await load(pst.id, pst.period) then loaded}
+              {#await load(pst.id, pst.period)}
+                <div
+                  style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                  <Loading
+                    style="width: 26px; height: 26px; animation-duration: .8s;" />
+                </div>
+              {:then loaded}
                 {#if loaded.prices.every((price) => isNaN(price))}
-                  <p>no data</p>
+                  <p in:fade={{ duration: 130 }}>no data</p>
                 {:else}
                   <Line
                     data={{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}
@@ -273,6 +293,7 @@
             margin-bottom: 3em
 
           .graph-wrapper
+            position: relative
             padding-top: 3.25em
             height: 8em
 
