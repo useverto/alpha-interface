@@ -313,9 +313,9 @@
     {:then loadedMetrics}
       {#if loadedMetrics.empty}
         {#if selectedMetric === 'price'}
-          <p>no price data.</p>
+          <p in:fade={{ duration: 300 }}>no price data.</p>
         {:else}
-          <p>no trading volume.</p>
+          <p in:fade={{ duration: 300 }}>no trading volume.</p>
         {/if}
       {:else}
         <div class="graph" in:fade={{ duration: 300 }}>
@@ -336,6 +336,7 @@
       {/if}
     {/await}
   </div>
+  <div class="trade-form" />
 </div>
 
 <style lang="sass">
@@ -354,6 +355,13 @@
     .metrics
       position: relative
       padding-top: 3em
+
+      p
+        color: var(--secondary-text-color)
+        font-weight: 600
+        font-size: .95em
+        margin: 0
+        text-transform: uppercase
       
       .graph
         position: relative
@@ -367,5 +375,9 @@
 
         select
           text-transform: uppercase
+
+    .trade-form
+      .menu
+        @include menu-style
 
 </style>
