@@ -3,11 +3,12 @@
 
   export let size: number = 40; // width and height
   export let style: string = ""; // external styling
+  export let speed: number = 1400; // speed in miliseconds
 </script>
 
 <div
   class="Loading"
-  style="width: {size}px; height: {size}px; {style}"
+  style="width: {size}px; height: {size}px; --speed: {speed}ms; {style}"
   in:fade={{ duration: 140 }}>
   <svg viewBox="22 22 44 44">
     <circle
@@ -29,12 +30,12 @@
     display: block
     line-height: 1
     color: var(--inverted-elements-color)
-    animation: spinnerParentAnimation 1.4s linear infinite
+    animation: spinnerParentAnimation var(--speed) linear infinite
     margin: 0 auto
 
     svg
       .spinner
-        animation: spinnerAnimation 1.4s ease-in-out infinite
+        animation: spinnerAnimation var(--speed) ease-in-out infinite
         stroke-dasharray: 80px, 200px
         stroke-dashoffset: 0
         stroke: currentColor

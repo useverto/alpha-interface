@@ -15,14 +15,6 @@
 
   if (process.browser && !$loggedIn) goto("/");
 
-  onMount(async () => {
-    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
-    if (res.country === "US") {
-      goto("/usa");
-    }
-  });
-
   notification.notify(
     "Warning",
     "Verto is currently in Alpha. Use at your own risk.",
@@ -31,11 +23,18 @@
   );
 
   let client = new Verto();
-  onMount(async () => {
-    client = new Verto(JSON.parse($keyfile));
-  });
-  let order;
 
+  onMount(async () => {
+    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
+    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
+    if (res.country === "US") {
+      goto("/usa");
+    }
+    client = new Verto(JSON.parse($keyfile));
+    loadMetrics();
+  });
+
+  let order;
   let selectedPost;
   let buyAmount: number = 1;
   let sellAmount: number = 1;
@@ -260,12 +259,13 @@
   }
 
   let selectedMetric: string;
-  let metricData = getMetrics();
-  async function getMetrics() {
+  let metricData = null;
+  let lodingMetrics = false;
+  async function loadMetrics() {
     if (!selectedMetric) {
       selectedMetric = "price";
     }
-
+    lodingMetrics = true;
     let ticker = mode === "buy" ? buyToken : sellToken;
     if (!ticker) {
       ticker = (await psts)[0].ticker;
@@ -279,15 +279,16 @@
       if (data.prices.every((price) => isNaN(price))) {
         data.empty = true;
       }
-      return data;
+      metricData = data;
     } else {
       const data = await client.volume(contract);
       data.empty = false;
       if (data.volume.length === 0 && data.dates.length === 0) {
         data.empty = true;
       }
-      return data;
+      metricData = data;
     }
+    lodingMetrics = false;
   }
 </script>
 
@@ -299,44 +300,66 @@
 <div class="trade">
   <Balance />
   <div class="metrics">
-    <div class="select-container">
-      <select
-        bind:value={selectedMetric}
-        on:change={() => (metricData = getMetrics())}>
-        <option value="price">Price</option>
-        <option value="volume">Volume</option>
-      </select>
-      <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
-    </div>
-    {#await metricData}
-      <Loading />
-    {:then loadedMetrics}
-      {#if loadedMetrics.empty}
-        {#if selectedMetric === 'price'}
-          <p in:fade={{ duration: 300 }}>no price data.</p>
-        {:else}
-          <p in:fade={{ duration: 300 }}>no trading volume.</p>
-        {/if}
-      {:else}
-        <div class="graph" in:fade={{ duration: 300 }}>
-          <Line
-            data={{ labels: loadedMetrics.dates, datasets: [{ data: selectedMetric === 'volume' ? loadedMetrics.volume : loadedMetrics.prices, backgroundColor: 'transparent', borderColor: function (context) {
-                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                    gradient.addColorStop(0, '#E698E8');
-                    gradient.addColorStop(1, '#8D5FBC');
-                    return gradient;
-                  }, pointBackgroundColor: function (context) {
-                    let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                    gradient.addColorStop(0, '#E698E8');
-                    gradient.addColorStop(1, '#8D5FBC');
-                    return gradient;
-                  } }] }}
-            options={{ elements: { point: { radius: 0 } }, maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
+    <div class="metrics-menu">
+      {#if lodingMetrics && metricData !== null}
+        <div>
+          <Loading
+            style="height: 1.1em; width: 1.1em; margin-right: 1em;"
+            speed={850} />
         </div>
       {/if}
-    {/await}
+      <div class="select-container">
+        <select bind:value={selectedMetric} on:change={loadMetrics}>
+          <option value="price">Price</option>
+          <option value="volume">Volume</option>
+        </select>
+        <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
+      </div>
+    </div>
+    {#if metricData === null}
+      <Loading />
+    {:else if metricData.empty}
+      {#if selectedMetric === 'price'}
+        <p in:fade={{ duration: 300 }}>no price data.</p>
+      {:else}
+        <p in:fade={{ duration: 300 }}>no trading volume.</p>
+      {/if}
+    {:else}
+      <div class="graph" in:fade={{ duration: 300 }}>
+        <Line
+          data={{ labels: metricData.dates, datasets: [{ data: selectedMetric === 'volume' ? metricData.volume : metricData.prices, backgroundColor: 'transparent', borderColor: function (context) {
+                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                  gradient.addColorStop(0, '#E698E8');
+                  gradient.addColorStop(1, '#8D5FBC');
+                  return gradient;
+                }, pointBackgroundColor: function (context) {
+                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                  gradient.addColorStop(0, '#E698E8');
+                  gradient.addColorStop(1, '#8D5FBC');
+                  return gradient;
+                } }] }}
+          options={{ elements: { point: { radius: 0 } }, maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
+      </div>
+    {/if}
   </div>
-  <div class="trade-form" />
+  <div class="trade-form">
+    <div class="menu">
+      <button
+        class:active={mode === 'buy'}
+        on:click={() => {
+          mode = 'buy';
+          orderBook = getOrderBook();
+          loadMetrics();
+        }}>Buy</button>
+      <button
+        class:active={mode === 'sell'}
+        on:click={() => {
+          mode = 'sell';
+          orderBook = getOrderBook();
+          loadMetrics();
+        }}>Sell</button>
+    </div>
+  </div>
 </div>
 
 <style lang="sass">
@@ -355,6 +378,7 @@
     .metrics
       position: relative
       padding-top: 3em
+      margin-bottom: 3em
 
       p
         color: var(--secondary-text-color)
@@ -367,14 +391,18 @@
         position: relative
         height: 32vh
 
-      .select-container
+      .metrics-menu
         position: absolute
         top: 0
         right: 0
-        width: 7em
+        display: flex
+        align-items: center
 
-        select
-          text-transform: uppercase
+        .select-container
+          width: 7em
+
+          select
+            text-transform: uppercase
 
     .trade-form
       .menu
