@@ -30,7 +30,7 @@
   let openModal: boolean = false;
   const createCancel = async (order: string) => {
     const client = new Arweave({
-      host: "arweave.dev",
+      host: "arweave.net",
       port: 443,
       protocol: "https",
     });
@@ -70,7 +70,7 @@
   };
   const sendCancel = async () => {
     const client = new Arweave({
-      host: "arweave.dev",
+      host: "arweave.net",
       port: 443,
       protocol: "https",
     });
