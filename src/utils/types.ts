@@ -85,3 +85,8 @@ export enum DisplayTheme {
   Light = "Light",
   Dark = "Dark",
 }
+
+export enum TradeMode {
+  Buy,
+  Sell,
+}

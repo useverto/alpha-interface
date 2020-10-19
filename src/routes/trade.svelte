@@ -3,7 +3,7 @@
   import { address, keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType } from "../utils/types";
+  import { NotificationType, TradeMode } from "../utils/types";
   import Verto from "@verto/lib";
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
@@ -12,6 +12,7 @@
   import Line from "svelte-chartjs/src/Line.svelte";
   import downArrowIcon from "../assets/down-arrow.svg";
   import { fade } from "svelte/transition";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -41,7 +42,7 @@
   let buyToken: string;
   let sellToken: string;
   let sellRate: number = 1;
-  let mode: string = "buy";
+  let mode: TradeMode = TradeMode.Sell;
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
@@ -88,7 +89,7 @@
       return;
     }
 
-    if (mode === "sell") {
+    if (mode === TradeMode.Sell) {
       order = await client.createOrder(
         "sell",
         sellAmount,
@@ -121,7 +122,7 @@
       confirmModalOpened = true;
       loading = false;
       return;
-    } else if (mode === "buy") {
+    } else if (mode === TradeMode.Buy) {
       let sum = 0;
       for (const order of orders) {
         if (order.type === "Sell") {
@@ -199,7 +200,7 @@
       let res = await (await fetch(url + endpoint)).clone().json();
       let loadedPSTs = await psts;
       const token = loadedPSTs.find(
-        (pst) => pst.ticker === (mode === "sell" ? sellToken : buyToken)
+        (pst) => pst.ticker === (mode === TradeMode.Sell ? sellToken : buyToken)
       )?.id;
       let orders = res.find((orders) => orders.token === token).orders;
       orders.map((order) => {
@@ -266,7 +267,7 @@
       selectedMetric = "price";
     }
     lodingMetrics = true;
-    let ticker = mode === "buy" ? buyToken : sellToken;
+    let ticker = mode === TradeMode.Buy ? buyToken : sellToken;
     if (!ticker) {
       ticker = (await psts)[0].ticker;
     }
@@ -345,19 +346,81 @@
   <div class="trade-form">
     <div class="menu">
       <button
-        class:active={mode === 'buy'}
+        class:active={mode === TradeMode.Sell}
         on:click={() => {
-          mode = 'buy';
-          orderBook = getOrderBook();
-          loadMetrics();
-        }}>Buy</button>
-      <button
-        class:active={mode === 'sell'}
-        on:click={() => {
-          mode = 'sell';
+          mode = TradeMode.Sell;
           orderBook = getOrderBook();
           loadMetrics();
         }}>Sell</button>
+      <button
+        class:active={mode === TradeMode.Buy}
+        on:click={() => {
+          mode = TradeMode.Buy;
+          orderBook = getOrderBook();
+          loadMetrics();
+        }}>Buy</button>
+    </div>
+    <div class="content" in:fade={{ duration: 150 }}>
+      <div class="content-section">
+        <div class="input">
+          <p class="label">Amount</p>
+          {#await psts}
+            <SkeletonLoading
+              style="display: flex; width: 100%; height: 2.35em" />
+          {:then _}
+            <input
+              type="number"
+              step={1}
+              pattern="\d+"
+              bind:value={sellAmount}
+              min={1} />
+          {/await}
+        </div>
+        <div class="input select-container">
+          <p class="label">Token</p>
+          {#await psts}
+            <SkeletonLoading
+              style="display: flex; width: 100%; height: 2.35em" />
+          {:then loadedPSTs}
+            <select
+              bind:value={sellToken}
+              on:change={() => {
+                orderBook = getOrderBook();
+                loadMetrics();
+              }}>
+              {#each loadedPSTs as pst}
+                <option value={pst.ticker}>{pst.ticker}</option>
+              {/each}
+            </select>
+            <object
+              data={downArrowIcon}
+              type="image/svg+xml"
+              title="select-icon" />
+          {/await}
+        </div>
+      </div>
+      <div class="content-section">
+        <div class="input">
+          <p class="label">Rate</p>
+          {#if sellToken === undefined}
+            <SkeletonLoading
+              style="display: flex; width: 100%; height: 2.35em" />
+          {:else}
+            <input type="number" bind:value={sellRate} min={0.0000001} />
+          {/if}
+        </div>
+        <div class="input">
+          <p class="label" />
+          {#await psts}
+            <SkeletonLoading
+              style="display: flex; width: 100%; height: 2.35em" />
+          {:then _}
+            <select class="fake-select" disabled>
+              <option>{'AR/' + sellToken}</option>
+            </select>
+          {/await}
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -369,8 +432,8 @@
   @import "../styles/selects.sass"
 
   .trade
-    @include table
-    @include page
+    +table
+    +page
 
     @media screen and (max-width: 720px)
       padding-top: 2em
@@ -406,6 +469,18 @@
 
     .trade-form
       .menu
-        @include menu-style
+        +menu-style
+
+      .input
+        +input
+
+      .content
+        .content-section
+          display: flex
+          align-items: flex-end
+          justify-content: space-between
+
+        .input
+          width: 47%
 
 </style>

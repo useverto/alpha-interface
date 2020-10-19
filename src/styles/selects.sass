@@ -1,6 +1,6 @@
 $selectSidePadding: .65em
 
-@mixin select-style
+=select-style
   position: relative
   color: var(--background-color)
   background-color: var(--inverted-elements-color)
@@ -20,7 +20,7 @@ $selectSidePadding: .65em
   transition: all .3s
 
   select
-    @include select-style
+    +select-style
     width: 100%
 
   svg, img, object
@@ -36,6 +36,6 @@ $selectSidePadding: .65em
     opacity: .8
 
 .fake-select
-  @include select-style
+  +select-style
   padding-right: $selectSidePadding
   border-radius: .3em
