@@ -36,7 +36,7 @@
     let posts: TradingPost[] = [];
 
     const arweave = new Arweave({
-      host: "arweave.dev",
+      host: "arweave.net",
       port: 443,
       protocol: "https",
       timeout: 20000,
