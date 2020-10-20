@@ -87,6 +87,6 @@ export enum DisplayTheme {
 }
 
 export enum TradeMode {
-  Buy,
-  Sell,
+  Buy = "Buy",
+  Sell = "Sell",
 }
