@@ -608,6 +608,75 @@
       </div>
     {/if}
   </div>
+  <div class="orders">
+    <div class="menu">
+      <button
+        class:active={activeMenu === 'open'}
+        on:click={() => (activeMenu = 'open')}>Open Orders</button>
+      <!-- <button
+        class:active={activeMenu === 'closed'}
+        on:click={() => (activeMenu = 'closed')}>Closed Orders</button> -->
+    </div>
+    {#if activeMenu === 'open'}
+      <div
+        class="content"
+        in:fly={{ duration: 150, x: -1000, delay: 65, easing: cubicOut }}
+        out:fly={{ duration: 150, x: -1000, easing: cubicOut }}>
+        <table>
+          <tr>
+            <th>OP</th>
+            <th>Quantity</th>
+            <th>Rate</th>
+            <th>Total</th>
+          </tr>
+          {#await orderBook}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 10%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+              </tr>
+            {/each}
+          {:then loadedOrders}
+            {#if loadedOrders.length === 0}
+              <p>This trading post doesn't have any open orders!</p>
+            {/if}
+            {#each loadedOrders as trade}
+              <tr>
+                <td><span class="direction">{trade.type}</span></td>
+                <td>
+                  {trade.amnt}
+                  {trade.type === 'Sell' ? (mode === TradeMode.Sell ? sellToken : buyToken) : 'AR'}
+                </td>
+                <td>
+                  {#if trade.type === 'Sell'}
+                    {1 / trade.rate} AR
+                  {:else}
+                    ---
+                    <!-- anything here if it is buy ?? -->
+                  {/if}
+                </td>
+                <td>
+                  <!-- TOTAL ?? -->
+                  148.32145 AR
+                </td>
+              </tr>
+            {/each}
+          {/await}
+        </table>
+      </div>
+    {/if}
+    <!-- TODO: closed orders -->
+  </div>
 </div>
 
 <style lang="sass">
@@ -653,6 +722,8 @@
             text-transform: uppercase
 
     .trade-form
+      margin-bottom: 3em
+
       .menu
         +menu-style
 
@@ -701,5 +772,9 @@
 
         .input
           width: 47%
+
+    .orders
+      .menu
+        +menu-style
 
 </style>
