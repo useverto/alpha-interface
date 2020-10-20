@@ -7,6 +7,7 @@
   import Verto from "@verto/lib";
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
+  import Footer from "../components/Footer.svelte";
   import Balance from "../components/app/Balance.svelte";
   import Loading from "../components/Loading.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
@@ -659,15 +660,12 @@
                 </td>
                 <td>
                   {#if trade.type === 'Sell'}
-                    {1 / trade.rate} AR
-                  {:else}
-                    ---
-                    <!-- anything here if it is buy ?? -->
-                  {/if}
+                    {1 / trade.rate} AR/{mode === TradeMode.Sell ? sellToken : buyToken}
+                  {:else}---{/if}
                 </td>
                 <td>
-                  <!-- TOTAL ?? -->
-                  148.32145 AR
+                  {trade.received}
+                  {trade.type === 'Sell' ? 'AR' : mode === TradeMode.Sell ? sellToken : buyToken}
                 </td>
               </tr>
             {/each}
@@ -678,6 +676,7 @@
     <!-- TODO: closed orders -->
   </div>
 </div>
+<Footer />
 
 <style lang="sass">
 

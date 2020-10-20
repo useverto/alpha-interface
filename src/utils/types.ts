@@ -73,6 +73,7 @@ export interface TokenInstance {
   addr: string;
   type: string;
   createdAt: Date;
+  received: number;
 }
 
 export enum Theme {
