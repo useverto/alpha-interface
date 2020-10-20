@@ -503,31 +503,23 @@
               <SkeletonLoading
                 style="display: flex; width: 100%; height: 2.35em" />
             {:then _}
-              <input
-                type="number"
-                step={1}
-                pattern="\d+"
-                bind:value={buyAmount}
-                min={0.000001} />
+              <div class="input-wrapper">
+                <input
+                  type="number"
+                  step={1}
+                  pattern="\d+"
+                  bind:value={buyAmount}
+                  min={0.000001} />
+                <select
+                  class="fake-select"
+                  style="opacity: 1 !important"
+                  disabled>
+                  <option>AR</option>
+                </select>
+              </div>
             {/await}
           </div>
           <div class="input select-container" style="opacity: 1 !important">
-            <p class="label" />
-            {#await psts}
-              <SkeletonLoading
-                style="display: flex; width: 100%; height: 2.35em" />
-            {:then _}
-              <select
-                class="fake-select"
-                style="opacity: 1 !important"
-                disabled>
-                <option>AR</option>
-              </select>
-            {/await}
-          </div>
-        </div>
-        <div class="content-section">
-          <div class="input select-container">
             <p class="label">Receive</p>
             {#await psts}
               <SkeletonLoading

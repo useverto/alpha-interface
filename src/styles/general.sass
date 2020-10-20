@@ -77,7 +77,7 @@ $mobileSidePadding: 10vw
     display: block
     color: var(--primary-text-color)
     border: $border-weight solid var(--inverted-elements-color)
-    border-radius: .2em
+    border-radius: .26em
     transition: all .3s
 
   input, .fake-select
@@ -99,10 +99,10 @@ $mobileSidePadding: 10vw
       border-radius: 0
       width: calc(70% - #{$input-side-padding * 2})
 
-    .select-container
+    .select-container, .fake-select
       border-radius: 0
       border: none
-      width: calc(30% - #{$input-side-padding * 2})
+      width: 30%
 
   &.select-container
     select
