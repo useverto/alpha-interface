@@ -173,7 +173,7 @@
     let psts: { id: string; name: string; ticker: string }[] = [];
 
     const client = new Arweave({
-      host: "arweave.dev",
+      host: "arweave.net",
       port: 443,
       protocol: "https",
       timeout: 20000,
