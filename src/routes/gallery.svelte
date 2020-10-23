@@ -202,7 +202,7 @@
         display: block
         width: 100%
         text-align: right
-        margin-bottom: 15px;
+        margin-bottom: 15px
 
         p
           font-size: 1.2em
