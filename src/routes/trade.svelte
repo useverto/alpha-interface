@@ -16,6 +16,7 @@
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Button from "../components/Button.svelte";
   import { cubicOut } from "svelte/easing";
+  import Modal from "../components/Modal.svelte";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -49,6 +50,8 @@
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
+  let tokenModalOpened: boolean = false;
+  let newTokenContract: string = "";
 
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
@@ -294,6 +297,20 @@
     }
     lodingMetrics = false;
   }
+
+  $: {
+    if (sellToken === "custom-token" || buyToken === "custom-token") {
+      tokenModalOpened = true;
+      // don't await if it is already resolved
+      psts.then((loadedPsts) => {
+        console.log(loadedPsts);
+      });
+    }
+  }
+
+  function addCustomToken() {
+    console.log(newTokenContract);
+  }
 </script>
 
 <svelte:head>
@@ -399,6 +416,7 @@
                   {#each loadedPSTs as pst}
                     <option value={pst.ticker}>{pst.ticker}</option>
                   {/each}
+                  <option value="custom-token">Custom token...</option>
                 </select>
                 <object
                   data={downArrowIcon}
@@ -536,6 +554,7 @@
                   {#each loadedPSTs as pst}
                     <option value={pst.ticker}>{pst.ticker}</option>
                   {/each}
+                  <option value="custom-token">Custom token...</option>
                 </select>
                 <object
                   data={downArrowIcon}
@@ -677,6 +696,17 @@
   </div>
 </div>
 <Footer />
+<Modal
+  bind:opened={tokenModalOpened}
+  confirmation={true}
+  onConfirm={addCustomToken}>
+  <h3 style="text-align: center;">Custom Token Contract ID</h3>
+  <input
+    type="text"
+    bind:value={newTokenContract}
+    class="light contract-id"
+    placeholder="Token Contract ID" />
+</Modal>
 
 <style lang="sass">
 
