@@ -726,6 +726,9 @@
       .menu
         +menu-style
 
+        @media screen and (max-width: 720px)
+          padding-top: 0
+
       .input
         +input
 
@@ -740,14 +743,25 @@
               transform: translateY()
 
           &.interact-area
+            @media screen and (max-width: 720px)
+              display: block
+              align-items: none
+              justify-content: none
+
             .input.select-container
               width: 66%
+
+              @media screen and (max-width: 720px)
+                width: auto
 
               select
                 padding-right: 1.2em
 
             .button-container
               width: 32%
+
+              @media screen and (max-width: 720px)
+                width: auto
 
               p
                 font-size: 0.95em
@@ -772,8 +786,18 @@
         .input
           width: 47%
 
+          @media screen and (max-width: 720px)
+            width: 48.5%
+
     .orders
       .menu
         +menu-style
+
+        @media screen and (max-width: 720px)
+          padding-top: 0
+
+      .content
+        p
+          color: var(--secondary-text-color)
 
 </style>
