@@ -224,9 +224,9 @@
       .menu
         position: relative
         display: flex
+        justify-content: space-between
 
         @media screen and (max-width: 720px)
-          justify-content: space-between
           align-items: middle
           margin-bottom: 1em
 
