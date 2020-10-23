@@ -84,6 +84,9 @@
 
       &.wallet
         text-transform: none
+        
+        @media screen and (max-width: 720px)
+          overflow-wrap: anywhere
 
     h1.total-balance
       font-size: 2.3em
