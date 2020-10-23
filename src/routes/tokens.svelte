@@ -237,6 +237,7 @@
 
             @media screen and (max-width: 1500px)
               font-size: .82em
+              overflow-wrap: anywhere
 
           span
             text-transform: uppercase

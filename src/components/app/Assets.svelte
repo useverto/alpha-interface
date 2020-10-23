@@ -97,6 +97,7 @@
       <div in:fade={{ duration: 100 }}>
         {#if !loading}
           <Button
+            style="min-width: 0; padding-left: .7em; padding-right: .7em;"
             click={async () => {
               loading = true;
               const loadedBalances = await balances;
@@ -224,11 +225,20 @@
         position: relative
         display: flex
 
-        @media screen and (min-width: 720px)
+        @media screen and (max-width: 720px)
           justify-content: space-between
+          align-items: middle
+          margin-bottom: 1em
+
+        h1.title
+          @media screen and (max-width: 720px)
+            margin: 0
 
         div
           padding-top: 1.8em
+
+          @media screen and (max-width: 720px)
+            padding-top: 0
 
       a.view-all
         display: block

@@ -129,6 +129,10 @@
                 <span>Balance</span>{post.balance}<span class="ar">ar</span>
               </p>
               <p><span>Stake</span>{post.stake}<span class="ar">VRT</span></p>
+              <!-- reputation for mobile devices -->
+              <p class="mobile-reputation">
+                <span>Reputation</span>{post.reputation}
+              </p>
             </div>
           </div>
           <h1 class="reputation">{post.reputation}</h1>
@@ -237,6 +241,9 @@
           @media screen and (max-width: 1500px)
             font-size: 2.05em
 
+          @media screen and (max-width: 720px)
+            display: none
+
         .post-info
           h1
             font-size: 1.5em
@@ -247,18 +254,35 @@
 
             @media screen and (max-width: 1500px)
               font-size: 1.4em
+              overflow-wrap: anywhere
+
+              &:last-child
+                display: none
 
           .other-info
             display: flex
             align-items: center
+
+            @media screen and (max-width: 720px)
+              display: block
 
             p
               margin: 0
               font-size: 1.05em
               color: #fff
 
+              &.mobile-reputation
+                display: none
+
               @media screen and (max-width: 1500px)
                 font-size: .95em
+
+              @media screen and (max-width: 720px)
+                &.mobile-reputation
+                  display: block
+
+                &:not(:last-child)
+                  margin-bottom: .2em
 
               &:first-child
                 margin-right: 2.5em
