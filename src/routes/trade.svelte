@@ -303,17 +303,27 @@
       tokenModalOpened = true;
       // don't await if it is already resolved
       psts.then((loadedPsts) => {
-        console.log(loadedPsts);
+        if (sellToken === "custom-token") sellToken = loadedPsts[0].ticker;
+        if (buyToken === "custom-token") buyToken = loadedPsts[0].ticker;
       });
     }
   }
 
   function addCustomToken() {
     const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
-    cache.push(newTokenContract);
-    localStorage.setItem("customTokens", JSON.stringify(cache));
-    psts = getTradingPostSupportedTokens();
-    tokenModalOpened = false;
+    psts.then((loadedPsts) => {
+      if (
+        loadedPsts.find((token) => token.id === newTokenContract) ||
+        cache.find((token) => token === newTokenContract)
+      ) {
+        // token is already listed
+      } else {
+        cache.push(newTokenContract);
+        localStorage.setItem("customTokens", JSON.stringify(cache));
+        psts = getTradingPostSupportedTokens();
+      }
+      newTokenContract = "";
+    });
   }
 </script>
 
