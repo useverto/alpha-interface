@@ -309,7 +309,11 @@
   }
 
   function addCustomToken() {
-    console.log(newTokenContract);
+    const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
+    cache.push(newTokenContract);
+    localStorage.setItem("customTokens", JSON.stringify(cache));
+    psts = getTradingPostSupportedTokens();
+    tokenModalOpened = false;
   }
 </script>
 
