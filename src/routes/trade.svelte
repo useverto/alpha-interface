@@ -847,6 +847,6 @@
 
       .content
         p
-          color: var(--secondary-text-color)
+          color: var(--primary-text-color)
 
 </style>
