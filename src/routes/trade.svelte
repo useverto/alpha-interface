@@ -317,43 +317,8 @@
   }
 
   async function addCustomToken() {
-    const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
-    const loadedTokens = await psts;
-    if (
-      loadedTokens.find((token) => token.id === newTokenContract) ||
-      cache.find((token) => token === newTokenContract)
-    ) {
-      // token is already listed
-    } else {
-      const arweave = new Arweave({
-        host: "arweave.net",
-        port: 443,
-        protocol: "https",
-      });
-
-      const tags = {
-        Exchange: "Verto",
-        Type: "Token",
-        Contract: newTokenContract,
-      };
-      const tx = await arweave.createTransaction(
-        {
-          target: exchangeWallet,
-          data: Math.random().toString().slice(-4),
-        },
-        JSON.parse($keyfile)
-      );
-      for (const [key, value] of Object.entries(tags)) {
-        tx.addTag(key, value);
-      }
-
-      await arweave.transactions.sign(tx, JSON.parse($keyfile));
-      // await arweave.transactions.post(tx);
-
-      cache.push(newTokenContract);
-      localStorage.setItem("customTokens", JSON.stringify(cache));
-      psts = getTradingPostSupportedTokens();
-    }
+    await client.saveToken(newTokenContract);
+    psts = getTradingPostSupportedTokens();
     newTokenContract = "";
   }
 </script>

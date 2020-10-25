@@ -2,6 +2,7 @@
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import Verto from "@verto/lib";
+  import { onMount } from "svelte";
   import Arweave from "arweave";
   import { exchangeWallet } from "../utils/constants";
   import NavBar from "../components/NavBar.svelte";
@@ -16,47 +17,20 @@
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
 
-  const client = new Verto();
+  let client = new Verto();
+  onMount(async () => {
+    client = new Verto(JSON.parse($keyfile));
+  });
   let tokens: Promise<
     { id: string; name: string; ticker: string }[]
-  > = client.getTokens();
+  > = client.popularTokens();
 
   let addTokenModalOpened: boolean = false;
   let newToken: string;
 
   async function addToken() {
-    const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
-    const loadedTokens = await tokens;
-    if (!loadedTokens.find((token) => token.id === newToken)) {
-      const arweave = new Arweave({
-        host: "arweave.net",
-        port: 443,
-        protocol: "https",
-      });
-
-      const tags = {
-        Exchange: "Verto",
-        Type: "Token",
-        Contract: newToken,
-      };
-      const tx = await arweave.createTransaction(
-        {
-          target: exchangeWallet,
-          data: Math.random().toString().slice(-4),
-        },
-        JSON.parse($keyfile)
-      );
-      for (const [key, value] of Object.entries(tags)) {
-        tx.addTag(key, value);
-      }
-
-      await arweave.transactions.sign(tx, JSON.parse($keyfile));
-      // await arweave.transactions.post(tx);
-
-      cache.push(newToken);
-      localStorage.setItem("customTokens", JSON.stringify(cache));
-      tokens = client.getTokens();
-    }
+    await client.saveToken(newToken);
+    tokens = client.popularTokens();
     newToken = "";
   }
 </script>

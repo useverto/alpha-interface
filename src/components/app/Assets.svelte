@@ -1,6 +1,7 @@
 <script lang="ts">
   import Verto from "@verto/lib";
-  import { address, keyfile } from "../../stores/keyfileStore";
+  import { onMount } from "svelte";
+  import { keyfile, address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import { notification } from "../../stores/notificationStore";
   import { NotificationType } from "../../utils/types";
@@ -10,10 +11,12 @@
   import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import addIcon from "../../assets/add.svg";
-  import type { Token } from "../../utils/types";
-  import { exchangeWallet } from "../../utils/constants";
 
-  const client = new Verto();
+  let client = new Verto();
+  onMount(async () => {
+    client = new Verto(JSON.parse($keyfile));
+  });
+
   let balances: Promise<
     { id: string; name: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
@@ -28,7 +31,6 @@
 
   let addTokenModalOpened: boolean = false;
   let newToken: string;
-  let tokens: Promise<Token[]> = client.getTokens();
 
   const transfer = async () => {
     const re = /[a-z0-9_-]{43}/i;
@@ -97,39 +99,8 @@
   }
 
   async function addToken() {
-    const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
-    const loadedTokens = await tokens;
-    if (!loadedTokens.find((token) => token.id === newToken)) {
-      const arweave = new Arweave({
-        host: "arweave.net",
-        port: 443,
-        protocol: "https",
-      });
-
-      const tags = {
-        Exchange: "Verto",
-        Type: "Token",
-        Contract: newToken,
-      };
-      const tx = await arweave.createTransaction(
-        {
-          target: exchangeWallet,
-          data: Math.random().toString().slice(-4),
-        },
-        JSON.parse($keyfile)
-      );
-      for (const [key, value] of Object.entries(tags)) {
-        tx.addTag(key, value);
-      }
-
-      await arweave.transactions.sign(tx, JSON.parse($keyfile));
-      // await arweave.transactions.post(tx);
-
-      cache.push(newToken);
-      localStorage.setItem("customTokens", JSON.stringify(cache));
-      tokens = client.getTokens();
-      balances = client.getAssets($address);
-    }
+    await client.saveToken(newToken);
+    balances = client.getAssets($address);
     newToken = "";
   }
 </script>
