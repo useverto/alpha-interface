@@ -19,35 +19,8 @@
 
   const client = new Verto();
   let supportedTokens: Promise<
-    { id: string; name: string; ticker: string; volume: number }[]
-  > = getTokens();
-
-  async function getTokens() {
-    const tokens: {
-      id: string;
-      name: string;
-      ticker: string;
-      volume: number;
-    }[] = [];
-
-    for (const token of await client.getTokens()) {
-      const volume = (await client.volume(token.id)).volume.reduce(
-        (a, b) => a + b,
-        0
-      );
-
-      tokens.push({
-        ...token,
-        volume,
-      });
-    }
-
-    tokens.sort((a, b) => {
-      return b.volume - a.volume;
-    });
-
-    return tokens;
-  }
+    { id: string; name: string; ticker: string }[]
+  > = client.getTokens();
 
   let addTokenModalOpened: boolean = false;
   let newContractID: string;
@@ -60,7 +33,7 @@
     if (newContractID === "" || newContractID === undefined) cancelClose();
     else {
       const client = new Arweave({
-        host: "arweave.dev",
+        host: "arweave.net",
         port: 443,
         protocol: "https",
         timeout: 20000,
@@ -264,6 +237,7 @@
 
             @media screen and (max-width: 1500px)
               font-size: .82em
+              overflow-wrap: anywhere
 
           span
             text-transform: uppercase

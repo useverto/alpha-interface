@@ -91,4 +91,4 @@
     Let's chat!
   </p>
 </About>
-<Footer />
+<Footer scrollTransition={true} />

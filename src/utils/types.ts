@@ -73,6 +73,7 @@ export interface TokenInstance {
   addr: string;
   type: string;
   createdAt: Date;
+  received: number;
 }
 
 export enum Theme {
@@ -84,4 +85,9 @@ export enum Theme {
 export enum DisplayTheme {
   Light = "Light",
   Dark = "Dark",
+}
+
+export enum TradeMode {
+  Buy = "Buy",
+  Sell = "Sell",
 }

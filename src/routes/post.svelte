@@ -56,7 +56,7 @@
     if (!process.browser) return "";
 
     const client = new Arweave({
-      host: "arweave.dev",
+      host: "arweave.net",
       port: 443,
       protocol: "https",
       timeout: 20000,
@@ -362,54 +362,6 @@
           opacity: .7
 
       .menu
-        position: relative
-        display: flex
-        margin-bottom: 1.5em
-
-        @media screen and (max-width: 720px)
-          justify-content: space-between
-          padding-top: 4em
-
-        button
-          position: relative
-          padding: .4em 1.8em
-          font-family: "JetBrainsMono", monospace
-          text-transform: uppercase
-          font-weight: 600
-          color: var(--primary-text-color)
-          background-color: transparent
-          border: none
-          font-size: 1.15em
-          outline: none
-          text-align: center
-          cursor: pointer
-
-          @media screen and (max-width: 720px)
-            padding: .18em .14em
-            font-size: .75em
-
-          &::after
-            content: ""
-            position: absolute
-            bottom: 0
-            left: 0
-            width: 100%
-            height: 0
-            opacity: 0
-            background-color: var(--inverted-elements-color)
-            transition: all .2s
-
-          &.active::after
-            opacity: 1
-            height: 3px
-
-        .trade
-          position: absolute
-          right: 0
-          top: 0
-
-          @media screen and (max-width: 720px)
-            right: unset
-            left: 0
+        @include menu-style
 
 </style>
