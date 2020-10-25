@@ -110,9 +110,6 @@
   {/if}
 </div>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .LatestTrades
@@ -141,10 +138,12 @@
           font-weight: 600
           padding-bottom: 1.15em
           text-decoration: underline
+          color: var(--primary-text-color)
 
         td
           width: 20%
           padding-bottom: .7em
+          color: var(--primary-text-color)
 
           &:first-child
             width: 70%

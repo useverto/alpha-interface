@@ -27,12 +27,8 @@ const onwarn = (warning, onwarn) => {
       warning.message.match("Can't resolve original location of error."))
   )
     return;
-  // remove the arweave warning. We can't do anything about that
-  if (
-    warning.code === "CIRCULAR_DEPENDENCY" &&
-    warning.importer.includes("arweave")
-  )
-    return;
+  // remove the circular dependency warning. We can't do anything about that
+  if (warning.code === "CIRCULAR_DEPENDENCY") return;
   // remove the no-onchange warning. In our case, on:change is needed, and on:blur does not work as intended
   if (
     warning.code === "PLUGIN_WARNING" &&

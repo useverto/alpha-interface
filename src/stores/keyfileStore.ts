@@ -81,7 +81,4 @@ export const loggedIn = derived(
 // this removes the keyfile from local stroage
 export function logOut() {
   keyfile.reset();
-  theme.set(Theme.Light);
-  // TODO
-  // localStorage.clear();
 }

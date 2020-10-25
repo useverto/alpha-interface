@@ -58,7 +58,7 @@
     Decisions for Verto are made by our very own Profit-Sharing DAO, which means
     that anyone can have a say in the direction of our platform.
   </p>
-  <p class="about-desciption">
+  <p class="about-description">
     You can also easily host your own Trading Post, while accruing PSTs for
     doing so. See our <a href="https://github.com/useverto/trading-post">Trading
       Post Repository</a> for documentation.
