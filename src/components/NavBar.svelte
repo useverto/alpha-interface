@@ -1,6 +1,6 @@
 <script lang="typescript">
   import { fade } from "svelte/transition";
-  import { loggedIn, logOut, profiles } from "../stores/keyfileStore";
+  import { address, loggedIn, logOut, profiles } from "../stores/keyfileStore";
   import { notification } from "../stores/notificationStore";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
@@ -10,10 +10,16 @@
   import Modal from "../components/Modal.svelte";
   import { NotificationType, DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
+  import downArrow from "../assets/down-arrow.svg";
+  import closeIcon from "../assets/close.svg";
+  import addIcon from "../assets/add.svg";
 
   export let hero: boolean = false;
+
   let y: number;
   let confirmModalOpened: boolean = false;
+  let showProfileSwitcher: boolean = false;
+  let navHeight: number = 0;
 
   function _logOut(e?: MouseEvent) {
     if (!process.browser) return;
@@ -35,6 +41,10 @@
     e.preventDefault();
     confirmModalOpened = true;
   }
+
+  function switchKeyfile(address: string) {
+    console.log(address);
+  }
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -42,7 +52,9 @@
   class="NavBar {$loggedIn ? '' : 'logged-out'}"
   class:scrolled={y > 20}
   class:hero
-  in:fade={{ duration: 750 }}>
+  bind:clientHeight={navHeight}
+  in:fade={{ duration: 750 }}
+  style="--profiles-color: {$displayTheme === DisplayTheme.Dark ? 'unset' : 'invert(45%)'};">
   <a href={$loggedIn ? '/app' : '/'} class="title">
     <img
       src={$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}
@@ -54,11 +66,47 @@
       <a href="/trade">Trade</a>
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>
-      <a href="/" on:click={_logOut}>Sign Out</a>
+      <!--<a href="/" on:click={_logOut}>Sign Out</a>-->
+      <a
+        href="#"
+        class="profiles"
+        on:mouseover={() => (showProfileSwitcher = true)}>
+        Profiles <object data={downArrow} type="image/svg+xml" title="down-arrow" />
+      </a>
     {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
   </div>
 </div>
-<div class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}" />
+<div
+  class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"
+  style="height: {navHeight}px" />
+{#if showProfileSwitcher}
+  <div
+    class="profile-switcher"
+    on:mouseleave={() => (showProfileSwitcher = false)}
+    transition:fade={{ duration: 240 }}
+    style="top: {navHeight + 10}px; --profile-border: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .2)' : 'rgba(0, 0, 0, .075)'};">
+    {#each $profiles as profile}
+      <div class="profile">
+        <button
+          on:click={() => switchKeyfile(profile.address)}
+          class="address"
+          title={profile.address}>{profile.address}</button>
+        {#if $profiles.length > 1}
+          <button class="remove"><object
+              data={closeIcon}
+              type="image/svg+xml"
+              title="down-arrow" /></button>
+        {/if}
+      </div>
+    {/each}
+    <button class="action">
+      <object data={addIcon} type="image/svg+xml" title="nav-icon" /> Add keyfile
+    </button>
+    <button
+      class="action sign-out"
+      title="Remove all keyfiles and sing out">Sign Out</button>
+  </div>
+{/if}
 <div class="mobile-nav">
   {#if $loggedIn}
     <a href="/trade"><object
@@ -87,9 +135,6 @@
   <p style="text-align: center">Are you sure you want to log out?</p>
 </Modal>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .NavBar
@@ -157,6 +202,18 @@
         font-weight: 400
         transition: all .3s
 
+        &.profiles
+          position: relative
+          display: flex
+          align-items: center
+          justify-content: space-between
+
+          object
+            filter: var(--profiles-color)
+            pointer-events: none
+            height: .45em
+            margin-left: .45em
+
         &::before
           content: "/"
           color: #B075CD
@@ -222,6 +279,92 @@
     @media screen and (max-width: 720px)
       &:not(.logged-out)
         display: none
+
+  .profile-switcher
+    position: fixed
+    right: 2em
+    background-color: var(--nav-scrolled)
+    backdrop-filter: blur(5px)
+    -webkit-backdrop-filter: blur(5px)
+    border-radius: 6px
+    z-index: 1000
+    border: 1px solid var(--profile-border)
+    overflow: hidden
+
+    .profile
+      position: relative
+      display: flex
+      justify-content: space-between
+      align-items: center
+      padding: .7em .28em
+      transition: all .3s
+
+      &::after
+        content: ''
+        position: absolute
+        top: 0
+        left: 0
+        right: 0
+        bottom: 0
+        background-color: var(--background-color)
+        opacity: 0
+        z-index: -1
+        transition: all .3s
+
+      &:hover::after
+        opacity: .55
+
+      button
+        background-color: transparent
+        outline: none
+        border: none
+        cursor: pointer
+        transition: all .3s
+
+        &:hover
+          opacity: .75
+
+        &.address
+          color: var(--primary-text-color)
+          font-size: .9em
+          width: 22vw
+          overflow: hidden
+          text-overflow: ellipsis
+          white-space: nowrap
+
+        &.remove
+          margin-left: .8em
+
+          object
+            filter: var(--profiles-color)
+            pointer-events: none
+
+    button.action
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 100%
+      text-align: center
+      border: none
+      outline: none
+      background-color: transparent
+      color: var(--primary-text-color)
+      cursor: pointer
+      font-size: 1em
+      padding: .35em 0
+      transition: all .3s
+
+      &.sign-out
+        border-top: 1px solid var(--profile-border)
+
+      &:hover
+        background-color: var(--nav-scrolled)
+
+      object
+        filter: var(--profiles-color)
+        pointer-events: none
+        margin-right: .38em
+        height: .73em
 
   .mobile-nav
     display: none

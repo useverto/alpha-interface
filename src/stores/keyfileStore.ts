@@ -1,6 +1,6 @@
 import { writable, derived, get } from "svelte/store";
 import Arweave from "arweave";
-import type { IProfiles } from "../utils/types";
+import type { IProfile } from "../utils/types";
 
 // We store the arweave keyfile here.
 // It gets saved to the local stroage of the browser
@@ -44,7 +44,7 @@ function createCustomStore(storeName) {
 
 // create store for all keyfiles
 function createProfilesStore() {
-  const defaultVal: IProfiles[] = [],
+  const defaultVal: IProfile[] = [],
     { subscribe, set, update } = writable(defaultVal);
 
   if (
@@ -57,7 +57,7 @@ function createProfilesStore() {
   }
 
   // migrate the old system
-  update((currentProfiles: IProfiles[]) => {
+  update((currentProfiles: IProfile[]) => {
     if (
       currentProfiles.filter((prf) => prf.address === get(address)).length !== 0
     )
@@ -75,7 +75,7 @@ function createProfilesStore() {
   return {
     subscribe,
     removeKeyfile: (removeAddress: string) =>
-      update((currentProfiles: IProfiles[]) => {
+      update((currentProfiles: IProfile[]) => {
         // @ts-ignore
         if (!process.browser) return;
 
@@ -90,7 +90,7 @@ function createProfilesStore() {
       // @ts-ignore
       if (!process.browser) return;
 
-      update((currentProfiles: IProfiles[]) => {
+      update((currentProfiles: IProfile[]) => {
         currentProfiles.push({ address: addAddress, keyfile: addKeyFile });
         localStorage.setItem("profiles", JSON.stringify(currentProfiles));
 

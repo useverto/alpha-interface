@@ -87,7 +87,7 @@ export enum DisplayTheme {
   Dark = "Dark",
 }
 
-export interface IProfiles {
+export interface IProfile {
   address: string;
   keyfile: string;
 }
