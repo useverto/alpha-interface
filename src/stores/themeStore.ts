@@ -1,7 +1,5 @@
-import { writable, derived, get } from "svelte/store";
+import { writable, derived } from "svelte/store";
 import { Theme, DisplayTheme } from "../utils/types";
-import { saveSetting, getSetting } from "src/utils/settings";
-import { address } from "./keyfileStore";
 
 export const theme = createThemeStore();
 
@@ -9,21 +7,17 @@ function createThemeStore() {
   const { set, subscribe } = writable(Theme.Light),
     setTheme = (themeValue: Theme) => {
       set(themeValue);
-      // @ts-ignore
-      if (process.browser) saveSetting("theme", themeValue, get(address));
-    },
-    load = () => {
-      // @ts-ignore
-      if (process.browser && getSetting("theme", get(address)))
-        set(Theme[getSetting("theme", get(address))]);
+      localStorage.setItem("theme", themeValue);
     };
 
-  load();
+  // @ts-ignore
+  if (process.browser && localStorage.getItem("theme")) {
+    set(Theme[localStorage.getItem("theme")]);
+  }
 
   return {
     set: setTheme,
     subscribe,
-    reload: load,
   };
 }
 
