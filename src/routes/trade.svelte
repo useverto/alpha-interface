@@ -208,13 +208,18 @@
       const token = loadedPSTs.find(
         (pst) => pst.ticker === (mode === TradeMode.Sell ? sellToken : buyToken)
       )?.id;
-      let orders = res.find((orders) => orders.token === token).orders;
-      orders.map((order) => {
-        if (order.type === "Sell") {
-          order.amnt = Math.floor(order.amnt);
-        }
-      });
-      return orders.sort((a, b) => b.rate - a.rate);
+      let table = res.find((orders) => orders.token === token);
+      if (table) {
+        let orders = table.orders;
+        orders.map((order) => {
+          if (order.type === "Sell") {
+            order.amnt = Math.floor(order.amnt);
+          }
+        });
+        return orders.sort((a, b) => b.rate - a.rate);
+      } else {
+        return [];
+      }
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
