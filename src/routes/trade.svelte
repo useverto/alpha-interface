@@ -475,19 +475,23 @@
                   disabled>
                   <option>{feePercent}%</option>
                 </select>
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 46%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
+                {#if !loading}
+                  <Button
+                    click={exchange}
+                    style={`
+                      font-family: 'JetBrainsMono', monospace; 
+                      text-transform: uppercase; 
+                      width: 46%;
+                      display: block;
+                      padding-left: 0;
+                      padding-right: 0;
+                      height: 100%;
+                    `}>
+                    {mode}
+                  </Button>
+                {:else}
+                  <Loading />
+                {/if}
               {/await}
             </div>
           </div>
@@ -590,19 +594,23 @@
                   disabled>
                   <option>{feePercent}%</option>
                 </select>
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 46%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
+                {#if !loading}
+                  <Button
+                    click={exchange}
+                    style={`
+                      font-family: 'JetBrainsMono', monospace; 
+                      text-transform: uppercase; 
+                      width: 46%;
+                      display: block;
+                      padding-left: 0;
+                      padding-right: 0;
+                      height: 100%;
+                    `}>
+                    {mode}
+                  </Button>
+                {:else}
+                  <Loading />
+                {/if}
               {/await}
             </div>
           </div>
