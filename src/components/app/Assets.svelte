@@ -11,6 +11,7 @@
   import { fade } from "svelte/transition";
   import addIcon from "../../assets/add.svg";
   import type { Token } from "../../utils/types";
+  import { exchangeWallet } from "../../utils/constants";
 
   const client = new Verto();
   let balances: Promise<
@@ -25,9 +26,9 @@
   let max: number;
   let target: string;
 
-  let addCustomTokenModal: boolean = false;
-  let newTokenContract: string = "";
-  let psts: Promise<Token[]> = client.getTokens();
+  let addTokenModalOpened: boolean = false;
+  let newToken: string;
+  let tokens: Promise<Token[]> = client.getTokens();
 
   const transfer = async () => {
     const re = /[a-z0-9_-]{43}/i;
@@ -95,18 +96,41 @@
     if (amnt % 1 !== 0) amnt = Math.round(amnt);
   }
 
-  // add a custom token to assets
-  function addCustomToken() {
+  async function addToken() {
     const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
-    psts.then((loadedPsts) => {
-      if (!loadedPsts.find((token) => token.id === newTokenContract)) {
-        cache.push(newTokenContract);
-        localStorage.setItem("customTokens", JSON.stringify(cache));
-        psts = client.getTokens();
-        balances = client.getAssets($address);
+    const loadedTokens = await tokens;
+    if (!loadedTokens.find((token) => token.id === newToken)) {
+      const arweave = new Arweave({
+        host: "arweave.net",
+        port: 443,
+        protocol: "https",
+      });
+
+      const tags = {
+        Exchange: "Verto",
+        Type: "Token",
+        Contract: newToken,
+      };
+      const tx = await arweave.createTransaction(
+        {
+          target: exchangeWallet,
+          data: Math.random().toString().slice(-4),
+        },
+        JSON.parse($keyfile)
+      );
+      for (const [key, value] of Object.entries(tags)) {
+        tx.addTag(key, value);
       }
-      newTokenContract = "";
-    });
+
+      await arweave.transactions.sign(tx, JSON.parse($keyfile));
+      // await arweave.transactions.post(tx);
+
+      cache.push(newToken);
+      localStorage.setItem("customTokens", JSON.stringify(cache));
+      tokens = client.getTokens();
+      balances = client.getAssets($address);
+    }
+    newToken = "";
   }
 </script>
 
@@ -119,7 +143,7 @@
           <img
             src={addIcon}
             alt="add"
-            on:click={() => (addCustomTokenModal = true)}
+            on:click={() => (addTokenModalOpened = true)}
             class="add-token" />
           <Button
             style="min-width: 0; padding-left: .7em; padding-right: .7em;"
@@ -170,7 +194,7 @@
         <p in:fade={{ duration: 300 }}>
           You don't have any tokens! Do you want to <a
             class="want-to-add"
-            on:click={() => (addCustomTokenModal = true)}>add a custom one</a>?
+            on:click={() => (addTokenModalOpened = true)}>add a custom one</a>?
         </p>
       {:else}
         <table in:fade={{ duration: 300 }}>
@@ -227,13 +251,13 @@
   {/await}
 </Modal>
 <Modal
-  bind:opened={addCustomTokenModal}
+  bind:opened={addTokenModalOpened}
   confirmation={true}
-  onConfirm={addCustomToken}>
+  onConfirm={addToken}>
   <h3 style="text-align: center;">Custom Token Contract ID</h3>
   <input
     type="text"
-    bind:value={newTokenContract}
+    bind:value={newToken}
     class="light contract-id"
     placeholder="Token Contract ID" />
 </Modal>
