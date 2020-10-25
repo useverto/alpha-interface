@@ -7,15 +7,18 @@ export const watchlist = createWatchListStore();
 
 function createWatchListStore() {
   const watchedPsts: IWatchlistElement[] = [],
-    { set, subscribe, update } = writable(watchedPsts);
+    { set, subscribe, update } = writable(watchedPsts),
+    load = () => {
+      if (
+        // @ts-ignore
+        process.browser &&
+        getSetting("watchlist", get(address))
+      ) {
+        set(getSetting("watchlist", get(address)));
+      }
+    };
 
-  if (
-    // @ts-ignore
-    process.browser &&
-    getSetting("watchlist", get(address))
-  ) {
-    set(getSetting("watchlist", get(address)));
-  }
+  load();
 
   return {
     addPst({ id, name, ticker, period }: IWatchlistElement) {
@@ -35,5 +38,6 @@ function createWatchListStore() {
       });
     },
     subscribe,
+    reload: load,
   };
 }

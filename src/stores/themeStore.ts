@@ -11,15 +11,19 @@ function createThemeStore() {
       set(themeValue);
       // @ts-ignore
       if (process.browser) saveSetting("theme", themeValue, get(address));
+    },
+    load = () => {
+      // @ts-ignore
+      if (process.browser && getSetting("theme", get(address)))
+        set(Theme[getSetting("theme", get(address))]);
     };
 
-  // @ts-ignore
-  if (process.browser && getSetting("theme", get(address)))
-    set(Theme[getSetting("theme", get(address))]);
+  load();
 
   return {
     set: setTheme,
     subscribe,
+    reload: load,
   };
 }
 

@@ -9,6 +9,8 @@
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
+  import { theme } from "../stores/themeStore";
+  import { watchlist } from "../stores/watchlistStore";
 
   let isDragOver = false;
   let files: File[] = [];
@@ -53,6 +55,10 @@
         if (outTxs.length > 0) {
           keyfile.set(reader.result);
           address.set(_address);
+          // @ts-ignore
+          theme.reload();
+          // @ts-ignore
+          watchlist.reload();
           goto("/app");
           notification.notify(
             "Welcome",
