@@ -92,11 +92,8 @@
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>
       <!--<a href="/" on:click={_logOut}>Sign Out</a>-->
-      <a
-        href="#"
-        class="profiles"
-        on:mouseover={() => (showProfileSwitcher = true)}>
-        Profiles <object data={downArrow} type="image/svg+xml" title="down-arrow" />
+      <a class="profiles" on:mouseover={() => (showProfileSwitcher = true)}>
+        Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
       </a>
     {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
   </div>
