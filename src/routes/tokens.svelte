@@ -1,7 +1,9 @@
 <script lang="typescript">
-  import { loggedIn } from "../stores/keyfileStore";
+  import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import Verto from "@verto/lib";
+  import Arweave from "arweave";
+  import { exchangeWallet } from "src/utils/constants";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
@@ -24,14 +26,38 @@
 
   async function addToken() {
     const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
-    tokens.then((loadedPsts) => {
-      if (!loadedPsts.find((token) => token.id === newToken)) {
-        cache.push(newToken);
-        localStorage.setItem("customTokens", JSON.stringify(cache));
-        tokens = client.getTokens();
+    const loadedTokens = await tokens;
+    if (!loadedTokens.find((token) => token.id === newToken)) {
+      const arweave = new Arweave({
+        host: "arweave.net",
+        port: 443,
+        protocol: "https",
+      });
+
+      const tags = {
+        Exchange: "Verto",
+        Type: "Token",
+        Contract: newToken,
+      };
+      const tx = await arweave.createTransaction(
+        {
+          target: exchangeWallet,
+          data: Math.random().toString().slice(-4),
+        },
+        JSON.parse($keyfile)
+      );
+      for (const [key, value] of Object.entries(tags)) {
+        tx.addTag(key, value);
       }
-      newToken = "";
-    });
+
+      await arweave.transactions.sign(tx, JSON.parse($keyfile));
+      // await arweave.transactions.post(tx);
+
+      cache.push(newToken);
+      localStorage.setItem("customTokens", JSON.stringify(cache));
+      tokens = client.getTokens();
+    }
+    newToken = "";
   }
 </script>
 
@@ -42,7 +68,7 @@
 <NavBar />
 <div class="tokens" in:fade={{ duration: 300 }}>
   <div class="tokens-head">
-    <h1 class="title">Supported Tokens</h1>
+    <h1 class="title">Tokens</h1>
     <Button
       click={() => (addTokenModalOpened = true)}
       style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
