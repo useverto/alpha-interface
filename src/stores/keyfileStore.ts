@@ -64,7 +64,6 @@ function createProfilesStore() {
       return currentProfiles;
     // @ts-ignore
     if (!process.browser) return;
-    console.log(get(keyfile));
 
     currentProfiles.push({ address: get(address), keyfile: get(keyfile) });
     localStorage.setItem("profiles", JSON.stringify(currentProfiles));
@@ -91,6 +90,11 @@ function createProfilesStore() {
       if (!process.browser) return;
 
       update((currentProfiles: IProfile[]) => {
+        if (
+          currentProfiles.filter((prf) => prf.address === addAddress).length > 0
+        )
+          return;
+
         currentProfiles.push({ address: addAddress, keyfile: addKeyFile });
         localStorage.setItem("profiles", JSON.stringify(currentProfiles));
 

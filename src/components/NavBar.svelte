@@ -92,14 +92,16 @@
           class="address"
           title={profile.address}>{profile.address}</button>
         {#if $profiles.length > 1}
-          <button class="remove"><object
+          <button
+            class="remove"
+            on:click={() => profiles.removeKeyfile(profile.address)}><object
               data={closeIcon}
               type="image/svg+xml"
               title="down-arrow" /></button>
         {/if}
       </div>
     {/each}
-    <button class="action">
+    <button class="action" on:click={() => goto('/login')}>
       <object data={addIcon} type="image/svg+xml" title="nav-icon" /> Add keyfile
     </button>
     <button

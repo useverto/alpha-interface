@@ -16,8 +16,6 @@
   let files: File[] = [];
   let client;
 
-  if (process.browser && $loggedIn) goto("/app");
-
   // let's create a new client
   if (process.browser) {
     client = new Arweave({
@@ -119,23 +117,30 @@
     <h1>Drop your keyfile here</h1>
   </div>
 {/if}
-<div class="Login">
+<div class="Login" in:fade={{ duration: 430 }}>
   <div class="instructions">
     <div class="content">
       <h1>
-        Sign in to <span class="verto-name"><a href="/">Verto</a></span><span
-          class="beta">alpha</span>
+        {#if $loggedIn}
+          Add a <span class="verto-name"><a href="/app">keyfile</a></span>
+        {:else}
+          Sign in to <span class="verto-name"><a href="/">Verto</a></span><span
+            class="beta">alpha</span>
+        {/if}
       </h1>
       <p>
-        To sign in, just drag and drop your Arweave Keyfile on this page. <br /><br />If
-        you don’t yet have a keyfile, you can get one by creating an <a
+        {#if $loggedIn}To add a new keyfile{:else}To sign in{/if}, just drag and
+        drop your Arweave Keyfile on this page. <br /><br />If you don’t yet
+        have a keyfile, you can get one by creating an <a
           href="https://www.arweave.org/wallet">Arweave Wallet</a>.
       </p>
       <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
   </div>
   <div class="arweave-login">
-    <h1>Sign in with your Arweave Keyfile</h1>
+    <h1>
+      {#if $loggedIn}Add a keyfile{:else}Sign in with your Arweave Keyfile{/if}
+    </h1>
     <img src={stroke} alt="stroke" class="Stroke" draggable={false} />
     <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false} />
     <p>
@@ -145,9 +150,6 @@
   </div>
 </div>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   =fixedFull()
