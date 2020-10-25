@@ -16,6 +16,7 @@
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Button from "../components/Button.svelte";
   import { cubicOut } from "svelte/easing";
+  import Modal from "../components/Modal.svelte";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -677,6 +678,27 @@
   </div>
 </div>
 <Footer />
+<Modal
+  bind:opened={confirmModalOpened}
+  confirmation={true}
+  onConfirm={confirmTrade}
+  onCancel={cancelTrade}>
+  <p style="text-align: center;">
+    {#if mode === TradeMode.Buy}
+      Buying {buyAmount} AR's worth of {buyToken}
+    {:else if mode === TradeMode.Sell}
+      Selling {Math.ceil(sellAmount)}
+      {sellToken} at a rate of {sellRate} AR/{sellToken}
+    {/if}
+  </p>
+  <p style="text-align: center">
+    {#await confirmModalText}
+      Loading fees...
+    {:then loadedText}
+      {loadedText}
+    {/await}
+  </p>
+</Modal>
 
 <style lang="sass">
 
