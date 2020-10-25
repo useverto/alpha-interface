@@ -64,6 +64,7 @@ function createProfilesStore() {
       return currentProfiles;
     // @ts-ignore
     if (!process.browser) return;
+    if (get(address) === "" && get(keyfile) === "") return;
 
     currentProfiles.push({ address: get(address), keyfile: get(keyfile) });
     localStorage.setItem("profiles", JSON.stringify(currentProfiles));
@@ -73,7 +74,8 @@ function createProfilesStore() {
 
   return {
     subscribe,
-    removeKeyfile: (removeAddress: string) =>
+    removeKeyfile: (removeAddress: string) => {
+      if (removeAddress === "") return;
       update((currentProfiles: IProfile[]) => {
         // @ts-ignore
         if (!process.browser) return;
@@ -84,12 +86,14 @@ function createProfilesStore() {
         localStorage.setItem("profiles", JSON.stringify(newVal));
 
         return newVal;
-      }),
+      });
+    },
     addKeyfile(addAddress: string, addKeyFile: string) {
-      // @ts-ignore
-      if (!process.browser) return;
-
+      if (addAddress === "" || addKeyFile === "") return;
       update((currentProfiles: IProfile[]) => {
+        // @ts-ignore
+        if (!process.browser) return;
+        if (currentProfiles === undefined) currentProfiles = [];
         if (
           currentProfiles.filter((prf) => prf.address === addAddress).length > 0
         )
@@ -100,6 +104,12 @@ function createProfilesStore() {
 
         return currentProfiles;
       });
+    },
+    removeAll() {
+      // @ts-ignore
+      if (!process.browser) return;
+      set([]);
+      localStorage.removeItem("profiles");
     },
   };
 }
@@ -143,4 +153,6 @@ export const loggedIn = derived(
 // this removes the keyfile from local stroage
 export function logOut() {
   keyfile.reset();
+  address.reset();
+  profiles.removeAll();
 }

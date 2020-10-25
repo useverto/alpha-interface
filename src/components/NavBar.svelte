@@ -129,7 +129,10 @@
     </button>
     <button
       class="action sign-out"
-      title="Remove all keyfiles and sing out">Sign Out</button>
+      title="Remove all keyfiles and sing out"
+      on:click={_logOut}>
+      Sign Out
+    </button>
   </div>
 {/if}
 <div class="mobile-nav">

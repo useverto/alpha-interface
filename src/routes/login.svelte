@@ -9,7 +9,6 @@
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
-  import { theme } from "../stores/themeStore";
   import { watchlist } from "../stores/watchlistStore";
 
   let isDragOver = false;
@@ -115,7 +114,7 @@
     <h1>Drop your keyfile here</h1>
   </div>
 {/if}
-<div class="Login" in:fade={{ duration: 430 }}>
+<div class="Login" in:fade={{ duration: loggedIn ? 430 : 0 }}>
   <div class="instructions">
     <div class="content">
       <h1>
