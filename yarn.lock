@@ -1163,10 +1163,10 @@
     "@typescript-eslint/types" "4.0.1"
     eslint-visitor-keys "^2.0.0"
 
-"@verto/lib@^0.5.0-beta":
-  version "0.5.0-beta"
-  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.5.0-beta.tgz#b8120063b366121428dd56666eda02c62024efdb"
-  integrity sha512-kc9DlHS6dSYM1BulzNCBBCvTCrzdwhTziRxuucK2G2LOWlomQOZ9vj9Tu0aqSXv2pDnH9Uvy3PCB+hJja+QVbQ==
+"@verto/lib@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.5.0.tgz#480b7b76ebef84729df76a77cc598d109cc4248a"
+  integrity sha512-NTAJd3MMrWBgHGem/xh+4xN/v9rMqTFdVMJ+8u+PLF3ydj0GMkNx2SEkWXYnePoFa5F6RMFQACGrmRd55ni3AA==
   dependencies:
     arweave "^1.9.1"
     cacheweave "^1.0.0"
