@@ -3,8 +3,6 @@
   import { goto } from "@sapper/app";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
-  import Arweave from "arweave";
-  import { exchangeWallet } from "../utils/constants";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
@@ -30,7 +28,6 @@
 
   async function addToken() {
     await client.saveToken(newToken);
-    tokens = client.popularTokens();
     newToken = "";
   }
 </script>

@@ -17,8 +17,6 @@
   import Button from "../components/Button.svelte";
   import { cubicOut } from "svelte/easing";
   import Modal from "../components/Modal.svelte";
-  import Arweave from "arweave";
-  import { exchangeWallet } from "../utils/constants";
 
   if (process.browser && !$loggedIn) goto("/");
 
