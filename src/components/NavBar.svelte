@@ -1,6 +1,12 @@
 <script lang="typescript">
   import { fade } from "svelte/transition";
-  import { address, loggedIn, logOut, profiles } from "../stores/keyfileStore";
+  import {
+    address,
+    loggedIn,
+    logOut,
+    profiles,
+    keyfile,
+  } from "../stores/keyfileStore";
   import { notification } from "../stores/notificationStore";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
@@ -42,8 +48,25 @@
     confirmModalOpened = true;
   }
 
-  function switchKeyfile(address: string) {
-    console.log(address);
+  function switchKeyfile(_address: string) {
+    if ($address === _address) return;
+    const profileData = $profiles.filter(
+      (prof) => prof.address === _address
+    )[0];
+
+    keyfile.set(profileData.keyfile);
+    address.set(profileData.address);
+    notification.notify(
+      "Success",
+      "Switched keyfile.",
+      NotificationType.success,
+      5000
+    );
+  }
+
+  function removeKeyfile(_address: string) {
+    profiles.removeKeyfile(_address);
+    if ($address === _address) switchKeyfile($profiles[0].address);
   }
 </script>
 
@@ -94,7 +117,7 @@
         {#if $profiles.length > 1}
           <button
             class="remove"
-            on:click={() => profiles.removeKeyfile(profile.address)}><object
+            on:click={() => removeKeyfile(profile.address)}><object
               data={closeIcon}
               type="image/svg+xml"
               title="down-arrow" /></button>

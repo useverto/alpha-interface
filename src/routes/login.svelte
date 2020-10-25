@@ -55,8 +55,6 @@
           address.set(_address);
           profiles.addKeyfile(_address, reader.result);
           // @ts-ignore
-          theme.reload();
-          // @ts-ignore
           watchlist.reload();
           goto("/app");
           notification.notify(
