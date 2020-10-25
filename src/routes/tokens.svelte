@@ -39,7 +39,7 @@
 <NavBar />
 <div class="tokens" in:fade={{ duration: 300 }}>
   <div class="tokens-head">
-    <h1 class="title">Tokens</h1>
+    <h1 class="title">Popular Tokens</h1>
     <Button
       click={() => (addTokenModalOpened = true)}
       style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>

@@ -315,8 +315,13 @@
   }
 
   async function addCustomToken() {
-    await client.saveToken(newTokenContract);
+    const ticker = await client.saveToken(newTokenContract);
     psts = getTradingPostSupportedTokens();
+    if (mode === TradeMode.Sell) {
+      sellToken = ticker;
+    } else {
+      buyToken = ticker;
+    }
     newTokenContract = "";
   }
 </script>
