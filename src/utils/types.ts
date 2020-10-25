@@ -73,6 +73,7 @@ export interface TokenInstance {
   addr: string;
   type: string;
   createdAt: Date;
+  received: number;
 }
 
 export enum Theme {
@@ -89,4 +90,9 @@ export enum DisplayTheme {
 export interface IProfiles {
   address: string;
   keyfile: string;
+}
+
+export enum TradeMode {
+  Buy = "Buy",
+  Sell = "Sell",
 }
