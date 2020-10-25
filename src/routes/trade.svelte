@@ -83,6 +83,7 @@
 
     loading = true;
     let orders = await orderBook;
+    let tokens = await psts;
 
     if ($address === selectedPost) {
       notification.notify(
@@ -96,10 +97,11 @@
     }
 
     if (mode === TradeMode.Sell) {
+      const token = tokens.find((pst) => pst.ticker === sellToken).id;
       order = await client.createOrder(
         "sell",
         sellAmount,
-        (await client.getTokens()).find((pst) => pst.ticker === sellToken).id,
+        token,
         selectedPost,
         sellRate
       );
@@ -124,6 +126,7 @@
         return;
       }
 
+      await client.saveToken(token);
       confirmModalText = `You're sending ${order.pst} ${sellToken} + ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
@@ -146,12 +149,8 @@
         return;
       }
 
-      order = await client.createOrder(
-        "buy",
-        buyAmount,
-        (await client.getTokens()).find((pst) => pst.ticker === buyToken).id,
-        selectedPost
-      );
+      const token = tokens.find((pst) => pst.ticker === buyToken).id;
+      order = await client.createOrder("buy", buyAmount, token, selectedPost);
 
       if (order === "ar") {
         notification.notify(
@@ -173,6 +172,7 @@
         return;
       }
 
+      await client.saveToken(token);
       confirmModalText = `You're sending ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
