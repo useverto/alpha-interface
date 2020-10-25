@@ -91,7 +91,6 @@
       <a href="/trade">Trade</a>
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>
-      <!--<a href="/" on:click={_logOut}>Sign Out</a>-->
       <a class="profiles" on:mouseover={() => (showProfileSwitcher = true)}>
         Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
       </a>
@@ -311,6 +310,7 @@
   .profile-switcher
     position: fixed
     right: 2em
+    top: 4em
     background-color: var(--nav-scrolled)
     backdrop-filter: blur(5px)
     -webkit-backdrop-filter: blur(5px)
@@ -364,7 +364,7 @@
           margin-left: .8em
 
           object
-            filter: var(--profiles-color)
+            filter: var(--svg-color)
             pointer-events: none
 
     button.action
@@ -379,17 +379,19 @@
       color: var(--primary-text-color)
       cursor: pointer
       font-size: 1em
-      padding: .35em 0
+      padding: .7em 0
       transition: all .3s
 
       &.sign-out
         border-top: 1px solid var(--profile-border)
+        padding: .35em 0
 
       &:hover
         background-color: var(--nav-scrolled)
+        opacity: .75
 
       object
-        filter: var(--profiles-color)
+        filter: var(--svg-color)
         pointer-events: none
         margin-right: .38em
         height: .73em
