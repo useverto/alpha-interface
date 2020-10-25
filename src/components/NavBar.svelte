@@ -19,6 +19,7 @@
   import downArrow from "../assets/down-arrow.svg";
   import closeIcon from "../assets/close.svg";
   import addIcon from "../assets/add.svg";
+  import { watchlist } from "../stores/watchlistStore";
 
   export let hero: boolean = false;
 
@@ -56,6 +57,7 @@
 
     keyfile.set(profileData.keyfile);
     address.set(profileData.address);
+    watchlist.reload();
     notification.notify(
       "Success",
       "Switched keyfile.",
@@ -113,6 +115,7 @@
         <button
           on:click={() => switchKeyfile(profile.address)}
           class="address"
+          style={$address === profile.address ? 'font-weight: 600;' : ''}
           title={profile.address}>{profile.address}</button>
         {#if $profiles.length > 1}
           <button

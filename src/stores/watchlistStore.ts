@@ -9,12 +9,12 @@ function createWatchListStore() {
   const watchedPsts: IWatchlistElement[] = [],
     { set, subscribe, update } = writable(watchedPsts),
     load = () => {
-      if (
-        // @ts-ignore
-        process.browser &&
-        getSetting("watchlist", get(address))
-      ) {
+      // @ts-ignore
+      if (!process.browser) return;
+      if (getSetting("watchlist", get(address))) {
         set(getSetting("watchlist", get(address)));
+      } else {
+        set([]);
       }
     };
 
