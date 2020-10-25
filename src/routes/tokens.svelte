@@ -2,86 +2,33 @@
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import Verto from "@verto/lib";
-  import Arweave from "arweave";
-  import Community from "community-js";
-  import { pstContract } from "../utils/constants";
-  import { notification } from "../stores/notificationStore";
-  import { NotificationType, DisplayTheme } from "../utils/types";
+  import { onMount } from "svelte";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
+  import { displayTheme } from "../stores/themeStore";
+  import { DisplayTheme } from "../utils/types";
   import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
-  import { displayTheme } from "../stores/themeStore";
 
+  // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
 
-  const client = new Verto();
-  let supportedTokens: Promise<
+  let client = new Verto();
+  onMount(async () => {
+    client = new Verto(JSON.parse($keyfile));
+  });
+  let tokens: Promise<
     { id: string; name: string; ticker: string }[]
-  > = client.getTokens();
+  > = client.popularTokens();
 
   let addTokenModalOpened: boolean = false;
-  let newContractID: string;
+  let newToken: string;
 
   async function addToken() {
-    addTokenModalOpened = true;
-  }
-
-  async function confirmAdd(cancelClose: Function) {
-    if (newContractID === "" || newContractID === undefined) cancelClose();
-    else {
-      const client = new Arweave({
-        host: "arweave.net",
-        port: 443,
-        protocol: "https",
-        timeout: 20000,
-      });
-      let community = new Community(client, JSON.parse($keyfile));
-      await community.setCommunityTx(pstContract);
-
-      // Make sure user has balance of our PST
-      try {
-        let balance = await community.get({
-          function: "vaultBalance",
-        });
-
-        if (balance.balance > 0) {
-          console.log("YOUR BAL IS GREATER THAN 0");
-        } else {
-          addTokenModalOpened = false;
-          notification.notify(
-            "Error",
-            "You don't have any locked VRT. This is needed to propose a vote to the community.",
-            NotificationType.error,
-            5000
-          );
-          return;
-        }
-      } catch (err) {
-        console.log(err);
-      }
-
-      // Propose a vote to the DAO
-      await community.proposeVote({
-        type: "indicative",
-        note: newContractID,
-      });
-      newContractID = "";
-      addTokenModalOpened = false;
-      notification.notify(
-        "Success",
-        "Your vote has been proposed. Check back soon!",
-        NotificationType.success,
-        5000
-      );
-    }
-  }
-
-  function cancelAdd() {
-    addTokenModalOpened = false;
-    newContractID = "";
+    await client.saveToken(newToken);
+    newToken = "";
   }
 </script>
 
@@ -92,30 +39,30 @@
 <NavBar />
 <div class="tokens" in:fade={{ duration: 300 }}>
   <div class="tokens-head">
-    <h1 class="title">Supported Tokens</h1>
+    <h1 class="title">Popular Tokens</h1>
     <Button
-      click={addToken}
+      click={() => (addTokenModalOpened = true)}
       style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
       Add Token
     </Button>
   </div>
   <div class="tokens-content">
-    {#await supportedTokens}
+    {#await tokens}
       <Loading />
-    {:then loadedPSTs}
-      {#each loadedPSTs as pst}
+    {:then loadedTokens}
+      {#each loadedTokens as token}
         <a
           class="token"
-          href="https://viewblock.io/arweave/tx/{pst.id}"
+          href="https://viewblock.io/arweave/tx/{token.id}"
           target="_blank"
           style="
             --hover-transparency: {$displayTheme === DisplayTheme.Dark ? '.8' : '1'};
             --hover-background: {$displayTheme === DisplayTheme.Dark ? '#161616' : '#000000'};    
             ">
-          <h1 class="short">{pst.ticker}</h1>
+          <h1 class="short">{token.ticker}</h1>
           <div class="info">
-            <h1><span>[PST]</span>{pst.name}</h1>
-            <p><span>ID:</span>{pst.id}</p>
+            <h1><span>[PST]</span>{token.name}</h1>
+            <p><span>ID:</span>{token.id}</p>
           </div>
         </a>
       {/each}
@@ -125,12 +72,11 @@
 <Modal
   bind:opened={addTokenModalOpened}
   confirmation={true}
-  onConfirm={confirmAdd}
-  onCancel={cancelAdd}>
+  onConfirm={addToken}>
   <h3 style="text-align: center;">Token Contract ID</h3>
   <input
     type="text"
-    bind:value={newContractID}
+    bind:value={newToken}
     class="light contract-id"
     placeholder="Contract ID" />
 </Modal>
