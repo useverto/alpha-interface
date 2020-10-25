@@ -27,11 +27,7 @@
 
   let addCustomTokenModal: boolean = false;
   let newTokenContract: string = "";
-  let psts = getSupportedTokens();
-
-  async function getSupportedTokens(): Promise<Token[]> {
-    return await client.getTokens();
-  }
+  let psts: Promise<Token[]> = client.getTokens();
 
   const transfer = async () => {
     const re = /[a-z0-9_-]{43}/i;
@@ -103,15 +99,11 @@
   function addCustomToken() {
     const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
     psts.then((loadedPsts) => {
-      if (
-        !(
-          loadedPsts.find((token) => token.id === newTokenContract) ||
-          cache.find((token) => token === newTokenContract)
-        )
-      ) {
+      if (!loadedPsts.find((token) => token.id === newTokenContract)) {
         cache.push(newTokenContract);
         localStorage.setItem("customTokens", JSON.stringify(cache));
-        psts = getSupportedTokens();
+        psts = client.getTokens();
+        balances = client.getAssets($address);
       }
       newTokenContract = "";
     });
