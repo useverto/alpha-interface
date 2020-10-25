@@ -1,14 +1,14 @@
-import { writable, derived } from "svelte/store";
+import { writable, derived, get } from "svelte/store";
 import Arweave from "arweave";
-import { theme } from "./themeStore";
-import { Theme } from "../utils/types";
+import type { IProfiles } from "../utils/types";
 
 // We store the arweave keyfile here.
 // It gets saved to the local stroage of the browser
 // It never leaves the user's browser
 
-export const keyfile = createCustomStore("keyfile");
 export const address = createCustomStore("address");
+export const keyfile = createCustomStore("keyfile");
+export const profiles = createProfilesStore();
 
 // this is a custom store
 // it enables saving to local storage
@@ -38,6 +38,64 @@ function createCustomStore(storeName) {
       // set
       set(val);
       localStorage.setItem(storeName, val);
+    },
+  };
+}
+
+// create store for all keyfiles
+function createProfilesStore() {
+  const defaultVal: IProfiles[] = [],
+    { subscribe, set, update } = writable(defaultVal);
+
+  if (
+    // @ts-ignore
+    process.browser &&
+    localStorage.getItem("profiles") !== null &&
+    localStorage.getItem("profiles") !== undefined
+  ) {
+    set(JSON.parse(localStorage.getItem("profiles")));
+  }
+
+  // migrate the old system
+  update((currentProfiles: IProfiles[]) => {
+    if (
+      currentProfiles.filter((prf) => prf.address === get(address)).length !== 0
+    )
+      return currentProfiles;
+    // @ts-ignore
+    if (!process.browser) return;
+    console.log(get(keyfile));
+
+    currentProfiles.push({ address: get(address), keyfile: get(keyfile) });
+    localStorage.setItem("profiles", JSON.stringify(currentProfiles));
+
+    return currentProfiles;
+  });
+
+  return {
+    subscribe,
+    removeKeyfile: (removeAddress: string) =>
+      update((currentProfiles: IProfiles[]) => {
+        // @ts-ignore
+        if (!process.browser) return;
+
+        const newVal = currentProfiles.filter(
+          (prf) => prf.address !== removeAddress
+        );
+        localStorage.setItem("profiles", JSON.stringify(newVal));
+
+        return newVal;
+      }),
+    addKeyfile(addAddress: string, addKeyFile: string) {
+      // @ts-ignore
+      if (!process.browser) return;
+
+      update((currentProfiles: IProfiles[]) => {
+        currentProfiles.push({ address: addAddress, keyfile: addKeyFile });
+        localStorage.setItem("profiles", JSON.stringify(currentProfiles));
+
+        return currentProfiles;
+      });
     },
   };
 }

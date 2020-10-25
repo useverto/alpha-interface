@@ -1,6 +1,6 @@
 <script lang="typescript">
   import { fade } from "svelte/transition";
-  import { loggedIn, logOut } from "../stores/keyfileStore";
+  import { loggedIn, logOut, profiles } from "../stores/keyfileStore";
   import { notification } from "../stores/notificationStore";
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";

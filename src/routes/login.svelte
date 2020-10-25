@@ -3,7 +3,7 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile, loggedIn, address } from "../stores/keyfileStore";
+  import { keyfile, loggedIn, address, profiles } from "../stores/keyfileStore";
   import { notification } from "../stores/notificationStore";
   import { NotificationType } from "../utils/types";
   import { query } from "../api-client";
@@ -38,7 +38,7 @@
     ) {
       const reader = new FileReader();
       reader.onload = async () => {
-        if (typeof reader.result !== "string") goto("/");
+        if (typeof reader.result !== "string") return goto("/");
         // @ts-ignore
         let _address = await client.wallets.jwkToAddress(
           JSON.parse(reader.result)
@@ -55,6 +55,7 @@
         if (outTxs.length > 0) {
           keyfile.set(reader.result);
           address.set(_address);
+          profiles.addKeyfile(_address, reader.result);
           // @ts-ignore
           theme.reload();
           // @ts-ignore
