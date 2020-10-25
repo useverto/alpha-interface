@@ -3,7 +3,7 @@
   import { goto } from "@sapper/app";
   import Verto from "@verto/lib";
   import Arweave from "arweave";
-  import { exchangeWallet } from "src/utils/constants";
+  import { exchangeWallet } from "../utils/constants";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
   import Button from "../components/Button.svelte";
