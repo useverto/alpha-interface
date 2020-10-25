@@ -9,6 +9,8 @@
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
+  import addIcon from "../../assets/add.svg";
+  import type { Token } from "../../utils/types";
 
   const client = new Verto();
   let balances: Promise<
@@ -22,6 +24,14 @@
   let amnt: number;
   let max: number;
   let target: string;
+
+  let addCustomTokenModal: boolean = false;
+  let newTokenContract: string = "";
+  let psts = getSupportedTokens();
+
+  async function getSupportedTokens(): Promise<Token[]> {
+    return await client.getTokens();
+  }
 
   const transfer = async () => {
     const re = /[a-z0-9_-]{43}/i;
@@ -88,14 +98,37 @@
     if (amnt < 1) amnt = 1;
     if (amnt % 1 !== 0) amnt = Math.round(amnt);
   }
+
+  // add a custom token to assets
+  function addCustomToken() {
+    const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
+    psts.then((loadedPsts) => {
+      if (
+        !(
+          loadedPsts.find((token) => token.id === newTokenContract) ||
+          cache.find((token) => token === newTokenContract)
+        )
+      ) {
+        cache.push(newTokenContract);
+        localStorage.setItem("customTokens", JSON.stringify(cache));
+        psts = getSupportedTokens();
+      }
+      newTokenContract = "";
+    });
+  }
 </script>
 
 <div class="section">
   <div class="assets-table">
     <div class="menu">
       <h1 class="title">Assets</h1>
-      <div in:fade={{ duration: 100 }}>
+      <div class="assets-options" in:fade={{ duration: 100 }}>
         {#if !loading}
+          <img
+            src={addIcon}
+            alt="add"
+            on:click={() => (addCustomTokenModal = true)}
+            class="add-token" />
           <Button
             style="min-width: 0; padding-left: .7em; padding-right: .7em;"
             click={async () => {
@@ -142,7 +175,11 @@
       </table>
     {:then loadedBalances}
       {#if loadedBalances.length === 0}
-        <p in:fade={{ duration: 300 }}>You don't have any tokens!</p>
+        <p in:fade={{ duration: 300 }}>
+          You don't have any tokens! Do you want to <a
+            class="want-to-add"
+            on:click={() => (addCustomTokenModal = true)}>add a custom one</a>?
+        </p>
       {:else}
         <table in:fade={{ duration: 300 }}>
           <tr style="width: 100%">
@@ -197,6 +234,17 @@
     <input type="string" bind:value={target} class="light" />
   {/await}
 </Modal>
+<Modal
+  bind:opened={addCustomTokenModal}
+  confirmation={true}
+  onConfirm={addCustomToken}>
+  <h3 style="text-align: center;">Custom Token Contract ID</h3>
+  <input
+    type="text"
+    bind:value={newTokenContract}
+    class="light contract-id"
+    placeholder="Token Contract ID" />
+</Modal>
 
 <style lang="sass">
   
@@ -234,11 +282,22 @@
           @media screen and (max-width: 720px)
             margin: 0
 
-        div
+        .assets-options
           padding-top: 1.8em
+          display: flex
+          align-items: center
+
+          .add-token
+            cursor: pointer
+            filter: var(--svg-color)
+            height: 1.3em
+            margin-right: 1em
 
           @media screen and (max-width: 720px)
             padding-top: 0
+
+      a.want-to-add
+        cursor: pointer
 
       a.view-all
         display: block
