@@ -511,19 +511,23 @@
                   disabled>
                   <option>{feePercent}%</option>
                 </select>
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 46%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
+                {#if !loading}
+                  <Button
+                    click={exchange}
+                    style={`
+                      font-family: 'JetBrainsMono', monospace; 
+                      text-transform: uppercase; 
+                      width: 46%;
+                      display: block;
+                      padding-left: 0;
+                      padding-right: 0;
+                      height: 100%;
+                    `}>
+                    {mode}
+                  </Button>
+                {:else}
+                  <Loading />
+                {/if}
               {/await}
             </div>
           </div>
@@ -627,19 +631,23 @@
                   disabled>
                   <option>{feePercent}%</option>
                 </select>
-                <Button
-                  click={exchange}
-                  style={`
-                    font-family: 'JetBrainsMono', monospace; 
-                    text-transform: uppercase; 
-                    width: 46%;
-                    display: block;
-                    padding-left: 0;
-                    padding-right: 0;
-                    height: 100%;
-                  `}>
-                  {mode}
-                </Button>
+                {#if !loading}
+                  <Button
+                    click={exchange}
+                    style={`
+                      font-family: 'JetBrainsMono', monospace; 
+                      text-transform: uppercase; 
+                      width: 46%;
+                      display: block;
+                      padding-left: 0;
+                      padding-right: 0;
+                      height: 100%;
+                    `}>
+                    {mode}
+                  </Button>
+                {:else}
+                  <Loading />
+                {/if}
               {/await}
             </div>
           </div>
@@ -725,6 +733,27 @@
     bind:value={newTokenContract}
     class="light contract-id"
     placeholder="Token Contract ID" />
+</Modal>
+<Modal
+  bind:opened={confirmModalOpened}
+  confirmation={true}
+  onConfirm={confirmTrade}
+  onCancel={cancelTrade}>
+  <p style="text-align: center;">
+    {#if mode === TradeMode.Buy}
+      Buying {buyAmount} AR's worth of {buyToken}
+    {:else if mode === TradeMode.Sell}
+      Selling {Math.ceil(sellAmount)}
+      {sellToken} at a rate of {sellRate} AR/{sellToken}
+    {/if}
+  </p>
+  <p style="text-align: center">
+    {#await confirmModalText}
+      Loading fees...
+    {:then loadedText}
+      {loadedText}
+    {/await}
+  </p>
 </Modal>
 
 <style lang="sass">
