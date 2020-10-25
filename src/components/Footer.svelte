@@ -2,16 +2,20 @@
   import { fade } from "svelte/transition";
   import { backOut } from "svelte/easing";
 
+  export let scrollTransition: boolean = false;
+
   let element,
     y,
     windowHeight,
     shown = false;
 
+  if (!scrollTransition) shown = true;
+
   // fade animation
   $: {
-    if (element !== undefined) {
+    if (element !== undefined && scrollTransition) {
       let componentY = element.offsetTop + element.offsetHeight;
-      if (componentY <= y + windowHeight + 120 && !shown) shown = true;
+      if (componentY <= y + windowHeight + 60 && !shown) shown = true;
     }
   }
 </script>
