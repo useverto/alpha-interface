@@ -17,6 +17,7 @@
   import Button from "../components/Button.svelte";
   import { cubicOut } from "svelte/easing";
   import Modal from "../components/Modal.svelte";
+  import { saveSetting } from "../utils/settings";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -316,6 +317,7 @@
 
   async function addCustomToken() {
     const ticker = await client.saveToken(newTokenContract);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
     psts = getTradingPostSupportedTokens();
     if (mode === TradeMode.Sell) {
       sellToken = ticker;

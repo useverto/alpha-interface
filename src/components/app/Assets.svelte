@@ -11,6 +11,7 @@
   import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import addIcon from "../../assets/add.svg";
+  import { saveSetting } from "../../utils/settings";
 
   let client = new Verto();
   onMount(async () => {
@@ -104,6 +105,7 @@
 
   async function addToken() {
     await client.saveToken(newToken);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
     balances = client.getAssets($address);
     newToken = "";
   }

@@ -19,7 +19,7 @@
   import downArrow from "../assets/down-arrow.svg";
   import closeIcon from "../assets/close.svg";
   import addIcon from "../assets/add.svg";
-  import type { prevent_default } from "svelte/internal";
+  import { getSetting } from "../utils/settings";
 
   export let hero: boolean = false;
   export let update: Function = null;
@@ -59,9 +59,18 @@
     keyfile.set(profileData.keyfile);
     address.set(profileData.address);
     if (update !== null) update();
+    // update the users tokens, used by the library
+    localStorage.setItem(
+      "tokens",
+      JSON.stringify(
+        getSetting("tokens", $address) !== undefined
+          ? getSetting("tokens", $address)
+          : []
+      )
+    );
     notification.notify(
       "Success",
-      "Switched keyfile.",
+      "Switched profile.",
       NotificationType.success,
       5000
     );

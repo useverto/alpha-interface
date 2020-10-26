@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { loggedIn, keyfile } from "../stores/keyfileStore";
+  import { loggedIn, keyfile, address } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
@@ -11,6 +11,7 @@
   import { DisplayTheme } from "../utils/types";
   import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
+  import { saveSetting } from "../utils/settings";
 
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
@@ -28,6 +29,7 @@
 
   async function addToken() {
     await client.saveToken(newToken);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
     newToken = "";
   }
 </script>
