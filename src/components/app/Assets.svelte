@@ -168,8 +168,12 @@
       {#if loadedBalances.length === 0}
         <p in:fade={{ duration: 300 }}>
           You don't have any tokens! Do you want to <a
+            href="/"
             class="want-to-add"
-            on:click={() => (addTokenModalOpened = true)}>add a custom one</a>?
+            on:click={(e) => {
+              e.preventDefault();
+              addTokenModalOpened = true;
+            }}>add a custom one</a>?
         </p>
       {:else}
         <table in:fade={{ duration: 300 }}>
