@@ -18,7 +18,7 @@
   let hasMetaMask: boolean = true;
   let connected: boolean = true;
   let client = new Verto();
-  let swapMode: SwapMode = SwapMode.AR;
+  let swapMode: SwapMode = SwapMode.CHAIN;
   let sendAmount: number = 0.01;
   let rate: number = 0.01;
   let receive: number = 0.001; //TODO john
