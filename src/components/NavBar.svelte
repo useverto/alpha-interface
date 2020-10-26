@@ -77,6 +77,7 @@
           : []
       )
     );
+    if (mobile) showProfileSwitcher = false;
     notification.notify(
       "Success",
       "Switched profile.",
