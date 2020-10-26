@@ -1,8 +1,7 @@
 <script lang="typescript">
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
-  import { notification } from "../stores/notificationStore";
-  import { NotificationType, SwapMode } from "../utils/types";
+  import { SwapMode } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
@@ -17,6 +16,7 @@
   if (process.browser && !$loggedIn) goto("/");
 
   let hasMetaMask: boolean = true;
+  let connected: boolean = true;
   let client = new Verto();
   let swapMode: SwapMode = SwapMode.AR;
   let sendAmount: number = 0.01;
@@ -30,6 +30,13 @@
     client = new Verto(JSON.parse($keyfile));
     // @ts-ignore
     hasMetaMask = typeof window.ethereum !== "undefined";
+    if (hasMetaMask) {
+      // @ts-ignore
+      const accounts = await window.ethereum.request({
+        method: "eth_accounts",
+      });
+      if (accounts.length == 0) connected = false;
+    }
   });
 
   function update() {
@@ -138,13 +145,36 @@
       </div>
     </div>
   {/if}
-  <div class="swap-interact">
-    <Button
-      click={() => {}}
-      style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
-      Swap
-    </Button>
-  </div>
+  {#if hasMetaMask}
+    <div class="swap-interact">
+      {#if connected}
+        <Button
+          click={() => {}}
+          style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
+          Swap
+        </Button>
+      {:else}
+        <Button
+          click={async () => {
+            const accounts = await window.ethereum.request({
+              method: 'eth_requestAccounts',
+            });
+            if (accounts.length > 0) connected = true;
+          }}
+          style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
+          Connect
+        </Button>
+      {/if}
+    </div>
+  {:else}
+    <div class="swap-interact">
+      <Button
+        disabled
+        style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
+        Install MetaMask
+      </Button>
+    </div>
+  {/if}
 </div>
 <Footer />
 
