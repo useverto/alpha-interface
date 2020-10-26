@@ -15,6 +15,10 @@
     { id: string; name: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
 
+  export const update = () => {
+    balances = client.getAssets($address);
+  };
+
   let loading: boolean = false;
   let transferPSTOpened: boolean = false;
 

@@ -11,17 +11,23 @@
   import { fade } from "svelte/transition";
 
   if (process.browser && !$loggedIn) goto("/");
+
+  let assetsComponent;
+
+  function update() {
+    assetsComponent.update();
+  }
 </script>
 
 <svelte:head>
   <title>Verto — Dashboard</title>
 </svelte:head>
 
-<NavBar />
+<NavBar {update} />
 <div class="dashboard" in:fade={{ duration: 300 }}>
   <Balance showThemeSwitcher={true} />
   <Watchlist />
-  <Assets />
+  <Assets bind:this={assetsComponent} />
   <LatestExchanges />
   <LatestTransactions />
 </div>

@@ -24,7 +24,11 @@ const onwarn = (warning, onwarn) => {
     (warning.code === "THIS_IS_UNDEFINED" &&
       warning.message.match("equivalent to 'undefined'")) ||
     (warning.code === "SOURCEMAP_ERROR" &&
-      warning.message.match("Can't resolve original location of error."))
+      warning.message.match("Can't resolve original location of error.")) ||
+    (warning.code === "MISSING_EXPORT" &&
+      warning.message.match(
+        "'preload' is not exported by 'src/routes/_layout.svelte'"
+      ))
   )
     return;
   // remove the circular dependency warning. We can't do anything about that

@@ -19,9 +19,10 @@
   import downArrow from "../assets/down-arrow.svg";
   import closeIcon from "../assets/close.svg";
   import addIcon from "../assets/add.svg";
-  import { watchlist } from "../stores/watchlistStore";
+  import type { prevent_default } from "svelte/internal";
 
   export let hero: boolean = false;
+  export let update: Function = null;
 
   let y: number;
   let confirmModalOpened: boolean = false;
@@ -57,7 +58,7 @@
 
     keyfile.set(profileData.keyfile);
     address.set(profileData.address);
-    watchlist.reload();
+    if (update !== null) update();
     notification.notify(
       "Success",
       "Switched keyfile.",
@@ -91,7 +92,11 @@
       <a href="/trade">Trade</a>
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>
-      <a class="profiles" on:mouseover={() => (showProfileSwitcher = true)}>
+      <a
+        href="/"
+        class="profiles"
+        on:mouseover={() => (showProfileSwitcher = true)}
+        on:click={(e) => e.preventDefault()}>
         Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
       </a>
     {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
