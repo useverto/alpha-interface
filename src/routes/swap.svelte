@@ -11,6 +11,7 @@
   import Balance from "../components/app/Balance.svelte";
   import switchIcon from "../assets/switch.svg";
   import downArrowIcon from "../assets/down-arrow.svg";
+  import Button from "../components/Button.svelte";
 
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
@@ -22,7 +23,7 @@
   let rate: number = 0.01;
 
   let switchSwap = () =>
-    swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR;
+    (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
 
   onMount(async () => {
     client = new Verto(JSON.parse($keyfile));
@@ -91,6 +92,13 @@
   {:else if swapMode === SwapMode.CHAIN}
     <div class="swap-container" in:fade={{ duration: 280 }} />
   {/if}
+  <div class="swap-interact">
+    <Button
+      click={() => {}}
+      style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
+      Swap
+    </Button>
+  </div>
 </div>
 <Footer />
 
@@ -107,6 +115,7 @@
     .swap-container
       margin: 0 auto
       width: 42%
+      margin-bottom: 2em
 
       @media screen and (max-width: 720px)
         width: 100%
@@ -118,29 +127,49 @@
           margin-top: 0
 
         .input-wrapper
+          @media screen and (max-width: 720px)
+            select, .select-container
+              width: 45% !important
+
+              select
+                width: 100% !important
+
           .select-container
             select
               height: 100%
 
       .switch-icon
+        $iconSize: 1.4em
         display: flex
-        padding-top: .6em
+        padding:
+          top: .6em
+          right: calc(15% - #{$iconSize})
         margin-bottom: -.6em
         cursor: pointer
 
         object
           margin-left: auto
-          height: 1.4em
-          width: 1.4em
+          height: $iconSize
+          width: $iconSize
           padding: .16em
           border-radius: 100%
           filter: var(--svg-color)
           border: 2px solid transparent
+          user-select: none
+          -moz-user-select: none
+          -webkit-user-select: none
           transition: all .3s
 
         &:hover object
           opacity: .75
           // we need to leave this black, even on dark theme, cuz we are already invertin it above with "filter: var(--svg-color)"
           border-color: #000
+
+    .swap-interact
+      margin: 0 auto
+      width: 42%
+
+      @media screen and (max-width: 720px)
+        width: 100%
 
 </style>
