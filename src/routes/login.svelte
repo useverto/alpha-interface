@@ -50,12 +50,12 @@
           })
         ).data.transactions.edges;
         if (outTxs.length > 0) {
+          goto("/app");
           keyfile.set(reader.result);
           address.set(_address);
           profiles.addKeyfile(_address, reader.result);
           // @ts-ignore
           watchlist.reload();
-          goto("/app");
           notification.notify(
             "Welcome",
             "You've successfully logged in!",

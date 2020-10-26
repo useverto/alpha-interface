@@ -96,3 +96,8 @@ export enum TradeMode {
   Buy = "Buy",
   Sell = "Sell",
 }
+
+export enum SwapMode {
+  CHAIN = "CHAIN",
+  AR = "AR",
+}
