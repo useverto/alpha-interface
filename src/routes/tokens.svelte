@@ -24,6 +24,10 @@
     { id: string; name: string; ticker: string }[]
   > = client.popularTokens();
 
+  export const update = () => {
+    client = new Verto(JSON.parse($keyfile));
+  };
+
   let addTokenModalOpened: boolean = false;
   let newToken: string;
 
@@ -38,7 +42,7 @@
   <title>Verto — Tokens</title>
 </svelte:head>
 
-<NavBar />
+<NavBar {update} />
 <div class="tokens" in:fade={{ duration: 300 }}>
   <div class="tokens-head">
     <h1 class="title">Popular Tokens</h1>
