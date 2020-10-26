@@ -13,7 +13,6 @@
   import tokensLogo from "../assets/nav/tokens.svg";
   import postsLogo from "../assets/nav/posts.svg";
   import peopleLogo from "../assets/nav/people.svg";
-  import personLogo from "../assets/nav/person.svg";
   import Modal from "../components/Modal.svelte";
   import { NotificationType, DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
@@ -168,7 +167,7 @@
         type="image/svg+xml"
         title="nav-icon" /></a>
     <a href="/" on:click={mobileLogOut}><object
-        data={$profiles.length > 1 ? peopleLogo : personLogo}
+        data={peopleLogo}
         type="image/svg+xml"
         title="nav-icon" /></a>
   {/if}
