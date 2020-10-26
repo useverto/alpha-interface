@@ -1,32 +1,30 @@
-import { writable } from "svelte/store";
+import { writable, get } from "svelte/store";
 import type { IWatchlistElement } from "../utils/types";
+import { saveSetting, getSetting } from "src/utils/settings";
+import { address } from "./keyfileStore";
 
 export const watchlist = createWatchListStore();
 
 function createWatchListStore() {
   const watchedPsts: IWatchlistElement[] = [],
-    { set, subscribe, update } = writable(watchedPsts);
+    { set, subscribe, update } = writable(watchedPsts),
+    load = () => {
+      // @ts-ignore
+      if (!process.browser) return;
+      if (getSetting("watchlist", get(address))) {
+        set(getSetting("watchlist", get(address)));
+      } else {
+        set([]);
+      }
+    };
 
-  if (
-    // @ts-ignore
-    process.browser &&
-    localStorage.getItem("watchlist") !== null &&
-    localStorage.getItem("watchlist") !== "" &&
-    localStorage.getItem("watchlist") !== "null" &&
-    localStorage.getItem("watchlist") !== undefined
-  ) {
-    // load watchlist from localstroage
-    set(JSON.parse(localStorage.getItem("watchlist")));
-    // @ts-ignore
-  } else if (process.browser) {
-    localStorage.setItem("watchlist", JSON.stringify(watchedPsts));
-  }
+  load();
 
   return {
     addPst({ id, name, ticker, period }: IWatchlistElement) {
       update((curr: IWatchlistElement[]) => {
         curr.push({ id, name, ticker, period });
-        localStorage.setItem("watchlist", JSON.stringify(curr));
+        saveSetting("watchlist", curr, get(address));
         return curr;
       });
     },
@@ -35,10 +33,11 @@ function createWatchListStore() {
         const updatedList = curr.filter(
           (el: IWatchlistElement) => el.ticker !== pstName
         );
-        localStorage.setItem("watchlist", JSON.stringify(updatedList));
+        saveSetting("watchlist", updatedList, get(address));
         return updatedList;
       });
     },
     subscribe,
+    reload: load,
   };
 }

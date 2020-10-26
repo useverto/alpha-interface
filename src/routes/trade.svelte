@@ -17,6 +17,7 @@
   import Button from "../components/Button.svelte";
   import { cubicOut } from "svelte/easing";
   import Modal from "../components/Modal.svelte";
+  import { saveSetting } from "../utils/settings";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -38,6 +39,13 @@
     client = new Verto(JSON.parse($keyfile));
     loadMetrics();
   });
+
+  export const update = () => {
+    client = new Verto(JSON.parse($keyfile));
+    psts = getTradingPostSupportedTokens();
+    orderBook = getOrderBook();
+    loadMetrics();
+  };
 
   let order;
   let selectedPost;
@@ -316,6 +324,7 @@
 
   async function addCustomToken() {
     const ticker = await client.saveToken(newTokenContract);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
     psts = getTradingPostSupportedTokens();
     if (mode === TradeMode.Sell) {
       sellToken = ticker;
@@ -330,7 +339,7 @@
   <title>Verto — Trade</title>
 </svelte:head>
 
-<NavBar />
+<NavBar {update} />
 <div class="trade">
   <Balance />
   <div class="metrics">

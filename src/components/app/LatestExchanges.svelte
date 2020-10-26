@@ -24,6 +24,10 @@
     }[]
   > = client.getExchanges($address);
 
+  export const update = () => {
+    exchanges = client.getExchanges($address);
+  };
+
   let currentCancel = "";
   let tx;
   let loading: boolean = false;

@@ -31,6 +31,18 @@
     }
   });
 
+  export const update = async () => {
+    tokens = await client.getTokens();
+    for (const element of $watchlist) {
+      const index = tokens.indexOf(
+        tokens.find((token) => token.ticker === element.ticker)
+      );
+      if (index > -1) {
+        tokens.splice(index, 1);
+      }
+    }
+  };
+
   let editMode = false;
   let addModalOpened = false;
   let addPst;
