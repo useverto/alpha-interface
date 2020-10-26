@@ -29,9 +29,6 @@
   {/if}
 </div>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .About
@@ -41,5 +38,6 @@
     font-size: 1em
     line-height: 1.7rem
     text-align: justify
+    color: var(--primary-text-color)
 
 </style>

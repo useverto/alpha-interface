@@ -87,6 +87,11 @@ export enum DisplayTheme {
   Dark = "Dark",
 }
 
+export interface IProfile {
+  address: string;
+  keyfile: string;
+}
+
 export enum TradeMode {
   Buy = "Buy",
   Sell = "Sell",

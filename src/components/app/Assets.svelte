@@ -11,6 +11,7 @@
   import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import addIcon from "../../assets/add.svg";
+  import { saveSetting } from "../../utils/settings";
 
   let client = new Verto();
   onMount(async () => {
@@ -20,6 +21,11 @@
   let balances: Promise<
     { id: string; name: string; ticker: string; balance: number }[]
   > = client.getAssets($address);
+
+  export const update = () => {
+    client = new Verto(JSON.parse($keyfile));
+    balances = client.getAssets($address);
+  };
 
   let loading: boolean = false;
   let transferPSTOpened: boolean = false;
@@ -100,6 +106,7 @@
 
   async function addToken() {
     await client.saveToken(newToken);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
     balances = client.getAssets($address);
     newToken = "";
   }
@@ -164,8 +171,12 @@
       {#if loadedBalances.length === 0}
         <p in:fade={{ duration: 300 }}>
           You don't have any tokens! Do you want to <a
+            href="/"
             class="want-to-add"
-            on:click={() => (addTokenModalOpened = true)}>add a custom one</a>?
+            on:click={(e) => {
+              e.preventDefault();
+              addTokenModalOpened = true;
+            }}>add a custom one</a>?
         </p>
       {:else}
         <table in:fade={{ duration: 300 }}>
