@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { fade } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
   import {
     address,
     loggedIn,
@@ -13,21 +13,37 @@
   import tokensLogo from "../assets/nav/tokens.svg";
   import postsLogo from "../assets/nav/posts.svg";
   import peopleLogo from "../assets/nav/people.svg";
-  import Modal from "../components/Modal.svelte";
   import { NotificationType, DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
   import downArrow from "../assets/down-arrow.svg";
   import closeIcon from "../assets/close.svg";
   import addIcon from "../assets/add.svg";
   import { getSetting } from "../utils/settings";
+  import { onDestroy, onMount } from "svelte";
 
   export let hero: boolean = false;
   export let update: Function = null;
 
   let y: number;
-  let confirmModalOpened: boolean = false;
   let showProfileSwitcher: boolean = false;
   let navHeight: number = 0;
+  let mobileHeight: number = 0;
+  let mobile: boolean = false;
+  let mediaWatch;
+
+  $: switchMobile = () =>
+    (mobile = mediaWatch === undefined ? false : mediaWatch.matches);
+
+  onMount(() => {
+    mobile = window.innerWidth <= 720;
+    mediaWatch = window.matchMedia("(max-width: 720px)");
+    mediaWatch.addListener(switchMobile);
+  });
+
+  onDestroy(() => {
+    if (mediaWatch === undefined) return;
+    mediaWatch.removeListener(switchMobile);
+  });
 
   function _logOut(e?: MouseEvent) {
     if (!process.browser) return;
@@ -41,13 +57,6 @@
       NotificationType.log,
       5000
     );
-  }
-
-  function mobileLogOut(e: MouseEvent) {
-    if (!process.browser) return;
-    if (!$loggedIn) return;
-    e.preventDefault();
-    confirmModalOpened = true;
   }
 
   function switchKeyfile(_address: string) {
@@ -115,11 +124,17 @@
   class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"
   style="height: {navHeight}px" />
 {#if showProfileSwitcher}
+  {#if mobile}
+    <div
+      class="mobile-switcher-bg"
+      on:click={() => (showProfileSwitcher = false)}
+      transition:fade={{ duration: 400 }} />
+  {/if}
   <div
     class="profile-switcher"
     on:mouseleave={() => (showProfileSwitcher = false)}
-    transition:fade={{ duration: 240 }}
-    style="top: {navHeight + 10}px; --profile-border: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .2)' : 'rgba(0, 0, 0, .075)'};">
+    transition:fly={{ duration: 400, y: mobile ? 1000 : 0, opacity: 0 }}
+    style="{!mobile ? `top: ${navHeight + 10}px;` : `bottom: ${mobileHeight}px;`} --profile-border: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .2)' : 'rgba(0, 0, 0, .075)'};">
     {#each $profiles as profile}
       <div class="profile">
         <button
@@ -148,7 +163,7 @@
     </button>
   </div>
 {/if}
-<div class="mobile-nav">
+<div class="mobile-nav" bind:clientHeight={mobileHeight}>
   {#if $loggedIn}
     <a href="/trade"><object
         data={tradeLogo}
@@ -166,15 +181,14 @@
         data={tokensLogo}
         type="image/svg+xml"
         title="nav-icon" /></a>
-    <a href="/" on:click={mobileLogOut}><object
-        data={peopleLogo}
-        type="image/svg+xml"
-        title="nav-icon" /></a>
+    <a
+      href="/"
+      on:click={(e) => {
+        e.preventDefault();
+        showProfileSwitcher = !showProfileSwitcher;
+      }}><object data={peopleLogo} type="image/svg+xml" title="nav-icon" /></a>
   {/if}
 </div>
-<Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={_logOut}>
-  <p style="text-align: center">Are you sure you want to log out?</p>
-</Modal>
 
 <style lang="sass">
 
@@ -321,6 +335,15 @@
       &:not(.logged-out)
         display: none
 
+  .mobile-switcher-bg
+    position: fixed
+    z-index: 950
+    background-color: rgba(0, 0, 0, .3)
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+
   .profile-switcher
     position: fixed
     right: 2em
@@ -332,6 +355,13 @@
     z-index: 1000
     border: 1px solid var(--profile-border)
     overflow: hidden
+
+    @media screen and (max-width: 720px)
+      top: unset
+      left: .6em
+      right: .6em
+      border-bottom-left-radius: 0
+      border-bottom-right-radius: 0
 
     .profile
       position: relative
@@ -363,6 +393,11 @@
         cursor: pointer
         transition: all .3s
 
+        @media screen and (max-width: 720px)
+          user-select: none
+          -moz-user-select: none
+          -webkit-user-select: none
+
         &:hover
           opacity: .75
 
@@ -373,6 +408,9 @@
           overflow: hidden
           text-overflow: ellipsis
           white-space: nowrap
+
+          @media screen and (max-width: 720px)
+            width: 90%
 
         &.remove
           margin-left: .8em
@@ -395,6 +433,11 @@
       font-size: 1em
       padding: .7em 0
       transition: all .3s
+
+      @media screen and (max-width: 720px)
+        user-select: none
+        -moz-user-select: none
+        -webkit-user-select: none
 
       &.sign-out
         border-top: 1px solid var(--profile-border)
