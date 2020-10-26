@@ -21,6 +21,7 @@
   let swapMode: SwapMode = SwapMode.AR;
   let sendAmount: number = 0.01;
   let rate: number = 0.01;
+  let receive: number = 0.001; //TODO john
 
   let switchSwap = () =>
     (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
@@ -60,7 +61,7 @@
         </div>
       </div>
       <div class="switch-icon" on:click={switchSwap}>
-        <object data={switchIcon} type="image/svg+xml" title="switch-icon" />
+        <img src={switchIcon} alt="switch-icon" />
       </div>
       <div class="input">
         <p class="label">Rate</p>
@@ -90,7 +91,52 @@
       </div>
     </div>
   {:else if swapMode === SwapMode.CHAIN}
-    <div class="swap-container" in:fade={{ duration: 280 }} />
+    <div class="swap-container" in:fade={{ duration: 280 }}>
+      <div class="input">
+        <p class="label">You send</p>
+        <div class="input-wrapper">
+          <input
+            type="number"
+            step={1}
+            pattern="\d+"
+            bind:value={sendAmount}
+            min={0.000001} />
+          <div class="select-container">
+            <select>
+              <option value="ETH">ETH</option>
+            </select>
+            <!-- TODO: john -->
+            <!--
+              <select bind:value={chainOrSomethin??}>
+                // chains
+              </select>
+            -->
+            <object
+              data={downArrowIcon}
+              type="image/svg+xml"
+              title="down-icon" />
+          </div>
+        </div>
+      </div>
+      <div class="switch-icon" on:click={switchSwap}>
+        <img src={switchIcon} alt="switch-icon" />
+      </div>
+      <div class="input">
+        <p class="label">You receive</p>
+        <div class="input-wrapper">
+          <input
+            type="number"
+            step={1}
+            pattern="\d+"
+            bind:value={receive}
+            min={0.000001}
+            disabled />
+          <select class="fake-select" style="opacity: 1 !important" disabled>
+            <option>AR</option>
+          </select>
+        </div>
+      </div>
+    </div>
   {/if}
   <div class="swap-interact">
     <Button
@@ -147,7 +193,7 @@
         margin-bottom: -.6em
         cursor: pointer
 
-        object
+        img
           margin-left: auto
           height: $iconSize
           width: $iconSize
@@ -160,9 +206,9 @@
           -webkit-user-select: none
           transition: all .3s
 
-        &:hover object
+        &:hover img
           opacity: .75
-          // we need to leave this black, even on dark theme, cuz we are already invertin it above with "filter: var(--svg-color)"
+          // we already have an invert filter for the img tag here, so we don't need to use css variables for the border color
           border-color: #000
 
     .swap-interact
