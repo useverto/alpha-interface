@@ -40,6 +40,13 @@
     loadMetrics();
   });
 
+  export const update = () => {
+    client = new Verto(JSON.parse($keyfile));
+    psts = getTradingPostSupportedTokens();
+    orderBook = getOrderBook();
+    loadMetrics();
+  };
+
   let order;
   let selectedPost;
   let buyAmount: number = 1;
@@ -332,7 +339,7 @@
   <title>Verto — Trade</title>
 </svelte:head>
 
-<NavBar />
+<NavBar {update} />
 <div class="trade">
   <Balance />
   <div class="metrics">

@@ -23,6 +23,7 @@
   > = client.getAssets($address);
 
   export const update = () => {
+    client = new Verto(JSON.parse($keyfile));
     balances = client.getAssets($address);
   };
 
