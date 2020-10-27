@@ -11,8 +11,7 @@
     "fmt:check": "prettier --check ."
   },
   "gitHooks": {
-    "pre-commit": "yarn prefmt && prettier --write . && git add -A",
-    "commit-msg": "node verify_commit.js"
+    "pre-commit": "yarn prefmt && prettier --write . && git add -A"
   },
   "dependencies": {
     "@verto/lib": "^0.6.1",
