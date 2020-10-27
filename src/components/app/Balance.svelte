@@ -7,7 +7,7 @@
   import { notification } from "../../stores/notificationStore";
   import { NotificationType } from "../../utils/types";
   import downArrowIcon from "../../assets/down-arrow.svg";
-  import copyIcon from "../../assets/copy.svg";
+  import copyIcon from "../../assets/clipboard.svg";
 
   export let showThemeSwitcher: boolean = false;
 
@@ -30,7 +30,7 @@
       "Copied",
       "Copied address to clipboard",
       NotificationType.log,
-      850
+      1000
     );
   }
 </script>
