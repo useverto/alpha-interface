@@ -730,7 +730,7 @@
   bind:opened={tokenModalOpened}
   confirmation={true}
   onConfirm={addCustomToken}>
-  <h3 style="text-align: center;">Custom Token Contract ID</h3>
+  <h3 style="text-align: center;">Add Token</h3>
   <input
     type="text"
     bind:value={newTokenContract}
