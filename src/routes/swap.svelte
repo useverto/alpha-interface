@@ -1,7 +1,8 @@
 <script lang="typescript">
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
-  import { SwapMode } from "../utils/types";
+  import { notification } from "../stores/notificationStore";
+  import { NotificationType, SwapMode } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
@@ -63,6 +64,17 @@
         rate
       );
 
+      if (swap === "ar") {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
+
       confirmModalText = `You're sending ${swap.ar} AR`;
       confirmModalOpened = true;
       loading = false;
@@ -75,10 +87,64 @@
         sendAmount
       );
 
+      if (swap === "ar") {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
+
+      // @ts-ignore
+      let balance = await window.ethereum.request({
+        method: "eth_getBalance",
+        // @ts-ignore
+        params: [window.ethereum.selectedAddress, "latest"],
+      });
+      balance = parseInt(balance, 16) / 1e18;
+
+      if (swap.chain > balance) {
+        notification.notify(
+          "Error",
+          `You don't have enough ${chain}.`,
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
+
       confirmModalText = `You're sending ${swap.chain} ${chain} + ${swap.ar} AR`;
       confirmModalOpened = true;
       loading = false;
       return;
+    }
+  }
+
+  async function sendSwap() {
+    for (const tx of swap.txs) {
+      if (tx.tags) {
+        await client.arweave.transactions.sign(tx, client.keyfile);
+        await client.arweave.transactions.post(tx);
+      } else {
+        tx.value *= 1e18;
+        // @ts-ignore
+        await window.ethereum.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              to: tx.to,
+              // @ts-ignore
+              from: window.ethereum.selectedAddress,
+              // @ts-ignore
+              value: tx.value.toString(16),
+            },
+          ],
+        });
+      }
     }
   }
 </script>
@@ -206,7 +272,10 @@
   {/if}
 </div>
 <Footer />
-<Modal bind:opened={confirmModalOpened} confirmation={true}>
+<Modal
+  bind:opened={confirmModalOpened}
+  confirmation={true}
+  onConfirm={sendSwap}>
   <p style="text-align: center;">
     {#if swapMode === SwapMode.AR}
       Swapping {sendAmount} AR at a rate of {rate}
