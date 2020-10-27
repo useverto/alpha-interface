@@ -17,6 +17,7 @@
   import Button from "../components/Button.svelte";
   import { cubicOut } from "svelte/easing";
   import Modal from "../components/Modal.svelte";
+  import { saveSetting } from "../utils/settings";
 
   if (process.browser && !$loggedIn) goto("/");
 
@@ -39,6 +40,13 @@
     loadMetrics();
   });
 
+  export const update = () => {
+    client = new Verto(JSON.parse($keyfile));
+    psts = getTradingPostSupportedTokens();
+    orderBook = getOrderBook();
+    loadMetrics();
+  };
+
   let order;
   let selectedPost;
   let buyAmount: number = 1;
@@ -46,10 +54,12 @@
   let buyToken: string;
   let sellToken: string;
   let sellRate: number = 1;
-  let mode: TradeMode = TradeMode.Sell;
+  let mode: TradeMode = TradeMode.Buy;
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
+  let tokenModalOpened: boolean = false;
+  let newTokenContract: string = "";
 
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
@@ -81,6 +91,7 @@
 
     loading = true;
     let orders = await orderBook;
+    let tokens = await psts;
 
     if ($address === selectedPost) {
       notification.notify(
@@ -94,10 +105,11 @@
     }
 
     if (mode === TradeMode.Sell) {
+      const token = tokens.find((pst) => pst.ticker === sellToken).id;
       order = await client.createOrder(
         "sell",
         sellAmount,
-        (await client.getTokens()).find((pst) => pst.ticker === sellToken).id,
+        token,
         selectedPost,
         sellRate
       );
@@ -122,6 +134,7 @@
         return;
       }
 
+      await client.saveToken(token);
       confirmModalText = `You're sending ${order.pst} ${sellToken} + ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
@@ -144,12 +157,8 @@
         return;
       }
 
-      order = await client.createOrder(
-        "buy",
-        buyAmount,
-        (await client.getTokens()).find((pst) => pst.ticker === buyToken).id,
-        selectedPost
-      );
+      const token = tokens.find((pst) => pst.ticker === buyToken).id;
+      order = await client.createOrder("buy", buyAmount, token, selectedPost);
 
       if (order === "ar") {
         notification.notify(
@@ -171,6 +180,7 @@
         return;
       }
 
+      await client.saveToken(token);
       confirmModalText = `You're sending ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
@@ -206,13 +216,18 @@
       const token = loadedPSTs.find(
         (pst) => pst.ticker === (mode === TradeMode.Sell ? sellToken : buyToken)
       )?.id;
-      let orders = res.find((orders) => orders.token === token).orders;
-      orders.map((order) => {
-        if (order.type === "Sell") {
-          order.amnt = Math.floor(order.amnt);
-        }
-      });
-      return orders.sort((a, b) => b.rate - a.rate);
+      let table = res.find((orders) => orders.token === token);
+      if (table) {
+        let orders = table.orders;
+        orders.map((order) => {
+          if (order.type === "Sell") {
+            order.amnt = Math.floor(order.amnt);
+          }
+        });
+        return orders.sort((a, b) => b.rate - a.rate);
+      } else {
+        return [];
+      }
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
@@ -295,13 +310,36 @@
     }
     lodingMetrics = false;
   }
+
+  $: {
+    if (sellToken === "custom-token" || buyToken === "custom-token") {
+      tokenModalOpened = true;
+      // don't await if it is already resolved
+      psts.then((loadedPsts) => {
+        if (sellToken === "custom-token") sellToken = loadedPsts[0].ticker;
+        if (buyToken === "custom-token") buyToken = loadedPsts[0].ticker;
+      });
+    }
+  }
+
+  async function addCustomToken() {
+    const ticker = await client.saveToken(newTokenContract);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
+    psts = getTradingPostSupportedTokens();
+    if (mode === TradeMode.Sell) {
+      sellToken = ticker;
+    } else {
+      buyToken = ticker;
+    }
+    newTokenContract = "";
+  }
 </script>
 
 <svelte:head>
   <title>Verto — Trade</title>
 </svelte:head>
 
-<NavBar />
+<NavBar {update} />
 <div class="trade">
   <Balance />
   <div class="metrics">
@@ -350,19 +388,19 @@
   <div class="trade-form">
     <div class="menu">
       <button
-        class:active={mode === TradeMode.Sell}
-        on:click={() => {
-          mode = TradeMode.Sell;
-          orderBook = getOrderBook();
-          loadMetrics();
-        }}>Sell</button>
-      <button
         class:active={mode === TradeMode.Buy}
         on:click={() => {
           mode = TradeMode.Buy;
           orderBook = getOrderBook();
           loadMetrics();
         }}>Buy</button>
+      <button
+        class:active={mode === TradeMode.Sell}
+        on:click={() => {
+          mode = TradeMode.Sell;
+          orderBook = getOrderBook();
+          loadMetrics();
+        }}>Sell</button>
     </div>
     {#if mode === TradeMode.Sell}
       <div
@@ -400,6 +438,7 @@
                   {#each loadedPSTs as pst}
                     <option value={pst.ticker}>{pst.ticker}</option>
                   {/each}
+                  <option value="custom-token">Custom token...</option>
                 </select>
                 <object
                   data={downArrowIcon}
@@ -541,6 +580,7 @@
                   {#each loadedPSTs as pst}
                     <option value={pst.ticker}>{pst.ticker}</option>
                   {/each}
+                  <option value="custom-token">Custom token...</option>
                 </select>
                 <object
                   data={downArrowIcon}
@@ -687,6 +727,17 @@
 </div>
 <Footer />
 <Modal
+  bind:opened={tokenModalOpened}
+  confirmation={true}
+  onConfirm={addCustomToken}>
+  <h3 style="text-align: center;">Custom Token Contract ID</h3>
+  <input
+    type="text"
+    bind:value={newTokenContract}
+    class="light contract-id"
+    placeholder="Token Contract ID" />
+</Modal>
+<Modal
   bind:opened={confirmModalOpened}
   confirmation={true}
   onConfirm={confirmTrade}
@@ -828,6 +879,6 @@
 
       .content
         p
-          color: var(--secondary-text-color)
+          color: var(--primary-text-color)
 
 </style>

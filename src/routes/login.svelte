@@ -3,18 +3,17 @@
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
-  import { keyfile, loggedIn, address } from "../stores/keyfileStore";
+  import { keyfile, loggedIn, address, profiles } from "../stores/keyfileStore";
   import { notification } from "../stores/notificationStore";
   import { NotificationType } from "../utils/types";
   import { query } from "../api-client";
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
+  import { watchlist } from "../stores/watchlistStore";
 
   let isDragOver = false;
   let files: File[] = [];
   let client;
-
-  if (process.browser && $loggedIn) goto("/app");
 
   // let's create a new client
   if (process.browser) {
@@ -36,7 +35,7 @@
     ) {
       const reader = new FileReader();
       reader.onload = async () => {
-        if (typeof reader.result !== "string") goto("/");
+        if (typeof reader.result !== "string") return goto("/");
         // @ts-ignore
         let _address = await client.wallets.jwkToAddress(
           JSON.parse(reader.result)
@@ -53,6 +52,9 @@
         if (outTxs.length > 0) {
           keyfile.set(reader.result);
           address.set(_address);
+          profiles.addKeyfile(_address, reader.result);
+          // @ts-ignore
+          watchlist.reload();
           goto("/app");
           notification.notify(
             "Welcome",
@@ -112,23 +114,30 @@
     <h1>Drop your keyfile here</h1>
   </div>
 {/if}
-<div class="Login">
+<div class="Login" in:fade={{ duration: loggedIn ? 430 : 0 }}>
   <div class="instructions">
     <div class="content">
       <h1>
-        Sign in to <span class="verto-name"><a href="/">Verto</a></span><span
-          class="beta">alpha</span>
+        {#if $loggedIn}
+          Add a <span class="verto-name"><a href="/app">keyfile</a></span>
+        {:else}
+          Sign in to <span class="verto-name"><a href="/">Verto</a></span><span
+            class="beta">alpha</span>
+        {/if}
       </h1>
       <p>
-        To sign in, just drag and drop your Arweave Keyfile on this page. <br /><br />If
-        you don’t yet have a keyfile, you can get one by creating an <a
+        {#if $loggedIn}To add a new keyfile{:else}To sign in{/if}, just drag and
+        drop your Arweave Keyfile on this page. <br /><br />If you don’t yet
+        have a keyfile, you can get one by creating an <a
           href="https://www.arweave.org/wallet">Arweave Wallet</a>.
       </p>
       <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
   </div>
   <div class="arweave-login">
-    <h1>Sign in with your Arweave Keyfile</h1>
+    <h1>
+      {#if $loggedIn}Add a keyfile{:else}Sign in with your Arweave Keyfile{/if}
+    </h1>
     <img src={stroke} alt="stroke" class="Stroke" draggable={false} />
     <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false} />
     <p>
@@ -138,9 +147,6 @@
   </div>
 </div>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   =fixedFull()

@@ -14,6 +14,10 @@
       timestamp: number;
     }[]
   > = client.getTransactions($address);
+
+  export const update = () => {
+    transactions = client.getTransactions($address);
+  };
 </script>
 
 <div class="section">
