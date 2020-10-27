@@ -11,6 +11,8 @@
   import switchIcon from "../assets/switch.svg";
   import downArrowIcon from "../assets/down-arrow.svg";
   import Button from "../components/Button.svelte";
+  import SkeletonLoading from "../components/SkeletonLoading.svelte";
+  import Modal from "../components/Modal.svelte";
 
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
@@ -19,9 +21,16 @@
   let connected: boolean = true;
   let client = new Verto();
   let swapMode: SwapMode = SwapMode.CHAIN;
+  let chain: string;
   let sendAmount: number = 0.01;
   let rate: number = 0.01;
   let receive: number = 0.001; //TODO john
+
+  let loading: boolean = false;
+  let swap;
+
+  let confirmModalOpened: boolean = false;
+  let confirmModalText: string = "";
 
   let switchSwap = () =>
     (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
@@ -41,6 +50,36 @@
 
   function update() {
     client = new Verto(JSON.parse($keyfile));
+  }
+
+  async function createSwap() {
+    loading = true;
+    if (swapMode === SwapMode.AR) {
+      swap = await client.createSwap(
+        chain,
+        await client.recommendPost(),
+        sendAmount,
+        null,
+        rate
+      );
+
+      confirmModalText = `You're sending ${swap.ar} AR`;
+      confirmModalOpened = true;
+      loading = false;
+      return;
+    } else if (swapMode === SwapMode.CHAIN) {
+      swap = await client.createSwap(
+        chain,
+        await client.recommendPost(),
+        null,
+        sendAmount
+      );
+
+      confirmModalText = `You're sending ${swap.chain} ${chain} + ${swap.ar} AR`;
+      confirmModalOpened = true;
+      loading = false;
+      return;
+    }
   }
 </script>
 
@@ -80,15 +119,9 @@
             bind:value={rate}
             min={0.000001} />
           <div class="select-container">
-            <select>
+            <select bind:value={chain}>
               <option value="ETH">ETH/AR</option>
             </select>
-            <!-- TODO: john -->
-            <!--
-              <select bind:value={chainOrSomethin??}>
-                // chains
-              </select>
-            -->
             <object
               data={downArrowIcon}
               type="image/svg+xml"
@@ -109,15 +142,9 @@
             bind:value={sendAmount}
             min={0.000001} />
           <div class="select-container">
-            <select>
+            <select bind:value={chain}>
               <option value="ETH">ETH</option>
             </select>
-            <!-- TODO: john -->
-            <!--
-              <select bind:value={chainOrSomethin??}>
-                // chains
-              </select>
-            -->
             <object
               data={downArrowIcon}
               type="image/svg+xml"
@@ -147,9 +174,11 @@
   {/if}
   {#if hasMetaMask}
     <div class="swap-interact">
-      {#if connected}
+      {#if loading}
+        <SkeletonLoading style="width: 100%; height: 2.5em" />
+      {:else if connected}
         <Button
-          click={() => {}}
+          click={createSwap}
           style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
           Swap
         </Button>
@@ -177,6 +206,24 @@
   {/if}
 </div>
 <Footer />
+<Modal bind:opened={confirmModalOpened} confirmation={true}>
+  <p style="text-align: center;">
+    {#if swapMode === SwapMode.AR}
+      Swapping {sendAmount} AR at a rate of {rate}
+      {chain}/AR
+    {:else if swapMode === SwapMode.CHAIN}
+      Swapping {sendAmount}
+      {chain} for ~{'TODO'} AR
+    {/if}
+  </p>
+  <p style="text-align: center">
+    {#await confirmModalText}
+      Loading fees...
+    {:then loadedText}
+      {loadedText}
+    {/await}
+  </p>
+</Modal>
 
 <style lang="sass">
 
