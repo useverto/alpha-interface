@@ -7,7 +7,7 @@
   import { notification } from "../../stores/notificationStore";
   import { NotificationType } from "../../utils/types";
   import downArrowIcon from "../../assets/down-arrow.svg";
-  import copyIcon from "../../assets/clipboard.svg";
+  import copyIcon from "../../assets/copy.svg";
 
   export let showThemeSwitcher: boolean = false;
 
