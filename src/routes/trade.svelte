@@ -54,7 +54,7 @@
   let buyToken: string;
   let sellToken: string;
   let sellRate: number = 1;
-  let mode: TradeMode = TradeMode.Sell;
+  let mode: TradeMode = TradeMode.Buy;
   let activeMenu: string = "open";
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
@@ -388,19 +388,19 @@
   <div class="trade-form">
     <div class="menu">
       <button
-        class:active={mode === TradeMode.Sell}
-        on:click={() => {
-          mode = TradeMode.Sell;
-          orderBook = getOrderBook();
-          loadMetrics();
-        }}>Sell</button>
-      <button
         class:active={mode === TradeMode.Buy}
         on:click={() => {
           mode = TradeMode.Buy;
           orderBook = getOrderBook();
           loadMetrics();
         }}>Buy</button>
+      <button
+        class:active={mode === TradeMode.Sell}
+        on:click={() => {
+          mode = TradeMode.Sell;
+          orderBook = getOrderBook();
+          loadMetrics();
+        }}>Sell</button>
     </div>
     {#if mode === TradeMode.Sell}
       <div
