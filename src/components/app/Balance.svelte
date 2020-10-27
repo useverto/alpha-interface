@@ -123,6 +123,7 @@
         
         @media screen and (max-width: 720px)
           overflow-wrap: anywhere
+          max-width: 90vw
 
     h1.total-balance
       font-size: 2.3em
