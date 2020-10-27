@@ -64,6 +64,16 @@
         rate
       );
 
+      if (swap === "arLink") {
+        notification.notify(
+          "Error",
+          "Setup ArLink.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      }
       if (swap === "ar") {
         notification.notify(
           "Error",
