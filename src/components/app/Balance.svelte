@@ -36,7 +36,7 @@
 </script>
 
 <div class="balance">
-  {#if $balance === 0}
+  {#if $balance === null}
     {#if showThemeSwitcher}
       <div>
         <SkeletonLoading style="height: 1em; width: 120px" />

@@ -1,4 +1,4 @@
-import { writable, derived, get } from "svelte/store";
+import { writable, derived, get, readable } from "svelte/store";
 import Arweave from "arweave";
 import type { IProfile } from "../utils/types";
 
@@ -115,27 +115,30 @@ function createProfilesStore() {
 }
 
 // return the balance
-export const balance = derived(
-  address,
-  ($address, set: Function) => {
-    // @ts-ignore
-    if (!process.browser) return;
-    const client = new Arweave({
-        host: "arweave.net",
-        port: 443,
-        protocol: "https",
-        timeout: 20000,
-      }),
-      getBalance = () =>
-        client.wallets
-          .getBalance($address)
-          .then((_balance) => set(client.ar.winstonToAr(_balance)));
-    getBalance();
-    // refresh in every minute
-    setInterval(getBalance, 60000);
-  },
-  0
-);
+export const balance = readable(null, (set) => {
+  // @ts-ignore
+  if (!process.browser) return;
+  const client = new Arweave({
+      host: "arweave.net",
+      port: 443,
+      protocol: "https",
+      timeout: 20000,
+    }),
+    getBalance = () =>
+      client.wallets
+        .getBalance(get(address))
+        .then((_balance) => set(client.ar.winstonToAr(_balance)));
+  getBalance();
+  // update balance on keyfile switch
+  const unsubscribe = address.subscribe(getBalance);
+  // refresh in every minute
+  const clearbalanceInterval = setInterval(getBalance, 60000);
+
+  return function stop() {
+    clearInterval(clearbalanceInterval);
+    unsubscribe();
+  };
+});
 
 // a derived store
 // acts like a computed variable in Vue
