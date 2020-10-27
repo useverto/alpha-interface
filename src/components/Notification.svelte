@@ -17,6 +17,7 @@
   function hide() {
     notification.remove();
     timeout = null;
+    hover = false;
   }
 
   $: {
@@ -53,9 +54,6 @@
   </div>
 {/if}
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .notification
@@ -75,7 +73,12 @@
     transition: all .3s
 
     @media screen and (max-width: 720px)
-      max-width: 95vw
+      $mobileSide: 1.2em
+      bottom: unset
+      top: $mobileSide
+      left: $mobileSide
+      right: $mobileSide
+      max-width: calc(100vw - #{$mobileSide * 2})
 
     img.notification-icon
       margin-right: .8em
