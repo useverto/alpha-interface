@@ -2,7 +2,7 @@
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType, SwapMode, ActiveMenu } from "../utils/types";
+  import { NotificationType, SwapMode } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
   import { fade, fly } from "svelte/transition";
@@ -34,8 +34,6 @@
 
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
-
-  let activeMenu: ActiveMenu = ActiveMenu.open;
 
   let switchSwap = () =>
     (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
@@ -313,125 +311,60 @@
   </div>
   <div class="orders">
     <h1 class="title">Orders</h1>
-    <div class="menu">
-      <button
-        class:active={activeMenu === ActiveMenu.open}
-        on:click={() => (activeMenu = ActiveMenu.open)}>Open</button>
-      <button
-        class:active={activeMenu === ActiveMenu.closed}
-        on:click={() => (activeMenu = ActiveMenu.closed)}>Closed</button>
+    <div
+      class="content"
+      in:fly={{ duration: 150, x: -1000, delay: 65, easing: cubicOut }}
+      out:fly={{ duration: 150, x: -1000, easing: cubicOut }}>
+      <table>
+        <tr>
+          <th>OP</th>
+          <th>Quantity</th>
+          <th>Rate</th>
+          <th>Filled</th>
+        </tr>
+        <!-- THIS IS ESSENTIALLY THE SAME STUFF AS ON TRADE.SVELTE -->
+        <!---{#await orderBook}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 10%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+              </tr>
+            {/each}
+          {:then loadedOrders}
+            {#if loadedOrders.length === 0}
+              <p>This trading post doesn't have any open orders!</p>
+            {/if}
+            {#each loadedOrders as trade}
+              <tr>
+                <td><span class="direction">{trade.type}</span></td>
+                <td>
+                  {trade.amnt}
+                  {trade.type === 'Sell' ? (mode === TradeMode.Sell ? sellToken : buyToken) : 'AR'}
+                </td>
+                <td>
+                  {#if trade.type === 'Sell'}
+                    {1 / trade.rate} AR/{mode === TradeMode.Sell ? sellToken : buyToken}
+                  {:else}---{/if}
+                </td>
+                <td>
+                  {trade.received}
+                  {trade.type === 'Sell' ? 'AR' : mode === TradeMode.Sell ? sellToken : buyToken}
+                </td>
+              </tr>
+            {/each}
+          {/await}-->
+      </table>
     </div>
-    {#if activeMenu === ActiveMenu.open}
-      <div
-        class="content"
-        in:fly={{ duration: 150, x: -1000, delay: 65, easing: cubicOut }}
-        out:fly={{ duration: 150, x: -1000, easing: cubicOut }}>
-        <table>
-          <tr>
-            <th>OP</th>
-            <th>Quantity</th>
-            <th>Rate</th>
-            <th>Total</th>
-          </tr>
-          <!-- THIS IS ESSENTIALLY THE SAME STUFF AS ON TRADE.SVELTE -->
-          <!---{#await orderBook}
-            {#each Array(5) as _}
-              <tr>
-                <td style="width: 10%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-              </tr>
-            {/each}
-          {:then loadedOrders}
-            {#if loadedOrders.length === 0}
-              <p>This trading post doesn't have any open orders!</p>
-            {/if}
-            {#each loadedOrders as trade}
-              <tr>
-                <td><span class="direction">{trade.type}</span></td>
-                <td>
-                  {trade.amnt}
-                  {trade.type === 'Sell' ? (mode === TradeMode.Sell ? sellToken : buyToken) : 'AR'}
-                </td>
-                <td>
-                  {#if trade.type === 'Sell'}
-                    {1 / trade.rate} AR/{mode === TradeMode.Sell ? sellToken : buyToken}
-                  {:else}---{/if}
-                </td>
-                <td>
-                  {trade.received}
-                  {trade.type === 'Sell' ? 'AR' : mode === TradeMode.Sell ? sellToken : buyToken}
-                </td>
-              </tr>
-            {/each}
-          {/await}-->
-        </table>
-      </div>
-    {:else}
-      <div
-        class="content"
-        in:fly={{ duration: 150, x: 1000, delay: 65, easing: cubicOut }}
-        out:fly={{ duration: 150, x: 1000, easing: cubicOut }}>
-        <table>
-          <tr>
-            <th>OP</th>
-            <th>Quantity</th>
-            <th>Rate</th>
-            <th>Total</th>
-          </tr>
-          <!-- THIS IS ESSENTIALLY THE SAME STUFF AS ON TRADE.SVELTE -->
-          <!---{#await orderBook}
-            {#each Array(5) as _}
-              <tr>
-                <td style="width: 10%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-              </tr>
-            {/each}
-          {:then loadedOrders}
-            {#if loadedOrders.length === 0}
-              <p>This trading post doesn't have any open orders!</p>
-            {/if}
-            {#each loadedOrders as trade}
-              <tr>
-                <td><span class="direction">{trade.type}</span></td>
-                <td>
-                  {trade.amnt}
-                  {trade.type === 'Sell' ? (mode === TradeMode.Sell ? sellToken : buyToken) : 'AR'}
-                </td>
-                <td>
-                  {#if trade.type === 'Sell'}
-                    {1 / trade.rate} AR/{mode === TradeMode.Sell ? sellToken : buyToken}
-                  {:else}---{/if}
-                </td>
-                <td>
-                  {trade.received}
-                  {trade.type === 'Sell' ? 'AR' : mode === TradeMode.Sell ? sellToken : buyToken}
-                </td>
-              </tr>
-            {/each}
-          {/await}-->
-        </table>
-      </div>
-    {/if}
   </div>
 </div>
 <Footer />
