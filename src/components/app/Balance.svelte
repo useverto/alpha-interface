@@ -4,7 +4,10 @@
   import { theme } from "../../stores/themeStore";
   import { Theme } from "../../utils/types";
   import SkeletonLoading from "../SkeletonLoading.svelte";
+  import { notification } from "../../stores/notificationStore";
+  import { NotificationType } from "../../utils/types";
   import downArrowIcon from "../../assets/down-arrow.svg";
+  import copyIcon from "../../assets/copy.svg";
 
   export let showThemeSwitcher: boolean = false;
 
@@ -13,10 +16,27 @@
     if (typeof val === "string") val = parseFloat(val);
     return val.toFixed(7);
   }
+
+  function copyAddress() {
+    const copyElement = document.createElement("textarea");
+    copyElement.style.opacity = "0";
+    copyElement.value = $address;
+
+    document.body.appendChild(copyElement);
+    copyElement.select();
+    document.execCommand("copy");
+    document.body.removeChild(copyElement);
+    notification.notify(
+      "Copied",
+      "Copied address to clipboard",
+      NotificationType.log,
+      1000
+    );
+  }
 </script>
 
 <div class="balance">
-  {#if $balance === 0}
+  {#if $balance === null}
     {#if showThemeSwitcher}
       <div>
         <SkeletonLoading style="height: 1em; width: 120px" />
@@ -58,7 +78,12 @@
     <h1 class="total-balance" in:fade={{ duration: 150 }}>
       {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
     </h1>
-    <p class="wallet" in:fade={{ duration: 150 }}>Wallet: {$address}</p>
+    <p class="wallet" in:fade={{ duration: 150 }}>
+      Wallet: {$address}<img
+        src={copyIcon}
+        alt="copy-address"
+        on:click={copyAddress} />
+    </p>
   {/if}
 </div>
 
@@ -84,9 +109,21 @@
 
       &.wallet
         text-transform: none
+        justify-content: normal
+
+        img
+          height: .97em
+          filter: var(--svg-color)
+          margin-left: .56em
+          cursor: pointer
+          transition: all .3s
+
+          &:hover
+            opacity: .7
         
         @media screen and (max-width: 720px)
           overflow-wrap: anywhere
+          max-width: 90vw
 
     h1.total-balance
       font-size: 2.3em
