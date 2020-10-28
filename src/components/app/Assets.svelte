@@ -176,7 +176,7 @@
             on:click={(e) => {
               e.preventDefault();
               addTokenModalOpened = true;
-            }}>add a custom one</a>?
+            }}>add one</a>?
         </p>
       {:else}
         <table in:fade={{ duration: 300 }}>
@@ -236,7 +236,7 @@
   bind:opened={addTokenModalOpened}
   confirmation={true}
   onConfirm={addToken}>
-  <h3 style="text-align: center;">Custom Token Contract ID</h3>
+  <h3 style="text-align: center;">Add Token</h3>
   <input
     type="text"
     bind:value={newToken}
