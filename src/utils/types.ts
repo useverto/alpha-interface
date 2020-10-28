@@ -101,3 +101,8 @@ export enum SwapMode {
   CHAIN = "CHAIN",
   AR = "AR",
 }
+
+export enum ActiveMenu {
+  open,
+  closed,
+}

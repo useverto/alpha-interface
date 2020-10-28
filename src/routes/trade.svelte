@@ -3,7 +3,7 @@
   import { address, keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType, TradeMode } from "../utils/types";
+  import { NotificationType, TradeMode, ActiveMenu } from "../utils/types";
   import Verto from "@verto/lib";
   import type { Token, TokenInstance } from "../utils/types";
   import NavBar from "../components/NavBar.svelte";
@@ -55,7 +55,7 @@
   let sellToken: string;
   let sellRate: number = 1;
   let mode: TradeMode = TradeMode.Buy;
-  let activeMenu: string = "open";
+  let activeMenu: ActiveMenu = ActiveMenu.open;
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
   let tokenModalOpened: boolean = false;
@@ -661,13 +661,13 @@
   <div class="orders">
     <div class="menu">
       <button
-        class:active={activeMenu === 'open'}
-        on:click={() => (activeMenu = 'open')}>Open Orders</button>
+        class:active={activeMenu === ActiveMenu.open}
+        on:click={() => (activeMenu = ActiveMenu.open)}>Open Orders</button>
       <!-- <button
-        class:active={activeMenu === 'closed'}
-        on:click={() => (activeMenu = 'closed')}>Closed Orders</button> -->
+        class:active={activeMenu === ActiveMenu.closed}
+        on:click={() => (activeMenu = ActiveMenu.closed)}>Closed Orders</button> -->
     </div>
-    {#if activeMenu === 'open'}
+    {#if activeMenu === ActiveMenu.open}
       <div
         class="content"
         in:fly={{ duration: 150, x: -1000, delay: 65, easing: cubicOut }}
