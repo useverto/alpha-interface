@@ -14,6 +14,7 @@
   import Button from "../components/Button.svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Modal from "../components/Modal.svelte";
+  import Line from "svelte-chartjs/src/Line.svelte";
 
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
@@ -166,120 +167,147 @@
 <NavBar {update} />
 <div class="swap">
   <Balance />
-  {#if swapMode === SwapMode.AR}
-    <div class="swap-container" in:fade={{ duration: 280 }}>
-      <div class="input">
-        <p class="label">You send</p>
-        <div class="input-wrapper">
-          <input
-            type="number"
-            step={1}
-            pattern="\d+"
-            bind:value={sendAmount}
-            min={0.000001} />
-          <select class="fake-select" style="opacity: 1 !important" disabled>
-            <option>AR</option>
-          </select>
-        </div>
-      </div>
-      <div class="switch-icon" on:click={switchSwap}>
-        <img src={switchIcon} alt="switch-icon" />
-      </div>
-      <div class="input">
-        <p class="label">Rate</p>
-        <div class="input-wrapper">
-          <input
-            type="number"
-            step={1}
-            pattern="\d+"
-            bind:value={rate}
-            min={0.000001} />
-          <div class="select-container">
-            <select bind:value={chain}>
-              <option value="ETH">ETH/AR</option>
+  <div class="swap-content">
+    <div class="graph-container" in:fade={{ duration: 300 }}>
+      <Line
+        data={{ labels: ['05.10', '05.11', '05.12', '05.13'], datasets: [{ data: [10, 20, 30, 24, 31, 18, 24], backgroundColor: 'transparent', borderColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              }, pointBackgroundColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              } }] }}
+        options={{ elements: { point: { radius: 0 }, line: { borderWidth: 5, borderCapStyle: 'round' } }, maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
+    </div>
+    <div class="swap-form">
+      {#if swapMode === SwapMode.AR}
+        <div class="input" in:fade={{ duration: 260 }}>
+          <p class="label">You send</p>
+          <div class="input-wrapper">
+            <input
+              type="number"
+              step={1}
+              pattern="\d+"
+              bind:value={sendAmount}
+              min={0.000001} />
+            <select class="fake-select" style="opacity: 1 !important" disabled>
+              <option>AR</option>
             </select>
-            <object
-              data={downArrowIcon}
-              type="image/svg+xml"
-              title="select-icon" />
           </div>
         </div>
-      </div>
-    </div>
-  {:else if swapMode === SwapMode.CHAIN}
-    <div class="swap-container" in:fade={{ duration: 280 }}>
-      <div class="input">
-        <p class="label">You send</p>
-        <div class="input-wrapper">
-          <input
-            type="number"
-            step={1}
-            pattern="\d+"
-            bind:value={sendAmount}
-            min={0.000001} />
-          <div class="select-container">
-            <select bind:value={chain}>
-              <option value="ETH">ETH</option>
-            </select>
-            <object
-              data={downArrowIcon}
-              type="image/svg+xml"
-              title="down-icon" />
+        <div class="switch-icon" on:click={switchSwap}>
+          <img src={switchIcon} alt="switch-icon" />
+        </div>
+        <div class="input" in:fade={{ duration: 260 }}>
+          <p class="label">Rate</p>
+          <div class="input-wrapper">
+            <input
+              type="number"
+              step={1}
+              pattern="\d+"
+              bind:value={rate}
+              min={0.000001} />
+            <div class="select-container">
+              <select bind:value={chain}>
+                <option value="ETH">ETH/AR</option>
+              </select>
+              <object
+                data={downArrowIcon}
+                type="image/svg+xml"
+                title="select-icon" />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="switch-icon" on:click={switchSwap}>
-        <img src={switchIcon} alt="switch-icon" />
-      </div>
-      <div class="input">
-        <p class="label">You receive</p>
-        <div class="input-wrapper">
-          <input
-            type="number"
-            step={1}
-            pattern="\d+"
-            bind:value={receive}
-            min={0.000001}
-            disabled />
-          <select class="fake-select" style="opacity: 1 !important" disabled>
-            <option>AR</option>
-          </select>
+      {:else if swapMode === SwapMode.CHAIN}
+        <div class="input" in:fade={{ duration: 260 }}>
+          <p class="label">You send</p>
+          <div class="input-wrapper">
+            <input
+              type="number"
+              step={1}
+              pattern="\d+"
+              bind:value={sendAmount}
+              min={0.000001} />
+            <div class="select-container">
+              <select bind:value={chain}>
+                <option value="ETH">ETH</option>
+              </select>
+              <object
+                data={downArrowIcon}
+                type="image/svg+xml"
+                title="down-icon" />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  {/if}
-  {#if hasMetaMask}
-    <div class="swap-interact">
-      {#if loading}
-        <SkeletonLoading style="width: 100%; height: 2.5em" />
-      {:else if connected}
-        <Button
-          click={createSwap}
-          style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
-          Swap
-        </Button>
+        <div class="switch-icon" on:click={switchSwap}>
+          <img src={switchIcon} alt="switch-icon" />
+        </div>
+        <div class="input" in:fade={{ duration: 260 }}>
+          <p class="label">You receive</p>
+          <div class="input-wrapper">
+            <input
+              type="number"
+              step={1}
+              pattern="\d+"
+              bind:value={receive}
+              min={0.000001}
+              disabled />
+            <select class="fake-select" style="opacity: 1 !important" disabled>
+              <option>AR</option>
+            </select>
+          </div>
+        </div>
+      {/if}
+      {#if hasMetaMask}
+        {#if loading}
+          <SkeletonLoading
+            style="width: 100%; height: 2.5em; margin-top: 2em;" />
+        {:else if connected}
+          <Button
+            click={createSwap}
+            style="
+              font-family: 'JetBrainsMono', monospace; 
+              text-transform: uppercase; 
+              display: block;
+              margin-top: 2em;
+            ">
+            Swap
+          </Button>
+        {:else}
+          <Button
+            click={async () => {
+              const accounts = await window.ethereum.request({
+                method: 'eth_requestAccounts',
+              });
+              if (accounts.length > 0) connected = true;
+            }}
+            style="
+              font-family: 'JetBrainsMono', monospace; 
+              text-transform: uppercase; 
+              display: block;
+              margin-top: 2em;
+            ">
+            Connect
+          </Button>
+        {/if}
       {:else}
         <Button
-          click={async () => {
-            const accounts = await window.ethereum.request({
-              method: 'eth_requestAccounts',
-            });
-            if (accounts.length > 0) connected = true;
-          }}
-          style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
-          Connect
+          disabled
+          style="
+            font-family: 'JetBrainsMono', monospace; 
+            text-transform: uppercase; 
+            display: block;
+            margin-top: 2em;
+          ">
+          Install MetaMask
         </Button>
       {/if}
     </div>
-  {:else}
-    <div class="swap-interact">
-      <Button
-        disabled
-        style="font-family: 'JetBrainsMono', monospace; text-transform: uppercase; display: block;">
-        Install MetaMask
-      </Button>
-    </div>
-  {/if}
+  </div>
 </div>
 <Footer />
 <Modal
@@ -314,64 +342,70 @@
     +table
     +page
 
-    .swap-container
-      margin: 0 auto
-      width: 42%
+    .swap-content
+      display: flex
+      align-items: stretch
+      justify-content: space-between
       margin-bottom: 2em
 
       @media screen and (max-width: 720px)
-        width: 100%
+        display: block
+        margin-bottom: 0
 
-      .input
-        +input
-        
-        p.label
-          margin-top: 0
+      .graph-container, .swap-form
+        width: 47%
 
-        .input-wrapper
-          @media screen and (max-width: 720px)
-            select, .select-container
-              width: 45% !important
+        @media screen and (max-width: 720px)
+          width: 100%
+          margin-bottom: 2em
 
+      .graph-container
+        position: relative
+
+      .swap-form
+        .input
+          +input
+          
+          p.label
+            margin-top: 0
+
+          .input-wrapper
+            @media screen and (max-width: 720px)
+              select, .select-container
+                width: 45% !important
+
+                select
+                  width: 100% !important
+
+            .select-container
               select
-                width: 100% !important
+                height: 100%
 
-          .select-container
-            select
-              height: 100%
+        .switch-icon
+          $iconSize: 1.4em
+          display: flex
+          padding:
+            top: .6em
+            right: calc(15% - #{$iconSize})
+          margin-bottom: -.6em
+          cursor: pointer
 
-      .switch-icon
-        $iconSize: 1.4em
-        display: flex
-        padding:
-          top: .6em
-          right: calc(15% - #{$iconSize})
-        margin-bottom: -.6em
-        cursor: pointer
+          img
+            margin-left: auto
+            height: $iconSize
+            width: $iconSize
+            padding: .16em
+            border-radius: 100%
+            filter: var(--svg-color)
+            border: 2px solid transparent
+            user-select: none
+            -moz-user-select: none
+            -webkit-user-select: none
+            transition: all .3s
 
-        img
-          margin-left: auto
-          height: $iconSize
-          width: $iconSize
-          padding: .16em
-          border-radius: 100%
-          filter: var(--svg-color)
-          border: 2px solid transparent
-          user-select: none
-          -moz-user-select: none
-          -webkit-user-select: none
-          transition: all .3s
-
-        &:hover img
-          opacity: .75
-          // we already have an invert filter for the img tag here, so we don't need to use css variables for the border color
-          border-color: #000
-
-    .swap-interact
-      margin: 0 auto
-      width: 42%
-
-      @media screen and (max-width: 720px)
-        width: 100%
+          &:hover img
+            opacity: .75
+            // we already have an invert filter for the img tag here, so we don't need to use css variables for the border color
+            border-color: #000
 
 </style>
