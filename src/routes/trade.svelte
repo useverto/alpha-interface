@@ -677,7 +677,7 @@
             <th>OP</th>
             <th>Quantity</th>
             <th>Rate</th>
-            <th>Total</th>
+            <th>Filled</th>
           </tr>
           {#await orderBook}
             {#each Array(5) as _}
