@@ -270,11 +270,11 @@
           </div>
         </div>
       {/if}
-      {#if hasMetaMask}
+      {#if swapMode === SwapMode.AR}
         {#if loading}
           <SkeletonLoading
             style="width: 100%; height: 2.5em; margin-top: 2em;" />
-        {:else if connected}
+        {:else}
           <Button
             click={createSwap}
             style="
@@ -283,6 +283,22 @@
               display: block;
               margin-top: 2em;
             ">
+            Swap
+          </Button>
+        {/if}
+      {:else if hasMetaMask}
+        {#if loading}
+          <SkeletonLoading
+            style="width: 100%; height: 2.5em; margin-top: 2em;" />
+        {:else if connected}
+          <Button
+            click={createSwap}
+            style="
+                font-family: 'JetBrainsMono', monospace; 
+                text-transform: uppercase; 
+                display: block;
+                margin-top: 2em;
+              ">
             Swap
           </Button>
         {:else}
@@ -294,11 +310,11 @@
               if (accounts.length > 0) connected = true;
             }}
             style="
-              font-family: 'JetBrainsMono', monospace; 
-              text-transform: uppercase; 
-              display: block;
-              margin-top: 2em;
-            ">
+                font-family: 'JetBrainsMono', monospace; 
+                text-transform: uppercase; 
+                display: block;
+                margin-top: 2em;
+              ">
             Connect
           </Button>
         {/if}
@@ -306,11 +322,11 @@
         <Button
           disabled
           style="
-            font-family: 'JetBrainsMono', monospace; 
-            text-transform: uppercase; 
-            display: block;
-            margin-top: 2em;
-          ">
+              font-family: 'JetBrainsMono', monospace; 
+              text-transform: uppercase; 
+              display: block;
+              margin-top: 2em;
+            ">
           Install MetaMask
         </Button>
       {/if}
