@@ -158,6 +158,13 @@
         });
       }
     }
+    notification.notify(
+      "Sent",
+      "We're processing your swap now! This may take a few minutes.",
+      NotificationType.success,
+      5000
+    );
+    goto("/app");
   }
 </script>
 
