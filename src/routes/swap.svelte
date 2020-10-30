@@ -22,12 +22,20 @@
 
   let hasMetaMask: boolean = true;
   let connected: boolean = true;
-  let client = new Verto();
+  let client = new Verto(null, null, {
+    exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
+  });
   let swapMode: SwapMode = SwapMode.CHAIN;
   let chain: string;
   let sendAmount: number = 0.01;
   let rate: number = 0.01;
-  let receive: number = 0.001; //TODO john
+  let receive = receiveAmount();
+
+  async function receiveAmount(): Promise<number> {
+    return parseFloat(
+      ((1 / (await client.latestChainRate("ETH"))) * sendAmount).toFixed(2)
+    );
+  }
 
   let loading: boolean = false;
   let swap;
@@ -39,7 +47,9 @@
     (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
 
   onMount(async () => {
-    client = new Verto(JSON.parse($keyfile));
+    client = new Verto(JSON.parse($keyfile), null, {
+      exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
+    });
     // @ts-ignore
     hasMetaMask = typeof window.ethereum !== "undefined";
     if (hasMetaMask) {
@@ -129,7 +139,7 @@
         return;
       }
 
-      confirmModalText = `You're sending ${swap.chain} ${chain} + ${swap.ar} AR`;
+      confirmModalText = `You're sending ${swap.chain} ${chain}`;
       confirmModalOpened = true;
       loading = false;
       return;
@@ -215,19 +225,23 @@
   <Balance />
   <div class="swap-content">
     <div class="graph-container" in:fade={{ duration: 300 }}>
-      <Line
-        data={{ labels: ['05.10', '05.11', '05.12', '05.13'], datasets: [{ data: [10, 20, 30, 24, 31, 18, 24], backgroundColor: 'transparent', borderColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              }, pointBackgroundColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              } }] }}
-        options={{ elements: { point: { radius: 0 }, line: { borderWidth: 5, borderCapStyle: 'round' } }, maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
+      {#await client.chainRate('ETH')}
+        <!--  -->
+      {:then data}
+        <Line
+          data={{ labels: data.dates.reverse(), datasets: [{ data: data.rates, backgroundColor: 'transparent', borderColor: function (context) {
+                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                  gradient.addColorStop(0, '#E698E8');
+                  gradient.addColorStop(1, '#8D5FBC');
+                  return gradient;
+                }, pointBackgroundColor: function (context) {
+                  let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                  gradient.addColorStop(0, '#E698E8');
+                  gradient.addColorStop(1, '#8D5FBC');
+                  return gradient;
+                } }] }}
+          options={{ elements: { point: { radius: 0 }, line: { borderWidth: 5, borderCapStyle: 'round' } }, maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false } }], yAxes: [{ gridLines: { display: false } }] } }} />
+      {/await}
     </div>
     <div class="swap-form">
       {#if swapMode === SwapMode.AR}
@@ -277,7 +291,8 @@
               step={1}
               pattern="\d+"
               bind:value={sendAmount}
-              min={0.000001} />
+              min={0.000001}
+              on:input={() => (receive = receiveAmount())} />
             <div class="select-container">
               <select bind:value={chain}>
                 <option value="ETH">ETH</option>
@@ -295,13 +310,11 @@
         <div class="input" in:fade={{ duration: 260 }}>
           <p class="label">You receive</p>
           <div class="input-wrapper">
-            <input
-              type="number"
-              step={1}
-              pattern="\d+"
-              bind:value={receive}
-              min={0.000001}
-              disabled />
+            {#await receive}
+              <!--  -->
+            {:then loadedReceive}
+              <input value={`~${loadedReceive}`} disabled />
+            {/await}
             <select class="fake-select" style="opacity: 1 !important" disabled>
               <option>AR</option>
             </select>
@@ -427,8 +440,10 @@
       Swapping {sendAmount} AR at a rate of {rate}
       {chain}/AR
     {:else if swapMode === SwapMode.CHAIN}
-      Swapping {sendAmount}
-      {chain} for ~{'TODO'} AR
+      {#await receive then loadedReceive}
+        Swapping {sendAmount}
+        {chain} for ~{loadedReceive} AR
+      {/await}
     {/if}
   </p>
   <p style="text-align: center">
