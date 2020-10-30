@@ -166,6 +166,44 @@
     );
     goto("/app");
   }
+
+  let orderBook = getOrderBook();
+
+  async function getOrderBook(): Promise<
+    {
+      txID: string;
+      amnt: number;
+      rate?: number;
+      addr: string;
+      type: string;
+      createdAt: Date;
+      received: number;
+    }[]
+  > {
+    // TODO(@johnletey): Don't hardcode trading post
+    const config = await client.getConfig(
+      "-zkZpuG7DiIsdFzRVgWdLQ3zxU2bDY-0r90Ri8lxL-A"
+    );
+
+    try {
+      let url = config["publicURL"].startsWith("https://")
+        ? config["publicURL"]
+        : "https://" + config["publicURL"];
+      let endpoint = url.endsWith("/") ? "orders" : "/orders";
+
+      let res = await (await fetch(url + endpoint)).clone().json();
+      let table = res.find((orders) => orders.token === chain);
+      if (table) {
+        let orders = table.orders;
+        return orders.sort((a, b) => b.rate - a.rate);
+      } else {
+        return [];
+      }
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -340,52 +378,41 @@
       out:fly={{ duration: 150, x: -1000, easing: cubicOut }}>
       <table>
         <tr>
-          <th>OP</th>
           <th>Quantity</th>
           <th>Rate</th>
           <th>Filled</th>
         </tr>
-        <!-- THIS IS ESSENTIALLY THE SAME STUFF AS ON TRADE.SVELTE -->
-        <!---{#await orderBook}
-            {#each Array(5) as _}
-              <tr>
-                <td style="width: 10%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-                <td style="width: 30%">
-                  <SkeletonLoading style="width: 100%;" />
-                </td>
-              </tr>
-            {/each}
-          {:then loadedOrders}
-            {#if loadedOrders.length === 0}
-              <p>This trading post doesn't have any open orders!</p>
-            {/if}
-            {#each loadedOrders as trade}
-              <tr>
-                <td><span class="direction">{trade.type}</span></td>
-                <td>
-                  {trade.amnt}
-                  {trade.type === 'Sell' ? (mode === TradeMode.Sell ? sellToken : buyToken) : 'AR'}
-                </td>
-                <td>
-                  {#if trade.type === 'Sell'}
-                    {1 / trade.rate} AR/{mode === TradeMode.Sell ? sellToken : buyToken}
-                  {:else}---{/if}
-                </td>
-                <td>
-                  {trade.received}
-                  {trade.type === 'Sell' ? 'AR' : mode === TradeMode.Sell ? sellToken : buyToken}
-                </td>
-              </tr>
-            {/each}
-          {/await}-->
+        {#await orderBook}
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 10%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+              <td style="width: 30%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+              <td style="width: 30%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+              <td style="width: 30%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+            </tr>
+          {/each}
+        {:then loadedOrders}
+          {#if loadedOrders.length === 0}
+            <p>This trading post doesn't have any open swaps!</p>
+          {/if}
+          {#each loadedOrders as trade}
+            <tr>
+              <td>{trade.amnt} {trade.type === 'Sell' ? chain : 'AR'}</td>
+              <td>
+                {#if trade.type === 'Buy'}{trade.rate} {chain}/AR{:else}---{/if}
+              </td>
+              <td>{trade.received} {trade.type === 'Sell' ? 'AR' : chain}</td>
+            </tr>
+          {/each}
+        {/await}
       </table>
     </div>
   </div>
