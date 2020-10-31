@@ -11,7 +11,7 @@
   import { goto } from "@sapper/app";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";
-  import postsLogo from "../assets/nav/posts.svg";
+  import swapIcon from "../assets/nav/swap.svg";
   import peopleLogo from "../assets/nav/people.svg";
   import { NotificationType, DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
@@ -109,6 +109,7 @@
   <div class="menu">
     {#if $loggedIn}
       <a href="/trade">Trade</a>
+      <a href="/swap">Swap</a>
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>
       <a
@@ -170,8 +171,8 @@
         data={tradeLogo}
         type="image/svg+xml"
         title="nav-icon" /></a>
-    <a href="/gallery"><object
-        data={postsLogo}
+    <a href="/swap"><object
+        data={swapIcon}
         type="image/svg+xml"
         title="nav-icon" /></a>
     <a href="/app"><img
