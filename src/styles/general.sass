@@ -80,10 +80,13 @@ $mobileSidePadding: 10vw
     border-radius: .26em
     transition: all .3s
 
-  input, .fake-select
+  input, .fake-select, select
     width: calc(100% - #{$input-side-padding * 2} - #{$border-weight * 2})
     padding: .18em $input-side-padding
     font-size: 1.4em
+
+  select
+    width: 100%
 
   .fake-select
     opacity: 1
