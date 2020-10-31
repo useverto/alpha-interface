@@ -67,6 +67,8 @@
 
   async function createSwap() {
     loading = true;
+    let orders = await orderBook;
+
     if (swapMode === SwapMode.AR) {
       swap = await client.createSwap(
         chain,
@@ -92,6 +94,16 @@
           "You don't have enough AR.",
           NotificationType.error,
           5000
+        );
+        loading = false;
+        return;
+      }
+      if (orders.find((swap) => swap.type === "Sell") === undefined) {
+        notification.notify(
+          "Error",
+          `There aren't any ${chain} -> AR swaps open.`,
+          NotificationType.error,
+          10000
         );
         loading = false;
         return;
