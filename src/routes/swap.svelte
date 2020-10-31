@@ -537,12 +537,6 @@
             border-color: #000
 
     .orders
-      .menu
-        +menu-style
-
-        @media screen and (max-width: 720px)
-          padding-top: 0
-
       .content
         p
           color: var(--primary-text-color)
