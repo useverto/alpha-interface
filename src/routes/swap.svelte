@@ -43,6 +43,8 @@
   let confirmModalOpened: boolean = false;
   let confirmModalText: string = "";
 
+  let post: string;
+
   let switchSwap = () =>
     (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
 
@@ -50,6 +52,7 @@
     client = new Verto(JSON.parse($keyfile), null, {
       exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
     });
+    post = await client.recommendPost();
     // @ts-ignore
     hasMetaMask = typeof window.ethereum !== "undefined";
     if (hasMetaMask) {
@@ -70,13 +73,7 @@
     let orders = await orderBook;
 
     if (swapMode === SwapMode.AR) {
-      swap = await client.createSwap(
-        chain,
-        await client.recommendPost(),
-        sendAmount,
-        null,
-        rate
-      );
+      swap = await client.createSwap(chain, post, sendAmount, null, rate);
 
       if (swap === "arLink") {
         notification.notify(
@@ -114,12 +111,7 @@
       loading = false;
       return;
     } else if (swapMode === SwapMode.CHAIN) {
-      swap = await client.createSwap(
-        chain,
-        await client.recommendPost(),
-        null,
-        sendAmount
-      );
+      swap = await client.createSwap(chain, post, null, sendAmount);
 
       if (swap === "ar") {
         notification.notify(
