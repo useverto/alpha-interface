@@ -91,7 +91,6 @@
 
     loading = true;
     let orders = await orderBook;
-    let tokens = await psts;
 
     if ($address === selectedPost) {
       notification.notify(
@@ -105,11 +104,10 @@
     }
 
     if (mode === TradeMode.Sell) {
-      const token = tokens.find((pst) => pst.ticker === sellToken).id;
       order = await client.createOrder(
         "sell",
         sellAmount,
-        token,
+        sellToken,
         selectedPost,
         sellRate
       );
@@ -134,7 +132,12 @@
         return;
       }
 
-      await client.saveToken(token);
+      await client.saveToken(sellToken);
+      saveSetting(
+        "tokens",
+        JSON.parse(localStorage.getItem("tokens")),
+        $address
+      );
       confirmModalText = `You're sending ${order.pst} ${sellToken} + ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
@@ -157,8 +160,12 @@
         return;
       }
 
-      const token = tokens.find((pst) => pst.ticker === buyToken).id;
-      order = await client.createOrder("buy", buyAmount, token, selectedPost);
+      order = await client.createOrder(
+        "buy",
+        buyAmount,
+        buyToken,
+        selectedPost
+      );
 
       if (order === "ar") {
         notification.notify(
@@ -180,7 +187,12 @@
         return;
       }
 
-      await client.saveToken(token);
+      await client.saveToken(buyToken);
+      saveSetting(
+        "tokens",
+        JSON.parse(localStorage.getItem("tokens")),
+        $address
+      );
       confirmModalText = `You're sending ${order.ar} AR`;
       confirmModalOpened = true;
       loading = false;
@@ -212,17 +224,17 @@
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
       let res = await (await fetch(url + endpoint)).clone().json();
-      let loadedPSTs = await psts;
-      const token = loadedPSTs.find(
-        (pst) => pst.ticker === (mode === TradeMode.Sell ? sellToken : buyToken)
-      )?.id;
-      let table = res.find((orders) => orders.token === token);
+      let table = res.find(
+        (orders) =>
+          orders.token === (mode === TradeMode.Sell ? sellToken : buyToken)
+      );
       if (table) {
         let orders = table.orders;
         orders.map((order) => {
           if (order.type === "Sell") {
             order.amnt = Math.floor(order.amnt);
           }
+          order.received = parseFloat(order.received.toFixed(2));
         });
         return orders.sort((a, b) => b.rate - a.rate);
       } else {
@@ -262,11 +274,6 @@
     goto("/app");
   }
 
-  function cancelTrade() {
-    console.log("Cancelled trade");
-    confirmModalText = "Loading...";
-  }
-
   let tradingPostFeePercent = getTradingPostFeePercent();
 
   async function getTradingPostFeePercent(): Promise<number> {
@@ -286,12 +293,11 @@
       selectedMetric = "price";
     }
     lodingMetrics = true;
-    let ticker = mode === TradeMode.Buy ? buyToken : sellToken;
-    if (!ticker) {
-      ticker = (await psts)[0].ticker;
-    }
 
-    const contract = (await psts).find((pst) => pst.ticker === ticker).id;
+    let contract = TradeMode.Buy ? buyToken : sellToken;
+    if (!contract) {
+      contract = (await psts)[0].id;
+    }
 
     if (selectedMetric === "price") {
       const data = await client.price(contract);
@@ -308,6 +314,7 @@
       }
       metricData = data;
     }
+
     lodingMetrics = false;
   }
 
@@ -316,22 +323,31 @@
       tokenModalOpened = true;
       // don't await if it is already resolved
       psts.then((loadedPsts) => {
-        if (sellToken === "custom-token") sellToken = loadedPsts[0].ticker;
-        if (buyToken === "custom-token") buyToken = loadedPsts[0].ticker;
+        if (sellToken === "custom-token") sellToken = loadedPsts[0].id;
+        if (buyToken === "custom-token") buyToken = loadedPsts[0].id;
       });
     }
   }
 
   async function addCustomToken() {
-    const ticker = await client.saveToken(newTokenContract);
+    const id = await client.saveToken(newTokenContract);
     saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
     psts = getTradingPostSupportedTokens();
     if (mode === TradeMode.Sell) {
-      sellToken = ticker;
+      sellToken = id;
     } else {
-      buyToken = ticker;
+      buyToken = id;
     }
+    loadMetrics();
+    orderBook = getOrderBook();
     newTokenContract = "";
+  }
+
+  async function getTicker() {
+    const tokens = await psts;
+    return tokens.find(
+      (token) => token.id === (mode === TradeMode.Sell ? sellToken : buyToken)
+    ).ticker;
   }
 </script>
 
@@ -436,7 +452,7 @@
                     loadMetrics();
                   }}>
                   {#each loadedPSTs as pst}
-                    <option value={pst.ticker}>{pst.ticker}</option>
+                    <option value={pst.id}>{pst.ticker}</option>
                   {/each}
                   <option value="custom-token">Custom token...</option>
                 </select>
@@ -465,7 +481,9 @@
                 style="display: flex; width: 100%; height: 2.35em" />
             {:then _}
               <select class="fake-select" disabled>
-                <option>{'AR/' + sellToken}</option>
+                {#await getTicker() then ticker}
+                  <option>{'AR/' + ticker}</option>
+                {/await}
               </select>
             {/await}
           </div>
@@ -578,7 +596,7 @@
                     loadMetrics();
                   }}>
                   {#each loadedPSTs as pst}
-                    <option value={pst.ticker}>{pst.ticker}</option>
+                    <option value={pst.id}>{pst.ticker}</option>
                   {/each}
                   <option value="custom-token">Custom token...</option>
                 </select>
@@ -705,16 +723,22 @@
                 <td><span class="direction">{trade.type}</span></td>
                 <td>
                   {trade.amnt}
-                  {trade.type === 'Sell' ? (mode === TradeMode.Sell ? sellToken : buyToken) : 'AR'}
+                  {#await getTicker() then ticker}
+                    {trade.type === 'Sell' ? ticker : 'AR'}
+                  {/await}
                 </td>
                 <td>
                   {#if trade.type === 'Sell'}
-                    {1 / trade.rate} AR/{mode === TradeMode.Sell ? sellToken : buyToken}
+                    {#await getTicker() then ticker}
+                      {1 / trade.rate} AR/{ticker}
+                    {/await}
                   {:else}---{/if}
                 </td>
                 <td>
                   {trade.received}
-                  {trade.type === 'Sell' ? 'AR' : mode === TradeMode.Sell ? sellToken : buyToken}
+                  {#await getTicker() then ticker}
+                    {trade.type === 'Sell' ? 'AR' : ticker}
+                  {/await}
                 </td>
               </tr>
             {/each}
@@ -740,15 +764,16 @@
 <Modal
   bind:opened={confirmModalOpened}
   confirmation={true}
-  onConfirm={confirmTrade}
-  onCancel={cancelTrade}>
+  onConfirm={confirmTrade}>
   <p style="text-align: center;">
-    {#if mode === TradeMode.Buy}
-      Buying {buyAmount} AR's worth of {buyToken}
-    {:else if mode === TradeMode.Sell}
-      Selling {Math.ceil(sellAmount)}
-      {sellToken} at a rate of {sellRate} AR/{sellToken}
-    {/if}
+    {#await getTicker() then ticker}
+      {#if mode === TradeMode.Buy}
+        Buying {buyAmount} AR's worth of {ticker}
+      {:else if mode === TradeMode.Sell}
+        Selling {Math.ceil(sellAmount)}
+        {ticker} at a rate of {sellRate} AR/{ticker}
+      {/if}
+    {/await}
   </p>
   <p style="text-align: center">
     {#await confirmModalText}
