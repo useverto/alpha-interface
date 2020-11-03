@@ -170,7 +170,7 @@
             },
           ],
         });
-        if (!tx.fee) {
+        if (!tx.type) {
           const cache = JSON.parse(localStorage.getItem("swaps") || "[]");
           cache.push({
             id: hash,
