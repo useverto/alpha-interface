@@ -29,13 +29,6 @@
   let chain: string;
   let sendAmount: number = 0.01;
   let rate: number = 0.01;
-  let receive = receiveAmount();
-
-  async function receiveAmount(): Promise<number> {
-    return parseFloat(
-      ((1 / (await client.latestChainRate("ETH"))) * sendAmount).toFixed(2)
-    );
-  }
 
   let loading: boolean = false;
   let swap;
@@ -214,7 +207,9 @@
         : "https://" + config["publicURL"];
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
-      let res = await (await fetch(url + endpoint)).clone().json();
+      let res = await (await fetch("http://localhost:8080/orders"))
+        .clone()
+        .json();
       let table = res.find((orders) => orders.token === chain);
       if (table) {
         let orders = table.orders;
@@ -226,6 +221,28 @@
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
     }
+  }
+
+  let receive = receiveAmount();
+
+  async function receiveAmount(): Promise<string> {
+    let orders = await orderBook;
+
+    // if there are no AR -> CHAIN orders
+    if (orders.find((swap) => swap.type === "Buy") === undefined) {
+      return "...";
+    }
+
+    let amnt = 0;
+    for (const order of orders) {
+      if (order.amnt >= sendAmount / order.rate) {
+        return "~" + sendAmount / order.rate;
+      } else {
+        amnt += order.amnt;
+      }
+    }
+
+    return "~" + amnt;
   }
 </script>
 
@@ -326,7 +343,7 @@
             {#await receive}
               <input value="..." disabled />
             {:then loadedReceive}
-              <input value={`~${loadedReceive}`} disabled />
+              <input value={loadedReceive} disabled />
             {/await}
             <select class="fake-select" style="opacity: 1 !important" disabled>
               <option>AR</option>
