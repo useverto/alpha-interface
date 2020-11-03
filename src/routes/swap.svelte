@@ -174,7 +174,7 @@
           const cache = JSON.parse(localStorage.getItem("swaps") || "[]");
           cache.push({
             id: hash,
-            timestamp: parseInt(new Date().getTime().toString().slice(0, -3)),
+            timestamp: new Date().getTime().toString().slice(0, -3),
             value: tx.value / 1e18,
           });
           localStorage.setItem("swaps", JSON.stringify(cache));
