@@ -315,7 +315,7 @@
           <p class="label">You receive</p>
           <div class="input-wrapper">
             {#await receive}
-              <!--  -->
+              <input value="..." disabled />
             {:then loadedReceive}
               <input value={`~${loadedReceive}`} disabled />
             {/await}
