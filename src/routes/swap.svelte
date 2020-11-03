@@ -158,7 +158,7 @@
       } else {
         tx.value *= 1e18;
         // @ts-ignore
-        await window.ethereum.request({
+        const hash = await window.ethereum.request({
           method: "eth_sendTransaction",
           params: [
             {
@@ -170,6 +170,15 @@
             },
           ],
         });
+        if (!tx.fee) {
+          const cache = JSON.parse(localStorage.getItem("swaps") || "[]");
+          cache.push({
+            id: hash,
+            timestamp: parseInt(new Date().getTime().toString().slice(0, -3)),
+            value: tx.value / 1e18,
+          });
+          localStorage.setItem("swaps", JSON.stringify(cache));
+        }
       }
     }
     notification.notify(
