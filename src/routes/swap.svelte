@@ -233,11 +233,13 @@
       return "...";
     }
 
+    let send = sendAmount;
     let amnt = 0;
     for (const order of orders) {
-      if (order.amnt >= sendAmount / order.rate) {
-        return "~" + sendAmount / order.rate;
+      if (order.amnt >= send / order.rate) {
+        return "~" + (amnt + send / order.rate);
       } else {
+        send -= order.amnt * order.rate;
         amnt += order.amnt;
       }
     }
