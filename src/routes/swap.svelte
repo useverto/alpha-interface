@@ -106,26 +106,17 @@
     } else if (swapMode === SwapMode.CHAIN) {
       swap = await client.createSwap(chain, post, null, sendAmount);
 
-      if (swap === "ar") {
+      if (swap === "arLink") {
         notification.notify(
           "Error",
-          "You don't have enough AR.",
+          "Setup ArLink.",
           NotificationType.error,
           5000
         );
         loading = false;
         return;
       }
-
-      // @ts-ignore
-      let balance = await window.ethereum.request({
-        method: "eth_getBalance",
-        // @ts-ignore
-        params: [window.ethereum.selectedAddress, "latest"],
-      });
-      balance = parseInt(balance, 16) / 1e18;
-
-      if (swap.chain > balance) {
+      if (swap === "chain") {
         notification.notify(
           "Error",
           `You don't have enough ${chain}.`,
