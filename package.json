@@ -24,7 +24,8 @@
     "sapper-google-analytics": "^1.0.2",
     "sirv": "^1.0.6",
     "smartweave": "^0.3.6",
-    "svelte-chartjs": "^1.0.1"
+    "svelte-chartjs": "^1.0.1",
+    "web3": "^1.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
