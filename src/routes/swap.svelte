@@ -222,6 +222,10 @@
       return "...";
     }
 
+    orders = orders.filter((swap) => {
+      return swap.type === "Buy";
+    });
+
     let send = sendAmount;
     let amnt = 0;
     for (const order of orders) {
@@ -463,7 +467,7 @@
     {:else if swapMode === SwapMode.CHAIN}
       {#await receive then loadedReceive}
         Swapping {sendAmount}
-        {chain} for ~{loadedReceive} AR
+        {chain} for {loadedReceive} AR
       {/await}
     {/if}
   </p>
