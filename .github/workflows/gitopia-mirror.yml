@@ -1,0 +1,24 @@
+name: Gitopia Mirror
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - name: Gitopia Mirror Action
+        uses: gitopia/gitopia-mirror-action@v0.1.2
+        with:
+          gitopiaWallet: "${{ secrets.GITOPIA_WALLET }}"
+          branch: "master"
+          remoteUrl: "gitopia://pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls/Verto-test"
