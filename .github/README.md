@@ -7,7 +7,13 @@
 
   <p align="center">
     A decentralized PST exchange for Arweave
- </p>
+  </p>
+
+  <p align="center">
+    <a href="https://gitopia.org/#/pvPWBZ8A5HLpGSEfhEmK1A3PfMgB_an8vVS6L14Hsls/Verto-test">
+      <img src="https://img.shields.io/endpoint?style=&url=https://gitopia.org/mirror-badge.json" alt="Gitopia Badge">
+    </a>
+  </p>
 </p>
 
 ## About
