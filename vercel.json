@@ -22,6 +22,10 @@
       "destination": "https://discord.gg/sNgJkMg"
     },
     {
+      "source": "/link",
+      "destination": "https://arweave.net/CodqSDWXY5CALyMf9oFLCtTDRYdW4lV9X9O7j-73g1U"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }
