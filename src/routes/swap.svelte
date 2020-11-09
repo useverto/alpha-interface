@@ -162,6 +162,28 @@
             value: tx.value / 1e18,
           });
           localStorage.setItem("swaps", JSON.stringify(cache));
+
+          const tags = {
+            Exchange: "Verto",
+            Type: "Swap",
+            Chain: chain,
+            Hash: hash,
+          };
+
+          const arTx = await client.arweave.createTransaction(
+            {
+              target: post,
+              data: Math.random().toString().slice(-4),
+            },
+            keyfile
+          );
+
+          for (const [key, value] of Object.entries(tags)) {
+            arTx.addTag(key, value.toString());
+          }
+
+          await client.arweave.transactions.sign(tx, client.keyfile);
+          await client.arweave.transactions.post(tx);
         }
       }
     }
