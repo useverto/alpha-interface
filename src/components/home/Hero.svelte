@@ -23,8 +23,8 @@
         class="beta">alpha</span>
     </h1>
     <p>
-      A decentralized token exchange for <a href="https://arweave.org">Arweave</a>
-      <br />Profit Sharing Tokens
+      A decentralized trading protocol on <a
+        href="https://arweave.org">Arweave</a>.
     </p>
     <Button
       reverse={true}
@@ -32,9 +32,7 @@
       click={() => animateScroll.scrollTo({ element: '#read-more' })}>
       Read more
     </Button>
-    <Button reverse={true} href={loggedIn ? 'app' : 'login'}>
-      Exchange now
-    </Button>
+    <Button reverse={true} href={loggedIn ? 'app' : 'login'}>Trade now</Button>
   </div>
 </div>
 
