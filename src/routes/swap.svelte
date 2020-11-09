@@ -88,10 +88,16 @@
         loading = false;
         return;
       }
-      if (orders.find((swap) => swap.type === "Sell") === undefined) {
+
+      confirmModalText = `You're sending ${swap.ar} AR`;
+      confirmModalOpened = true;
+      loading = false;
+      return;
+    } else if (swapMode === SwapMode.CHAIN) {
+      if (orders.find((swap) => swap.type === "Buy") === undefined) {
         notification.notify(
           "Error",
-          `There aren't any ${chain} -> AR swaps open.`,
+          `There aren't any AR -> ${chain} swaps open.`,
           NotificationType.error,
           10000
         );
@@ -99,11 +105,6 @@
         return;
       }
 
-      confirmModalText = `You're sending ${swap.ar} AR`;
-      confirmModalOpened = true;
-      loading = false;
-      return;
-    } else if (swapMode === SwapMode.CHAIN) {
       swap = await client.createSwap(chain, post, null, sendAmount);
 
       if (swap === "arLink") {
@@ -175,15 +176,15 @@
               target: post,
               data: Math.random().toString().slice(-4),
             },
-            keyfile
+            client.keyfile
           );
 
           for (const [key, value] of Object.entries(tags)) {
             arTx.addTag(key, value.toString());
           }
 
-          await client.arweave.transactions.sign(tx, client.keyfile);
-          await client.arweave.transactions.post(tx);
+          await client.arweave.transactions.sign(arTx, client.keyfile);
+          await client.arweave.transactions.post(arTx);
         }
       }
     }
