@@ -16,6 +16,7 @@
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
   import Modal from "../components/Modal.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
+  import Loading from "../components/Loading.svelte";
 
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
@@ -277,7 +278,7 @@
   <div class="swap-content">
     <div class="graph-container" in:fade={{ duration: 300 }}>
       {#await client.chainRate(chain)}
-        <!--  -->
+        <Loading style="position: absolute; left: 40%; top: 40%;" />
       {:then data}
         <Line
           data={{ labels: data.dates, datasets: [{ data: data.rates, backgroundColor: 'transparent', borderColor: function (context) {
