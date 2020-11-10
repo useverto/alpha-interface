@@ -37,6 +37,17 @@
   let confirmModalText: string = "";
 
   let post: string;
+  let orderBook: Promise<
+    {
+      txID: string;
+      amnt: number;
+      rate?: number;
+      addr: string;
+      type: string;
+      createdAt: Date;
+      received: number;
+    }[]
+  >;
 
   let switchSwap = () =>
     (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
@@ -46,6 +57,7 @@
       exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
     });
     post = await client.recommendPost();
+    orderBook = getOrderBook();
     // @ts-ignore
     hasMetaMask = typeof window.ethereum !== "undefined";
     if (hasMetaMask) {
@@ -197,8 +209,6 @@
     goto("/app");
   }
 
-  let orderBook = getOrderBook();
-
   async function getOrderBook(): Promise<
     {
       txID: string;
@@ -210,10 +220,7 @@
       received: number;
     }[]
   > {
-    // TODO(@johnletey): Don't hardcode trading post
-    const config = await client.getConfig(
-      "-zkZpuG7DiIsdFzRVgWdLQ3zxU2bDY-0r90Ri8lxL-A"
-    );
+    const config = await client.getConfig(post);
 
     try {
       let url = config["publicURL"].startsWith("https://")
@@ -239,6 +246,9 @@
 
   async function receiveAmount(): Promise<string> {
     let orders = await orderBook;
+    if (!orders) {
+      return "...";
+    }
 
     // if there are no AR -> CHAIN orders
     if (orders.find((swap) => swap.type === "Buy") === undefined) {
@@ -461,18 +471,38 @@
             </tr>
           {/each}
         {:then loadedOrders}
-          {#if loadedOrders.length === 0}
+          {#if !loadedOrders}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 10%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+              </tr>
+            {/each}
+          {:else if loadedOrders && loadedOrders.length === 0}
             <p>This trading post doesn't have any open swaps!</p>
+            {#each loadedOrders as trade}
+              <tr>
+                <td>{trade.amnt} {trade.type === 'Sell' ? chain : 'AR'}</td>
+                <td>
+                  {#if trade.type === 'Buy'}
+                    {trade.rate}
+                    {chain}/AR
+                  {:else}---{/if}
+                </td>
+                <td>{trade.received} {trade.type === 'Sell' ? 'AR' : chain}</td>
+              </tr>
+            {/each}
           {/if}
-          {#each loadedOrders as trade}
-            <tr>
-              <td>{trade.amnt} {trade.type === 'Sell' ? chain : 'AR'}</td>
-              <td>
-                {#if trade.type === 'Buy'}{trade.rate} {chain}/AR{:else}---{/if}
-              </td>
-              <td>{trade.received} {trade.type === 'Sell' ? 'AR' : chain}</td>
-            </tr>
-          {/each}
         {/await}
       </table>
     </div>
