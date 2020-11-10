@@ -168,19 +168,12 @@
           ],
         });
         if (!tx.type) {
-          const cache = JSON.parse(localStorage.getItem("swaps") || "[]");
-          cache.push({
-            id: hash,
-            timestamp: new Date().getTime().toString().slice(0, -3),
-            value: tx.value / 1e18,
-          });
-          localStorage.setItem("swaps", JSON.stringify(cache));
-
           const tags = {
             Exchange: "Verto",
             Type: "Swap",
             Chain: chain,
             Hash: hash,
+            Value: tx.value / 1e18,
           };
 
           const arTx = await client.arweave.createTransaction(
