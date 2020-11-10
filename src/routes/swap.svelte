@@ -488,8 +488,9 @@
                 </td>
               </tr>
             {/each}
-          {:else if loadedOrders && loadedOrders.length === 0}
+          {:else if loadedOrders.length === 0}
             <p>This trading post doesn't have any open swaps!</p>
+          {:else}
             {#each loadedOrders as trade}
               <tr>
                 <td>{trade.amnt} {trade.type === 'Sell' ? chain : 'AR'}</td>
