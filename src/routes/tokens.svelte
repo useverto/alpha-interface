@@ -1,17 +1,14 @@
 <script lang="typescript">
-  import { loggedIn, keyfile, address } from "../stores/keyfileStore";
+  import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
-  import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
   import { displayTheme } from "../stores/themeStore";
   import { DisplayTheme } from "../utils/types";
-  import Modal from "../components/Modal.svelte";
   import Footer from "../components/Footer.svelte";
-  import { saveSetting } from "../utils/settings";
 
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
@@ -27,15 +24,6 @@
   export const update = () => {
     client = new Verto(JSON.parse($keyfile));
   };
-
-  let addTokenModalOpened: boolean = false;
-  let newToken: string;
-
-  async function addToken() {
-    await client.saveToken(newToken);
-    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
-    newToken = "";
-  }
 </script>
 
 <svelte:head>
@@ -46,11 +34,6 @@
 <div class="tokens" in:fade={{ duration: 300 }}>
   <div class="tokens-head">
     <h1 class="title">Popular Tokens</h1>
-    <Button
-      click={() => (addTokenModalOpened = true)}
-      style={"font-family: 'JetBrainsMono', monospace; text-transform: uppercase;"}>
-      Add Token
-    </Button>
   </div>
   <div class="tokens-content">
     {#await tokens}
@@ -75,17 +58,6 @@
     {/await}
   </div>
 </div>
-<Modal
-  bind:opened={addTokenModalOpened}
-  confirmation={true}
-  onConfirm={addToken}>
-  <h3 style="text-align: center;">Add Token</h3>
-  <input
-    type="text"
-    bind:value={newToken}
-    class="light contract-id"
-    placeholder="Token Contract ID" />
-</Modal>
 <Footer />
 
 <style lang="sass">
