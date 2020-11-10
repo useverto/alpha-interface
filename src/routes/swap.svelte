@@ -273,11 +273,11 @@
   <Balance />
   <div class="swap-content">
     <div class="graph-container" in:fade={{ duration: 300 }}>
-      {#await client.chainRate('ETH')}
+      {#await client.chainRate(chain)}
         <!--  -->
       {:then data}
         <Line
-          data={{ labels: data.dates.reverse(), datasets: [{ data: data.rates, backgroundColor: 'transparent', borderColor: function (context) {
+          data={{ labels: data.dates, datasets: [{ data: data.rates, backgroundColor: 'transparent', borderColor: function (context) {
                   let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
                   gradient.addColorStop(0, '#E698E8');
                   gradient.addColorStop(1, '#8D5FBC');
