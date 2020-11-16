@@ -23,9 +23,7 @@
 
   let hasMetaMask: boolean = true;
   let connected: boolean = true;
-  let client = new Verto(null, null, {
-    exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
-  });
+  let client = new Verto();
   let swapMode: SwapMode = SwapMode.CHAIN;
   let chain: string;
   let sendAmount: number = 0.01;
@@ -54,9 +52,7 @@
     (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
 
   onMount(async () => {
-    client = new Verto(JSON.parse($keyfile), null, {
-      exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
-    });
+    client = new Verto(JSON.parse($keyfile));
     post = await client.recommendPost();
     orderBook = getOrderBook();
     // @ts-ignore
