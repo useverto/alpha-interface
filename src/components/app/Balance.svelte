@@ -12,6 +12,7 @@
 
   export let showThemeSwitcher: boolean = false;
   const verified = isVerified($address);
+  let hoveredVerify = false;
 
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
@@ -85,7 +86,17 @@
       {#await verified}
         ⏳
       {:then ver}
-        {#if ver.verified}✅{:else}🙅{/if}
+        <span
+          class="verified-emoji"
+          on:mouseover={() => (hoveredVerify = true)}
+          on:mouseleave={() => (hoveredVerify = false)}>
+          {#if ver.verified}✅{:else}🙅{/if}
+          {#if hoveredVerify}
+            <div class="verified-tooltip" transition:fade={{ duration: 160 }}>
+              {ver.verified ? 'V' : 'Not v'}erified on ArVerify
+            </div>
+          {/if}
+        </span>
       {/await}
       {$address}<img src={copyIcon} alt="copy-address" on:click={copyAddress} />
     </p>
@@ -115,6 +126,38 @@
       &.wallet
         text-transform: none
         justify-content: normal
+
+        span.verified-emoji
+          margin: 0 .32em
+          cursor: default
+          position: relative
+
+          .verified-tooltip
+            position: absolute
+            top: 137%
+            left: 50%
+            background-color: var(--inverted-elements-color)
+            padding: .27em .36em
+            border-radius: 5px
+            color: var(--background-color)
+            font-size: .83em
+            font-weight: 400
+            text-align: center
+            text-transform: none
+            width: max-content
+            display: inline-block
+            transform: translateX(-50%)
+
+            &::after
+              content: ''
+              position: absolute
+              bottom: 100%
+              left: 50%
+              background-color: var(--inverted-elements-color)
+              width: .6em
+              height: .6em
+              z-index: -1
+              transform: translate(-50%, 60%) rotate(45deg)
 
         img
           height: .97em
