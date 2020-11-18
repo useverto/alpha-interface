@@ -18,7 +18,7 @@
 <main
   style="
     --primary-text-color: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .837)' : '#000'};
-    --secondary-text-color: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .3)' : 'rgba(0, 0, 0, .3)'};
+    --secondary-text-color: {$displayTheme === DisplayTheme.Dark ? '#4d4d4d' : '#b2b2b2'};
     --darker-secondary-text-color: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .5)' : 'rgba(0, 0, 0, .5)'};
     --inverted-elements-color: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .94)' : '#000'};
     --nav-scrolled: {$displayTheme === DisplayTheme.Dark ? 'rgba(0, 0, 0, .73)' : 'rgba(255, 255, 255, .7)'};
