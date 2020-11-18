@@ -8,8 +8,10 @@
   import { NotificationType } from "../../utils/types";
   import downArrowIcon from "../../assets/down-arrow.svg";
   import copyIcon from "../../assets/copy.svg";
+  import { isVerified } from "arverify";
 
   export let showThemeSwitcher: boolean = false;
+  const verified = isVerified($address);
 
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
@@ -79,10 +81,13 @@
       {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
     </h1>
     <p class="wallet" in:fade={{ duration: 150 }}>
-      Wallet: {$address}<img
-        src={copyIcon}
-        alt="copy-address"
-        on:click={copyAddress} />
+      Wallet:
+      {#await verified}
+        ⏳
+      {:then ver}
+        {#if ver.verified}✅{:else}🙅{/if}
+      {/await}
+      {$address}<img src={copyIcon} alt="copy-address" on:click={copyAddress} />
     </p>
   {/if}
 </div>
