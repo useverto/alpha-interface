@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-  import { address, balance } from "../../stores/keyfileStore";
+  import { address, balance, keyfile } from "../../stores/keyfileStore";
   import { theme } from "../../stores/themeStore";
   import { Theme } from "../../utils/types";
   import SkeletonLoading from "../SkeletonLoading.svelte";
@@ -8,11 +8,13 @@
   import { NotificationType } from "../../utils/types";
   import downArrowIcon from "../../assets/down-arrow.svg";
   import copyIcon from "../../assets/copy.svg";
-  import { isVerified } from "arverify";
+  import { isVerified, verify } from "arverify";
+  import Modal from "../Modal.svelte";
 
   export let showThemeSwitcher: boolean = false;
   const verified = isVerified($address);
-  let hoveredVerify = false;
+  let hoveredVerify = false,
+    verifyModalOpened = false;
 
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
@@ -88,12 +90,18 @@
       {:then ver}
         <span
           class="verified-emoji"
+          on:click={() => {
+            if (!ver.verified) verifyModalOpened = true;
+          }}
+          style={ver.verified ? '' : 'cursor: pointer;'}
           on:mouseover={() => (hoveredVerify = true)}
           on:mouseleave={() => (hoveredVerify = false)}>
           {#if ver.verified}✅{:else}🙅{/if}
           {#if hoveredVerify}
             <div class="verified-tooltip" transition:fade={{ duration: 160 }}>
-              {ver.verified ? 'V' : 'Not v'}erified on ArVerify
+              {#if ver.verified}
+                Verified on ArVerify
+              {:else}Not verified on ArVerify. Click to verify!{/if}
             </div>
           {/if}
         </span>
@@ -102,6 +110,20 @@
     </p>
   {/if}
 </div>
+<Modal bind:opened={verifyModalOpened} confirmation={true} onConfirm={() => {}}>
+  <h1 style="text-align: center;">Verify with ArVerify</h1>
+  <p style="text-align: justify;">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi laudantium
+    tenetur quisquam, omnis atque in dolorem laboriosam incidunt quaerat
+    molestiae quos eveniet voluptate laborum, illo soluta quibusdam provident
+    praesentium officia?
+  </p>
+  <h2>Verify url</h2>
+  <p>Click the URL below to verify your address:</p>
+  {#await verify(JSON.parse($keyfile)) then verifyURL}
+    <a href={verifyURL} target="_blank" rel="noopener noreferer">{verifyURL}</a>
+  {/await}
+</Modal>
 
 <style lang="sass">
 
@@ -145,6 +167,7 @@
             text-align: center
             text-transform: none
             width: max-content
+            max-width: 193px
             display: inline-block
             transform: translateX(-50%)
 
