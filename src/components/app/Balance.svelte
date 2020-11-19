@@ -111,14 +111,13 @@
   {/if}
 </div>
 <Modal bind:opened={verifyModalOpened} confirmation={true} onConfirm={() => {}}>
-  <h1 style="text-align: center;">Verify with ArVerify</h1>
+  <h1 style="text-align: center;">🤖?</h1>
   <p style="text-align: justify;">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi laudantium
-    tenetur quisquam, omnis atque in dolorem laboriosam incidunt quaerat
-    molestiae quos eveniet voluptate laborum, illo soluta quibusdam provident
-    praesentium officia?
+    ArVerify checks to ensure an Arweave wallet address is owned by an actual
+    person, not a robot. Verifying signifies your unique identity on the
+    permaweb and promotes trust for person-to-person interactions across the
+    network.
   </p>
-  <h2>Verify url</h2>
   <p>Click the URL below to verify your address:</p>
   {#await verify(JSON.parse($keyfile)) then verifyURL}
     <a href={verifyURL} target="_blank" rel="noopener noreferer">{verifyURL}</a>
