@@ -108,7 +108,6 @@
   </a>
   <div class="menu">
     {#if $loggedIn}
-      <a href="/trade">Trade</a>
       <a href="/swap">Swap</a>
       <a href="/gallery">Posts</a>
       <a href="/tokens">Tokens</a>

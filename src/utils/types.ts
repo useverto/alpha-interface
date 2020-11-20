@@ -106,3 +106,13 @@ export enum ActiveMenu {
   open,
   closed,
 }
+
+export interface OrderBookItem {
+  txID: string;
+  amnt: number;
+  rate?: number;
+  addr: string;
+  type: string;
+  createdAt: Date;
+  received: number;
+}
