@@ -114,11 +114,10 @@
   <h1 style="text-align: center;">🤖?</h1>
   <p style="text-align: justify;">
     ArVerify checks to ensure an Arweave wallet address is owned by an actual
-    person, not a robot. Verifying signifies your unique identity on the
-    permaweb and promotes trust for person-to-person interactions across the
-    network.
+    person, not a robot. Verifying promotes trust for person-to-person
+    interactions across the network.
   </p>
-  <p>Click the URL below to verify your address:</p>
+  <p>Click the URL below to verify your wallet:</p>
   {#await verify(JSON.parse($keyfile)) then verifyURL}
     <a href={verifyURL} target="_blank" rel="noopener noreferer">{verifyURL}</a>
   {/await}
