@@ -4206,7 +4206,7 @@ smartweave@^0.3.6:
     loglevel "^1.7.0"
     yargs "^15.3.1"
 
-smartweave@^0.4.11, smartweave@^0.4.12:
+smartweave@^0.4.10, smartweave@^0.4.11, smartweave@^0.4.12:
   version "0.4.12"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.12.tgz#e9c770867ab5eb36940637db264620974e2c19b6"
   integrity sha512-EMaRLV7ZT0kafU+XDlNH7EBKIJO1PfRXe4yOKu1IVN279uMHCRaEywioo7eHQ2WjCryr168X07ndpFA6l1fgkA==
