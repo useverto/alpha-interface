@@ -15,15 +15,15 @@
   },
   "dependencies": {
     "@verto/lib": "^0.7.1",
-    "arweave": "^1.9.1",
-    "community-js": "^1.0.14",
+    "arweave": "^1.10.0",
+    "community-js": "^1.1.6",
     "compression": "^1.7.1",
     "graphql": "^15.3.0",
     "moment": "^2.27.0",
     "polka": "next",
     "sapper-google-analytics": "^1.0.2",
     "sirv": "^1.0.6",
-    "smartweave": "^0.3.6",
+    "smartweave": "^0.4.12",
     "svelte-chartjs": "^1.0.1"
   },
   "devDependencies": {
