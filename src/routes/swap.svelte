@@ -19,7 +19,6 @@
   import Line from "svelte-chartjs/src/Line.svelte";
   import Loading from "../components/Loading.svelte";
 
-  let activeMenu = ActiveMenu.open;
   // with trade, the user can define how much they want to receive
   // with swap, the received amount is predefined
   let swapMode: SwapMode = "Trade";
@@ -161,32 +160,22 @@
   </div>
   <div class="orders">
     <h1 class="title">Orders</h1>
-    <div class="menu">
-      <button
-        class:active={activeMenu === ActiveMenu.open}
-        on:click={() => (activeMenu = ActiveMenu.open)}>Open</button>
-      <!-- <button
-        class:active={activeMenu === ActiveMenu.closed}
-        on:click={() => (activeMenu = ActiveMenu.closed)}>Closed</button> -->
+    <div class="content" in:fade={{ duration: 260 }}>
+      <table>
+        <tr>
+          <th>OP</th>
+          <th>Quantity</th>
+          <th>Rate</th>
+          <th>Filled</th>
+        </tr>
+        <tr>
+          <td><span class="direction">SELL</span></td>
+          <td>1450 VRT</td>
+          <td>0.1 AR/VRT</td>
+          <td>2 AR</td>
+        </tr>
+      </table>
     </div>
-    {#if activeMenu === ActiveMenu.open}
-      <div class="content" in:fade={{ duration: 260 }}>
-        <table>
-          <tr>
-            <th>OP</th>
-            <th>Quantity</th>
-            <th>Rate</th>
-            <th>Filled</th>
-          </tr>
-          <tr>
-            <td><span class="direction">SELL</span></td>
-            <td>1450 VRT</td>
-            <td>0.1 AR/VRT</td>
-            <td>2 AR</td>
-          </tr>
-        </table>
-      </div>
-    {/if}
   </div>
 </div>
 <Footer />
