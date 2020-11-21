@@ -239,6 +239,7 @@
             border-radius: 100%
             padding: $iconPadding
             border: $borderWidth solid transparent
+            filter: var(--svg-color)
             transition: all .3s
           
           &:hover
