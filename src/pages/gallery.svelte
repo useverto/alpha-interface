@@ -3,7 +3,7 @@
   import Footer from "../components/Footer.svelte";
   import Loading from "../components/Loading.svelte";
   import { loggedIn } from "../stores/keyfileStore";
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
   import type { TradingPost } from "../utils/types";
@@ -15,7 +15,7 @@
   import Verto from "@verto/lib";
   const client = new Verto();
 
-  if (process.browser && !$loggedIn) goto("/");
+  if (!$loggedIn) $goto("/");
 
   let sortingType: string;
   let tradingPosts: TradingPost[] = [];
@@ -29,7 +29,6 @@
   onMount(() => loadMoreTradingPosts());
 
   async function loadMoreTradingPosts() {
-    if (!process.browser) return;
     if (!hasNext) return;
 
     loading = true;

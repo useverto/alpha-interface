@@ -8,10 +8,10 @@
   import LatestExchanges from "../components/app/LatestExchanges.svelte";
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
   import { loggedIn } from "../stores/keyfileStore";
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
   import { fade } from "svelte/transition";
 
-  if (process.browser && !$loggedIn) goto("/");
+  if (!$loggedIn) $goto("/");
 
   let watchlistComponent;
   let assetsComponent;

@@ -1,7 +1,7 @@
 <script lang="typescript">
   import { onMount } from "svelte";
   import { address, keyfile, loggedIn } from "../stores/keyfileStore";
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
   import { notification } from "../stores/notificationStore";
   import { NotificationType, TradeMode } from "../utils/types";
   import Verto from "@verto/lib";
@@ -19,7 +19,7 @@
   import Modal from "../components/Modal.svelte";
   import { saveSetting } from "../utils/settings";
 
-  if (process.browser && !$loggedIn) goto("/");
+  if (process.browser && !$loggedIn) $goto("/");
 
   notification.notify(
     "Warning",
@@ -34,7 +34,7 @@
     const ip = await (await fetch("https://api.ipify.org?format=json")).json();
     const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
     if (res.country === "US") {
-      goto("/usa");
+      $goto("/usa");
     }
     client = new Verto(JSON.parse($keyfile));
     loadMetrics();
@@ -259,7 +259,7 @@
       NotificationType.success,
       5000
     );
-    goto("/app");
+    $goto("/app");
   }
 
   function cancelTrade() {

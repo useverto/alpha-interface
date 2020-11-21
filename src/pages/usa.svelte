@@ -1,6 +1,6 @@
 <script lang="typescript">
   import { onMount } from "svelte";
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
   import { loggedIn } from "../stores/keyfileStore";
   import NavBar from "../components/NavBar.svelte";
   import usa from "../assets/usa.svg";
@@ -10,11 +10,11 @@
     const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
 
     if (res.country !== "US") {
-      goto("/app");
+      $goto("/app");
     }
 
     if (!$loggedIn) {
-      goto("/");
+      $goto("/");
     }
   });
 </script>

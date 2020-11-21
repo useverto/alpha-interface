@@ -1,19 +1,20 @@
 <script lang="typescript">
   import Notification from "../components/Notification.svelte";
-  import GoogleAnalytics from "sapper-google-analytics/GoogleAnalytics.svelte";
-  import { stores } from "@sapper/app";
+  //import GoogleAnalytics from "sapper-google-analytics/GoogleAnalytics.svelte";
+  //import { stores } from "@sapper/app";
   import { displayTheme } from "../stores/themeStore";
   import { DisplayTheme } from "../utils/types";
 
-  const ga_measurment_id = "UA-177614485-1";
+  //const ga_measurment_id = "UA-177614485-1";
 
   $: backgroundColor = $displayTheme === DisplayTheme.Dark ? "#000" : "#fff";
   $: {
-    if (process.browser) document.body.style.backgroundColor = backgroundColor;
+    document.body.style.backgroundColor = backgroundColor;
   }
 </script>
 
-<GoogleAnalytics {stores} id={ga_measurment_id} />
+<!-- TODO: ADD BACK GOOGLE ANALYTICS -->
+<!--<GoogleAnalytics {stores} id={ga_measurment_id} />-->
 <Notification />
 <main
   style="

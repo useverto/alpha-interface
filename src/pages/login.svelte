@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
   import keyfileSVG from "../assets/keyfile.svg";
   import stroke from "../assets/stroke.svg";
   import { fade } from "svelte/transition";
@@ -35,7 +35,7 @@
     ) {
       const reader = new FileReader();
       reader.onload = async () => {
-        if (typeof reader.result !== "string") return goto("/");
+        if (typeof reader.result !== "string") return $goto("/");
         // @ts-ignore
         let _address = await client.wallets.jwkToAddress(
           JSON.parse(reader.result)
@@ -55,7 +55,7 @@
           profiles.addKeyfile(_address, reader.result);
           // @ts-ignore
           watchlist.reload();
-          goto("/app");
+          $goto("/app");
           notification.notify(
             "Welcome",
             "You've successfully logged in!",
@@ -63,7 +63,7 @@
             5000
           );
         } else {
-          goto("/gate");
+          $goto("/gate");
         }
       };
       reader.readAsText(files[0]);

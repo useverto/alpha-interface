@@ -6,9 +6,9 @@
   import About from "../components/home/About.svelte";
   import Footer from "../components/Footer.svelte";
   import { keyfile, loggedIn } from "../stores/keyfileStore";
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
 
-  if (process.browser && $loggedIn) goto("/app");
+  if ($loggedIn) $goto("/app");
 </script>
 
 <svelte:head>

@@ -1,7 +1,7 @@
 <script lang="typescript">
   import Verto from "@verto/lib";
   import { loggedIn } from "../stores/keyfileStore";
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
   import Arweave from "arweave";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
@@ -14,11 +14,11 @@
   let activeMenu: string = "transactions";
   let addr: string = "";
 
-  if (process.browser && !$loggedIn) goto("/");
+  if (process.browser && !$loggedIn) $goto("/");
 
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("addr") === null) goto("/gallery");
+    if (params.get("addr") === null) $goto("/gallery");
     addr = params.get("addr");
   }
 

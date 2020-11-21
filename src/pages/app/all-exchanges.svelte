@@ -9,6 +9,7 @@
   import Arweave from "arweave";
   import tokensQuery from "../../queries/tokens.gql";
   import { exchangeWallet, pstContract } from "../../utils/constants";
+  import { goto } from "@roxi/routify";
   import moment from "moment";
   import SkeletonLoading from "../../components/SkeletonLoading.svelte";
   import Loading from "../../components/Loading.svelte";
@@ -22,9 +23,9 @@
     loading = false;
 
   onMount(() => loadMoreExchanges());
+  if (!$loggedIn) $goto("/");
 
   async function loadMoreExchanges() {
-    if (!process.browser) return;
     if (!hasNext) return;
 
     let _exchanges: Exchange[] = [];
@@ -168,8 +169,6 @@
   async function getSupportedPSTs(): Promise<
     { id: string; name: string; ticker: string }[]
   > {
-    if (!process.browser) return [];
-
     let psts: { id: string; name: string; ticker: string }[] = [];
 
     const client = new Arweave({
