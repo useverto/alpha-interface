@@ -28,6 +28,15 @@
   if (process.browser && !$loggedIn) goto("/");
 
   let client = new Verto();
+  let post: string;
+  let options: { ticker: string; id: string; type: string }[] = [
+    { ticker: "ETH", id: "ETH", type: "CHAIN" },
+    { ticker: "AR", id: "AR", type: "CHAIN" },
+  ];
+  let orderBook: Promise<OrderBookItem[]>;
+
+  let hasMetaMask: boolean = true;
+  let connected: boolean = true;
 
   onMount(async () => {
     const ip = await (await fetch("https://api.ipify.org?format=json")).json();
@@ -35,12 +44,57 @@
     if (res.country === "US") {
       goto("/usa");
     }
+
     client = new Verto(JSON.parse($keyfile));
+
+    const params = new URLSearchParams(window.location.search);
+    post = params.get("post") || (await client.recommendPost());
+
+    const tokens = await client.getTPTokens(post);
+    tokens.map((token) =>
+      options.push({ ticker: token.ticker, id: token.id, type: "PST" })
+    );
+
+    orderBook = getOrderBook();
+
+    // @ts-ignore
+    hasMetaMask = typeof window.ethereum !== "undefined";
+    if (hasMetaMask) {
+      // @ts-ignore
+      const accounts = await window.ethereum.request({
+        method: "eth_accounts",
+      });
+      if (accounts.length == 0) connected = false;
+    }
   });
 
-  export const update = () => {
+  function update() {
     client = new Verto(JSON.parse($keyfile));
-  };
+  }
+
+  async function getOrderBook(): Promise<OrderBookItem[]> {
+    const config = await client.getConfig(post);
+    console.log(post);
+
+    try {
+      let url = config["publicURL"].startsWith("https://")
+        ? config["publicURL"]
+        : "https://" + config["publicURL"];
+      let endpoint = url.endsWith("/") ? "orders" : "/orders";
+
+      let res = await (await fetch(url + endpoint)).clone().json();
+      let table = res.find((orders) => orders.token === sendSelected);
+      if (table) {
+        let orders = table.orders;
+        return orders.sort((a, b) => b.rate - a.rate);
+      } else {
+        return [];
+      }
+    } catch (err) {
+      notification.notify("Error", err, NotificationType.error, 5000);
+      return;
+    }
+  }
 
   function switchSwap() {
     let prev = { sendSelected, receiveSelected };
@@ -53,7 +107,7 @@
   <title>Verto — Swap</title>
 </svelte:head>
 
-<NavBar />
+<NavBar {update} />
 <div class="swap">
   <Balance />
   <div class="swap-content">
@@ -183,12 +237,54 @@
           <th>Rate</th>
           <th>Filled</th>
         </tr>
-        <tr>
-          <td><span class="direction">SELL</span></td>
-          <td>1450 VRT</td>
-          <td>0.1 AR/VRT</td>
-          <td>2 AR</td>
-        </tr>
+        {#await orderBook}
+          {#each Array(5) as _}
+            <tr>
+              <td style="width: 10%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+              <td style="width: 30%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+              <td style="width: 30%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+              <td style="width: 30%">
+                <SkeletonLoading style="width: 100%;" />
+              </td>
+            </tr>
+          {/each}
+        {:then loadedOrders}
+          {#if !loadedOrders}
+            {#each Array(5) as _}
+              <tr>
+                <td style="width: 10%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+                <td style="width: 30%">
+                  <SkeletonLoading style="width: 100%;" />
+                </td>
+              </tr>
+            {/each}
+          {:else if loadedOrders.length === 0}
+            <p>TODO</p>
+          {:else}
+            {#each loadedOrders as order}
+              <tr>
+                <td><span class="direction">{order.type}</span></td>
+                <td>{order.amnt} VRT</td>
+                <td>{order.rate || '---'} AR/VRT</td>
+                <td>{order.received} AR</td>
+              </tr>
+            {/each}
+          {/if}
+        {/await}
       </table>
     </div>
   </div>
