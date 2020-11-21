@@ -6,10 +6,9 @@
   import Button from "../Button.svelte";
 
   // is logged in?
-  $: loggedIn = process.browser
-    ? localStorage.getItem("keyfile") !== null &&
-      localStorage.getItem("keyfile") !== undefined
-    : false;
+  $: loggedIn =
+    localStorage.getItem("keyfile") !== null &&
+    localStorage.getItem("keyfile") !== undefined;
 </script>
 
 <div class="Hero">

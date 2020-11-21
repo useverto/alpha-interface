@@ -10,8 +10,7 @@ function createThemeStore() {
       localStorage.setItem("theme", themeValue);
     };
 
-  // @ts-ignore
-  if (process.browser && localStorage.getItem("theme")) {
+  if (localStorage.getItem("theme")) {
     set(Theme[localStorage.getItem("theme")]);
   }
 
@@ -29,8 +28,6 @@ export const displayTheme = derived(theme, ($theme) => {
       break;
     case Theme.Auto:
       if (
-        // @ts-ignore
-        process.browser &&
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       )

@@ -10,5 +10,5 @@ public/build/*
 .vercel/
 .idea/
 bundle.css
-
+.routify
 .vercel

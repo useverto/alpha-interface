@@ -23,8 +23,6 @@
   }
 
   async function getLatestTrades(): Promise<Trade[]> {
-    if (!process.browser) return [];
-
     let txs: Trade[] = [];
 
     const client = new Arweave({

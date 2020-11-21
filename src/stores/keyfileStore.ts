@@ -16,8 +16,6 @@ function createCustomStore(storeName) {
   const { subscribe, set } = writable("");
 
   if (
-    // @ts-ignore
-    process.browser &&
     localStorage.getItem(storeName) !== null &&
     localStorage.getItem(storeName) !== "" &&
     localStorage.getItem(storeName) !== "null" &&
@@ -48,8 +46,6 @@ function createProfilesStore() {
     { subscribe, set, update } = writable(defaultVal);
 
   if (
-    // @ts-ignore
-    process.browser &&
     localStorage.getItem("profiles") !== null &&
     localStorage.getItem("profiles") !== undefined
   ) {
@@ -62,8 +58,6 @@ function createProfilesStore() {
       currentProfiles.filter((prf) => prf.address === get(address)).length !== 0
     )
       return currentProfiles;
-    // @ts-ignore
-    if (!process.browser) return;
     if (get(address) === "" && get(keyfile) === "") return;
 
     currentProfiles.push({ address: get(address), keyfile: get(keyfile) });
@@ -77,9 +71,6 @@ function createProfilesStore() {
     removeKeyfile: (removeAddress: string) => {
       if (removeAddress === "") return;
       update((currentProfiles: IProfile[]) => {
-        // @ts-ignore
-        if (!process.browser) return;
-
         const newVal = currentProfiles.filter(
           (prf) => prf.address !== removeAddress
         );
@@ -91,8 +82,6 @@ function createProfilesStore() {
     addKeyfile(addAddress: string, addKeyFile: string) {
       if (addAddress === "" || addKeyFile === "") return;
       update((currentProfiles: IProfile[]) => {
-        // @ts-ignore
-        if (!process.browser) return;
         if (currentProfiles === undefined) currentProfiles = [];
         if (
           currentProfiles.filter((prf) => prf.address === addAddress).length > 0
@@ -106,8 +95,6 @@ function createProfilesStore() {
       });
     },
     removeAll() {
-      // @ts-ignore
-      if (!process.browser) return;
       set([]);
       localStorage.removeItem("profiles");
     },
@@ -116,8 +103,6 @@ function createProfilesStore() {
 
 // return the balance
 export const balance = readable(null, (set) => {
-  // @ts-ignore
-  if (!process.browser) return;
   const client = new Arweave({
       host: "arweave.net",
       port: 443,

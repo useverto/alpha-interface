@@ -8,7 +8,7 @@
     keyfile,
   } from "../stores/keyfileStore";
   import { notification } from "../stores/notificationStore";
-  import { goto } from "@sapper/app";
+  import { goto } from "@roxi/routify";
   import tradeLogo from "../assets/nav/trade.svg";
   import tokensLogo from "../assets/nav/tokens.svg";
   import postsLogo from "../assets/nav/posts.svg";
@@ -46,11 +46,10 @@
   });
 
   function _logOut(e?: MouseEvent) {
-    if (!process.browser) return;
     if (!$loggedIn) return;
     if (e !== undefined && e.preventDefault) e.preventDefault();
     logOut();
-    goto("/");
+    $goto("/");
     notification.notify(
       "Logged out",
       "You've successfully logged out.",
@@ -153,7 +152,7 @@
         {/if}
       </div>
     {/each}
-    <button class="action" on:click={() => goto('/login')}>
+    <button class="action" on:click={() => $goto('/login')}>
       <object data={addIcon} type="image/svg+xml" title="nav-icon" /> Add keyfile
     </button>
     <button
