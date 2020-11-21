@@ -2,7 +2,7 @@
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType, SwapMode } from "../utils/types";
+  import { NotificationType, OldSwapMode } from "../utils/types";
   import type { OrderBookItem } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
@@ -25,7 +25,7 @@
   let hasMetaMask: boolean = true;
   let connected: boolean = true;
   let client = new Verto();
-  let swapMode: SwapMode = SwapMode.CHAIN;
+  let swapMode: OldSwapMode = OldSwapMode.CHAIN;
   let chain: string;
   let sendAmount: number = 0.01;
   let rate: number = 0.01;
@@ -40,7 +40,8 @@
   let orderBook: Promise<OrderBookItem[]>;
 
   let switchSwap = () =>
-    (swapMode = swapMode === SwapMode.AR ? SwapMode.CHAIN : SwapMode.AR);
+    (swapMode =
+      swapMode === OldSwapMode.AR ? OldSwapMode.CHAIN : OldSwapMode.AR);
 
   onMount(async () => {
     client = new Verto(JSON.parse($keyfile));
@@ -65,7 +66,7 @@
     loading = true;
     let orders = await orderBook;
 
-    if (swapMode === SwapMode.AR) {
+    if (swapMode === OldSwapMode.AR) {
       swap = await client.createSwap(chain, post, sendAmount, null, rate);
 
       if (swap === "arLink") {
@@ -93,7 +94,7 @@
       confirmModalOpened = true;
       loading = false;
       return;
-    } else if (swapMode === SwapMode.CHAIN) {
+    } else if (swapMode === OldSwapMode.CHAIN) {
       if (orders.find((swap) => swap.type === "Buy") === undefined) {
         notification.notify(
           "Error",
@@ -273,7 +274,7 @@
       {/await}
     </div>
     <div class="swap-form">
-      {#if swapMode === SwapMode.AR}
+      {#if swapMode === OldSwapMode.AR}
         <div class="input" in:fade={{ duration: 260 }}>
           <p class="label">You send</p>
           <div class="input-wrapper">
@@ -311,7 +312,7 @@
             </div>
           </div>
         </div>
-      {:else if swapMode === SwapMode.CHAIN}
+      {:else if swapMode === OldSwapMode.CHAIN}
         <div class="input" in:fade={{ duration: 260 }}>
           <p class="label">You send</p>
           <div class="input-wrapper">
@@ -350,7 +351,7 @@
           </div>
         </div>
       {/if}
-      {#if swapMode === SwapMode.AR}
+      {#if swapMode === OldSwapMode.AR}
         {#if loading}
           <SkeletonLoading
             style="width: 100%; height: 2.5em; margin-top: 2em;" />
@@ -486,10 +487,10 @@
   confirmation={true}
   onConfirm={sendSwap}>
   <p style="text-align: center;">
-    {#if swapMode === SwapMode.AR}
+    {#if swapMode === OldSwapMode.AR}
       Swapping {sendAmount} AR at a rate of {rate}
       {chain}/AR
-    {:else if swapMode === SwapMode.CHAIN}
+    {:else if swapMode === OldSwapMode.CHAIN}
       {#await receive then loadedReceive}
         Swapping {sendAmount}
         {chain} for {loadedReceive} AR

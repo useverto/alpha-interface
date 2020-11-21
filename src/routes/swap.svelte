@@ -2,8 +2,8 @@
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType, SwapMode, ActiveMenu } from "../utils/types";
-  import type { OrderBookItem } from "../utils/types";
+  import { NotificationType, ActiveMenu } from "../utils/types";
+  import type { OrderBookItem, SwapMode } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
   import { fade, fly } from "svelte/transition";
@@ -20,11 +20,19 @@
   import Loading from "../components/Loading.svelte";
 
   let activeMenu = ActiveMenu.open;
+  // with trade, the user can define how much they want to receive
+  // with swap, the received amount is predefined
+  let swapMode: SwapMode = "Trade";
+  let sendSelected: string, receiveSelected: string;
 
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
 
-  function switchSwap() {}
+  function switchSwap() {
+    let prev = { sendSelected, receiveSelected };
+    sendSelected = prev.receiveSelected;
+    receiveSelected = prev.sendSelected;
+  }
 </script>
 
 <svelte:head>
@@ -40,8 +48,10 @@
       <!-- prettier-ignore -->
       <Line
         data={{ 
+          // TODO
           labels: ['sep 09', 'sep 10', 'sep 11', 'sep12', 'sep13', 'sep14', 'sep15', 'sep16'], 
-          datasets: [{ 
+          datasets: [{
+            // TODO
             data: [0, 2, 3, 5, 6, 5, 4, 3], 
             backgroundColor: 'transparent', 
             borderColor: function (context) {
@@ -77,38 +87,35 @@
           scales: { 
             xAxes: [{ 
               gridLines: { display: false }, 
-              scaleLabel: { display: true, labelString: 'Date' }
+              scaleLabel: { display: false }
             }], 
             yAxes: [{ 
               gridLines: { display: false }, 
               scaleLabel: { 
                 display: true,
+                // TODO
                 labelString: `${'ETH'} / AR`
               } 
             }] 
           } 
         }} />
+      <div class="select-container">
+        <select>
+          <option value="price">Price</option>
+          <option value="volume">Volume</option>
+        </select>
+        <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
+      </div>
     </div>
     <div class="swap-form" in:fade={{ duration: 250 }}>
       <div class="input" in:fade={{ duration: 260 }}>
         <p class="label">You send</p>
-        <div class="input-wrapper">
-          <input type="number" step={1} pattern="\d+" min={0.000001} />
-          <select class="fake-select" style="opacity: 1 !important" disabled>
-            <option>AR</option>
-          </select>
-        </div>
-      </div>
-      <div class="switch-icon" on:click={switchSwap} title="Switch">
-        <img src={switchIcon} alt="switch-icon" />
-      </div>
-      <div class="input" in:fade={{ duration: 260 }}>
-        <p class="label">Rate</p>
-        <div class="input-wrapper">
+        <div class="input-wrapper wider">
           <input type="number" step={1} pattern="\d+" min={0.000001} />
           <div class="select-container">
-            <select>
-              <option value="ETH">ETH/AR</option>
+            <select bind:value={sendSelected}>
+              <option value="ETH">ETH</option>
+              <option value="VRT">VRT</option>
             </select>
             <object
               data={downArrowIcon}
@@ -117,6 +124,39 @@
           </div>
         </div>
       </div>
+      <div class="switch-icon" on:click={switchSwap} title="Switch">
+        <img src={switchIcon} alt="switch-icon" />
+      </div>
+      <div class="input" in:fade={{ duration: 260 }}>
+        <p class="label">{swapMode === 'Swap' ? 'You receive' : 'You want'}</p>
+        <div class="input-wrapper wider">
+          <input
+            type="number"
+            step={1}
+            pattern="\d+"
+            min={0.000001}
+            disabled={swapMode === 'Swap'} />
+          <div class="select-container">
+            <select bind:value={receiveSelected}>
+              <option value="VRT">VRT</option>
+              <option value="ETH">ETH</option>
+            </select>
+            <object
+              data={downArrowIcon}
+              type="image/svg+xml"
+              title="select-icon" />
+          </div>
+        </div>
+      </div>
+      <Button
+        style="
+          font-family: 'JetBrainsMono', monospace; 
+          text-transform: uppercase; 
+          display: block;
+          margin-top: 2em;
+        ">
+        Swap
+      </Button>
     </div>
   </div>
   <div class="orders">
@@ -164,12 +204,14 @@
     .swap-content
       display: flex
       align-items: stretch
+      margin-top: 2em
 
       @media screen and (max-width: 720px)
         display: block
 
       .swap-graph
-        width: 66%
+        position: relative
+        width: 60%
         margin-right: 2%
 
         @media screen and (max-width: 720px)
@@ -178,8 +220,13 @@
             right: 0
             bottom: 1.2em
 
+        .select-container
+          position: absolute
+          top: 0
+          right: 0
+
       .swap-form
-        width: 30%
+        width: 36%
         margin-left: 2%
 
         @media screen and (max-width: 720px)

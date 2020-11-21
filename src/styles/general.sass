@@ -121,6 +121,13 @@ $pcSidePadding: 23vw
       @media screen and (max-width: 1300px)
         width: 44%
 
+    &.wider
+      input
+        width: calc(66% - #{$input-side-padding * 2})
+
+      .select-container, .fake-select
+        width: 44%
+
   &.select-container
     select
       padding: .18em $input-side-padding
