@@ -2,7 +2,7 @@
   import { loggedIn, keyfile } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType, SwapMode } from "../utils/types";
+  import { NotificationType, SwapMode, ActiveMenu } from "../utils/types";
   import type { OrderBookItem } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
@@ -19,6 +19,8 @@
   import Line from "svelte-chartjs/src/Line.svelte";
   import Loading from "../components/Loading.svelte";
 
+  let activeMenu = ActiveMenu.open;
+
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
 
@@ -34,21 +36,60 @@
   <Balance />
   <div class="swap-content">
     <div class="swap-graph">
+      <!-- ignore this, do not remove -->
+      <!-- prettier-ignore -->
       <Line
-        data={{ labels: ['sep 09', 'sep 10', 'sep 11', 'sep12', 'sep13', 'sep14', 'sep15', 'sep16'], datasets: [{ data: [0, 2, 3, 5, 6, 5, 4, 3], backgroundColor: 'transparent', borderColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              }, pointBackgroundColor: function (context) {
-                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-                gradient.addColorStop(0, '#E698E8');
-                gradient.addColorStop(1, '#8D5FBC');
-                return gradient;
-              } }] }}
-        options={{ elements: { point: { radius: 0 }, line: { borderWidth: 5, borderCapStyle: 'round' } }, tooltips: { mode: 'index', intersect: false }, hover: { mode: 'nearest', intersect: true }, maintainAspectRatio: false, legend: { display: false }, scales: { xAxes: [{ gridLines: { display: false }, scaleLabel: { display: true, labelString: 'Date' } }], yAxes: [{ gridLines: { display: false }, scaleLabel: { display: true, labelString: `${'ETH'} / AR` } }] } }} />
+        data={{ 
+          labels: ['sep 09', 'sep 10', 'sep 11', 'sep12', 'sep13', 'sep14', 'sep15', 'sep16'], 
+          datasets: [{ 
+            data: [0, 2, 3, 5, 6, 5, 4, 3], 
+            backgroundColor: 'transparent', 
+            borderColor: function (context) {
+              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+              gradient.addColorStop(0, '#E698E8');
+              gradient.addColorStop(1, '#8D5FBC');
+              return gradient;
+            }, 
+            pointBackgroundColor: function (context) {
+              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+              gradient.addColorStop(0, '#E698E8');
+              gradient.addColorStop(1, '#8D5FBC');
+              return gradient;
+            }
+          }] 
+        }}
+        options={{ 
+          elements: {
+            point: { radius: 0 },
+            line: {
+              borderWidth: 5,
+              borderCapStyle: 'round'
+            }
+          }, tooltips: {
+            mode: 'index',
+            intersect: false
+          }, hover: {
+            mode: 'nearest',
+            intersect: true
+          }, 
+          maintainAspectRatio: false, 
+          legend: { display: false }, 
+          scales: { 
+            xAxes: [{ 
+              gridLines: { display: false }, 
+              scaleLabel: { display: true, labelString: 'Date' }
+            }], 
+            yAxes: [{ 
+              gridLines: { display: false }, 
+              scaleLabel: { 
+                display: true,
+                labelString: `${'ETH'} / AR`
+              } 
+            }] 
+          } 
+        }} />
     </div>
-    <div class="swap-form">
+    <div class="swap-form" in:fade={{ duration: 250 }}>
       <div class="input" in:fade={{ duration: 260 }}>
         <p class="label">You send</p>
         <div class="input-wrapper">
@@ -78,6 +119,35 @@
       </div>
     </div>
   </div>
+  <div class="orders">
+    <h1 class="title">Orders</h1>
+    <div class="menu">
+      <button
+        class:active={activeMenu === ActiveMenu.open}
+        on:click={() => (activeMenu = ActiveMenu.open)}>Open</button>
+      <!-- <button
+        class:active={activeMenu === ActiveMenu.closed}
+        on:click={() => (activeMenu = ActiveMenu.closed)}>Closed</button> -->
+    </div>
+    {#if activeMenu === ActiveMenu.open}
+      <div class="content" in:fade={{ duration: 260 }}>
+        <table>
+          <tr>
+            <th>OP</th>
+            <th>Quantity</th>
+            <th>Rate</th>
+            <th>Filled</th>
+          </tr>
+          <tr>
+            <td><span class="direction">SELL</span></td>
+            <td>1450 VRT</td>
+            <td>0.1 AR/VRT</td>
+            <td>2 AR</td>
+          </tr>
+        </table>
+      </div>
+    {/if}
+  </div>
 </div>
 <Footer />
 
@@ -95,13 +165,26 @@
       display: flex
       align-items: stretch
 
+      @media screen and (max-width: 720px)
+        display: block
+
       .swap-graph
         width: 66%
         margin-right: 2%
 
+        @media screen and (max-width: 720px)
+          width: 100%
+          margin:
+            right: 0
+            bottom: 1.2em
+
       .swap-form
         width: 30%
         margin-left: 2%
+
+        @media screen and (max-width: 720px)
+          width: 100%
+          margin-left: 0
 
         .switch-icon
           cursor: pointer
@@ -135,6 +218,21 @@
             margin-top: 0
 
     .orders
+      margin-top: 5em
+
+      @media screen and (max-width: 720px)
+        margin-top: 2em
+
+      h1.title
+        margin-top: 0
+        margin-bottom: 1.05em
+
+      .menu
+        +menu-style
+
+        @media screen and (max-width: 720px)
+          padding-top: 0
+
       .content
         p
           color: var(--primary-text-color)

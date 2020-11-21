@@ -1,7 +1,14 @@
 $mobileSidePadding: 10vw
+$smallerScreenSidePadding: 15vw
+$pcSidePadding: 23vw
 
 =page
-  padding: 2em 15vw 3em
+  padding: 2em $pcSidePadding 3em
+
+  @media screen and (max-width: 1300px)
+    padding:
+      left: $smallerScreenSidePadding
+      right: $smallerScreenSidePadding
 
   @media screen and (max-width: 720px)
     padding:
@@ -102,10 +109,17 @@ $mobileSidePadding: 10vw
       border-radius: 0
       width: calc(70% - #{$input-side-padding * 2})
 
+      @media screen and (max-width: 1300px)
+        width: calc(66% - #{$input-side-padding * 2})                
+
     .select-container, .fake-select
       border-radius: 0
       border: none
+      background-color: var(--inverted-elements-color)
       width: 30%
+
+      @media screen and (max-width: 1300px)
+        width: 44%
 
   &.select-container
     select
