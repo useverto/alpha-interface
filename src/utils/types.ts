@@ -97,12 +97,25 @@ export enum TradeMode {
   Sell = "Sell",
 }
 
-export enum SwapMode {
+// TODO: remove
+export enum OldSwapMode {
   CHAIN = "CHAIN",
   AR = "AR",
 }
 
+export type SwapMode = "Trade" | "Swap";
+
 export enum ActiveMenu {
   open,
   closed,
+}
+
+export interface OrderBookItem {
+  txID: string;
+  amnt: number;
+  rate?: number;
+  addr: string;
+  type: string;
+  createdAt: Date;
+  received: number;
 }

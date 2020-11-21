@@ -297,19 +297,4 @@
       a.want-to-add
         cursor: pointer
 
-      a.view-all
-        display: block
-        text-align: center
-        color: var(--darker-secondary-text-color)
-        font-weight: 500
-        padding: .8em 0
-        transition: all .3s
-
-        &:hover
-          opacity: .7
-
-      a.transaction
-        text-decoration: none
-        color: black
-
 </style>
