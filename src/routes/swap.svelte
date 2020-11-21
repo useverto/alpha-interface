@@ -27,6 +27,21 @@
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
 
+  let client = new Verto();
+
+  onMount(async () => {
+    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
+    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
+    if (res.country === "US") {
+      goto("/usa");
+    }
+    client = new Verto(JSON.parse($keyfile));
+  });
+
+  export const update = () => {
+    client = new Verto(JSON.parse($keyfile));
+  };
+
   function switchSwap() {
     let prev = { sendSelected, receiveSelected };
     sendSelected = prev.receiveSelected;
