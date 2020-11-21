@@ -127,7 +127,7 @@
         <img src={switchIcon} alt="switch-icon" />
       </div>
       <div class="input" in:fade={{ duration: 260 }}>
-        <p class="label">{swapMode === 'Swap' ? 'You receive' : 'You want'}</p>
+        <p class="label">You receive</p>
         <div class="input-wrapper wider">
           <input
             type="number"
