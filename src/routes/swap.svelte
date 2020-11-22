@@ -29,10 +29,7 @@
 
   let client = new Verto();
   let post: string;
-  let options: { ticker: string; id: string; type: string }[] = [
-    { ticker: "ETH", id: "ETH", type: "CHAIN" },
-    { ticker: "AR", id: "AR", type: "CHAIN" },
-  ];
+  let options: Promise<{ ticker: string; id: string; type: string }[]>;
   let orderBook: Promise<OrderBookItem[]>;
 
   let hasMetaMask: boolean = true;
@@ -50,10 +47,7 @@
     const params = new URLSearchParams(window.location.search);
     post = params.get("post") || (await client.recommendPost());
 
-    const tokens = await client.getTPTokens(post);
-    tokens.map((token) =>
-      options.push({ ticker: token.ticker, id: token.id, type: "PST" })
-    );
+    options = getOptions();
 
     orderBook = getOrderBook();
 
@@ -70,6 +64,22 @@
 
   function update() {
     client = new Verto(JSON.parse($keyfile));
+  }
+
+  async function getOptions(): Promise<
+    { ticker: string; id: string; type: string }[]
+  > {
+    const options: { ticker: string; id: string; type: string }[] = [];
+
+    options.push({ ticker: "ETH", id: "ETH", type: "CHAIN" });
+    options.push({ ticker: "AR", id: "AR", type: "CHAIN" });
+
+    const tokens = await client.getTPTokens(post);
+    tokens.map((token) =>
+      options.push({ ticker: token.ticker, id: token.id, type: "PST" })
+    );
+
+    return options;
   }
 
   async function getOrderBook(): Promise<OrderBookItem[]> {
@@ -180,15 +190,30 @@
         <p class="label">You send</p>
         <div class="input-wrapper wider">
           <input type="number" step={1} pattern="\d+" min={0.000001} />
+
           <div class="select-container">
-            <select bind:value={sendSelected}>
-              <option value="ETH">ETH</option>
-              <option value="VRT">VRT</option>
-            </select>
-            <object
-              data={downArrowIcon}
-              type="image/svg+xml"
-              title="select-icon" />
+            {#await options}
+              <SkeletonLoading
+                style="display: flex; width: 100%; height: 2.35em" />
+            {:then loadedOptions}
+              {#if !loadedOptions}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:else if loadedOptions.length === 0}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:else}
+                <select bind:value={sendSelected}>
+                  {#each loadedOptions as option}
+                    <option value={option.id}>{option.ticker}</option>
+                  {/each}
+                </select>
+                <object
+                  data={downArrowIcon}
+                  type="image/svg+xml"
+                  title="select-icon" />
+              {/if}
+            {/await}
           </div>
         </div>
       </div>
@@ -205,14 +230,28 @@
             min={0.000001}
             disabled={swapMode === 'Swap'} />
           <div class="select-container">
-            <select bind:value={receiveSelected}>
-              <option value="VRT">VRT</option>
-              <option value="ETH">ETH</option>
-            </select>
-            <object
-              data={downArrowIcon}
-              type="image/svg+xml"
-              title="select-icon" />
+            {#await options}
+              <SkeletonLoading
+                style="display: flex; width: 100%; height: 2.35em" />
+            {:then loadedOptions}
+              {#if !loadedOptions}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:else if loadedOptions.length === 0}
+                <SkeletonLoading
+                  style="display: flex; width: 100%; height: 2.35em" />
+              {:else}
+                <select bind:value={receiveSelected}>
+                  {#each loadedOptions.filter((entry) => entry.id !== sendSelected) as option}
+                    <option value={option.id}>{option.ticker}</option>
+                  {/each}
+                </select>
+                <object
+                  data={downArrowIcon}
+                  type="image/svg+xml"
+                  title="select-icon" />
+              {/if}
+            {/await}
           </div>
         </div>
       </div>
