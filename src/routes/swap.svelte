@@ -48,7 +48,6 @@
     post = params.get("post") || (await client.recommendPost());
 
     options = getOptions();
-
     orderBook = getOrderBook();
 
     // @ts-ignore
@@ -88,17 +87,17 @@
     const selected = options.find((entry) => entry.id === sendSelected);
     options = options.filter((entry) => entry.id !== sendSelected);
 
-    if (selected.type === "PST")
+    if (selected.type === "PST") {
       options = options.filter((entry) => entry.type !== "PST");
-    if (selected.type === "PST")
       options = options.filter((entry) => entry.id !== "ETH");
+    }
 
     return options;
   }
 
   async function getOrderBook(): Promise<OrderBookItem[]> {
+    await options;
     const config = await client.getConfig(post);
-    console.log(post);
 
     try {
       let url = config["publicURL"].startsWith("https://")
@@ -118,12 +117,6 @@
       notification.notify("Error", err, NotificationType.error, 5000);
       return;
     }
-  }
-
-  function switchSwap() {
-    let prev = { sendSelected, receiveSelected };
-    sendSelected = prev.receiveSelected;
-    receiveSelected = prev.sendSelected;
   }
 </script>
 
@@ -230,7 +223,7 @@
           </div>
         </div>
       </div>
-      <div class="switch-icon" on:click={switchSwap} title="Switch">
+      <div class="switch-icon" title="Switch">
         <img src={switchIcon} alt="switch-icon" />
       </div>
       <div class="input" in:fade={{ duration: 260 }}>
@@ -386,7 +379,6 @@
           margin-left: 0
 
         .switch-icon
-          cursor: pointer
           margin:
             top: .6em
             bottom: -1em
@@ -404,12 +396,6 @@
             border: $borderWidth solid transparent
             filter: var(--svg-color)
             transition: all .3s
-          
-          &:hover
-            opacity: .63
-
-            img
-              border-color: 2px solid var(--inverted-elements-color)
 
         .input
           +input
