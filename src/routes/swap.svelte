@@ -82,6 +82,20 @@
     return options;
   }
 
+  function restrict(
+    options: { ticker: string; id: string; type: string }[]
+  ): { ticker: string; id: string; type: string }[] {
+    const selected = options.find((entry) => entry.id === sendSelected);
+    options = options.filter((entry) => entry.id !== sendSelected);
+
+    if (selected.type === "PST")
+      options = options.filter((entry) => entry.type !== "PST");
+    if (selected.type === "PST")
+      options = options.filter((entry) => entry.id !== "ETH");
+
+    return options;
+  }
+
   async function getOrderBook(): Promise<OrderBookItem[]> {
     const config = await client.getConfig(post);
     console.log(post);
@@ -190,7 +204,6 @@
         <p class="label">You send</p>
         <div class="input-wrapper wider">
           <input type="number" step={1} pattern="\d+" min={0.000001} />
-
           <div class="select-container">
             {#await options}
               <SkeletonLoading
@@ -242,7 +255,7 @@
                   style="display: flex; width: 100%; height: 2.35em" />
               {:else}
                 <select bind:value={receiveSelected}>
-                  {#each loadedOptions.filter((entry) => entry.id !== sendSelected) as option}
+                  {#each restrict(loadedOptions) as option}
                     <option value={option.id}>{option.ticker}</option>
                   {/each}
                 </select>
