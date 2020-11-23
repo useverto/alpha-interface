@@ -152,7 +152,7 @@
       }
       console.log(metricData);
     } else {
-      // TODO
+      metricData = await client.chainRate(value.id);
     }
   }
 </script>
@@ -174,7 +174,7 @@
         data={{ 
           labels: metricData.dates, 
           datasets: [{
-            data: metricData.prices || metricData.volume, 
+            data: metricData.prices || metricData.volume || metricData.rates, 
             backgroundColor: 'transparent', 
             borderColor: function (context) {
               let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
