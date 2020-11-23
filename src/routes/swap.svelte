@@ -35,6 +35,10 @@
   let hasMetaMask: boolean = true;
   let connected: boolean = true;
 
+  let metricSelected: string;
+  let metricData = null;
+  let loadingMetrics = false;
+
   onMount(async () => {
     const ip = await (await fetch("https://api.ipify.org?format=json")).json();
     const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
@@ -49,6 +53,7 @@
 
     options = getOptions();
     orderBook = getOrderBook();
+    loadMetrics();
 
     // @ts-ignore
     hasMetaMask = typeof window.ethereum !== "undefined";
@@ -118,6 +123,38 @@
       return;
     }
   }
+
+  async function loadMetrics() {
+    const loadedOptions = await options;
+    if (!sendSelected) sendSelected = loadedOptions[0].id;
+    if (!receiveSelected) receiveSelected = restrict(loadedOptions)[0].id;
+
+    const value = loadedOptions.find(
+      (entry) =>
+        entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
+    );
+
+    if (value.type === "PST") {
+      if (metricSelected === "price") {
+        const data = await client.price(value.id);
+        data.empty = false;
+        if (data.prices.every((price) => isNaN(price))) {
+          data.empty = true;
+        }
+        metricData = data;
+      } else {
+        const data = await client.volume(value.id);
+        data.empty = false;
+        if (data.volume.length === 0 && data.dates.length === 0) {
+          data.empty = true;
+        }
+        metricData = data;
+      }
+      console.log(metricData);
+    } else {
+      // TODO
+    }
+  }
 </script>
 
 <svelte:head>
@@ -131,13 +168,13 @@
     <div class="swap-graph">
       <!-- ignore this, do not remove -->
       <!-- prettier-ignore -->
+      {#if metricData === null}
+      {:else}
       <Line
         data={{ 
-          // TODO
-          labels: ['sep 09', 'sep 10', 'sep 11', 'sep12', 'sep13', 'sep14', 'sep15', 'sep16'], 
+          labels: metricData.dates, 
           datasets: [{
-            // TODO
-            data: [0, 2, 3, 5, 6, 5, 4, 3], 
+            data: metricData.prices || metricData.volume, 
             backgroundColor: 'transparent', 
             borderColor: function (context) {
               let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
@@ -185,12 +222,15 @@
           } 
         }} />
       <div class="select-container">
-        <select>
+        <select bind:value={metricSelected} on:change={() => {
+          loadMetrics();
+        }}>
           <option value="price">Price</option>
           <option value="volume">Volume</option>
         </select>
         <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
       </div>
+      {/if}
     </div>
     <div class="swap-form" in:fade={{ duration: 250 }}>
       <div class="input" in:fade={{ duration: 260 }}>
@@ -209,7 +249,11 @@
                 <SkeletonLoading
                   style="display: flex; width: 100%; height: 2.35em" />
               {:else}
-                <select bind:value={sendSelected}>
+                <select
+                  bind:value={sendSelected}
+                  on:change={() => {
+                    loadMetrics();
+                  }}>
                   {#each loadedOptions as option}
                     <option value={option.id}>{option.ticker}</option>
                   {/each}
@@ -247,7 +291,11 @@
                 <SkeletonLoading
                   style="display: flex; width: 100%; height: 2.35em" />
               {:else}
-                <select bind:value={receiveSelected}>
+                <select
+                  bind:value={receiveSelected}
+                  on:change={() => {
+                    loadMetrics();
+                  }}>
                   {#each restrict(loadedOptions) as option}
                     <option value={option.id}>{option.ticker}</option>
                   {/each}
