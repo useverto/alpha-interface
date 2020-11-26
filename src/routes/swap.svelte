@@ -309,15 +309,58 @@
           </div>
         </div>
       </div>
-      <Button
-        style="
-          font-family: 'JetBrainsMono', monospace; 
-          text-transform: uppercase; 
-          display: block;
-          margin-top: 2em;
-        ">
-        Swap
-      </Button>
+      {#if sendSelected === 'ETH'}
+        {#if hasMetaMask}
+          {#if connected}
+            <Button
+              style="
+                font-family: 'JetBrainsMono', monospace; 
+                text-transform: uppercase; 
+                display: block;
+                margin-top: 2em;
+              ">
+              Swap
+            </Button>
+          {:else}
+            <Button
+              click={async () => {
+                const accounts = await window.ethereum.request({
+                  method: 'eth_requestAccounts',
+                });
+                if (accounts.length > 0) connected = true;
+              }}
+              style="
+                font-family: 'JetBrainsMono', monospace; 
+                text-transform: uppercase; 
+                display: block;
+                margin-top: 2em;
+              ">
+              Connect
+            </Button>
+          {/if}
+        {:else}
+          <Button
+            disabled
+            style="
+              font-family: 'JetBrainsMono', monospace; 
+              text-transform: uppercase; 
+              display: block;
+              margin-top: 2em;
+            ">
+            Install MetaMask
+          </Button>
+        {/if}
+      {:else}
+        <Button
+          style="
+            font-family: 'JetBrainsMono', monospace; 
+            text-transform: uppercase; 
+            display: block;
+            margin-top: 2em;
+          ">
+          Swap
+        </Button>
+      {/if}
     </div>
   </div>
   <div class="orders">
