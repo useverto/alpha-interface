@@ -19,9 +19,7 @@
   import Line from "svelte-chartjs/src/Line.svelte";
   import Loading from "../components/Loading.svelte";
 
-  // with trade, the user can define how much they want to receive
-  // with swap, the received amount is predefined
-  let swapMode: SwapMode = "Trade";
+  let sendAmount: number, receiveAmount: number;
   let sendSelected: string, receiveSelected: string;
 
   // @ts-ignore
@@ -150,9 +148,83 @@
         }
         metricData = data;
       }
-      console.log(metricData);
     } else {
       metricData = await client.chainRate(value.id);
+    }
+  }
+
+  let order;
+
+  async function exchange() {
+    const value = (await options).find(
+      (entry) =>
+        entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
+    );
+    const type = sendSelected === "AR" ? "buy" : "sell";
+
+    if (value.type === "PST") {
+      order = await client.createOrder(
+        type,
+        sendAmount,
+        value.id,
+        post,
+        type === "sell" && receiveAmount / sendAmount
+      );
+
+      if (order === "pst") {
+        notification.notify(
+          "Error",
+          "You don't have the sufficient amount of tokens.",
+          NotificationType.error,
+          5000
+        );
+        return;
+      }
+      if (order === "ar") {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        return;
+      }
+    } else {
+      order = await client.createSwap(
+        value.id,
+        post,
+        type === "buy" && sendAmount,
+        type === "sell" && sendAmount,
+        type === "buy" && receiveAmount / sendAmount
+      );
+
+      if (order === "arLink") {
+        notification.notify(
+          "Error",
+          "Setup ArLink.",
+          NotificationType.error,
+          5000
+        );
+        return;
+      }
+      if (order === "chain") {
+        notification.notify(
+          "Error",
+          `You don't have enough ${value.id}.`,
+          NotificationType.error,
+          5000
+        );
+        return;
+      }
+      if (order === "ar") {
+        notification.notify(
+          "Error",
+          "You don't have enough AR.",
+          NotificationType.error,
+          5000
+        );
+        return;
+      }
     }
   }
 </script>
@@ -236,7 +308,12 @@
       <div class="input" in:fade={{ duration: 260 }}>
         <p class="label">You send</p>
         <div class="input-wrapper wider">
-          <input type="number" step={1} pattern="\d+" min={0.000001} />
+          <input
+            type="number"
+            step={1}
+            pattern="\d+"
+            min={0.000001}
+            bind:value={sendAmount} />
           <div class="select-container">
             {#await options}
               <SkeletonLoading
@@ -278,7 +355,7 @@
             step={1}
             pattern="\d+"
             min={0.000001}
-            disabled={swapMode === 'Swap'} />
+            bind:value={receiveAmount} />
           <div class="select-container">
             {#await options}
               <SkeletonLoading
@@ -313,6 +390,7 @@
         {#if hasMetaMask}
           {#if connected}
             <Button
+              click={exchange}
               style="
                 font-family: 'JetBrainsMono', monospace; 
                 text-transform: uppercase; 
@@ -352,6 +430,7 @@
         {/if}
       {:else}
         <Button
+          click={exchange}
           style="
             font-family: 'JetBrainsMono', monospace; 
             text-transform: uppercase; 
