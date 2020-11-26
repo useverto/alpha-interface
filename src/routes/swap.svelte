@@ -153,10 +153,19 @@
     }
   }
 
+  let loading: boolean;
+  let confirmModalOpened: boolean = false;
+  let modalText: string = "";
+  let modalDetails: string = "";
   let order;
 
   async function exchange() {
-    const value = (await options).find(
+    loading = true;
+
+    const loadedOptions = await options;
+    if (!restrict(loadedOptions).find((entry) => entry.id === receiveSelected))
+      receiveSelected = restrict(loadedOptions)[0].id;
+    const value = loadedOptions.find(
       (entry) =>
         entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
     );
@@ -178,6 +187,7 @@
           NotificationType.error,
           5000
         );
+        loading = false;
         return;
       }
       if (order === "ar") {
@@ -187,8 +197,22 @@
           NotificationType.error,
           5000
         );
+        loading = false;
         return;
       }
+
+      if (order.pst > 0) {
+        modalText = `Selling ${sendAmount} ${value.ticker} at a rate of ${
+          receiveAmount / sendAmount
+        } AR/${value.ticker}`;
+        modalDetails = `You're sending ${order.pst} ${value.ticker} + ${order.ar} AR`;
+      } else {
+        modalText = `Buying ${sendAmount} AR's worth of ${value.ticker}`;
+        modalDetails = `You're sending ${order.ar} AR`;
+      }
+      confirmModalOpened = true;
+      loading = false;
+      return;
     } else {
       order = await client.createSwap(
         value.id,
@@ -205,6 +229,7 @@
           NotificationType.error,
           5000
         );
+        loading = false;
         return;
       }
       if (order === "chain") {
@@ -214,6 +239,7 @@
           NotificationType.error,
           5000
         );
+        loading = false;
         return;
       }
       if (order === "ar") {
@@ -223,8 +249,22 @@
           NotificationType.error,
           5000
         );
+        loading = false;
         return;
       }
+
+      if (order.chain > 0) {
+        modalText = `Swapping ${sendAmount} ${value.ticker} for ${`TODO`} AR`;
+        modalDetails = `You're sending ${order.chain} ${value.ticker}`;
+      } else {
+        modalText = `Swapping ${sendAmount} AR at a rate of ${
+          receiveAmount / sendAmount
+        } ${value.ticker}/AR`;
+        modalDetails = `You're sending ${order.ar} AR`;
+      }
+      confirmModalOpened = true;
+      loading = false;
+      return;
     }
   }
 </script>
@@ -389,16 +429,21 @@
       {#if sendSelected === 'ETH'}
         {#if hasMetaMask}
           {#if connected}
-            <Button
-              click={exchange}
-              style="
-                font-family: 'JetBrainsMono', monospace; 
-                text-transform: uppercase; 
-                display: block;
-                margin-top: 2em;
-              ">
-              Swap
-            </Button>
+            {#if loading}
+              <SkeletonLoading
+                style="width: 100%; height: 2.5em; margin-top: 2em;" />
+            {:else}
+              <Button
+                click={exchange}
+                style="
+                  font-family: 'JetBrainsMono', monospace; 
+                  text-transform: uppercase; 
+                  display: block;
+                  margin-top: 2em;
+                ">
+                Swap
+              </Button>
+            {/if}
           {:else}
             <Button
               click={async () => {
@@ -428,15 +473,17 @@
             Install MetaMask
           </Button>
         {/if}
+      {:else if loading}
+        <SkeletonLoading style="width: 100%; height: 2.5em; margin-top: 2em;" />
       {:else}
         <Button
           click={exchange}
           style="
-            font-family: 'JetBrainsMono', monospace; 
-            text-transform: uppercase; 
-            display: block;
-            margin-top: 2em;
-          ">
+              font-family: 'JetBrainsMono', monospace; 
+              text-transform: uppercase; 
+              display: block;
+              margin-top: 2em;
+            ">
           Swap
         </Button>
       {/if}
@@ -505,6 +552,10 @@
   </div>
 </div>
 <Footer />
+<Modal bind:opened={confirmModalOpened} confirmation={true}>
+  <p style="text-align: center;">{modalText}</p>
+  <p style="text-align: center">{modalDetails}</p>
+</Modal>
 
 <style lang="sass">
 
