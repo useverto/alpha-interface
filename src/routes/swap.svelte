@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { loggedIn, keyfile } from "../stores/keyfileStore";
+  import { loggedIn, keyfile, address } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
   import { NotificationType, ActiveMenu } from "../utils/types";
@@ -18,6 +18,7 @@
   import Modal from "../components/Modal.svelte";
   import Line from "svelte-chartjs/src/Line.svelte";
   import Loading from "../components/Loading.svelte";
+  import { saveSetting } from "../utils/settings";
 
   let sendAmount: number, receiveAmount: number;
   let sendSelected: string, receiveSelected: string;
@@ -210,6 +211,12 @@
         modalText = `Buying ${sendAmount} AR's worth of ${value.ticker}`;
         modalDetails = `You're sending ${order.ar} AR`;
       }
+      await client.saveToken(value.id);
+      saveSetting(
+        "tokens",
+        JSON.parse(localStorage.getItem("tokens")),
+        $address
+      );
       confirmModalOpened = true;
       loading = false;
       return;
