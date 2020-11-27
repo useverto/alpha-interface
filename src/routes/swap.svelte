@@ -100,8 +100,13 @@
   }
 
   async function getOrderBook(): Promise<OrderBookItem[]> {
-    await options;
     const config = await client.getConfig(post);
+
+    const loadedOptions = await options;
+    const value = loadedOptions.find(
+      (entry) =>
+        entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
+    );
 
     try {
       let url = config["publicURL"].startsWith("https://")
@@ -110,7 +115,7 @@
       let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
       let res = await (await fetch(url + endpoint)).clone().json();
-      let table = res.find((orders) => orders.token === sendSelected);
+      let table = res.find((orders) => orders.token === value.id);
       if (table) {
         let orders = table.orders;
         return orders.sort((a, b) => b.rate - a.rate);
@@ -379,6 +384,7 @@
                   bind:value={sendSelected}
                   on:change={() => {
                     loadMetrics();
+                    orderBook = getOrderBook();
                   }}>
                   {#each loadedOptions as option}
                     <option value={option.id}>{option.ticker}</option>
@@ -421,6 +427,7 @@
                   bind:value={receiveSelected}
                   on:change={() => {
                     loadMetrics();
+                    orderBook = getOrderBook();
                   }}>
                   {#each restrict(loadedOptions) as option}
                     <option value={option.id}>{option.ticker}</option>
