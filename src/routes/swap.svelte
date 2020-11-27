@@ -127,6 +127,8 @@
     const loadedOptions = await options;
     if (!sendSelected) sendSelected = loadedOptions[0].id;
     if (!receiveSelected) receiveSelected = restrict(loadedOptions)[0].id;
+    if (!restrict(loadedOptions).find((entry) => entry.id === receiveSelected))
+      receiveSelected = restrict(loadedOptions)[0].id;
 
     const value = loadedOptions.find(
       (entry) =>
@@ -152,6 +154,7 @@
     } else {
       metricData = await client.chainRate(value.id);
     }
+    metricData.ticker = value.ticker;
   }
 
   let loading: boolean;
@@ -334,8 +337,7 @@
               gridLines: { display: false }, 
               scaleLabel: { 
                 display: true,
-                // TODO
-                labelString: `${'ETH'} / AR`
+                labelString: metricSelected === "price" || !metricSelected ? `${metricData.ticker} / AR` : metricData.ticker
               } 
             }] 
           } 
