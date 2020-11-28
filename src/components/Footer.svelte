@@ -56,10 +56,6 @@
         display: inline-block
         text-align: center
   
-        @media screen and (max-width: 720px)
-          display: inline-block
-          width: 30%
-  
         a
           text-decoration: none
           width: 100% !important
