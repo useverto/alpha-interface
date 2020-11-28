@@ -46,7 +46,7 @@
     margin: 0 auto
 
     @media screen and (max-width: 720px)
-      padding-bottom: 4em
+      display: none
   
     .FooterContent
       padding: 30px 0
