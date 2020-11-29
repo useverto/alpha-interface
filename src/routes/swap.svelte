@@ -73,16 +73,58 @@
     } else if (sendSelected === "AR") {
       // sending AR
       if (receiveSelected === "ETH") {
-        // recieving ETH -> enabled
+        // receiving ETH -> enabled
         disabled = false;
       } else {
-        // recieving tokens -> disabled
+        // receiving tokens -> disabled
         disabled = true;
       }
     } else {
       // sending tokens -> enabled
       disabled = false;
     }
+  }
+  let receivePromise = receive();
+  async function receive(): Promise<string> {
+    let orders = await orderBook;
+    if (!orders) {
+      return "...";
+    }
+
+    const loadedOptions = await options;
+    if (!restrict(loadedOptions).find((entry) => entry.id === receiveSelected))
+      receiveSelected = restrict(loadedOptions)[0].id;
+    const value = loadedOptions.find(
+      (entry) =>
+        entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
+    );
+    const type = sendSelected === "AR" ? "Sell" : "Buy";
+    orders = orders.filter((order) => {
+      return order.type === type;
+    });
+
+    if (!orders) {
+      return "...";
+    }
+
+    let send = sendAmount;
+    let amnt = 0;
+    for (const order of orders) {
+      if (order.amnt >= send / order.rate) {
+        return (
+          "~" +
+          (value.type === "PST"
+            ? Math.floor(amnt + send / order.rate)
+            : amnt + send / order.rate)
+        );
+      } else {
+        send -= order.amnt * order.rate;
+        amnt += order.amnt;
+      }
+    }
+    if (value.type === "PST") amnt = Math.floor(amnt);
+
+    return "~" + amnt;
   }
 
   function update() {
@@ -450,7 +492,8 @@
             step={1}
             pattern="\d+"
             min={0.000001}
-            bind:value={sendAmount} />
+            bind:value={sendAmount}
+            on:input={() => (receivePromise = receive())} />
           <div class="select-container">
             {#await options}
               <SkeletonLoading
@@ -488,13 +531,20 @@
       <div class="input" in:fade={{ duration: 260 }}>
         <p class="label">You receive</p>
         <div class="input-wrapper wider">
-          <input
-            type="number"
-            step={1}
-            pattern="\d+"
-            min={0.000001}
-            bind:value={receiveAmount}
-            {disabled} />
+          {#if disabled}
+            {#await receivePromise}
+              <input value="..." disabled />
+            {:then loadedReceive}
+              <input value={loadedReceive} disabled />
+            {/await}
+          {:else}
+            <input
+              type="number"
+              step={1}
+              pattern="\d+"
+              min={0.000001}
+              bind:value={receiveAmount} />
+          {/if}
           <div class="select-container">
             {#await options}
               <SkeletonLoading
