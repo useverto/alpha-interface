@@ -65,6 +65,26 @@
     }
   });
 
+  let disabled: boolean = true;
+  $: {
+    if (sendSelected === "ETH") {
+      // sending ETH -> disabled
+      disabled = true;
+    } else if (sendSelected === "AR") {
+      // sending AR
+      if (receiveSelected === "ETH") {
+        // recieving ETH -> enabled
+        disabled = false;
+      } else {
+        // recieving tokens -> disabled
+        disabled = true;
+      }
+    } else {
+      // sending tokens -> enabled
+      disabled = false;
+    }
+  }
+
   function update() {
     client = new Verto(JSON.parse($keyfile));
   }
@@ -473,7 +493,8 @@
             step={1}
             pattern="\d+"
             min={0.000001}
-            bind:value={receiveAmount} />
+            bind:value={receiveAmount}
+            {disabled} />
           <div class="select-container">
             {#await options}
               <SkeletonLoading
