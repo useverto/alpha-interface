@@ -18,9 +18,20 @@
 
   const client = new Verto();
 
+  const unique = (arr) => {
+    console.log(arr);
+    const seen: Record<string, boolean> = {};
+    return arr.filter((item) => {
+      return item.id in seen ? false : (seen[item.id] = true);
+    });
+  };
+
   let tokens;
   onMount(async () => {
-    tokens = await client.getTokens();
+    tokens = unique([
+      ...(await client.popularTokens()),
+      ...(await client.getTokens()),
+    ]);
     for (const element of $watchlist) {
       const index = tokens.indexOf(
         tokens.find((token) => token.ticker === element.ticker)
@@ -32,7 +43,10 @@
   });
 
   export const update = async () => {
-    tokens = await client.getTokens();
+    tokens = unique([
+      ...(await client.popularTokens()),
+      ...(await client.getTokens()),
+    ]);
     for (const element of $watchlist) {
       const index = tokens.indexOf(
         tokens.find((token) => token.ticker === element.ticker)
