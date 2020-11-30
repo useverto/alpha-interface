@@ -118,7 +118,7 @@
     interactions across the network.
   </p>
   <p>Click the URL below to verify your wallet:</p>
-  {#await verify(JSON.parse($keyfile)) then verifyURL}
+  {#await verify(JSON.parse($keyfile), 'http://localhost:3000') then verifyURL}
     <a href={verifyURL} target="_blank" rel="noopener noreferer">{verifyURL}</a>
   {/await}
 </Modal>

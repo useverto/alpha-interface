@@ -1282,6 +1282,13 @@ aproba@^1.0.3:
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
   integrity sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==
 
+ar-gql@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/ar-gql/-/ar-gql-0.0.1.tgz#66b4b1fcba928dee634a0b9c76a9534a41eb4a55"
+  integrity sha512-ky7kOIfs5lYr3cN3movieHbzm45xeUb1q42kZN4nvb3FB712UQ939q3I48WCpcrBeZXygSDfLvNvUxOZZjylrA==
+  dependencies:
+    node-fetch "^2.6.1"
+
 are-we-there-yet@~1.1.2:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/are-we-there-yet/-/are-we-there-yet-1.1.5.tgz#4b35c2944f062a8bfcda66410760350fe9ddfc21"
@@ -1307,11 +1314,12 @@ array-union@^2.1.0:
   resolved "https://registry.yarnpkg.com/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
   integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
-arverify@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/arverify/-/arverify-2.1.0.tgz#071ce35f96f6e6d0aab8bf97823a26ce8dbbd95d"
-  integrity sha512-/nPMrRLc5kOOYDaCDfe23KvPINCsePtEVD4PIbUKb33f0zs8ss2yfuZZ92sxZtpss6Z+8hRqAav/WZIwmUgGVA==
+arverify@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/arverify/-/arverify-0.0.1.tgz#c5080a34b1b04b41889a0523b463373cd3764482"
+  integrity sha512-QPCdKNXb2bOuR2fae7bOZElZPT86v9vzrodF8OfZWSzIXGiYAPpjR+QIeC5Y9TwQRFnsp3lgPdVJkp8Z7jXk8Q==
   dependencies:
+    ar-gql "^0.0.1"
     arweave "^1.9.1"
     node-fetch "^2.6.1"
     smartweave "^0.4.10"
