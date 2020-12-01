@@ -272,6 +272,46 @@
     );
     const type = sendSelected === "AR" ? "buy" : "sell";
 
+    if (
+      (type === "sell" && value.type !== "PST") ||
+      (type === "buy" && value.type === "PST")
+    ) {
+      const orders = await getOrderBook();
+      if (!orders || orders.length === 0) {
+        notification.notify(
+          "Error",
+          "You can't place this order to do a lack of liquidity.",
+          NotificationType.error,
+          5000
+        );
+        loading = false;
+        return;
+      } else {
+        let filled = true;
+        let send = sendAmount;
+        for (const order of orders.filter(
+          (order) => order.type === (type === "buy" ? "sell" : "buy")
+        )) {
+          if (order.amnt >= send / order.rate) {
+            filled = false;
+          } else {
+            send -= order.amnt * order.rate;
+          }
+        }
+
+        if (filled) {
+          notification.notify(
+            "Error",
+            "You can't place this order to do a lack of liquidity.",
+            NotificationType.error,
+            5000
+          );
+          loading = false;
+          return;
+        }
+      }
+    }
+
     if (value.type === "PST") {
       order = await client.createOrder(
         type,
