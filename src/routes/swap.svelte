@@ -280,7 +280,7 @@
       if (!orders || orders.length === 0) {
         notification.notify(
           "Error",
-          "You can't place this order to do a lack of liquidity.",
+          "You can't place this order due to a lack of liquidity.",
           NotificationType.error,
           5000
         );
@@ -302,7 +302,7 @@
         if (filled) {
           notification.notify(
             "Error",
-            "You can't place this order to do a lack of liquidity.",
+            "You can't place this order due to a lack of liquidity.",
             NotificationType.error,
             5000
           );
