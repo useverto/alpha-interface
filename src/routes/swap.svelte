@@ -214,6 +214,7 @@
           orders[i].ticker = value.ticker;
           if (value.type === "PST") {
             orders[i].units = `AR/${value.ticker}`;
+            if (orders[i].rate) orders[i].rate = 1 / orders[i].rate;
           } else {
             orders[i].units = `${value.ticker}/AR`;
           }
@@ -370,12 +371,15 @@
       loading = false;
       return;
     } else {
+      const token =
+        type === "sell" && receiveSelected !== "AR" ? receiveSelected : null;
       order = await client.createSwap(
         value.id,
         post,
         type === "buy" && sendAmount,
         type === "sell" && sendAmount,
-        type === "buy" && receiveAmount / sendAmount
+        type === "buy" && receiveAmount / sendAmount,
+        token
       );
 
       if (order === "arLink") {
@@ -474,6 +478,8 @@
           for (const [key, value] of Object.entries(tags)) {
             arTx.addTag(key, value.toString());
           }
+
+          if (tx.token) arTx.addTag("Token", tx.token);
 
           await client.arweave.transactions.sign(arTx, client.keyfile);
           await client.arweave.transactions.post(arTx);
@@ -782,9 +788,15 @@
             {#each loadedOrders as order}
               <tr>
                 <td><span class="direction">{order.type}</span></td>
-                <td>{order.amnt} {order.ticker}</td>
+                <td>
+                  {order.amnt}
+                  {order.type === 'Buy' ? 'AR' : order.ticker}
+                </td>
                 <td>{order.rate || '---'} {order.units}</td>
-                <td>{order.received} AR</td>
+                <td>
+                  {order.received}
+                  {order.type === 'Buy' ? order.ticker : 'AR'}
+                </td>
               </tr>
             {/each}
           {/if}
