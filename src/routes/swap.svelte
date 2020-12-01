@@ -417,72 +417,82 @@
 <div class="swap">
   <Balance />
   <div class="swap-content">
-    <div class="swap-graph">
-      <!-- ignore this, do not remove -->
-      <!-- prettier-ignore -->
-      {#if metricData === null}
-      {:else}
-      <Line
-        data={{ 
-          labels: metricData.dates, 
-          datasets: [{
-            data: metricData.prices || metricData.volume || metricData.rates, 
-            backgroundColor: 'transparent', 
-            borderColor: function (context) {
-              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-              gradient.addColorStop(0, '#E698E8');
-              gradient.addColorStop(1, '#8D5FBC');
-              return gradient;
-            }, 
-            pointBackgroundColor: function (context) {
-              let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
-              gradient.addColorStop(0, '#E698E8');
-              gradient.addColorStop(1, '#8D5FBC');
-              return gradient;
-            }
-          }] 
-        }}
-        options={{ 
-          elements: {
-            point: { radius: 0 },
-            line: {
-              borderWidth: 5,
-              borderCapStyle: 'round'
-            }
-          }, tooltips: {
-            mode: 'index',
-            intersect: false
-          }, hover: {
-            mode: 'nearest',
-            intersect: true
-          }, 
-          maintainAspectRatio: false, 
-          legend: { display: false }, 
-          scales: { 
-            xAxes: [{ 
-              gridLines: { display: false }, 
-              scaleLabel: { display: false }
-            }], 
-            yAxes: [{ 
-              gridLines: { display: false }, 
-              scaleLabel: { 
-                display: true,
-                labelString: metricSelected === "price" || !metricSelected ? `${metricData.ticker} / AR` : metricData.ticker
-              } 
-            }] 
-          } 
-        }} />
-      <div class="select-container">
-        <select bind:value={metricSelected} on:change={() => {
-          loadMetrics();
-        }}>
-          <option value="price">Price</option>
-          <option value="volume">Volume</option>
-        </select>
-        <object data={downArrowIcon} type="image/svg+xml" title="select-icon" />
+    {#if metricData === null}
+      <div class="swap-graph">
+        <div class="placemiddle">
+          <Loading speed={850} />
+        </div>
       </div>
-      {/if}
-    </div>
+    {:else}
+      <div class="swap-graph">
+        <!-- ignore this, do not remove -->
+        <!-- prettier-ignore -->
+        <Line
+          data={{ 
+            labels: metricData.dates, 
+            datasets: [{
+              data: metricData.prices || metricData.volume || metricData.rates, 
+              backgroundColor: 'transparent', 
+              borderColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              }, 
+              pointBackgroundColor: function (context) {
+                let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
+                gradient.addColorStop(0, '#E698E8');
+                gradient.addColorStop(1, '#8D5FBC');
+                return gradient;
+              }
+            }] 
+          }}
+          options={{ 
+            elements: {
+              point: { radius: 0 },
+              line: {
+                borderWidth: 5,
+                borderCapStyle: 'round'
+              }
+            }, tooltips: {
+              mode: 'index',
+              intersect: false
+            }, hover: {
+              mode: 'nearest',
+              intersect: true
+            }, 
+            maintainAspectRatio: false, 
+            legend: { display: false }, 
+            scales: { 
+              xAxes: [{ 
+                gridLines: { display: false }, 
+                scaleLabel: { display: false }
+              }], 
+              yAxes: [{ 
+                gridLines: { display: false }, 
+                scaleLabel: { 
+                  display: true,
+                  labelString: metricSelected === "price" || !metricSelected ? `${metricData.ticker} / AR` : metricData.ticker
+                } 
+              }] 
+            } 
+          }} />
+        <div class="select-container">
+          <select
+            bind:value={metricSelected}
+            on:change={() => {
+              loadMetrics();
+            }}>
+            <option value="price">Price</option>
+            <option value="volume">Volume</option>
+          </select>
+          <object
+            data={downArrowIcon}
+            type="image/svg+xml"
+            title="select-icon" />
+        </div>
+      </div>
+    {/if}
     <div class="swap-form" in:fade={{ duration: 250 }}>
       <div class="input" in:fade={{ duration: 260 }}>
         <p class="label">You send</p>
@@ -735,6 +745,12 @@
           margin:
             right: 0
             bottom: 1.2em
+
+        .placemiddle
+          position: absolute
+          top: 50%
+          left: 50%
+          transform: translate(-50%, -50%)
 
         .select-container
           position: absolute
