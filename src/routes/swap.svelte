@@ -148,7 +148,30 @@
       options.push({ ticker: token.ticker, id: token.id, type: "PST" })
     );
 
+    options.push({ ticker: "Custom ...", id: "custom", type: "PST" });
+
     return options;
+  }
+
+  let tokenModalOpened: boolean = false;
+  let newToken: string;
+  $: {
+    if (sendSelected === "custom" || receiveSelected === "custom") {
+      tokenModalOpened = true;
+      // don't await if it is already resolved
+      options.then((loadedOptions) => {
+        if (sendSelected === "custom") sendSelected = loadedOptions[0].id;
+        if (receiveSelected === "custom")
+          receiveSelected = restrict(loadedOptions)[0].id;
+      });
+    }
+  }
+
+  async function addToken() {
+    await client.saveToken(newToken);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
+    options = getOptions();
+    newToken = "";
   }
 
   function restrict(
@@ -338,7 +361,9 @@
       }
 
       if (order.chain > 0) {
-        modalText = `Swapping ${sendAmount} ${value.ticker} for ${`TODO`} AR`;
+        modalText = `Swapping ${sendAmount} ${
+          value.ticker
+        } for ${await receivePromise} AR`;
         modalDetails = `You're sending ${order.chain} ${value.ticker}`;
       } else {
         modalText = `Swapping ${sendAmount} AR at a rate of ${
@@ -720,6 +745,14 @@
   </div>
 </div>
 <Footer />
+<Modal bind:opened={tokenModalOpened} confirmation={true} onConfirm={addToken}>
+  <h3 style="text-align: center;">Add Token</h3>
+  <input
+    type="text"
+    bind:value={newToken}
+    class="light contract-id"
+    placeholder="Token Contract ID" />
+</Modal>
 <Modal bind:opened={confirmModalOpened} confirmation={true} onConfirm={send}>
   <p style="text-align: center">{modalText}</p>
   <p style="text-align: center">{modalDetails}</p>
