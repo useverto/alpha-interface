@@ -210,6 +210,15 @@
       let table = res.find((orders) => orders.token === value.id);
       if (table) {
         let orders = table.orders;
+        for (let i = 0; i < orders.length; i++) {
+          orders[i].ticker = value.ticker;
+          if (value.type === "PST") {
+            orders[i].units = `AR/${value.ticker}`;
+          } else {
+            orders[i].units = `${value.ticker}/AR`;
+          }
+        }
+        console.log(orders);
         return orders.sort((a, b) => b.rate - a.rate);
       } else {
         return [];
@@ -773,8 +782,8 @@
             {#each loadedOrders as order}
               <tr>
                 <td><span class="direction">{order.type}</span></td>
-                <td>{order.amnt} VRT</td>
-                <td>{order.rate || '---'} AR/VRT</td>
+                <td>{order.amnt} {order.ticker}</td>
+                <td>{order.rate || '---'} {order.units}</td>
                 <td>{order.received} AR</td>
               </tr>
             {/each}

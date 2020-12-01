@@ -118,4 +118,6 @@ export interface OrderBookItem {
   type: string;
   createdAt: Date;
   received: number;
+  ticker: string;
+  units: string;
 }
