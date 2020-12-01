@@ -39,13 +39,15 @@
   let loadingMetrics = false;
 
   onMount(async () => {
-    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
-    if (res.country === "US") {
-      goto("/usa");
-    }
+    // const ip = await (await fetch("https://api.ipify.org?format=json")).json();
+    // const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
+    // if (res.country === "US") {
+    //   goto("/usa");
+    // }
 
-    client = new Verto(JSON.parse($keyfile));
+    client = new Verto(JSON.parse($keyfile), null, {
+      exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
+    });
 
     const params = new URLSearchParams(window.location.search);
     post = params.get("post") || (await client.recommendPost());
@@ -128,7 +130,9 @@
   }
 
   function update() {
-    client = new Verto(JSON.parse($keyfile));
+    client = new Verto(JSON.parse($keyfile), null, {
+      exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
+    });
   }
 
   async function getOptions(): Promise<
@@ -171,12 +175,15 @@
     );
 
     try {
-      let url = config["publicURL"].startsWith("https://")
-        ? config["publicURL"]
-        : "https://" + config["publicURL"];
-      let endpoint = url.endsWith("/") ? "orders" : "/orders";
+      // let url = config["publicURL"].startsWith("https://")
+      //   ? config["publicURL"]
+      //   : "https://" + config["publicURL"];
+      // let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
-      let res = await (await fetch(url + endpoint)).clone().json();
+      let res = await (await fetch("http://localhost:8080/orders"))
+        .clone()
+        .json();
+      console.log(res);
       let table = res.find((orders) => orders.token === value.id);
       if (table) {
         let orders = table.orders;
