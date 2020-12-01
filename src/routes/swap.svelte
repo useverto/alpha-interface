@@ -206,7 +206,6 @@
       let res = await (await fetch("http://localhost:8080/orders"))
         .clone()
         .json();
-      console.log(res);
       let table = res.find((orders) => orders.token === value.id);
       if (table) {
         let orders = table.orders;
@@ -219,7 +218,6 @@
             orders[i].units = `${value.ticker}/AR`;
           }
         }
-        console.log(orders);
         return orders.sort((a, b) => b.rate - a.rate);
       } else {
         return [];
@@ -300,7 +298,7 @@
         let filled = true;
         let send = sendAmount;
         for (const order of orders.filter(
-          (order) => order.type === (type === "buy" ? "sell" : "buy")
+          (order) => order.type === (type === "buy" ? "Sell" : "Buy")
         )) {
           if (order.amnt >= send / order.rate) {
             filled = false;
