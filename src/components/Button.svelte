@@ -6,6 +6,7 @@
   export let click: Function = () => {}; // click event
   export let style: string = undefined;
   export let disabled: boolean = false;
+  export let title: string = undefined;
 
   // don't let malicious links override the content of the site
   // https://web.dev/external-anchors-use-rel-noopener/
@@ -24,6 +25,7 @@
   class="Button"
   on:click={handleClick}
   {style}
+  {title}
   class:clear
   class:reverse
   class:disabled>

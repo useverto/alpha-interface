@@ -624,6 +624,7 @@
         {:else}
           <Button
             disabled
+            title="You will need to install the MetaMask extension for this action"
             style="
               font-family: 'JetBrainsMono', monospace; 
               text-transform: uppercase; 
@@ -695,7 +696,7 @@
               </tr>
             {/each}
           {:else if loadedOrders.length === 0}
-            <p>TODO</p>
+            <p>No orders for now. Want to make the first one?</p>
           {:else}
             {#each loadedOrders as order}
               <tr>
