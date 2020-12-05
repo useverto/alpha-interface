@@ -414,7 +414,11 @@
       if (order.chain > 0) {
         modalText = `Swapping ${sendAmount} ${
           value.ticker
-        } for ${await receivePromise} AR`;
+        } for ${await receivePromise} ${
+          token
+            ? loadedOptions.find((option) => option.id === token).ticker
+            : "AR"
+        }`;
         modalDetails = `You're sending ${order.chain} ${value.ticker}`;
       } else {
         modalText = `Swapping ${sendAmount} AR at a rate of ${
