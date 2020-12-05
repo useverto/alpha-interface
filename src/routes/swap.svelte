@@ -87,8 +87,16 @@
     }
   }
   let receivePromise = receive();
-  async function receive(): Promise<string> {
-    let orders = await orderBook;
+  async function receive(
+    amount?: number,
+    id?: string,
+    orderType?: "Buy" | "Sell"
+  ): Promise<string> {
+    if (!(amount || sendAmount)) {
+      return "...";
+    }
+
+    let orders = id ? await getOrderBook(id) : await orderBook;
     if (!orders) {
       return "...";
     }
@@ -98,9 +106,10 @@
       receiveSelected = restrict(loadedOptions)[0].id;
     const value = loadedOptions.find(
       (entry) =>
-        entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
+        entry.id === id ||
+        (sendSelected === "AR" ? receiveSelected : sendSelected)
     );
-    const type = sendSelected === "AR" ? "Sell" : "Buy";
+    const type = orderType || sendSelected === "AR" ? "Sell" : "Buy";
     orders = orders.filter((order) => {
       return order.type === type;
     });
@@ -109,16 +118,29 @@
       return "...";
     }
 
-    let send = sendAmount;
+    const token =
+      type === "Buy" && receiveSelected !== "AR" ? receiveSelected : null;
+
+    let send = amount || sendAmount;
     let amnt = 0;
     for (const order of orders) {
       if (order.amnt >= send / order.rate) {
-        return (
-          "~" +
-          (value.type === "PST"
-            ? Math.floor(amnt + send / order.rate)
-            : amnt + send / order.rate)
-        );
+        if (token) {
+          return await receive(
+            value.type === "PST"
+              ? Math.floor(amnt + send / order.rate)
+              : amnt + send / order.rate,
+            token,
+            type === "Buy" ? "Sell" : "Buy"
+          );
+        } else {
+          return (
+            "~" +
+            (value.type === "PST"
+              ? Math.floor(amnt + send / order.rate)
+              : amnt + send / order.rate)
+          );
+        }
       } else {
         send -= order.amnt * order.rate;
         amnt += order.amnt;
@@ -126,7 +148,9 @@
     }
     if (value.type === "PST") amnt = Math.floor(amnt);
 
-    return "~" + amnt;
+    return token
+      ? await receive(amnt, token, type === "Buy" ? "Sell" : "Buy")
+      : ">" + amnt;
   }
 
   function update() {
@@ -188,13 +212,14 @@
     return options;
   }
 
-  async function getOrderBook(): Promise<OrderBookItem[]> {
+  async function getOrderBook(id?: string): Promise<OrderBookItem[]> {
     const config = await client.getConfig(post);
 
     const loadedOptions = await options;
     const value = loadedOptions.find(
       (entry) =>
-        entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
+        entry.id ===
+        (id || (sendSelected === "AR" ? receiveSelected : sendSelected))
     );
 
     try {
