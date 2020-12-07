@@ -1,6 +1,6 @@
 <script lang="typescript">
   import { goto } from "@sapper/app";
-
+  import { fade } from "svelte/transition";
   import { loggedIn } from "../stores/keyfileStore";
   import Button from "../components/Button.svelte";
 
@@ -14,7 +14,7 @@
   <title>Verto — Gate</title>
 </svelte:head>
 
-<div class="gate">
+<div class="gate" in:fade={{ duration: 400 }}>
   <div class="container">
     <div class="text">
       <h1>You aren't eligible...</h1>

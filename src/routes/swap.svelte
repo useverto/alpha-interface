@@ -528,7 +528,7 @@
 </svelte:head>
 
 <NavBar {update} />
-<div class="swap">
+<div class="swap" in:fade={{ duration: 400 }}>
   <Balance />
   <div class="swap-content">
     {#if metricData === null}
