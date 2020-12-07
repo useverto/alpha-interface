@@ -536,6 +536,10 @@
         <div class="placemiddle">
           <Loading speed={850} />
         </div>
+        <div class="select-container">
+          <SkeletonLoading
+            style="display: flex; width: 6.3em; height: 2.1em; margin-bottom: .4em" />
+        </div>
       </div>
     {:else}
       <div class="swap-graph">
@@ -608,28 +612,44 @@
       </div>
     {/if}
     <div class="swap-form" in:fade={{ duration: 250 }}>
-      <div class="input" in:fade={{ duration: 260 }}>
-        <p class="label">You send</p>
-        <div class="input-wrapper wider">
-          <input
-            type="number"
-            step={1}
-            pattern="\d+"
-            min={0.000001}
-            bind:value={sendAmount}
-            on:input={() => (receivePromise = receive())} />
-          <div class="select-container">
-            {#await options}
-              <SkeletonLoading
-                style="display: flex; width: 100%; height: 2.35em" />
-            {:then loadedOptions}
-              {#if !loadedOptions}
-                <SkeletonLoading
-                  style="display: flex; width: 100%; height: 2.35em" />
-              {:else if loadedOptions.length === 0}
-                <SkeletonLoading
-                  style="display: flex; width: 100%; height: 2.35em" />
-              {:else}
+      {#await options}
+        <SkeletonLoading
+          style="display: flex; width: 5em; height: 1.2em; margin-bottom: .4em" />
+        <SkeletonLoading style="display: flex; width: 100%; height: 2.35em" />
+        <div class="switch-icon" title="Switch">
+          <SkeletonLoading
+            style="width: 1.47em; height: 1.47em; margin-left: calc(100% - 1.47em); border-radius: 100%;" />
+        </div>
+        <SkeletonLoading
+          style="display: flex; width: 5em; height: 1.2em; margin-bottom: .4em" />
+        <SkeletonLoading style="display: flex; width: 100%; height: 2.35em" />
+        <SkeletonLoading style="width: 100%; height: 2.5em; margin-top: 2em" />
+      {:then loadedOptions}
+        {#if !loadedOptions || loadedOptions.length === 0}
+          <SkeletonLoading
+            style="display: flex; width: 5em; height: 1.2em; margin-bottom: .4em" />
+          <SkeletonLoading style="display: flex; width: 100%; height: 2.35em" />
+          <div class="switch-icon" title="Switch">
+            <SkeletonLoading
+              style="width: 1.47em; height: 1.47em; margin-left: calc(100% - 1.47em); border-radius: 100%;" />
+          </div>
+          <SkeletonLoading
+            style="display: flex; width: 5em; height: 1.2em; margin-bottom: .4em" />
+          <SkeletonLoading style="display: flex; width: 100%; height: 2.35em" />
+          <SkeletonLoading
+            style="width: 100%; height: 2.5em; margin-top: 2em" />
+        {:else}
+          <div class="input" in:fade={{ duration: 260 }}>
+            <p class="label">You send</p>
+            <div class="input-wrapper wider">
+              <input
+                type="number"
+                step={1}
+                pattern="\d+"
+                min={0.000001}
+                bind:value={sendAmount}
+                on:input={() => (receivePromise = receive())} />
+              <div class="select-container">
                 <select
                   bind:value={sendSelected}
                   on:change={() => {
@@ -644,43 +664,30 @@
                   data={downArrowIcon}
                   type="image/svg+xml"
                   title="select-icon" />
-              {/if}
-            {/await}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="switch-icon" title="Switch">
-        <img src={switchIcon} alt="switch-icon" />
-      </div>
-      <div class="input" in:fade={{ duration: 260 }}>
-        <p class="label">You receive</p>
-        <div class="input-wrapper wider">
-          {#if disabled}
-            {#await receivePromise}
-              <input value="..." disabled />
-            {:then loadedReceive}
-              <input value={loadedReceive} disabled />
-            {/await}
-          {:else}
-            <input
-              type="number"
-              step={1}
-              pattern="\d+"
-              min={0.000001}
-              bind:value={receiveAmount} />
-          {/if}
-          <div class="select-container">
-            {#await options}
-              <SkeletonLoading
-                style="display: flex; width: 100%; height: 2.35em" />
-            {:then loadedOptions}
-              {#if !loadedOptions}
-                <SkeletonLoading
-                  style="display: flex; width: 100%; height: 2.35em" />
-              {:else if loadedOptions.length === 0}
-                <SkeletonLoading
-                  style="display: flex; width: 100%; height: 2.35em" />
+          <div class="switch-icon" title="Switch">
+            <img src={switchIcon} alt="switch-icon" />
+          </div>
+          <div class="input" in:fade={{ duration: 260 }}>
+            <p class="label">You receive</p>
+            <div class="input-wrapper wider">
+              {#if disabled}
+                {#await receivePromise}
+                  <input value="..." disabled />
+                {:then loadedReceive}
+                  <input value={loadedReceive} disabled />
+                {/await}
               {:else}
+                <input
+                  type="number"
+                  step={1}
+                  pattern="\d+"
+                  min={0.000001}
+                  bind:value={receiveAmount} />
+              {/if}
+              <div class="select-container">
                 <select
                   bind:value={receiveSelected}
                   on:change={() => {
@@ -695,73 +702,74 @@
                   data={downArrowIcon}
                   type="image/svg+xml"
                   title="select-icon" />
-              {/if}
-            {/await}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      {#if sendSelected === 'ETH'}
-        {#if hasMetaMask}
-          {#if connected}
-            {#if loading}
-              <SkeletonLoading
-                style="width: 100%; height: 2.5em; margin-top: 2em;" />
+          {#if sendSelected === 'ETH'}
+            {#if hasMetaMask}
+              {#if connected}
+                {#if loading}
+                  <SkeletonLoading
+                    style="width: 100%; height: 2.5em; margin-top: 2em;" />
+                {:else}
+                  <Button
+                    click={exchange}
+                    style="
+                      font-family: 'JetBrainsMono', monospace; 
+                      text-transform: uppercase; 
+                      display: block;
+                      margin-top: 2em;
+                    ">
+                    Swap
+                  </Button>
+                {/if}
+              {:else}
+                <Button
+                  click={async () => {
+                    const accounts = await window.ethereum.request({
+                      method: 'eth_requestAccounts',
+                    });
+                    if (accounts.length > 0) connected = true;
+                  }}
+                  style="
+                    font-family: 'JetBrainsMono', monospace; 
+                    text-transform: uppercase; 
+                    display: block;
+                    margin-top: 2em;
+                  ">
+                  Connect
+                </Button>
+              {/if}
             {:else}
               <Button
-                click={exchange}
+                disabled
+                title="You will need to install the MetaMask extension for this action"
                 style="
                   font-family: 'JetBrainsMono', monospace; 
                   text-transform: uppercase; 
                   display: block;
                   margin-top: 2em;
                 ">
-                Swap
+                Install MetaMask
               </Button>
             {/if}
+          {:else if loading}
+            <SkeletonLoading
+              style="width: 100%; height: 2.5em; margin-top: 2em;" />
           {:else}
             <Button
-              click={async () => {
-                const accounts = await window.ethereum.request({
-                  method: 'eth_requestAccounts',
-                });
-                if (accounts.length > 0) connected = true;
-              }}
+              click={exchange}
               style="
-                font-family: 'JetBrainsMono', monospace; 
-                text-transform: uppercase; 
-                display: block;
-                margin-top: 2em;
-              ">
-              Connect
+                  font-family: 'JetBrainsMono', monospace; 
+                  text-transform: uppercase; 
+                  display: block;
+                  margin-top: 2em;
+                ">
+              Swap
             </Button>
           {/if}
-        {:else}
-          <Button
-            disabled
-            title="You will need to install the MetaMask extension for this action"
-            style="
-              font-family: 'JetBrainsMono', monospace; 
-              text-transform: uppercase; 
-              display: block;
-              margin-top: 2em;
-            ">
-            Install MetaMask
-          </Button>
         {/if}
-      {:else if loading}
-        <SkeletonLoading style="width: 100%; height: 2.5em; margin-top: 2em;" />
-      {:else}
-        <Button
-          click={exchange}
-          style="
-              font-family: 'JetBrainsMono', monospace; 
-              text-transform: uppercase; 
-              display: block;
-              margin-top: 2em;
-            ">
-          Swap
-        </Button>
-      {/if}
+      {/await}
     </div>
   </div>
   <div class="orders">
@@ -895,15 +903,15 @@
           margin-left: 0
 
         .switch-icon
+          $iconPadding: .2em
+          $iconWidth: 1.4em
+          $borderWidth: 2px
           margin:
             top: .6em
             bottom: -1em
           transition: all .3s
 
           img
-            $iconPadding: .2em
-            $iconWidth: 1.4em
-            $borderWidth: 2px
             margin-left: calc(100% - #{$iconWidth + $iconPadding * 2} - #{$borderWidth * 2})
             width: $iconWidth
             height: $iconWidth
