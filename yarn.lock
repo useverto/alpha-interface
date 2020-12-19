@@ -1381,6 +1381,13 @@ axios@^0.19.2:
   dependencies:
     follow-redirects "1.5.10"
 
+axios@^0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.0.tgz#26df088803a2350dff2c27f96fef99fe49442aca"
+  integrity sha512-fmkJBknJKoZwem3/IKSSLpkdNXZeBu5Q7GA/aRsr2btgrptmSCxi2oFjZHqGdK9DoTil9PIHlPIZw2EcRJXRvw==
+  dependencies:
+    follow-redirects "^1.10.0"
+
 babel-plugin-dynamic-import-node@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/babel-plugin-dynamic-import-node/-/babel-plugin-dynamic-import-node-2.3.3.tgz#84fda19c976ec5c6defef57f9427b3def66e17a3"
@@ -1791,12 +1798,13 @@ community-js@^1.0.15:
     smartweave "^0.3.6"
     tiny-worker "^2.3.0"
 
-community-js@^1.1.6:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.6.tgz#d165096dcdb47589f99619b9841e416194aa5aef"
-  integrity sha512-heL/FhX2UuTxVP6cmtMIdWH7uLtrzgyjShAXS66voJbP/3zuUpP8rLGnI9KQ2NLs4VSNifK2FVKHJEHvnjN4qg==
+community-js@^1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.8.tgz#7b81263a9e121b258798f72ee04d9b1f77fa9f97"
+  integrity sha512-ZJE7Z8COFRc/tJ93lUTTW1Z384PBB54p559cB1eI4C9CsqmXArwezmatv3sr/KsRCRNBpJE2l5S2kAkIpem0Tg==
   dependencies:
     arweave "^1.9.1"
+    axios "^0.21.0"
     smartweave "^0.4.11"
     tiny-worker "^2.3.0"
 
@@ -2395,6 +2403,11 @@ follow-redirects@1.5.10:
   integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
   dependencies:
     debug "=3.1.0"
+
+follow-redirects@^1.10.0:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.1.tgz#5f69b813376cee4fd0474a3aba835df04ab763b7"
+  integrity sha512-SSG5xmZh1mkPGyKzjZP8zLjltIfpW32Y5QpdNJyjcfGxK3qo3NDDkZOZSFiGn1A6SclQxY9GzEwAHQ3dmYRWpg==
 
 foreach@~2.0.1:
   version "2.0.5"
