@@ -16,6 +16,7 @@
   "dependencies": {
     "@verto/lib": "^0.7.2",
     "arweave": "^1.10.0",
+    "cacheweave": "^2.1.0",
     "community-js": "^1.1.8",
     "compression": "^1.7.1",
     "graphql": "^15.3.0",
@@ -23,7 +24,7 @@
     "polka": "next",
     "sapper-google-analytics": "^1.0.2",
     "sirv": "^1.0.6",
-    "smartweave": "^0.4.12",
+    "smartweave": "^0.4.13",
     "svelte-chartjs": "^1.0.1"
   },
   "devDependencies": {
