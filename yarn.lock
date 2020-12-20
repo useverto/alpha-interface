@@ -1282,13 +1282,6 @@ aproba@^1.0.3:
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
   integrity sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==
 
-ar-gql@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/ar-gql/-/ar-gql-0.0.3.tgz#3c0734e572a26842ffbdb6bb343182f96e2a711f"
-  integrity sha512-P9xdIVU6InndVBO9n6nbKpu1A1Ad/6Yr02Lf835zZiEq4t60zMkp6epb88gr+YnXbDYdKuCrXTJWMHpHK7ZNTw==
-  dependencies:
-    node-fetch "^2.6.1"
-
 are-we-there-yet@~1.1.2:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/are-we-there-yet/-/are-we-there-yet-1.1.5.tgz#4b35c2944f062a8bfcda66410760350fe9ddfc21"
@@ -1591,16 +1584,6 @@ cacheweave@^1.0.0:
     node-fetch "^2.6.1"
     smartweave "^0.3.6"
 
-cacheweave@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-2.1.0.tgz#0aa4878ed831fb164e5a834ecd61baa7624888e0"
-  integrity sha512-OWorhqe3vww5zikp+WxNxtRxRJcmVd5+JazkFzrGfVYyI/dfc/MJ0WhGoHjhGwRG4usBCcdXZ0jBUNumlOt8tA==
-  dependencies:
-    ar-gql "^0.0.3"
-    arweave "^1.10.0"
-    community-js "^1.1.6"
-    smartweave "^0.4.13"
-
 callsites@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.1.0.tgz#b3630abd8943432f54b3f0519238e33cd7df2f73"
@@ -1815,7 +1798,7 @@ community-js@^1.0.15:
     smartweave "^0.3.6"
     tiny-worker "^2.3.0"
 
-community-js@^1.1.6, community-js@^1.1.8:
+community-js@^1.1.8:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.8.tgz#7b81263a9e121b258798f72ee04d9b1f77fa9f97"
   integrity sha512-ZJE7Z8COFRc/tJ93lUTTW1Z384PBB54p559cB1eI4C9CsqmXArwezmatv3sr/KsRCRNBpJE2l5S2kAkIpem0Tg==
@@ -4227,21 +4210,10 @@ smartweave@^0.3.6:
     loglevel "^1.7.0"
     yargs "^15.3.1"
 
-smartweave@^0.4.11:
+smartweave@^0.4.11, smartweave@^0.4.12:
   version "0.4.12"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.12.tgz#e9c770867ab5eb36940637db264620974e2c19b6"
   integrity sha512-EMaRLV7ZT0kafU+XDlNH7EBKIJO1PfRXe4yOKu1IVN279uMHCRaEywioo7eHQ2WjCryr168X07ndpFA6l1fgkA==
-  dependencies:
-    "@weavery/clarity" "^0.1.5"
-    arweave "^1.9.1"
-    bignumber.js "^9.0.1"
-    loglevel "^1.7.0"
-    yargs "^16.1.0"
-
-smartweave@^0.4.13:
-  version "0.4.13"
-  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.13.tgz#d5da11332199acd7e3548b8d553f68d52b60c0e9"
-  integrity sha512-xf+ACoQ37sejfYJvl+G4Glc69P3m5iT29kwRuC7w8rBRSdhyZeHSssJMbYpFzaQtu4AcGy1YUnyPh+1iPQv3hQ==
   dependencies:
     "@weavery/clarity" "^0.1.5"
     arweave "^1.9.1"

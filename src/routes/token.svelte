@@ -1,6 +1,7 @@
 <script lang="typescript">
   import { keyfile } from "../stores/keyfileStore";
   import Arweave from "arweave";
+  import Community from "community-js";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
   import { goto } from "@sapper/app";
@@ -8,9 +9,6 @@
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import SkeletonLoading from "../components/SkeletonLoading.svelte";
-
-  import { getContract } from "cacheweave";
-  import type { StateInterface } from "community-js/lib/faces";
 
   let client = new Verto();
   const arweaveClient = Arweave.init({
@@ -21,7 +19,8 @@
     logging: false,
   });
   let communityID: string = "";
-  let state: StateInterface;
+  let community: Community = null;
+  let state;
 
   if (process.browser) {
     const params = new URLSearchParams(window.location.search);
@@ -30,7 +29,10 @@
   }
 
   async function initCommunity() {
-    state = await getContract(arweaveClient, communityID);
+    // @ts-expect-error
+    community = new Community(arweaveClient);
+    await community.setCommunityTx(communityID);
+    state = await community.getState();
   }
 
   onMount(async () => {
