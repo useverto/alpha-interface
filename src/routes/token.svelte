@@ -6,6 +6,7 @@
   import { onMount } from "svelte";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
+  import { run } from "ar-gql";
 
   import Line from "svelte-chartjs/src/Line.svelte";
   import NavBar from "../components/NavBar.svelte";
@@ -37,6 +38,7 @@
     community = new Community(arweaveClient);
     await community.setCommunityTx(communityID);
     state = await community.getState();
+    console.log(state);
   }
 
   onMount(async () => {
@@ -108,6 +110,71 @@
     await communityName;
     return state.settings.get("communityAppUrl") || "";
   }
+
+  async function arPrice() {
+    const networkInfo = await arweaveClient.network.getInfo();
+    const res = (
+      await run(
+        `
+      {
+        transactions(
+          tags: [
+            { name: "app", values: "Limestone" }
+            { name: "type", values: "data-latest" }
+            { name: "token", values: "AR" }
+            { name: "version", values: "0.005" }
+          ]
+          block: { min: ${networkInfo.height - 50} }
+          first: 1
+        ) {
+          edges {
+            node {
+              tags {
+                name
+                value
+              }
+            }
+          }
+        }
+      }
+      `
+      )
+    ).data.transactions.edges;
+
+    if (res[0]) {
+      let tags = res[0].node.tags;
+      let result: { price: number; updated: Date };
+      tags.forEach((tag) => {
+        if (tag.name === "value") {
+          result.price = parseFloat(tag.value);
+        }
+        if (tag.name === "time") {
+          result.updated = new Date(parseInt(tag.value));
+        }
+      });
+      return result;
+    } else {
+      return 0;
+    }
+  }
+
+  async function cPriceUSD(): Promise<number> {
+    await communityName;
+    const priceAR: number = await client.latestPrice(communityID);
+    console.log(priceAR);
+    const priceUSD: number = (await arPrice()).price;
+    console.log(await arPrice());
+    return priceAR * priceUSD;
+  }
+
+  async function cMarketCap(): Promise<string> {
+    await communityName;
+    let totalSupply = 0;
+    for (const key of Object.keys(state.balances)) {
+      totalSupply += state.balances[key];
+    }
+    return ((await cPriceUSD()) * totalSupply).toString();
+  }
 </script>
 
 <svelte:head>
@@ -176,13 +243,23 @@
         {/if}
       {/await}
     </div>
-    <div class="description">
-      <h2>About</h2>
-      {#await cDescription()}
-        <SkeletonLoading />
-      {:then loadedDesc}
-        <p>{loadedDesc}</p>
-      {/await}
+    <div class="content">
+      <div class="description">
+        <h2>About</h2>
+        {#await cDescription()}
+          <SkeletonLoading />
+        {:then loadedDesc}
+          <p>{loadedDesc}</p>
+        {/await}
+      </div>
+      <div class="stats">
+        <h2>Metrics</h2>
+        {#await cMarketCap()}
+          <SkeletonLoading />
+        {:then loadedMarketCap}
+          <p>Market Cap: {loadedMarketCap}</p>
+        {/await}
+      </div>
     </div>
   </div>
 </div>
@@ -244,5 +321,10 @@
     .token-body
       .graph-wrapper
         margin-bottom: 3em
+
+      .content
+        display: flex
+        justify-content: space-between
+        align-items: stretch
 
 </style>
