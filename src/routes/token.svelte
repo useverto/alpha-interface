@@ -38,14 +38,13 @@
     community = new Community(arweaveClient);
     await community.setCommunityTx(communityID);
     state = await community.getState();
-    console.log(state);
   }
 
   onMount(async () => {
     client = new Verto(JSON.parse($keyfile));
   });
 
-  const update = () => {
+  const update = async () => {
     client = new Verto(JSON.parse($keyfile));
   };
 
@@ -61,14 +60,10 @@
     return state.settings.get("communityLogo");
   }
 
-  const communityLogo: Promise<string> = cLogo();
-
   async function cTicker(): Promise<string> {
     await communityName;
     return state.ticker;
   }
-
-  const communityTicker: Promise<string> = cTicker();
 
   async function cGraph() {
     await communityName;
@@ -113,6 +108,7 @@
 
   async function arPrice() {
     const networkInfo = await arweaveClient.network.getInfo();
+    const blockMin = networkInfo.height - 50;
     const res = (
       await run(
         `
@@ -124,7 +120,7 @@
             { name: "token", values: "AR" }
             { name: "version", values: "0.005" }
           ]
-          block: { min: ${networkInfo.height - 50} }
+          block: { min: ${blockMin} }
           first: 1
         ) {
           edges {
@@ -143,37 +139,47 @@
 
     if (res[0]) {
       let tags = res[0].node.tags;
-      let result: { price: number; updated: Date };
-      tags.forEach((tag) => {
-        if (tag.name === "value") {
-          result.price = parseFloat(tag.value);
+      let price;
+      for (let i = 0; i < tags.length; i++) {
+        if (tags[i].name === "value") {
+          price = parseFloat(tags[i].value);
+          return price;
         }
-        if (tag.name === "time") {
-          result.updated = new Date(parseInt(tag.value));
-        }
-      });
-      return result;
-    } else {
-      return 0;
+      }
     }
   }
 
   async function cPriceUSD(): Promise<number> {
     await communityName;
     const priceAR: number = await client.latestPrice(communityID);
-    console.log(priceAR);
-    const priceUSD: number = (await arPrice()).price;
-    console.log(await arPrice());
+    const priceUSD: number = await arPrice();
     return priceAR * priceUSD;
   }
 
-  async function cMarketCap(): Promise<string> {
+  async function cCirculatingSupply(): Promise<number> {
     await communityName;
-    let totalSupply = 0;
+    let circulatingSupply = 0;
     for (const key of Object.keys(state.balances)) {
-      totalSupply += state.balances[key];
+      circulatingSupply += state.balances[key];
     }
-    return ((await cPriceUSD()) * totalSupply).toString();
+    return circulatingSupply;
+  }
+
+  async function cTotalSupply(): Promise<number> {
+    await communityName;
+    const vaultUsers = Object.keys(state.vault);
+    let vaultBalance = 0;
+    for (let i = 0, j = vaultUsers.length; i < j; i++) {
+      vaultBalance += state.vault[vaultUsers[i]]
+        .map((a) => a.balance)
+        .reduce((a, b) => a + b, 0);
+    }
+    return vaultBalance + (await cCirculatingSupply());
+  }
+
+  async function cMarketCap(): Promise<number> {
+    await communityName;
+    return (await cPriceUSD()) * (await cTotalSupply());
   }
 </script>
 
@@ -186,7 +192,7 @@
 <div class="token">
   <div class="token-head">
     <div class="logo">
-      {#await communityLogo}
+      {#await cLogo()}
         <SkeletonLoading />
       {:then loadedLogo}
         <img
@@ -201,7 +207,7 @@
       {:then loadedName}
         {loadedName}
       {/await}
-      {#await communityTicker}
+      {#await cTicker()}
         <SkeletonLoading />
       {:then loadedTicker}
         <span class="ticker">{loadedTicker}</span>
@@ -257,7 +263,17 @@
         {#await cMarketCap()}
           <SkeletonLoading />
         {:then loadedMarketCap}
-          <p>Market Cap: {loadedMarketCap}</p>
+          <p>Market Cap: ~${Math.round(loadedMarketCap)} USD</p>
+        {/await}
+        {#await cCirculatingSupply()}
+          <SkeletonLoading />
+        {:then loadedCirculatingSupply}
+          <p>Circulating Supply: {loadedCirculatingSupply}</p>
+        {/await}
+        {#await cTotalSupply()}
+          <SkeletonLoading />
+        {:then loadedTotalSupply}
+          <p>Total Supply: {loadedTotalSupply}</p>
         {/await}
       </div>
     </div>
@@ -326,5 +342,9 @@
         display: flex
         justify-content: space-between
         align-items: stretch
+
+        .stats
+          min-width: 40%
+          margin-left: 2em
 
 </style>
