@@ -101,6 +101,13 @@
     );
   }
 
+  async function cSocialLinks(): Promise<string[]> {
+    await communityName;
+    return (
+      state.settings.get("communityDiscussionLinks") || ["No social links"]
+    );
+  }
+
   async function cAppURL(): Promise<string> {
     await communityName;
     return state.settings.get("communityAppUrl") || "";
@@ -256,6 +263,16 @@
           <SkeletonLoading />
         {:then loadedDesc}
           <p>{loadedDesc}</p>
+        {/await}
+        <h2 style="margin-top: 2em;">Social Links</h2>
+        {#await cSocialLinks()}
+          <SkeletonLoading />
+        {:then loadedSocialLinks}
+          <ul>
+            {#each loadedSocialLinks as link}
+              <li><a href={link}>{link}</a></li>
+            {/each}
+          </ul>
         {/await}
       </div>
       <div class="stats">
