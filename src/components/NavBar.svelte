@@ -117,7 +117,7 @@
         on:click={(e) => e.preventDefault()}>
         Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
       </a>
-    {:else}<a href="/">Home</a> <a href="/login">Sign In</a>{/if}
+    {:else}<a href="/tokens">Tokens</a> <a href="/login">Sign In</a>{/if}
   </div>
 </div>
 <div
