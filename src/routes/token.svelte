@@ -34,10 +34,12 @@
   }
 
   async function initCommunity() {
-    // @ts-expect-error
-    community = new Community(arweaveClient);
-    await community.setCommunityTx(communityID);
-    state = await community.getState();
+    if (process.browser) {
+      // @ts-expect-error
+      community = new Community(arweaveClient);
+      await community.setCommunityTx(communityID);
+      state = await community.getState();
+    }
   }
 
   onMount(async () => {
@@ -103,9 +105,10 @@
 
   async function cSocialLinks(): Promise<string[]> {
     await communityName;
-    return (
-      state.settings.get("communityDiscussionLinks") || ["No social links"]
-    );
+    const url = await cAppURL();
+    const urls = state.settings.get("communityDiscussionLinks");
+    urls.unshift(url);
+    return urls;
   }
 
   async function cAppURL(): Promise<string> {
@@ -221,13 +224,7 @@
       {/await}
     </h1>
     <div class="cta">
-      {#await cAppURL()}
-        <SkeletonLoading />
-      {:then loadedURL}
-        <Button href={loadedURL} style="min-width: unset !important">
-          Visit
-        </Button>
-      {/await}
+      <Button href="/trade" style="min-width: unset !important">Swap</Button>
     </div>
   </div>
   <div class="token-body">
@@ -266,7 +263,7 @@
         {:then loadedDesc}
           <p>{loadedDesc}</p>
         {/await}
-        <h2 style="margin-top: 2em;">Social Links</h2>
+        <h2 style="margin-top: 2em;">Links</h2>
         {#await cSocialLinks()}
           <SkeletonLoading />
         {:then loadedSocialLinks}
@@ -274,6 +271,10 @@
             {#each loadedSocialLinks as link}
               <li><a href={link}>{link}</a></li>
             {/each}
+            <li>
+              <a
+                href="https://community.xyz/#{communityID}">https://community.xyz/#{communityID.substring(0, 3)}...</a>
+            </li>
           </ul>
         {/await}
       </div>
@@ -293,6 +294,10 @@
           <SkeletonLoading />
         {:then loadedTotalSupply}
           <p>Total Supply: {loadedTotalSupply}</p>
+          <hr class="divider" />
+          <p>
+            Powered by <a href="https://limestone.finance/#/">Limestone</a> and <a href="https://community.xyz/">CommunityXYZ</a>
+          </p>
         {/await}
       </div>
     </div>
@@ -318,7 +323,6 @@
 
       h1.title
         margin: 0
-        width: min-content
 
         @media screen and (max-width: 720px)
           font-size: 1.35em
@@ -367,5 +371,12 @@
 
         .stats
           min-width: 40%
+
+      .divider
+        height: 5px
+        width: 5%
+        margin-left: 0
+        background-color: rgba(17, 51, 83, 0.1)
+        border: 0 transparent !important
 
 </style>
