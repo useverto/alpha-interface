@@ -224,7 +224,9 @@
       {#await cAppURL()}
         <SkeletonLoading />
       {:then loadedURL}
-        <Button href={loadedURL}>Visit</Button>
+        <Button href={loadedURL} style="min-width: unset !important">
+          Visit
+        </Button>
       {/await}
     </div>
   </div>
@@ -314,11 +316,9 @@
       margin-top: 2em
       position: relative
 
-      @media screen and (max-width: 720px)
-        display: block
-
       h1.title
         margin: 0
+        width: min-content
 
         @media screen and (max-width: 720px)
           font-size: 1.35em
@@ -334,13 +334,15 @@
       .logo
         width: 2.3em
         height: 2.3em
-        border-radius: 100000px
-        margin-top: 2px
-        margin-right: 2em
+        border-radius: 100%
+        margin:
+          top: 2px
+          right: 2em
 
         @media screen and (max-width: 720px)
           width: 1.35em
           height: 1.35em
+          margin-right: 1em
 
         img
           width: 100%
@@ -360,8 +362,10 @@
         justify-content: space-between
         align-items: stretch
 
+        @media screen and (max-width: 720px)
+          display: block
+
         .stats
           min-width: 40%
-          margin-left: 2em
 
 </style>
