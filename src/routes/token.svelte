@@ -213,12 +213,12 @@
     </div>
     <h1 class="title">
       {#await communityName}
-        <SkeletonLoading />
+        <SkeletonLoading style="width: 10%;" />
       {:then loadedName}
         {loadedName}
       {/await}
       {#await cTicker()}
-        <SkeletonLoading />
+        <SkeletonLoading style="width: 10%;" />
       {:then loadedTicker}
         <span class="ticker">{loadedTicker}</span>
       {/await}
@@ -240,7 +240,7 @@
           <p in:fade={{ duration: 130 }}>no data</p>
         {:else}
           <Line
-            data={{ labels: loaded.dates, datasets: [{ label: 'AR', data: loaded.prices, backgroundColor: '#ffe3ff', borderColor: function (context) {
+            data={{ labels: loaded.dates, datasets: [{ label: 'AR', data: loaded.prices, backgroundColor: 'rgba(141, 95, 188, 0.2)', borderColor: function (context) {
                     let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
                     gradient.addColorStop(0, '#E698E8');
                     gradient.addColorStop(1, '#8D5FBC');
@@ -330,7 +330,7 @@
         
         .ticker
           margin-left: 10px
-          color: rgba(17, 51, 83, 0.6)
+          color: var(--secondary-text-color)
           text-transform: uppercase
           font-size: 0.75em
           font-family: "JetBrainsMono", monospace
@@ -372,11 +372,14 @@
         .stats
           min-width: 40%
 
+        h2, p
+          color: var(--primary-text-color)
+
       .divider
         height: 5px
         width: 5%
         margin-left: 0
-        background-color: rgba(17, 51, 83, 0.1)
+        background-color: var(--secondary-text-color)
         border: 0 transparent !important
 
 </style>
