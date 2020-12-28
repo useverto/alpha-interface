@@ -1,6 +1,5 @@
 <script lang="typescript">
-  import { loggedIn, keyfile } from "../stores/keyfileStore";
-  import { goto } from "@sapper/app";
+  import { keyfile } from "../stores/keyfileStore";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
   import NavBar from "../components/NavBar.svelte";
@@ -9,9 +8,6 @@
   import { displayTheme } from "../stores/themeStore";
   import { DisplayTheme } from "../utils/types";
   import Footer from "../components/Footer.svelte";
-
-  // @ts-ignore
-  if (process.browser && !$loggedIn) goto("/");
 
   let client = new Verto();
   onMount(async () => {
