@@ -15,8 +15,9 @@
   },
   "dependencies": {
     "@verto/lib": "^0.8.1",
+    "ar-gql": "^0.0.3",
     "arweave": "^1.10.0",
-    "community-js": "^1.1.6",
+    "community-js": "^1.1.8",
     "compression": "^1.7.1",
     "graphql": "^15.3.0",
     "moment": "^2.27.0",
