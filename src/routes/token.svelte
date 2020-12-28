@@ -240,7 +240,7 @@
           <p in:fade={{ duration: 130 }}>no data</p>
         {:else}
           <Line
-            data={{ labels: loaded.dates, datasets: [{ label: 'AR', data: loaded.prices, backgroundColor: 'rgba(141, 95, 188, 0.2)', borderColor: function (context) {
+            data={{ labels: loaded.dates, datasets: [{ label: 'AR', data: loaded.prices, backgroundColor: 'rgba(230, 152, 232, 0.2)', borderColor: function (context) {
                     let gradient = context.chart.ctx.createLinearGradient(0, 0, context.chart.width, context.chart.height);
                     gradient.addColorStop(0, '#E698E8');
                     gradient.addColorStop(1, '#8D5FBC');
@@ -273,7 +273,7 @@
             {/each}
             <li>
               <a
-                href="https://community.xyz/#{communityID}">https://community.xyz/#{communityID.substring(0, 3)}...</a>
+                href="https://community.xyz/#{communityID}">community.xyz/#{communityID.substring(0, 3)}...</a>
             </li>
           </ul>
         {/await}
