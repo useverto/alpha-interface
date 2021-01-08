@@ -38,7 +38,7 @@
       {#each loadedTokens as token}
         <a
           class="token"
-          href="https://viewblock.io/arweave/tx/{token.id}"
+          href="/token?id={token.id}"
           target="_blank"
           style="
             --hover-transparency: {$displayTheme === DisplayTheme.Dark ? '.8' : '1'};
