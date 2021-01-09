@@ -19,7 +19,6 @@
   const client = new Verto();
 
   const unique = (arr) => {
-    console.log(arr);
     const seen: Record<string, boolean> = {};
     return arr.filter((item) => {
       return item.id in seen ? false : (seen[item.id] = true);
@@ -29,6 +28,7 @@
   let tokens;
   onMount(async () => {
     tokens = unique([
+      { id: "ETH", name: "ETH", ticker: "ETH" },
       ...(await client.popularTokens()),
       ...(await client.getTokens()),
     ]);
@@ -44,6 +44,7 @@
 
   export const update = async () => {
     tokens = unique([
+      { id: "ETH", name: "ETH", ticker: "ETH" },
       ...(await client.popularTokens()),
       ...(await client.getTokens()),
     ]);
@@ -114,11 +115,20 @@
   }
 
   async function load(token: string, period: number) {
-    const returnedPrices = await client.price(token);
-    const length = returnedPrices.prices.length - 1;
+    const returnedPrices =
+      token === "ETH"
+        ? await client.chainRate(token)
+        : await client.price(token);
+    const length =
+      (token === "ETH"
+        ? // @ts-ignore
+          returnedPrices.rates.length
+        : // @ts-ignore
+          returnedPrices.prices.length) - 1;
 
     let dates = returnedPrices.dates;
-    let prices = returnedPrices.prices;
+    // @ts-ignore
+    let prices = token === "ETH" ? returnedPrices.rates : returnedPrices.prices;
     if (period && period < length) {
       dates = dates.slice(length - period, length);
       prices = prices.slice(length - period, length);
