@@ -106,8 +106,8 @@
       receiveSelected = restrict(loadedOptions)[0].id;
     const value = loadedOptions.find(
       (entry) =>
-        entry.id === id ||
-        (sendSelected === "AR" ? receiveSelected : sendSelected)
+        entry.id ===
+        (id || (sendSelected === "AR" ? receiveSelected : sendSelected))
     );
     const type = orderType || sendSelected === "AR" ? "Sell" : "Buy";
     orders = orders.filter((order) => {
