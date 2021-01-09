@@ -1163,16 +1163,17 @@
     "@typescript-eslint/types" "4.0.1"
     eslint-visitor-keys "^2.0.0"
 
-"@verto/lib@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.8.1.tgz#5b82310c933be8d2155b59408886208a4f4185c9"
-  integrity sha512-SL6aymEJ6fVizXl/sX38ZTP1g5BqlTW/pyuTHNd9cAGRfOYBLWq/6psRjNWldAIAsPW9R+5GhFDvMG7hNTciaA==
+"@verto/lib@^0.8.8":
+  version "0.8.8"
+  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.8.8.tgz#9c06e401f083df959a6a49bcc34a58a30a3cb578"
+  integrity sha512-O8X32hv6yVcYYBzpuEqgAjJUJGOKgpqWdhGAOOu+jE6n16wxqDdBB85wvCM0TUcq5sYYTcuojtixNr4b16WSDw==
   dependencies:
+    ar-gql "^0.0.3"
     arweave "^1.10.0"
     cacheweave "^2.1.0"
     moment "^2.29.1"
     node-fetch "^2.6.1"
-    smartweave "^0.4.13"
+    smartweave "^0.4.21"
 
 "@weavery/clarity@^0.1.5":
   version "0.1.5"
@@ -4172,6 +4173,17 @@ smartweave@^0.4.13:
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.13.tgz#d5da11332199acd7e3548b8d553f68d52b60c0e9"
   integrity sha512-xf+ACoQ37sejfYJvl+G4Glc69P3m5iT29kwRuC7w8rBRSdhyZeHSssJMbYpFzaQtu4AcGy1YUnyPh+1iPQv3hQ==
+  dependencies:
+    "@weavery/clarity" "^0.1.5"
+    arweave "^1.9.1"
+    bignumber.js "^9.0.1"
+    loglevel "^1.7.0"
+    yargs "^16.1.0"
+
+smartweave@^0.4.21:
+  version "0.4.21"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.21.tgz#2c40e0faf4d45f67f32367b88b3fa39a29faa1bc"
+  integrity sha512-DgNdYzCeG6YEeG2Cxg7Bqvgkgii7PVR+Ni53MZ/Oflv9EWu/YNnnXvu5KpoveSfkNHDX7TYZL1iLnjVy9jLkZA==
   dependencies:
     "@weavery/clarity" "^0.1.5"
     arweave "^1.9.1"
