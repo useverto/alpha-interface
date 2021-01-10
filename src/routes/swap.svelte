@@ -456,61 +456,7 @@
   }
 
   async function send() {
-    const loadedOptions = await options;
-    if (!restrict(loadedOptions).find((entry) => entry.id === receiveSelected))
-      receiveSelected = restrict(loadedOptions)[0].id;
-    const value = loadedOptions.find(
-      (entry) =>
-        entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
-    );
-
-    for (const tx of order.txs) {
-      if (tx.tags) {
-        await client.arweave.transactions.sign(tx, client.keyfile);
-        await client.arweave.transactions.post(tx);
-      } else {
-        tx.value *= 1e18;
-        // @ts-ignore
-        const hash = await window.ethereum.request({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              to: tx.to,
-              // @ts-ignore
-              from: window.ethereum.selectedAddress,
-              // @ts-ignore
-              value: tx.value.toString(16),
-            },
-          ],
-        });
-        if (!tx.type) {
-          const tags = {
-            Exchange: "Verto",
-            Type: "Swap",
-            Chain: value.ticker,
-            Hash: hash,
-            Value: tx.value / 1e18,
-          };
-
-          const arTx = await client.arweave.createTransaction(
-            {
-              target: post,
-              data: Math.random().toString().slice(-4),
-            },
-            client.keyfile
-          );
-
-          for (const [key, value] of Object.entries(tags)) {
-            arTx.addTag(key, value.toString());
-          }
-
-          if (tx.token) arTx.addTag("Token", tx.token);
-
-          await client.arweave.transactions.sign(arTx, client.keyfile);
-          await client.arweave.transactions.post(arTx);
-        }
-      }
-    }
+    await client.sendSwap(order.txs, post);
     notification.notify(
       "Sent",
       "We're processing your swap now! This may take a few minutes.",
