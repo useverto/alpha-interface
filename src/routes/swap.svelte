@@ -442,7 +442,7 @@
       } else {
         modalText = `Swapping ${sendAmount} AR at a rate of ${
           receiveAmount / sendAmount
-        } ${value.ticker}/AR`;
+        } AR/${value.ticker}`;
         modalDetails = `You're sending ${order.ar} AR`;
       }
       confirmModalOpened = true;
