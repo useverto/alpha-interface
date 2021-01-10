@@ -223,12 +223,14 @@
     );
 
     try {
-      let url = config["publicURL"].startsWith("https://")
-        ? config["publicURL"]
-        : "https://" + config["publicURL"];
-      let endpoint = url.endsWith("/") ? "orders" : "/orders";
+      // let url = config["publicURL"].startsWith("https://")
+      //   ? config["publicURL"]
+      //   : "https://" + config["publicURL"];
+      // let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
-      let res = await (await fetch(url + endpoint)).clone().json();
+      let res = await (await fetch("http://localhost:8080/orders"))
+        .clone()
+        .json();
       let table = res.find((orders) => orders.token === value.id);
       if (table) {
         let orders = table.orders;
@@ -656,16 +658,22 @@
                   <SkeletonLoading
                     style="width: 100%; height: 2.5em; margin-top: 2em;" />
                 {:else}
-                  <Button
-                    click={exchange}
-                    style="
-                      font-family: 'JetBrainsMono', monospace; 
-                      text-transform: uppercase; 
-                      display: block;
-                      margin-top: 2em;
-                    ">
-                    Swap
-                  </Button>
+                  {#await receivePromise}
+                    <SkeletonLoading
+                      style="width: 100%; height: 2.5em; margin-top: 2em;" />
+                  {:then loadedReceive}
+                    <Button
+                      click={exchange}
+                      disabled={loadedReceive === '~0'}
+                      style="
+                        font-family: 'JetBrainsMono', monospace; 
+                        text-transform: uppercase; 
+                        display: block;
+                        margin-top: 2em;
+                      ">
+                      Swap
+                    </Button>
+                  {/await}
                 {/if}
               {:else}
                 <Button
@@ -701,16 +709,22 @@
             <SkeletonLoading
               style="width: 100%; height: 2.5em; margin-top: 2em;" />
           {:else}
-            <Button
-              click={exchange}
-              style="
-                  font-family: 'JetBrainsMono', monospace; 
-                  text-transform: uppercase; 
-                  display: block;
-                  margin-top: 2em;
-                ">
-              Swap
-            </Button>
+            {#await receivePromise}
+              <SkeletonLoading
+                style="width: 100%; height: 2.5em; margin-top: 2em;" />
+            {:then loadedReceive}
+              <Button
+                click={exchange}
+                disabled={loadedReceive === '~0'}
+                style="
+              font-family: 'JetBrainsMono', monospace; 
+              text-transform: uppercase; 
+              display: block;
+              margin-top: 2em;
+            ">
+                Swap
+              </Button>
+            {/await}
           {/if}
         {/if}
       {/await}
