@@ -237,7 +237,7 @@
             orders[i].units = `${value.ticker}/AR`;
           }
         }
-        return orders.sort((a, b) => b.rate - a.rate);
+        return orders.sort((a, b) => a.rate - b.rate);
       } else {
         return [];
       }
