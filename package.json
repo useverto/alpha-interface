@@ -14,8 +14,8 @@
     "pre-commit": "yarn prefmt && prettier --write . && git add -A"
   },
   "dependencies": {
-    "arverify": "^0.0.1",
     "@verto/lib": "^0.8.1",
+    "arverify": "^0.0.2",
     "arweave": "^1.10.0",
     "community-js": "^1.1.6",
     "compression": "^1.7.1",
