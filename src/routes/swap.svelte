@@ -223,14 +223,12 @@
     );
 
     try {
-      // let url = config["publicURL"].startsWith("https://")
-      //   ? config["publicURL"]
-      //   : "https://" + config["publicURL"];
-      // let endpoint = url.endsWith("/") ? "orders" : "/orders";
+      let url = config["publicURL"].startsWith("https://")
+        ? config["publicURL"]
+        : "https://" + config["publicURL"];
+      let endpoint = url.endsWith("/") ? "orders" : "/orders";
 
-      let res = await (await fetch("http://localhost:8080/orders"))
-        .clone()
-        .json();
+      let res = await (await fetch(url + endpoint)).clone().json();
       let table = res.find((orders) => orders.token === value.id);
       if (table) {
         let orders = table.orders;
