@@ -160,7 +160,7 @@
   > {
     const options: { ticker: string; id: string; type: string }[] = [];
 
-    options.push({ ticker: "ETH", id: "ETH", type: "CHAIN" });
+    // options.push({ ticker: "ETH", id: "ETH", type: "CHAIN" });
     options.push({ ticker: "AR", id: "AR", type: "CHAIN" });
 
     const tokens = await client.getTPTokens(post);
