@@ -1133,14 +1133,14 @@
     "@typescript-eslint/types" "4.12.0"
     eslint-visitor-keys "^2.0.0"
 
-"@verto/lib@^0.8.9":
-  version "0.8.9"
-  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.8.9.tgz#c5a35a0fa6a204c5cc14f02b8dcebd31f896f57d"
-  integrity sha512-NDyEegOipL6YHR56aJGCx3csYE14r6zwmV7qahpMQBYhcXpB3FERuEAojBks/A8GN77phJ3/i4S9v6lt0OnIww==
+"@verto/lib@^0.9.4":
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.9.4.tgz#751e2c33b1f896cbb25929f741da85057b45351c"
+  integrity sha512-UxdWbr5fGzKFJlUYKbdcqkLAvhj6P+UHvFtgkZMEmTwHmy9+WwjpVT/SkcUhx9KqXoc1hms4HQ6Oj2lON7BRFQ==
   dependencies:
     ar-gql "^0.0.3"
     arweave "^1.10.0"
-    cacheweave "^2.1.0"
+    cacheweave "^2.5.0"
     moment "^2.29.1"
     node-fetch "^2.6.1"
     smartweave "^0.4.21"
@@ -1547,15 +1547,15 @@ bytes@3.0.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
   integrity sha1-0ygVQE1olpn4Wk6k+odV3ROpYEg=
 
-cacheweave@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-2.1.0.tgz#0aa4878ed831fb164e5a834ecd61baa7624888e0"
-  integrity sha512-OWorhqe3vww5zikp+WxNxtRxRJcmVd5+JazkFzrGfVYyI/dfc/MJ0WhGoHjhGwRG4usBCcdXZ0jBUNumlOt8tA==
+cacheweave@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-2.5.0.tgz#0c49845bf8a148439ba582c2fc45af0982659d29"
+  integrity sha512-4stiUaetJjfSSGvfcypJw5d8PYuffcx0juzZEuC0Xsa9Zq69Qvq6KgAyBwty6Z/tLg2anL3WSPQhjVlQ2pXSnQ==
   dependencies:
     ar-gql "^0.0.3"
     arweave "^1.10.0"
-    community-js "^1.1.6"
-    smartweave "^0.4.13"
+    community-js "^1.1.15"
+    smartweave "^0.4.23"
 
 call-bind@^1.0.0:
   version "1.0.1"
@@ -1766,7 +1766,17 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-community-js@^1.1.6, community-js@^1.1.8:
+community-js@^1.1.15:
+  version "1.1.15"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.15.tgz#d61ef0d672faf4e29131f1a061c715f03049be9b"
+  integrity sha512-Ynp5lwokeSKUL948pDEtAa2oj9gyUmEi86IU3Bw0mLYHenPZOdPnsLkBJs8iY5hO9YX4Nc4R2Z01q4D9ys1Zrg==
+  dependencies:
+    arweave "^1.9.1"
+    axios "^0.21.0"
+    smartweave "^0.4.23"
+    tiny-worker "^2.3.0"
+
+community-js@^1.1.8:
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.14.tgz#ce5dea061cee8cb87810f7f578b51a45c1353210"
   integrity sha512-EiCqYCdjcdkXBX+A2uhjBRslvoZv9c+CDIgrLUi9UO+DOdeKd9I2Yz/j7JoAiF9549z+upUUJaoGwcfTk10kdA==
@@ -4095,10 +4105,21 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-smartweave@^0.4.12, smartweave@^0.4.13, smartweave@^0.4.21:
+smartweave@^0.4.12, smartweave@^0.4.21:
   version "0.4.21"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.21.tgz#2c40e0faf4d45f67f32367b88b3fa39a29faa1bc"
   integrity sha512-DgNdYzCeG6YEeG2Cxg7Bqvgkgii7PVR+Ni53MZ/Oflv9EWu/YNnnXvu5KpoveSfkNHDX7TYZL1iLnjVy9jLkZA==
+  dependencies:
+    "@weavery/clarity" "^0.1.5"
+    arweave "^1.9.1"
+    bignumber.js "^9.0.1"
+    loglevel "^1.7.0"
+    yargs "^16.1.0"
+
+smartweave@^0.4.23:
+  version "0.4.23"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.23.tgz#8037102b839f4e324fe2aaa605d02e8a14bd0a50"
+  integrity sha512-vU9iAPKZRnjVaRFmRdvkAKy1e+oWYo4mj/7s36VOumYX7jceBYQPb2cwEILgghaimWpIvdHi1kcfs0zcqcNlHg==
   dependencies:
     "@weavery/clarity" "^0.1.5"
     arweave "^1.9.1"
