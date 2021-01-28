@@ -90,7 +90,8 @@ $pcSidePadding: 23vw
   input, .fake-select, select
     width: calc(100% - #{$input-side-padding * 2} - #{$border-weight * 2})
     padding: .18em $input-side-padding
-    font-size: 1.4em
+    font-size: 1.2em
+    line-height: 1.4em
 
   select
     width: 100%
@@ -116,17 +117,17 @@ $pcSidePadding: 23vw
       border-radius: 0
       border: none
       background-color: var(--inverted-elements-color)
-      width: 30%
+      width: 42%
 
       @media screen and (max-width: 1300px)
-        width: 44%
+        width: 48%
 
     &.wider
       input
         width: calc(66% - #{$input-side-padding * 2})
 
       .select-container, .fake-select
-        width: 44%
+        width: 48%
 
   &.select-container
     select
