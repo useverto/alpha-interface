@@ -532,7 +532,7 @@
                 gridLines: { display: false }, 
                 scaleLabel: { 
                   display: true,
-                  labelString: metricSelected === "price" || !metricSelected ? `${metricData.ticker} / AR` : metricData.ticker
+                  labelString: metricSelected === "price" || !metricSelected ? `AR / ${metricData.ticker}` : metricData.ticker
                 } 
               }] 
             } 
