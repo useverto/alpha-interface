@@ -10,7 +10,6 @@
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
   import { watchlist } from "../stores/watchlistStore";
-  import Button from "../components/Button.svelte";
   import Loading from "../components/Loading.svelte";
 
   let isDragOver = false;
@@ -156,7 +155,9 @@
       </p>
       <div class="weaveid-login">
         {#if !!weaveIdClient}
-          <Button click={openWeaveIdLoginModal}>Sign in with WeaveID</Button>
+          <button class="weave-id-button" on:click={openWeaveIdLoginModal}>
+            <img src="https://weaveid.io/img/favicon.png" alt="weaveid" /> WeaveID
+          </button>
         {:else}
           <Loading style="color: white" />
         {/if}
@@ -187,6 +188,30 @@
     right: 0
     width: 100vw
     height: 100vh
+
+  .weave-id-button
+    font-family: "Inter", sans-serif
+    margin: 0 auto
+    display: flex
+    align-items: center
+    background-color: #fff
+    border-radius: 5px
+    color: #000
+    font-size: 1.1em
+    font-weight: 400
+    cursor: pointer
+    outline: none
+    border: none
+    transition: all .3s ease-in-out
+    padding: .4em .7em
+
+    img
+      margin-right: .47em
+      width: 1.1em
+      height: 1.1em
+
+    &:hover
+      opacity: .8
 
   .FileInput
     +fixedFull()
