@@ -11,6 +11,7 @@
   import Arweave from "arweave";
   import { watchlist } from "../stores/watchlistStore";
   import Loading from "../components/Loading.svelte";
+  import weaveidSVG from "../assets/weaveid.svg";
 
   let isDragOver = false;
   let files: File[] = [];
@@ -156,7 +157,7 @@
       <div class="weaveid-login">
         {#if !!weaveIdClient}
           <button class="weave-id-button" on:click={openWeaveIdLoginModal}>
-            <img src="https://weaveid.io/img/favicon.png" alt="weaveid" /> WeaveID
+            <img src={weaveidSVG} alt="weaveid" /> WeaveID
           </button>
         {:else}
           <Loading style="color: white" />
@@ -207,8 +208,8 @@
 
     img
       margin-right: .47em
-      width: 1.1em
-      height: 1.1em
+      width: 1.75em
+      height: 1.75em
 
     &:hover
       opacity: .8
