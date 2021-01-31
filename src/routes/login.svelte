@@ -155,13 +155,13 @@
           href="https://www.arweave.org/wallet">Arweave Wallet</a>.
       </p>
       <div class="weaveid-login">
-        <!-- {#if !!weaveIdClient} -->
+        {#if !!weaveIdClient}
           <button class="weave-id-button" on:click={openWeaveIdLoginModal}>
             <img src={weaveidSVG} alt="weaveid" /> WeaveID
           </button>
-        <!-- {:else}
+        {:else}
           <Loading style="color: white" />
-        {/if} -->
+        {/if}
       </div>
       <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
