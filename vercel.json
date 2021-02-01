@@ -29,5 +29,11 @@
       "source": "/(.*)",
       "destination": "/"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/roadmap",
+      "destination": "https://www.notion.so/verto/48f99dfb0ba744f5b5257185f53ad7c4"
+    }
   ]
 }
