@@ -157,7 +157,7 @@
       <div class="weaveid-login">
         {#if !!weaveIdClient}
           <button class="weave-id-button" on:click={openWeaveIdLoginModal}>
-            <img src={weaveidSVG} alt="weaveid" /> WeaveID
+            <img src={weaveidSVG} alt="weaveid" /> use WeaveID
           </button>
         {:else}
           <Loading style="color: white" />
