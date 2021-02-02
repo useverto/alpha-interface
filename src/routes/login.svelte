@@ -65,7 +65,13 @@
 
   // functions for WeaveID
   async function openWeaveIdLoginModal() {
-    await weaveIdClient.openLoginModal();
+    const address = await weaveIdClient.openLoginModal();
+
+    // address will be null when modal has been closed without logging in
+    if (!address) {
+      return;
+    }
+
     const jwk = await weaveIdClient.getWallet();
     await weaveIdClient.closeLoginModal();
     await signIn(JSON.stringify(jwk));
@@ -154,6 +160,9 @@
         have a keyfile, you can get one by creating an <a
           href="https://www.arweave.org/wallet">Arweave Wallet</a>.
       </p>
+
+      <div class="or">or</div>
+
       <div class="weaveid-login">
         {#if !!weaveIdClient}
           <button class="weave-id-button" on:click={openWeaveIdLoginModal}>
@@ -173,8 +182,8 @@
     <img src={stroke} alt="stroke" class="Stroke" draggable={false} />
     <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false} />
     <p>
-      If you don’t yet have a keyfile, you can get one by creating an <a
-        href="https://www.arweave.org/wallet">Arweave Wallet</a>.
+      If you don’t yet have a keyfile, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave
+        Wallet</a>
     </p>
   </div>
 </div>
@@ -351,8 +360,13 @@
         top: unset
         bottom: 5vh
 
+    .or
+      text-align: center;
+      color: #828282;
+      font-size: 1.3em;
+      margin: 2em 0;
+
     .weaveid-login
       margin: 0 auto
       text-align: center
-      margin-top: 2em
 </style>
