@@ -39,4 +39,8 @@
     color: var(--primary-text-color)
     transition: all .3s
 
+  /* Fix WeaveID background overlay z-index */
+  \:global(#popupdarkbg)
+    z-index: 10 !important
+
 </style>

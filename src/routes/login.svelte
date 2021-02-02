@@ -361,10 +361,10 @@
         bottom: 5vh
 
     .or
-      text-align: center;
-      color: #828282;
-      font-size: 1.3em;
-      margin: 2em 0;
+      text-align: center
+      color: #828282
+      font-size: 1.3em
+      margin: 2em 0
 
     .weaveid-login
       margin: 0 auto
