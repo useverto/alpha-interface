@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-  import { address, balance } from "../../stores/keyfileStore";
+  import { address, balance, keyfile } from "../../stores/keyfileStore";
   import { theme } from "../../stores/themeStore";
   import { Theme } from "../../utils/types";
   import SkeletonLoading from "../SkeletonLoading.svelte";
@@ -8,8 +8,13 @@
   import { NotificationType } from "../../utils/types";
   import downArrowIcon from "../../assets/down-arrow.svg";
   import copyIcon from "../../assets/copy.svg";
+  import { isVerified, verify } from "arverify";
+  import Modal from "../Modal.svelte";
 
   export let showThemeSwitcher: boolean = false;
+  const verified = isVerified($address);
+  let hoveredVerify = false,
+    verifyModalOpened = false;
 
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
@@ -79,13 +84,44 @@
       {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
     </h1>
     <p class="wallet" in:fade={{ duration: 150 }}>
-      Wallet: {$address}<img
-        src={copyIcon}
-        alt="copy-address"
-        on:click={copyAddress} />
+      Wallet:
+      {#await verified}
+        ⏳
+      {:then ver}
+        <span
+          class="verified-emoji"
+          on:click={() => {
+            if (!ver.verified) verifyModalOpened = true;
+          }}
+          style={ver.verified ? '' : 'cursor: pointer;'}
+          on:mouseover={() => (hoveredVerify = true)}
+          on:mouseleave={() => (hoveredVerify = false)}>
+          {#if ver.verified}✅{:else}🙅{/if}
+          {#if hoveredVerify}
+            <div class="verified-tooltip" transition:fade={{ duration: 160 }}>
+              {#if ver.verified}
+                Verified on ArVerify
+              {:else}Not verified on ArVerify. Click to verify!{/if}
+            </div>
+          {/if}
+        </span>
+      {/await}
+      {$address}<img src={copyIcon} alt="copy-address" on:click={copyAddress} />
     </p>
   {/if}
 </div>
+<Modal bind:opened={verifyModalOpened} confirmation={true} onConfirm={() => {}}>
+  <h1 style="text-align: center;">🤖?</h1>
+  <p style="text-align: justify;">
+    ArVerify checks to ensure an Arweave wallet address is owned by an actual
+    person, not a robot. Verifying promotes trust for person-to-person
+    interactions across the network.
+  </p>
+  <p>Click the URL below to verify your wallet:</p>
+  {#await verify(JSON.parse($keyfile), 'http://localhost:3000') then verifyURL}
+    <a href={verifyURL} target="_blank" rel="noopener noreferer">{verifyURL}</a>
+  {/await}
+</Modal>
 
 <style lang="sass">
 
@@ -110,6 +146,39 @@
       &.wallet
         text-transform: none
         justify-content: normal
+
+        span.verified-emoji
+          margin: 0 .32em
+          cursor: default
+          position: relative
+
+          .verified-tooltip
+            position: absolute
+            top: 137%
+            left: 50%
+            background-color: var(--inverted-elements-color)
+            padding: .27em .36em
+            border-radius: 5px
+            color: var(--background-color)
+            font-size: .83em
+            font-weight: 400
+            text-align: center
+            text-transform: none
+            width: max-content
+            max-width: 193px
+            display: inline-block
+            transform: translateX(-50%)
+
+            &::after
+              content: ''
+              position: absolute
+              bottom: 100%
+              left: 50%
+              background-color: var(--inverted-elements-color)
+              width: .6em
+              height: .6em
+              z-index: -1
+              transform: translate(-50%, 60%) rotate(45deg)
 
         img
           height: .97em
