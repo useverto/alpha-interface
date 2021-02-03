@@ -377,10 +377,15 @@
         return;
       }
 
-      if (order.pst > 0) {
+      if (order.pst > 0 && receiveSelected !== "ETH") {
         modalText = `Selling ${sendAmount} ${value.ticker} at a rate of ${
           receiveAmount / sendAmount
         } AR/${value.ticker}`;
+        modalDetails = `You're sending ${order.pst} ${value.ticker} + ${order.ar} AR`;
+      } else if (order.pst > 0 && receiveSelected === "ETH") {
+        modalText = `Selling ${sendAmount} ${value.ticker} at a rate of ${
+          sendAmount / receiveAmount
+        } ${value.ticker}/AR`;
         modalDetails = `You're sending ${order.pst} ${value.ticker} + ${order.ar} AR`;
       } else {
         modalText = `Buying ${sendAmount} AR's worth of ${value.ticker}`;
