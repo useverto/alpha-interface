@@ -216,7 +216,10 @@
     return options;
   }
 
-  async function getOrderBook(id?: string): Promise<OrderBookItem[]> {
+  async function getOrderBook(
+    id?: string,
+    recursive: boolean = false
+  ): Promise<OrderBookItem[]> {
     const config = await client.getConfig(post);
 
     const loadedOptions = await options;
@@ -245,9 +248,32 @@
             orders[i].units = `${value.ticker}/AR`;
           }
         }
-        return orders.sort((a, b) => a.rate - b.rate);
+
+        if (orders.sort((a, b) => a.rate - b.rate).length === 0 && !recursive) {
+          let _post = await client.recommendPost();
+          while (_post === post) {
+            _post = await client.recommendPost();
+          }
+
+          console.log(post, _post);
+          post = _post;
+          return await getOrderBook(id, true);
+        } else {
+          return orders.sort((a, b) => a.rate - b.rate);
+        }
       } else {
-        return [];
+        if (!recursive) {
+          let _post = await client.recommendPost();
+          while (_post === post) {
+            _post = await client.recommendPost();
+          }
+
+          console.log(post, _post);
+          post = _post;
+          return await getOrderBook(id, true);
+        } else {
+          return [];
+        }
       }
     } catch (err) {
       notification.notify("Error", err, NotificationType.error, 5000);
