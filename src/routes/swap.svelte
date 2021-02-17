@@ -26,9 +26,7 @@
   // @ts-ignore
   if (process.browser && !$loggedIn) goto("/");
 
-  let client = new Verto(null, null, {
-    exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
-  });
+  let client = new Verto();
   let post: string;
   let options: Promise<{ ticker: string; id: string; type: string }[]>;
   let orderBook: Promise<OrderBookItem[]>;
@@ -41,15 +39,13 @@
   let loadingMetrics = false;
 
   onMount(async () => {
-    // const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    // const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
-    // if (res.country === "US") {
-    //   goto("/usa");
-    // }
+    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
+    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
+    if (res.country === "US") {
+      goto("/usa");
+    }
 
-    client = new Verto(JSON.parse($keyfile), null, {
-      exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
-    });
+    client = new Verto(JSON.parse($keyfile));
 
     const params = new URLSearchParams(window.location.search);
     post = params.get("post") || (await client.recommendPost());
@@ -158,9 +154,7 @@
   }
 
   function update() {
-    client = new Verto(JSON.parse($keyfile), null, {
-      exchangeContract: "EXUlqbRXY9MPr8Xpl4xuQCBR83mrJ8Ba2Y6ZVnsHLv8",
-    });
+    client = new Verto(JSON.parse($keyfile));
   }
 
   async function getOptions(): Promise<
