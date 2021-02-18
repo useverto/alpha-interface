@@ -23,9 +23,6 @@
   </div>
 </div>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .NotFound

@@ -32,7 +32,7 @@
 </svelte:head>
 
 <NavBar {update} />
-<div class="dashboard" in:fade={{ duration: 300 }}>
+<div class="dashboard" in:fade={{ duration: 400 }}>
   <Balance showThemeSwitcher={true} />
   <Watchlist bind:this={watchlistComponent} />
   <Assets bind:this={assetsComponent} />

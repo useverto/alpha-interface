@@ -239,7 +239,7 @@
 
 <svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
-<div class="all-exchanges" in:fade={{ duration: 300 }}>
+<div class="all-exchanges" in:fade={{ duration: 400 }}>
   <h1 class="title">All Trades</h1>
   {#if !loadedExchanges}
     <table>

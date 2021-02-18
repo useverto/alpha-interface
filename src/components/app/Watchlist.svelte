@@ -18,9 +18,20 @@
 
   const client = new Verto();
 
+  const unique = (arr) => {
+    const seen: Record<string, boolean> = {};
+    return arr.filter((item) => {
+      return item.id in seen ? false : (seen[item.id] = true);
+    });
+  };
+
   let tokens;
   onMount(async () => {
-    tokens = await client.getTokens();
+    tokens = unique([
+      { id: "ETH", name: "ETH", ticker: "ETH" },
+      ...(await client.popularTokens()),
+      ...(await client.getTokens()),
+    ]);
     for (const element of $watchlist) {
       const index = tokens.indexOf(
         tokens.find((token) => token.ticker === element.ticker)
@@ -32,7 +43,11 @@
   });
 
   export const update = async () => {
-    tokens = await client.getTokens();
+    tokens = unique([
+      { id: "ETH", name: "ETH", ticker: "ETH" },
+      ...(await client.popularTokens()),
+      ...(await client.getTokens()),
+    ]);
     for (const element of $watchlist) {
       const index = tokens.indexOf(
         tokens.find((token) => token.ticker === element.ticker)
@@ -100,11 +115,20 @@
   }
 
   async function load(token: string, period: number) {
-    const returnedPrices = await client.price(token);
-    const length = returnedPrices.prices.length - 1;
+    const returnedPrices =
+      token === "ETH"
+        ? await client.chainRate(token)
+        : await client.price(token);
+    const length =
+      (token === "ETH"
+        ? // @ts-ignore
+          returnedPrices.rates.length
+        : // @ts-ignore
+          returnedPrices.prices.length) - 1;
 
     let dates = returnedPrices.dates;
-    let prices = returnedPrices.prices;
+    // @ts-ignore
+    let prices = token === "ETH" ? returnedPrices.rates : returnedPrices.prices;
     if (period && period < length) {
       dates = dates.slice(length - period, length);
       prices = prices.slice(length - period, length);
@@ -223,7 +247,7 @@
                 {:else}
                   <Line
                     data={{ labels: loaded.dates, datasets: [{ data: loaded.prices, backgroundColor: 'transparent', borderColor: loaded.color, pointBackgroundColor: loaded.color }] }}
-                    options={{ elements: { point: { radius: 0 } }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }} />
+                    options={{ elements: { point: { radius: 0 } }, tooltips: { mode: 'index', intersect: false }, hover: { mode: 'nearest', intersect: true }, legend: { display: false }, scales: { xAxes: [{ ticks: { display: false }, gridLines: { display: false } }], yAxes: [{ ticks: { display: false }, scaleLabel: { display: false, fontFamily: '"JetBrainsMono", monospace', fontSize: 18 }, gridLines: { display: false } }] } }} />
                 {/if}
               {/await}
             </div>

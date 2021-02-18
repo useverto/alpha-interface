@@ -136,7 +136,7 @@
 
 <svelte:window bind:scrollY={y} bind:innerHeight={windowHeight} />
 <NavBar />
-<div class="all-transactions" in:fade={{ duration: 300 }}>
+<div class="all-transactions" in:fade={{ duration: 400 }}>
   <h1 class="title">All Transactions</h1>
   <table>
     <tr>

@@ -71,7 +71,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="post" in:fade={{ duration: 300 }}>
+<div class="post" in:fade={{ duration: 400 }}>
   <div class="post-info">
     <div class="long-cell">
       <p>trading post address</p>

@@ -21,9 +21,6 @@
   </svg>
 </div>
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .Loading

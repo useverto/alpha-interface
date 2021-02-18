@@ -4,6 +4,7 @@
   import { loggedIn } from "../stores/keyfileStore";
   import NavBar from "../components/NavBar.svelte";
   import usa from "../assets/usa.svg";
+  import { fade } from "svelte/transition";
 
   onMount(async () => {
     const ip = await (await fetch("https://api.ipify.org?format=json")).json();
@@ -24,7 +25,7 @@
 </svelte:head>
 
 <NavBar />
-<div class="usa">
+<div class="usa" in:fade={{ duration: 400 }}>
   <div class="container">
     <div class="text">
       <h1>
