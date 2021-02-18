@@ -759,6 +759,15 @@
               </Button>
             {/await}
           {/if}
+          {#if sendSelected === 'ETH'}
+            <p>
+              It is <b>highly</b> recommended that you swap with amounts > $50.
+            </p>
+            <p>
+              If you don't, your order is less likely to be matched due to gas
+              fees.
+            </p>
+          {/if}
         {/if}
       {/await}
     </div>
