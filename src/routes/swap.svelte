@@ -223,6 +223,12 @@
         (id || (sendSelected === "AR" ? receiveSelected : sendSelected))
     );
 
+    if (sendSelected === "AR") {
+      if (receiveSelected === "ETH") recursive = true;
+    } else {
+      if (sendSelected !== "ETH") recursive = true;
+    }
+
     try {
       let url = config["publicURL"].startsWith("https://")
         ? config["publicURL"]
