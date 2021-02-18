@@ -1493,10 +1493,10 @@
     "@typescript-eslint/types" "4.15.1"
     eslint-visitor-keys "^2.0.0"
 
-"@verto/lib@^0.9.8":
-  version "0.9.8"
-  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.9.8.tgz#81797bb152d0932c02db2792c9d955b5044270f3"
-  integrity sha512-BaKgFCSVTIMJ0uUJwctNav5ebMyIqBHIhLIfEzj6H9vGDjPl6FjRGdSCB/5SbhFZZco0Eol/nw1XL0IIm2FZEg==
+"@verto/lib@^0.9.9":
+  version "0.9.9"
+  resolved "https://registry.yarnpkg.com/@verto/lib/-/lib-0.9.9.tgz#b1ade7561269a7b883c3dafc9771158097d7cfc5"
+  integrity sha512-gUKMoiJPKvxnk41T3mvj9MnRWYPuzMLQb1Zcaz79zeSPfyw5pJ5NCrXQiDcdJQubJ2rb98LQVhqV7gUcMTJI6A==
   dependencies:
     ar-gql "^0.0.3"
     arweave "^1.10.0"
