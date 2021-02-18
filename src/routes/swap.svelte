@@ -293,6 +293,8 @@
         entry.id === (sendSelected === "AR" ? receiveSelected : sendSelected)
     );
 
+    if (!metricSelected) metricSelected = "price";
+
     if (value.type === "PST") {
       if (metricSelected === "price") {
         const data = await client.price(value.id);
@@ -569,7 +571,7 @@
                 gridLines: { display: false }, 
                 scaleLabel: { 
                   display: true,
-                  labelString: metricSelected === "price" || !metricSelected ? `${metricData.ticker} / AR` : metricData.ticker
+                  labelString: metricSelected === "price" || !metricSelected ? `AR / ${metricData.ticker}` : metricData.ticker
                 } 
               }] 
             } 

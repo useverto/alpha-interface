@@ -14,17 +14,17 @@
     "pre-commit": "yarn prefmt && prettier --write . && git add -A"
   },
   "dependencies": {
-    "@verto/lib": "^0.9.6",
+    "@verto/lib": "^0.9.7",
     "ar-gql": "^0.0.3",
-    "arweave": "^1.10.0",
-    "community-js": "^1.1.8",
+    "arweave": "^1.10.11",
+    "community-js": "^1.1.18",
     "compression": "^1.7.1",
     "graphql": "^15.3.0",
     "moment": "^2.27.0",
     "polka": "next",
     "sapper-google-analytics": "^1.0.2",
     "sirv": "^1.0.6",
-    "smartweave": "^0.4.12",
+    "smartweave": "^0.4.27",
     "svelte-chartjs": "^1.0.1",
     "weaveid": "^1.0.26"
   },
