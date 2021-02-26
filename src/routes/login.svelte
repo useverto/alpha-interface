@@ -49,22 +49,18 @@
             },
           })
         ).data.transactions.edges;
-        if (outTxs.length > 0) {
-          keyfile.set(reader.result);
-          address.set(_address);
-          profiles.addKeyfile(_address, reader.result);
-          // @ts-ignore
-          watchlist.reload();
-          goto("/app");
-          notification.notify(
-            "Welcome",
-            "You've successfully logged in!",
-            NotificationType.success,
-            5000
-          );
-        } else {
-          goto("/gate");
-        }
+        keyfile.set(reader.result);
+        address.set(_address);
+        profiles.addKeyfile(_address, reader.result);
+        // @ts-ignore
+        watchlist.reload();
+        goto("/app");
+        notification.notify(
+          "Welcome",
+          "You've successfully logged in!",
+          NotificationType.success,
+          5000
+        );
       };
       reader.readAsText(files[0]);
     }
