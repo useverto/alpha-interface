@@ -9,10 +9,10 @@
   } from "../stores/keyfileStore";
   import { notification } from "../stores/notificationStore";
   import { goto } from "@sapper/app";
-  import tradeLogo from "../assets/nav/trade.svg";
-  import tokensLogo from "../assets/nav/tokens.svg";
-  import postsLogo from "../assets/nav/posts.svg";
-  import peopleLogo from "../assets/nav/people.svg";
+  import swapIcon from "../assets/nav/swap.svg";
+  import tokensIcon from "../assets/nav/tokens.svg";
+  import chatIcon from "../assets/nav/chat.svg";
+  import peopleIcon from "../assets/nav/people.svg";
   import { NotificationType, DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
   import downArrow from "../assets/down-arrow.svg";
@@ -108,8 +108,7 @@
   </a>
   <div class="menu">
     {#if $loggedIn}
-      <a href="/trade">Trade</a>
-      <a href="/gallery">Posts</a>
+      <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
       <a
         href="/"
@@ -166,20 +165,20 @@
 {/if}
 <div class="mobile-nav" bind:clientHeight={mobileHeight}>
   {#if $loggedIn}
-    <a href="/trade"><object
-        data={tradeLogo}
+    <a href="/swap"><object
+        data={swapIcon}
         type="image/svg+xml"
         title="nav-icon" /></a>
-    <a href="/gallery"><object
-        data={postsLogo}
+    <a href="/tokens"><object
+        data={tokensIcon}
         type="image/svg+xml"
         title="nav-icon" /></a>
     <a href="/app"><img
         class="verto"
         src={$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}
         alt="v" /></a>
-    <a href="/tokens"><object
-        data={tokensLogo}
+    <a href="/chat"><object
+        data={chatIcon}
         type="image/svg+xml"
         title="nav-icon" /></a>
     <a
@@ -187,7 +186,7 @@
       on:click={(e) => {
         e.preventDefault();
         showProfileSwitcher = !showProfileSwitcher;
-      }}><object data={peopleLogo} type="image/svg+xml" title="nav-icon" /></a>
+      }}><object data={peopleIcon} type="image/svg+xml" title="nav-icon" /></a>
   {/if}
 </div>
 

@@ -12,9 +12,6 @@
   in:fade={{ duration: 100 }}
   out:fade={{ duration: 70 }} />
 
-
-
-<!-- prettier-ignore -->
 <style lang="sass">
 
   .skeleton-loading
@@ -24,21 +21,15 @@
     display: inline-block
     position: relative
     overflow: hidden
-    background-color: var(--skeleton-background-color)
+    background-size: 400% 100%
+    background-image: linear-gradient(to right, var(--skeleton-background-color) 5%, var(--skeleton-secondary-color) 35%, var(--skeleton-background-color) 45%)
+    animation: skeletonLoading 6.6s ease-in-out infinite
 
-    &::after
-      position: absolute
-      top: 0
-      right: 0
-      bottom: 0
-      left: 0
-      transform: translateX(-100%)
-      background: linear-gradient(to right, var(--skeleton-background-color) 5%, var(--skeleton-secondary-color) 35%, var(--skeleton-background-color) 50%)
-      animation: shine 2.6s infinite
-      content: ''
+  @keyframes skeletonLoading
+    0%
+      background-position: 200% 0
 
-    @keyframes shine
-      100%
-        transform: translateX(100%)
+    to
+      background-position: -200% 0
 
 </style>

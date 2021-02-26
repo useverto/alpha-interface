@@ -27,7 +27,7 @@
 </svelte:head>
 
 <NavBar {update} />
-<div class="tokens" in:fade={{ duration: 300 }}>
+<div class="tokens" in:fade={{ duration: 400 }}>
   <div class="tokens-head">
     <h1 class="title">Popular Tokens</h1>
   </div>

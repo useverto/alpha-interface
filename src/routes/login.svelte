@@ -10,10 +10,13 @@
   import latestTransactionsQuery from "../queries/latestTransactions.gql";
   import Arweave from "arweave";
   import { watchlist } from "../stores/watchlistStore";
+  import Loading from "../components/Loading.svelte";
+  import weaveidSVG from "../assets/weaveid.svg";
 
   let isDragOver = false;
   let files: File[] = [];
   let client;
+  let weaveIdClient;
 
   // let's create a new client
   if (process.browser) {
@@ -22,6 +25,11 @@
       port: 443,
       protocol: "https",
       timeout: 20000,
+    });
+
+    // lazily import WeaveID because it doesn't support SSR
+    import("weaveid").then((WeaveID) => {
+      WeaveID.init().then(() => (weaveIdClient = WeaveID));
     });
   }
 
@@ -33,34 +41,15 @@
       files[0] !== undefined &&
       files[0].type === "application/json"
     ) {
+      // close WeaveID login modal if initialized
+      if (weaveIdClient) {
+        weaveIdClient.closeLoginModal();
+      }
+
       const reader = new FileReader();
       reader.onload = async () => {
         if (typeof reader.result !== "string") return goto("/");
-        // @ts-ignore
-        let _address = await client.wallets.jwkToAddress(
-          JSON.parse(reader.result)
-        );
-        const outTxs = (
-          await query({
-            query: latestTransactionsQuery,
-            variables: {
-              recipients: null,
-              owners: [_address],
-            },
-          })
-        ).data.transactions.edges;
-        keyfile.set(reader.result);
-        address.set(_address);
-        profiles.addKeyfile(_address, reader.result);
-        // @ts-ignore
-        watchlist.reload();
-        goto("/app");
-        notification.notify(
-          "Welcome",
-          "You've successfully logged in!",
-          NotificationType.success,
-          5000
-        );
+        await signIn(reader.result);
       };
       reader.readAsText(files[0]);
     }
@@ -72,6 +61,46 @@
   }
   function drag() {
     isDragOver = true;
+  }
+
+  // functions for WeaveID
+  async function openWeaveIdLoginModal() {
+    const address = await weaveIdClient.openLoginModal();
+
+    // address will be null when modal has been closed without logging in
+    if (!address) {
+      return;
+    }
+
+    const jwk = await weaveIdClient.getWallet();
+    await weaveIdClient.closeLoginModal();
+    await signIn(JSON.stringify(jwk));
+  }
+
+  async function signIn(jwk: string) {
+    // @ts-ignore
+    let _address = await client.wallets.jwkToAddress(JSON.parse(jwk));
+    const outTxs = (
+      await query({
+        query: latestTransactionsQuery,
+        variables: {
+          recipients: null,
+          owners: [_address],
+        },
+      })
+    ).data.transactions.edges;
+    keyfile.set(jwk);
+    address.set(_address);
+    profiles.addKeyfile(_address, jwk);
+    // @ts-ignore
+    watchlist.reload();
+    goto("/app");
+    notification.notify(
+      "Welcome",
+      "You've successfully logged in!",
+      NotificationType.success,
+      5000
+    );
   }
 </script>
 
@@ -127,6 +156,18 @@
         have a keyfile, you can get one by creating an <a
           href="https://www.arweave.org/wallet">Arweave Wallet</a>.
       </p>
+
+      <div class="or">or</div>
+
+      <div class="weaveid-login">
+        {#if !!weaveIdClient}
+          <button class="weave-id-button" on:click={openWeaveIdLoginModal}>
+            <img src={weaveidSVG} alt="weaveid" /> use WeaveID
+          </button>
+        {:else}
+          <Loading style="color: white" />
+        {/if}
+      </div>
       <p class="notice">Your Arweave Keyfile does not leave your system.</p>
     </div>
   </div>
@@ -137,8 +178,8 @@
     <img src={stroke} alt="stroke" class="Stroke" draggable={false} />
     <img src={keyfileSVG} alt="keyfile" class="Keyfile" draggable={false} />
     <p>
-      If you don’t yet have a keyfile, you can get one by creating an <a
-        href="https://www.arweave.org/wallet">Arweave Wallet</a>.
+      If you don’t yet have a keyfile, you can get one by creating an <a href="https://www.arweave.org/wallet">Arweave
+        Wallet</a>
     </p>
   </div>
 </div>
@@ -154,10 +195,34 @@
     width: 100vw
     height: 100vh
 
+  .weave-id-button
+    font-family: "Inter", sans-serif
+    margin: 0 auto
+    display: flex
+    align-items: center
+    background-color: #fff
+    border-radius: 5px
+    color: #000
+    font-size: 1.1em
+    font-weight: 400
+    cursor: pointer
+    outline: none
+    border: none
+    transition: all .3s ease-in-out
+    padding: .4em .7em
+
+    img
+      margin-right: 0.75em
+      width: 1.25em
+      height: 1.25em
+
+    &:hover
+      opacity: .8
+
   .FileInput
     +fixedFull()
     opacity: 0
-    z-index: 1000
+    z-index: 9
 
     @media screen and (max-width: 720px)
       width: 100vw !important
@@ -170,7 +235,7 @@
 
   .drag-overlay
     +fixedFull()
-    z-index: 900
+    z-index: 8
     background-color: rgba(#000, .67)
 
     h1
@@ -250,7 +315,7 @@
         p.notice
           font-size: .75em
           color: #828282
-          margin-top: 4em
+          margin-top: 2em
           text-align: center
 
     .arweave-login
@@ -291,4 +356,13 @@
         top: unset
         bottom: 5vh
 
+    .or
+      text-align: center
+      color: #828282
+      font-size: 1.3em
+      margin: 2em 0
+
+    .weaveid-login
+      margin: 0 auto
+      text-align: center
 </style>

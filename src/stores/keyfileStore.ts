@@ -97,7 +97,7 @@ function createProfilesStore() {
         if (
           currentProfiles.filter((prf) => prf.address === addAddress).length > 0
         )
-          return;
+          return currentProfiles;
 
         currentProfiles.push({ address: addAddress, keyfile: addKeyFile });
         localStorage.setItem("profiles", JSON.stringify(currentProfiles));
