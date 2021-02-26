@@ -89,22 +89,18 @@
         },
       })
     ).data.transactions.edges;
-    if (outTxs.length > 0) {
-      keyfile.set(jwk);
-      address.set(_address);
-      profiles.addKeyfile(_address, jwk);
-      // @ts-ignore
-      watchlist.reload();
-      goto("/app");
-      notification.notify(
-        "Welcome",
-        "You've successfully logged in!",
-        NotificationType.success,
-        5000
-      );
-    } else {
-      goto("/gate");
-    }
+    keyfile.set(jwk);
+    address.set(_address);
+    profiles.addKeyfile(_address, jwk);
+    // @ts-ignore
+    watchlist.reload();
+    goto("/app");
+    notification.notify(
+      "Welcome",
+      "You've successfully logged in!",
+      NotificationType.success,
+      5000
+    );
   }
 </script>
 
