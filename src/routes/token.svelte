@@ -224,7 +224,7 @@
       {/await}
     </h1>
     <div class="cta">
-      <Button href="/trade" style="min-width: unset !important">Swap</Button>
+      <Button href="/swap" style="min-width: unset !important">Swap</Button>
     </div>
   </div>
   <div class="token-body">
