@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { onMount } from "svelte";
   import NavBar from "../components/NavBar.svelte";
   import Hero from "../components/home/Hero.svelte";
   // import Volume from "../components/home/Volume.svelte";
@@ -8,7 +9,23 @@
   import { keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
 
-  if (process.browser && $loggedIn) goto("/app");
+  onMount(() => {
+    if (window.arweaveWallet) {
+      tryToConnect();
+    } else {
+      addEventListener("arweaveWalletLoaded", tryToConnect);
+    }
+  });
+
+  async function tryToConnect() {
+    const permissions = await window.arweaveWallet.getPermissions();
+    if (
+      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("SIGN_TRANSACTION") > -1
+    ) {
+      goto("/app");
+    }
+  }
 </script>
 
 <svelte:head>

@@ -140,16 +140,15 @@
     {:else}
       <a href="/tokens">Tokens</a>
       <a
+        target="_blank"
+        href={hasWallet ? '' : 'https://chrome.google.com/webstore/detail/arconnect/einnioafmpimabjcddiinlhmijaionap'}
         on:click={async () => {
-          if (hasWallet) {
-            await window.arweaveWallet.connect([
-              'ACCESS_ADDRESS',
-              'SIGN_TRANSACTION',
-            ]);
-            connected = true;
-          } else {
-            window.open('https://chrome.google.com/webstore/detail/arconnect/einnioafmpimabjcddiinlhmijaionap');
-          }
+          await window.arweaveWallet.connect([
+            'ACCESS_ADDRESS',
+            'SIGN_TRANSACTION',
+          ]);
+          connected = true;
+          goto('/app');
         }}>{hasWallet ? 'Connect' : 'Install ArConnect'}</a>
     {/if}
   </div>
