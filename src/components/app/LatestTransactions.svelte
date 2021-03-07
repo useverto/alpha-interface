@@ -1,23 +1,33 @@
 <script lang="typescript">
   import Verto from "@verto/lib";
+  import { onMount } from "svelte";
   import { address } from "../../stores/keyfileStore";
   import SkeletonLoading from "../SkeletonLoading.svelte";
   import { fade } from "svelte/transition";
 
   const client = new Verto();
-  let transactions: Promise<
-    {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[]
-  > = client.getTransactions($address);
+  let transactions = [];
 
-  export const update = () => {
-    transactions = client.getTransactions($address);
-  };
+  onMount(() => {
+    if (window.arweaveWallet) {
+      tryToConnect();
+    } else {
+      addEventListener("arweaveWalletLoaded", tryToConnect);
+    }
+  });
+
+  async function tryToConnect() {
+    const permissions = await window.arweaveWallet.getPermissions();
+    if (
+      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("SIGN_TRANSACTION") > -1
+    ) {
+      // @ts-ignore
+      const address = await window.arweaveWallet.getActiveAddress();
+      // @ts-ignore
+      transactions = client.getTransactions(address);
+    }
+  }
 </script>
 
 <div class="section">

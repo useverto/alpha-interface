@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { onMount } from "svelte";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Balance from "../components/app/Balance.svelte";
@@ -7,11 +8,28 @@
   import Assets from "../components/app/Assets.svelte";
   import LatestExchanges from "../components/app/LatestExchanges.svelte";
   import LatestTransactions from "../components/app/LatestTransactions.svelte";
-  import { loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
 
-  if (process.browser && !$loggedIn) goto("/");
+  onMount(() => {
+    if (window.arweaveWallet) {
+      tryToConnect();
+    } else {
+      addEventListener("arweaveWalletLoaded", tryToConnect);
+    }
+  });
+
+  async function tryToConnect() {
+    const permissions = await window.arweaveWallet.getPermissions();
+    if (
+      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("SIGN_TRANSACTION") > -1
+    ) {
+      // User is connected with the correct permissions.
+    } else {
+      goto("/");
+    }
+  }
 
   let watchlistComponent;
   let assetsComponent;

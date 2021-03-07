@@ -1,7 +1,6 @@
 <script lang="ts">
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
-  import { keyfile, address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import { notification } from "../../stores/notificationStore";
   import { NotificationType } from "../../utils/types";
@@ -14,18 +13,27 @@
   import { saveSetting } from "../../utils/settings";
 
   let client = new Verto();
-  onMount(async () => {
-    client = new Verto(JSON.parse($keyfile));
+  let balances = [];
+  onMount(() => {
+    if (window.arweaveWallet) {
+      tryToConnect();
+    } else {
+      addEventListener("arweaveWalletLoaded", tryToConnect);
+    }
   });
 
-  let balances: Promise<
-    { id: string; name: string; ticker: string; balance: number }[]
-  > = client.getAssets($address);
-
-  export const update = () => {
-    client = new Verto(JSON.parse($keyfile));
-    balances = client.getAssets($address);
-  };
+  async function tryToConnect() {
+    const permissions = await window.arweaveWallet.getPermissions();
+    if (
+      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("SIGN_TRANSACTION") > -1
+    ) {
+      // @ts-ignore
+      const address = await window.arweaveWallet.getActiveAddress();
+      // @ts-ignore
+      balances = client.getAssets(address);
+    }
+  }
 
   let loading: boolean = false;
   let transferPSTOpened: boolean = false;
@@ -73,19 +81,16 @@
       }),
     };
 
-    const tx = await arweave.createTransaction(
-      {
-        target,
-        data: Math.random().toString().slice(-4),
-      },
-      JSON.parse($keyfile)
-    );
+    const tx = await arweave.createTransaction({
+      target,
+      data: Math.random().toString().slice(-4),
+    });
 
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value);
     }
 
-    await arweave.transactions.sign(tx, JSON.parse($keyfile));
+    await arweave.transactions.sign(tx);
     await arweave.transactions.post(tx);
 
     notification.notify(
@@ -104,10 +109,11 @@
     if (amnt % 1 !== 0) amnt = Math.round(amnt);
   }
 
+  // TODO(@johnletey)
   async function addToken() {
-    await client.saveToken(newToken);
-    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
-    balances = client.getAssets($address);
+    // await client.saveToken(newToken);
+    // saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
+    // balances = client.getAssets($address);
     newToken = "";
   }
 </script>

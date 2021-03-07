@@ -21,6 +21,9 @@
   import { getSetting } from "../utils/settings";
   import { onDestroy, onMount } from "svelte";
 
+  let hasWallet: boolean = false;
+  let connected: boolean = false;
+
   export let hero: boolean = false;
   export let update: Function = null;
 
@@ -38,7 +41,24 @@
     mobile = window.innerWidth <= 720;
     mediaWatch = window.matchMedia("(max-width: 720px)");
     mediaWatch.addListener(switchMobile);
+
+    if (window.arweaveWallet) {
+      tryToConnect();
+    } else {
+      addEventListener("arweaveWalletLoaded", tryToConnect);
+    }
   });
+
+  async function tryToConnect() {
+    hasWallet = true;
+    const permissions = await window.arweaveWallet.getPermissions();
+    if (
+      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("SIGN_TRANSACTION") > -1
+    ) {
+      connected = true;
+    }
+  }
 
   onDestroy(() => {
     if (mediaWatch === undefined) return;
@@ -47,7 +67,7 @@
 
   function _logOut(e?: MouseEvent) {
     if (!process.browser) return;
-    if (!$loggedIn) return;
+    if (!connected) return;
     if (e !== undefined && e.preventDefault) e.preventDefault();
     logOut();
     goto("/");
@@ -94,20 +114,20 @@
 
 <svelte:window bind:scrollY={y} />
 <div
-  class="NavBar {$loggedIn ? '' : 'logged-out'}"
+  class="NavBar {connected ? '' : 'logged-out'}"
   class:scrolled={y > 20}
   class:hero
   bind:clientHeight={navHeight}
   in:fade={{ duration: 750 }}
   style="--profiles-color: {$displayTheme === DisplayTheme.Dark ? 'unset' : 'invert(45%)'};">
-  <a href={$loggedIn ? '/app' : '/'} class="title">
+  <a href={connected ? '/app' : '/'} class="title">
     <img
       src={$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}
       alt="v" />
     <span class="beta">alpha</span>
   </a>
   <div class="menu">
-    {#if $loggedIn}
+    {#if connected}
       <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
       <a
@@ -117,11 +137,25 @@
         on:click={(e) => e.preventDefault()}>
         Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
       </a>
-    {:else}<a href="/tokens">Tokens</a> <a href="/login">Sign In</a>{/if}
+    {:else}
+      <a href="/tokens">Tokens</a>
+      <a
+        on:click={async () => {
+          if (hasWallet) {
+            await window.arweaveWallet.connect([
+              'ACCESS_ADDRESS',
+              'SIGN_TRANSACTION',
+            ]);
+            connected = true;
+          } else {
+            window.open('https://chrome.google.com/webstore/detail/arconnect/einnioafmpimabjcddiinlhmijaionap');
+          }
+        }}>{hasWallet ? 'Connect' : 'Install ArConnect'}</a>
+    {/if}
   </div>
 </div>
 <div
-  class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"
+  class="NavBarSpacer {connected ? '' : 'logged-out'}"
   style="height: {navHeight}px" />
 {#if showProfileSwitcher}
   {#if mobile}
@@ -164,7 +198,7 @@
   </div>
 {/if}
 <div class="mobile-nav" bind:clientHeight={mobileHeight}>
-  {#if $loggedIn}
+  {#if connected}
     <a href="/swap"><object
         data={swapIcon}
         type="image/svg+xml"
