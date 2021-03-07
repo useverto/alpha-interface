@@ -1,15 +1,22 @@
 <script lang="typescript">
+  import { onMount } from "svelte";
   import { fade } from "svelte/transition";
   import * as animateScroll from "svelte-scrollto";
   import blob1 from "../../assets/blob1.svg";
   import blob2 from "../../assets/blob2.svg";
   import Button from "../Button.svelte";
+  import { goto } from "@sapper/app";
 
-  // is logged in?
-  $: loggedIn = process.browser
-    ? localStorage.getItem("keyfile") !== null &&
-      localStorage.getItem("keyfile") !== undefined
-    : false;
+  let hasWallet: boolean = false;
+  onMount(() => {
+    if (window.arweaveWallet) {
+      hasWallet = true;
+    } else {
+      addEventListener("arweaveWalletLoaded", () => {
+        hasWallet = true;
+      });
+    }
+  });
 </script>
 
 <div class="Hero">
@@ -32,7 +39,19 @@
       click={() => animateScroll.scrollTo({ element: '#read-more' })}>
       Read more
     </Button>
-    <Button reverse={true} href={loggedIn ? 'app' : 'login'}>Trade now</Button>
+    <Button
+      reverse={true}
+      target="_blank"
+      href={hasWallet ? '' : 'https://chrome.google.com/webstore/detail/arconnect/einnioafmpimabjcddiinlhmijaionap'}
+      click={async () => {
+        await window.arweaveWallet.connect([
+          'ACCESS_ADDRESS',
+          'SIGN_TRANSACTION',
+        ]);
+        goto('/app');
+      }}>
+      Trade now
+    </Button>
   </div>
 </div>
 
