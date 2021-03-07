@@ -1,9 +1,7 @@
 <script lang="typescript">
-  import { keyfile } from "../stores/keyfileStore";
   import Arweave from "arweave";
   import Community from "community-js";
   import Verto from "@verto/lib";
-  import { onMount } from "svelte";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
   import { run } from "ar-gql";
@@ -41,14 +39,6 @@
       state = await community.getState();
     }
   }
-
-  onMount(async () => {
-    client = new Verto(JSON.parse($keyfile));
-  });
-
-  const update = async () => {
-    client = new Verto(JSON.parse($keyfile));
-  };
 
   async function cName(): Promise<string> {
     await initCommunity();
@@ -197,7 +187,7 @@
   <title>Verto — Token</title>
 </svelte:head>
 
-<NavBar {update} />
+<NavBar />
 
 <div class="token">
   <div class="token-head">

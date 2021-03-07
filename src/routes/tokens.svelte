@@ -1,7 +1,5 @@
 <script lang="typescript">
-  import { keyfile } from "../stores/keyfileStore";
   import Verto from "@verto/lib";
-  import { onMount } from "svelte";
   import NavBar from "../components/NavBar.svelte";
   import { fade } from "svelte/transition";
   import Loading from "../components/Loading.svelte";
@@ -10,23 +8,16 @@
   import Footer from "../components/Footer.svelte";
 
   let client = new Verto();
-  onMount(async () => {
-    client = new Verto(JSON.parse($keyfile));
-  });
   let tokens: Promise<
     { id: string; name: string; ticker: string }[]
   > = client.popularTokens();
-
-  export const update = () => {
-    client = new Verto(JSON.parse($keyfile));
-  };
 </script>
 
 <svelte:head>
   <title>Verto — Tokens</title>
 </svelte:head>
 
-<NavBar {update} />
+<NavBar />
 <div class="tokens" in:fade={{ duration: 400 }}>
   <div class="tokens-head">
     <h1 class="title">Popular Tokens</h1>
