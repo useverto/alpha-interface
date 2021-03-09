@@ -1,14 +1,13 @@
 <script lang="typescript">
   import { fade } from "svelte/transition";
-  import { address } from "../stores/keyfileStore";
+  import { address, logOut } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import swapIcon from "../assets/nav/swap.svg";
   import tokensIcon from "../assets/nav/tokens.svg";
   import chatIcon from "../assets/nav/chat.svg";
-  import peopleIcon from "../assets/nav/people.svg";
+  import signoutIcon from "../assets/nav/signout.svg";
   import { DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
-  import downArrow from "../assets/down-arrow.svg";
   import { onMount } from "svelte";
 
   let hasWallet: boolean = false;
@@ -60,9 +59,7 @@
     {#if connected}
       <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
-      <a href="/" class="profiles" on:click={(e) => e.preventDefault()}>
-        Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
-      </a>
+      <a href="/" class="profiles" on:click={logOut}> Sign out </a>
     {:else}
       <a href="/tokens">Tokens</a>
       <a
@@ -101,11 +98,10 @@
         data={chatIcon}
         type="image/svg+xml"
         title="nav-icon" /></a>
-    <a
-      href="/"
-      on:click={(e) => {
-        e.preventDefault();
-      }}><object data={peopleIcon} type="image/svg+xml" title="nav-icon" /></a>
+    <a href="/" on:click={logOut}><object
+        data={signoutIcon}
+        type="image/svg+xml"
+        title="nav-icon" /></a>
   {/if}
 </div>
 
