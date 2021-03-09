@@ -1,25 +1,15 @@
 <script lang="typescript">
-  import { fade, fly } from "svelte/transition";
-  import {
-    address,
-    loggedIn,
-    logOut,
-    profiles,
-    keyfile,
-  } from "../stores/keyfileStore";
-  import { notification } from "../stores/notificationStore";
+  import { fade } from "svelte/transition";
+  import { address } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import swapIcon from "../assets/nav/swap.svg";
   import tokensIcon from "../assets/nav/tokens.svg";
   import chatIcon from "../assets/nav/chat.svg";
   import peopleIcon from "../assets/nav/people.svg";
-  import { NotificationType, DisplayTheme } from "../utils/types";
+  import { DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
   import downArrow from "../assets/down-arrow.svg";
-  import closeIcon from "../assets/close.svg";
-  import addIcon from "../assets/add.svg";
-  import { getSetting } from "../utils/settings";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
 
   let hasWallet: boolean = false;
   let connected: boolean = false;
@@ -28,20 +18,10 @@
   export let update: Function = null;
 
   let y: number;
-  let showProfileSwitcher: boolean = false;
   let navHeight: number = 0;
-  let mobileHeight: number = 0;
-  let mobile: boolean = false;
-  let mediaWatch;
-
-  $: switchMobile = () =>
-    (mobile = mediaWatch === undefined ? false : mediaWatch.matches);
 
   onMount(() => {
-    mobile = window.innerWidth <= 720;
-    mediaWatch = window.matchMedia("(max-width: 720px)");
-    mediaWatch.addListener(switchMobile);
-
+    // @ts-ignore
     if (window.arweaveWallet) {
       tryToConnect();
     } else {
@@ -51,6 +31,7 @@
 
   async function tryToConnect() {
     hasWallet = true;
+    // @ts-ignore
     const permissions = await window.arweaveWallet.getPermissions();
     if (
       permissions.indexOf("ACCESS_ADDRESS") > -1 &&
@@ -58,57 +39,6 @@
     ) {
       connected = true;
     }
-  }
-
-  onDestroy(() => {
-    if (mediaWatch === undefined) return;
-    mediaWatch.removeListener(switchMobile);
-  });
-
-  function _logOut(e?: MouseEvent) {
-    if (!process.browser) return;
-    if (!connected) return;
-    if (e !== undefined && e.preventDefault) e.preventDefault();
-    logOut();
-    goto("/");
-    notification.notify(
-      "Logged out",
-      "You've successfully logged out.",
-      NotificationType.log,
-      5000
-    );
-  }
-
-  function switchKeyfile(_address: string) {
-    if ($address === _address) return;
-    const profileData = $profiles.filter(
-      (prof) => prof.address === _address
-    )[0];
-
-    keyfile.set(profileData.keyfile);
-    address.set(profileData.address);
-    if (update !== null) update();
-    // update the users tokens, used by the library
-    localStorage.setItem(
-      "tokens",
-      JSON.stringify(
-        getSetting("tokens", $address) !== undefined
-          ? getSetting("tokens", $address)
-          : []
-      )
-    );
-    if (mobile) showProfileSwitcher = false;
-    notification.notify(
-      "Success",
-      "Switched profile.",
-      NotificationType.success,
-      5000
-    );
-  }
-
-  function removeKeyfile(_address: string) {
-    profiles.removeKeyfile(_address);
-    if ($address === _address) switchKeyfile($profiles[0].address);
   }
 </script>
 
@@ -130,11 +60,7 @@
     {#if connected}
       <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
-      <a
-        href="/"
-        class="profiles"
-        on:mouseover={() => (showProfileSwitcher = true)}
-        on:click={(e) => e.preventDefault()}>
+      <a href="/" class="profiles" on:click={(e) => e.preventDefault()}>
         Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
       </a>
     {:else}
@@ -148,6 +74,7 @@
             'SIGN_TRANSACTION',
           ]);
           connected = true;
+          address.sync();
           goto('/app');
         }}>{hasWallet ? 'Connect' : 'Install ArConnect'}</a>
     {/if}
@@ -156,47 +83,7 @@
 <div
   class="NavBarSpacer {connected ? '' : 'logged-out'}"
   style="height: {navHeight}px" />
-{#if showProfileSwitcher}
-  {#if mobile}
-    <div
-      class="mobile-switcher-bg"
-      on:click={() => (showProfileSwitcher = false)}
-      transition:fade={{ duration: 400 }} />
-  {/if}
-  <div
-    class="profile-switcher"
-    on:mouseleave={() => (showProfileSwitcher = false)}
-    transition:fly={{ duration: 400, y: mobile ? 1000 : 0, opacity: 0 }}
-    style="{!mobile ? `top: ${navHeight + 10}px;` : `bottom: ${mobileHeight}px;`} --profile-border: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .2)' : 'rgba(0, 0, 0, .075)'};">
-    {#each $profiles as profile}
-      <div class="profile">
-        <button
-          on:click={() => switchKeyfile(profile.address)}
-          class="address"
-          style={$address === profile.address ? 'font-weight: 600;' : ''}
-          title={profile.address}>{profile.address}</button>
-        {#if $profiles.length > 1}
-          <button
-            class="remove"
-            on:click={() => removeKeyfile(profile.address)}><object
-              data={closeIcon}
-              type="image/svg+xml"
-              title="down-arrow" /></button>
-        {/if}
-      </div>
-    {/each}
-    <button class="action" on:click={() => goto('/login')}>
-      <object data={addIcon} type="image/svg+xml" title="nav-icon" /> Add keyfile
-    </button>
-    <button
-      class="action sign-out"
-      title="Remove all keyfiles and sing out"
-      on:click={_logOut}>
-      Sign Out
-    </button>
-  </div>
-{/if}
-<div class="mobile-nav" bind:clientHeight={mobileHeight}>
+<div class="mobile-nav">
   {#if connected}
     <a href="/swap"><object
         data={swapIcon}
@@ -218,7 +105,6 @@
       href="/"
       on:click={(e) => {
         e.preventDefault();
-        showProfileSwitcher = !showProfileSwitcher;
       }}><object data={peopleIcon} type="image/svg+xml" title="nav-icon" /></a>
   {/if}
 </div>

@@ -6,10 +6,10 @@
   import LatestTrades from "../components/home/LatestTrades.svelte";
   import About from "../components/home/About.svelte";
   import Footer from "../components/Footer.svelte";
-  import { keyfile, loggedIn } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
 
   onMount(() => {
+    // @ts-ignore
     if (window.arweaveWallet) {
       tryToConnect();
     } else {
@@ -18,6 +18,7 @@
   });
 
   async function tryToConnect() {
+    // @ts-ignore
     const permissions = await window.arweaveWallet.getPermissions();
     if (
       permissions.indexOf("ACCESS_ADDRESS") > -1 &&

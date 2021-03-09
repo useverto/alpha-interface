@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import { loggedIn, keyfile, address } from "../stores/keyfileStore";
+  import { loggedIn, address } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
   import { NotificationType, ActiveMenu } from "../utils/types";
