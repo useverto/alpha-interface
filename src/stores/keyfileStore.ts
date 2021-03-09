@@ -1,5 +1,6 @@
 import { derived, get, readable, writable } from "svelte/store";
 import Arweave from "arweave";
+import { goto } from "@sapper/app";
 
 function createAddressStore() {
   const { subscribe, set } = writable<string>(null);
@@ -73,7 +74,8 @@ export const loggedIn = derived(
 );
 
 // log out
-// this removes the keyfile from local stroage
-export function logOut() {
-  // TODO disconnect
+export async function logOut() {
+  // @ts-ignore
+  await window.arweaveWallet.disconnect();
+  goto("/");
 }
