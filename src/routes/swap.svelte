@@ -40,8 +40,10 @@
 
   onMount(async () => {
     const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
-    if (res.country === "US") {
+    const res = await (
+      await fetch(`http://ip-api.com/json/${ip.ip}?fields=countryCode`)
+    ).json();
+    if (res.countryCode === "US") {
       goto("/usa");
     }
 
