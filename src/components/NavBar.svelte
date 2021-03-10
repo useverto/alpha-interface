@@ -69,6 +69,7 @@
           await window.arweaveWallet.connect([
             'ACCESS_ADDRESS',
             'SIGN_TRANSACTION',
+            'ACCESS_ALL_ADDRESSES',
           ]);
           connected = true;
           address.sync();

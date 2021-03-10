@@ -42,6 +42,7 @@
       addEventListener("arweaveWalletLoaded", tryToConnect);
     }
 
+    // TODO @johnletey
     const ip = await (await fetch("https://api.ipify.org?format=json")).json();
     const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
     if (res.country === "US") {
