@@ -12,13 +12,6 @@
 
   export let showThemeSwitcher: boolean = false;
 
-  let wallet = "";
-  onMount(async () => {
-    // @ts-ignore
-    const names = await window.arweaveWallet.getWalletNames();
-    wallet = names[$address];
-  });
-
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
     if (typeof val === "string") val = parseFloat(val);
@@ -87,7 +80,7 @@
       {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
     </h1>
     <p class="wallet" in:fade={{ duration: 150 }}>
-      Wallet: {wallet}<img
+      Wallet: {$address}<img
         src={copyIcon}
         alt="copy-address"
         on:click={copyAddress} />

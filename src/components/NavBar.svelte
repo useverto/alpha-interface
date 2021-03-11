@@ -12,6 +12,7 @@
 
   let hasWallet: boolean = false;
   let connected: boolean = false;
+  let wallet: string = "";
 
   export let hero: boolean = false;
   export let update: Function = null;
@@ -38,6 +39,12 @@
       permissions.indexOf("SIGN_TRANSACTION") > -1
     ) {
       connected = true;
+
+      // @ts-ignore
+      const address = await window.arweaveWallet.getActiveAddress();
+      // @ts-ignore
+      const names = await window.arweaveWallet.getWalletNames();
+      wallet = names[address];
     }
   }
 </script>
@@ -60,7 +67,7 @@
     {#if connected}
       <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
-      <a href="/" class="profiles" on:click={logOut}> Sign out </a>
+      <a href="/" on:click={logOut}>{wallet}</a>
     {:else}
       <a href="/tokens">Tokens</a>
       <a
