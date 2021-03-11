@@ -22,6 +22,7 @@
     const permissions = await window.arweaveWallet.getPermissions();
     if (
       permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("ACCESS_ALL_ADDRESSES") > -1 &&
       permissions.indexOf("SIGN_TRANSACTION") > -1
     ) {
       goto("/app");

@@ -34,6 +34,7 @@
     const permissions = await window.arweaveWallet.getPermissions();
     if (
       permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("ACCESS_ALL_ADDRESSES") > -1 &&
       permissions.indexOf("SIGN_TRANSACTION") > -1
     ) {
       connected = true;
@@ -68,8 +69,8 @@
         on:click={async () => {
           await window.arweaveWallet.connect([
             'ACCESS_ADDRESS',
-            'SIGN_TRANSACTION',
             'ACCESS_ALL_ADDRESSES',
+            'SIGN_TRANSACTION',
           ]);
           connected = true;
           address.sync();

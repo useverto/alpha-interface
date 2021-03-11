@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { fade } from "svelte/transition";
   import { address, balance } from "../../stores/keyfileStore";
   import { theme } from "../../stores/themeStore";
@@ -10,6 +11,13 @@
   import copyIcon from "../../assets/copy.svg";
 
   export let showThemeSwitcher: boolean = false;
+
+  let wallet = "";
+  onMount(async () => {
+    // @ts-ignore
+    const names = await window.arweaveWallet.getWalletNames();
+    wallet = names[$address];
+  });
 
   function roundCurrency(val: number | string): string {
     if (val === "?") return val;
@@ -79,7 +87,7 @@
       {roundCurrency($balance)}<span style="text-transform: uppercase; font-size: .5em; display: inline-block">Ar</span>
     </h1>
     <p class="wallet" in:fade={{ duration: 150 }}>
-      Wallet: {$address}<img
+      Wallet: {wallet}<img
         src={copyIcon}
         alt="copy-address"
         on:click={copyAddress} />
