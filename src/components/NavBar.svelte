@@ -13,6 +13,7 @@
   let hasWallet: boolean = false;
   let connected: boolean = false;
   let wallet: string = "";
+  let windowWidth = 0;
 
   export let hero: boolean = false;
   export let update: Function = null;
@@ -67,7 +68,10 @@
     {#if connected}
       <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
-      <a href="/" on:click={logOut}>{wallet}</a>
+      <a href="/" on:click={logOut} class="signout">
+        {wallet}
+        <div class="tooltip">Click to sign out</div>
+      </a>
     {:else}
       <a href="/tokens">Tokens</a>
       <a
@@ -413,5 +417,39 @@
 
         &.verto
           height: 2.17em
+
+  .signout
+    position: relative
+
+    .tooltip
+      $borderRadius: 6.5px
+      position: absolute
+      top: 140%
+      right: 50%
+      background-color: var(--inverted-elements-color)
+      color: var(--background-color)
+      border-radius: $borderRadius
+      font-size: 1em
+      font-weight: 500
+      font-family: "Inter", sans-serif
+      padding: .2em .37em
+      opacity: 0
+      display: none
+      width: max-content
+      transition: all .23s ease-in-out
+
+      &::after
+        content: ""
+        position: absolute
+        bottom: 100%
+        right: $borderRadius
+        margin-left: -5px
+        border-width: 5px
+        border-style: solid
+        border-color: transparent transparent var(--inverted-elements-color) transparent
+
+    &:hover .tooltip
+      opacity: 1
+      display: block
 
 </style>
