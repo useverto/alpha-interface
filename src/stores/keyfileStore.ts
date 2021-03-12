@@ -11,7 +11,6 @@ function createAddressStore() {
     const permissions = await window.arweaveWallet.getPermissions();
     if (!permissions.includes("ACCESS_ADDRESS")) return;
     await setAddress();
-    window.addEventListener("walletSwitch", setAddress);
   }
   async function setAddress(e?: any) {
     const addr = e
@@ -21,12 +20,13 @@ function createAddressStore() {
     set(addr);
   }
 
+  window.addEventListener("walletSwitch", setAddress);
   window.addEventListener("arweaveWalletLoaded", walletLoadedListener);
   setAddress();
 
   return {
     subscribe,
-    sync: () => setAddress(),
+    sync: setAddress,
     reset: () => set(null),
   };
 }
