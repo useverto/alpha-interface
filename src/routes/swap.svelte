@@ -39,9 +39,8 @@
   let loadingMetrics = false;
 
   onMount(async () => {
-    const ip = await (await fetch("/loc")).json();
-    console.log(ip);
-    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
+    const res = await (await fetch("/loc")).json();
+    console.log(res);
     if (res.country === "US") {
       goto("/usa");
     }

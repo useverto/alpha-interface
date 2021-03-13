@@ -27,7 +27,7 @@
     },
     {
       "source": "/loc",
-      "destination": "https://api.ipify.org?format=json"
+      "destination": "http://ipinfo.io/json"
     },
     {
       "source": "/(.*)",
