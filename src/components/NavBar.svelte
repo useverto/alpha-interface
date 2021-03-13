@@ -12,11 +12,9 @@
 
   let hasWallet: boolean = false;
   let connected: boolean = false;
-  let wallet: string = "";
-  let windowWidth = 0;
+  let names: string[] = [];
 
   export let hero: boolean = false;
-  export let update: Function = null;
 
   let y: number;
   let navHeight: number = 0;
@@ -42,10 +40,7 @@
       connected = true;
 
       // @ts-ignore
-      const address = await window.arweaveWallet.getActiveAddress();
-      // @ts-ignore
-      const names = await window.arweaveWallet.getWalletNames();
-      wallet = names[address];
+      names = await window.arweaveWallet.getWalletNames();
     }
   }
 </script>
@@ -69,7 +64,7 @@
       <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
       <a href="/" on:click={logOut} class="signout">
-        {wallet}
+        {names[$address]}
         <div class="tooltip">Click to sign out</div>
       </a>
     {:else}
