@@ -39,8 +39,12 @@
   let loadingMetrics = false;
 
   onMount(async () => {
-    const res = await (await fetch("/loc")).json();
-    console.log(res);
+    let res;
+    try {
+      res = await (await fetch("/loc")).json();
+    } catch {
+      res = await (await fetch("https://ipinfo.io/json?token=c406c5cb84a4a5")).json();
+    }
     if (res.country === "US") {
       goto("/usa");
     }

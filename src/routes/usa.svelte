@@ -7,7 +7,12 @@
   import { fade } from "svelte/transition";
 
   onMount(async () => {
-    const res = await (await fetch("/loc")).json();
+    let res;
+    try {
+      res = await (await fetch("/loc")).json();
+    } catch {
+      res = await (await fetch("https://ipinfo.io/json?token=c406c5cb84a4a5")).json();
+    }
     if (res.country !== "US") {
       goto("/app");
     }

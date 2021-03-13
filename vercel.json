@@ -27,7 +27,7 @@
     },
     {
       "source": "/loc",
-      "destination": "http://ipinfo.io/json"
+      "destination": "https://ipinfo.io/json?token=c406c5cb84a4a5"
     },
     {
       "source": "/(.*)",
