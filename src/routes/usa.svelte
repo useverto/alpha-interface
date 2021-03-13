@@ -7,12 +7,10 @@
   import { fade } from "svelte/transition";
 
   onMount(async () => {
-    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    const res = await (
-      await fetch(`http://ip-api.com/json/${ip.ip}?fields=countryCode`)
-    ).json();
+    const ip = await (await fetch("/loc")).json();
+    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
 
-    if (res.countryCode !== "US") {
+    if (res.country !== "US") {
       goto("/app");
     }
 
