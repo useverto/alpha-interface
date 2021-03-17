@@ -7,7 +7,6 @@
   import moment from "moment";
   import { goto } from "@sapper/app";
   import { fade } from "svelte/transition";
-  import { onMount } from "svelte";
   import { query } from "../../api-client";
   import Arweave from "arweave";
   import allTransactionsQuery from "../../queries/allTransactions.gql";
@@ -25,7 +24,20 @@
     loading = false;
   let y: number, windowHeight: number;
 
-  onMount(() => loadMoreTransactions());
+  $: {
+    if ($address) {
+      transactions = [];
+      loading = false;
+      loadedTransactions = false;
+      hasNextOut = true;
+      hasNextIn = true;
+      lastCursorOut = "";
+      lastCursorIn = "";
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      loadMoreTransactions();
+    }
+  }
 
   async function loadMoreTransactions() {
     if (!process.browser) return [];

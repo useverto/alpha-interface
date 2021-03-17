@@ -1,8 +1,8 @@
 <script lang="ts">
   import Verto from "@verto/lib";
-  import { onMount } from "svelte";
   import Arweave from "arweave";
   import { notification } from "../../stores/notificationStore";
+  import { address } from "../../stores/keyfileStore";
   import { NotificationType } from "../../utils/types";
   import Button from "../../components/Button.svelte";
   import Loading from "../Loading.svelte";
@@ -10,28 +10,14 @@
   import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import addIcon from "../../assets/add.svg";
-  import { saveSetting } from "../../utils/settings";
 
   let client = new Verto();
   let balances = [];
-  onMount(() => {
-    if (window.arweaveWallet) {
-      tryToConnect();
-    } else {
-      addEventListener("arweaveWalletLoaded", tryToConnect);
-    }
-  });
 
-  async function tryToConnect() {
-    const permissions = await window.arweaveWallet.getPermissions();
-    if (
-      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
-      permissions.indexOf("SIGN_TRANSACTION") > -1
-    ) {
+  $: {
+    if (address) {
       // @ts-ignore
-      const address = await window.arweaveWallet.getActiveAddress();
-      // @ts-ignore
-      balances = client.getAssets(address);
+      balances = client.getAssets($address);
     }
   }
 

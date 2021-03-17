@@ -1,13 +1,12 @@
 <script lang="typescript">
-  import { loggedIn, address } from "../stores/keyfileStore";
+  import { address } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType, ActiveMenu } from "../utils/types";
-  import type { OrderBookItem, SwapMode } from "../utils/types";
+  import { NotificationType } from "../utils/types";
+  import type { OrderBookItem } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
-  import { fade, fly } from "svelte/transition";
-  import { cubicOut } from "svelte/easing";
+  import { fade } from "svelte/transition";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Balance from "../components/app/Balance.svelte";

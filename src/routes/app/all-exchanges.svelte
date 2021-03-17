@@ -1,9 +1,8 @@
 <script lang="typescript">
-  import { loggedIn, address } from "../../stores/keyfileStore";
+  import { address } from "../../stores/keyfileStore";
   import NavBar from "../../components/NavBar.svelte";
   import Footer from "../../components/Footer.svelte";
   import { fade } from "svelte/transition";
-  import { onMount } from "svelte";
   import { query } from "../../api-client";
   import exchangesQuery from "../../queries/exchanges.gql";
   import Arweave from "arweave";
@@ -21,7 +20,18 @@
     loadedExchanges = false,
     loading = false;
 
-  onMount(() => loadMoreExchanges());
+  $: {
+    if ($address) {
+      exchanges = [];
+      loading = true;
+      loadedExchanges = false;
+      hasNext = true;
+      lastCursor = "";
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      loadMoreExchanges();
+    }
+  }
 
   async function loadMoreExchanges() {
     if (!process.browser) return;
