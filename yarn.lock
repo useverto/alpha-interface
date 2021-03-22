@@ -1769,6 +1769,16 @@ arweave@^1.10.11, arweave@^1.10.6:
     base64-js "^1.3.1"
     bignumber.js "^9.0.1"
 
+arweave@^1.10.13:
+  version "1.10.13"
+  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.10.13.tgz#88205154524b30a22b18f011f7241b2ddc22413c"
+  integrity sha512-FfM9CAF5msAk/12d87KDKu+00/ZriEf/S3ei2FTPMKCOdOb++SwLx7F3kAKO74obAgIGzL8X4Y0D/aV8oNNJDA==
+  dependencies:
+    asn1.js "^5.4.1"
+    axios "^0.21.1"
+    base64-js "^1.3.1"
+    bignumber.js "^9.0.1"
+
 asn1.js@^5.2.0, asn1.js@^5.4.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.4.1.tgz#11a980b84ebb91781ce35b0fdc2ee294e3783f07"
