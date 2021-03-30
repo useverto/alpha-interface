@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { fade } from "svelte/transition";
   import { address, balance } from "../../stores/keyfileStore";
   import { theme } from "../../stores/themeStore";

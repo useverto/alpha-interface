@@ -1,9 +1,8 @@
 <script lang="ts">
   import Verto from "@verto/lib";
-  import { onMount } from "svelte";
-  import { keyfile, address } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import { notification } from "../../stores/notificationStore";
+  import { address } from "../../stores/keyfileStore";
   import { NotificationType } from "../../utils/types";
   import Button from "../../components/Button.svelte";
   import Loading from "../Loading.svelte";
@@ -14,18 +13,14 @@
   import { saveSetting } from "../../utils/settings";
 
   let client = new Verto();
-  onMount(async () => {
-    client = new Verto(JSON.parse($keyfile));
-  });
+  let balances = [];
 
-  let balances: Promise<
-    { id: string; name: string; ticker: string; balance: number }[]
-  > = client.getAssets($address);
-
-  export const update = () => {
-    client = new Verto(JSON.parse($keyfile));
-    balances = client.getAssets($address);
-  };
+  $: {
+    if (address) {
+      // @ts-ignore
+      balances = client.getAssets($address);
+    }
+  }
 
   let loading: boolean = false;
   let transferPSTOpened: boolean = false;
@@ -73,19 +68,16 @@
       }),
     };
 
-    const tx = await arweave.createTransaction(
-      {
-        target,
-        data: Math.random().toString().slice(-4),
-      },
-      JSON.parse($keyfile)
-    );
+    const tx = await arweave.createTransaction({
+      target,
+      data: Math.random().toString().slice(-4),
+    });
 
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value);
     }
 
-    await arweave.transactions.sign(tx, JSON.parse($keyfile));
+    await arweave.transactions.sign(tx);
     await arweave.transactions.post(tx);
 
     notification.notify(
@@ -107,6 +99,7 @@
   async function addToken() {
     await client.saveToken(newToken);
     saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
+    // @ts-ignore
     balances = client.getAssets($address);
     newToken = "";
   }

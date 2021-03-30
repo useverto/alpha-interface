@@ -1,13 +1,12 @@
 <script lang="typescript">
-  import { loggedIn, keyfile, address } from "../stores/keyfileStore";
+  import { address } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import { notification } from "../stores/notificationStore";
-  import { NotificationType, ActiveMenu } from "../utils/types";
-  import type { OrderBookItem, SwapMode } from "../utils/types";
+  import { NotificationType } from "../utils/types";
+  import type { OrderBookItem } from "../utils/types";
   import Verto from "@verto/lib";
   import { onMount } from "svelte";
-  import { fade, fly } from "svelte/transition";
-  import { cubicOut } from "svelte/easing";
+  import { fade } from "svelte/transition";
   import NavBar from "../components/NavBar.svelte";
   import Footer from "../components/Footer.svelte";
   import Balance from "../components/app/Balance.svelte";
@@ -23,9 +22,6 @@
   let sendAmount: number, receiveAmount: number;
   let sendSelected: string, receiveSelected: string;
 
-  // @ts-ignore
-  if (process.browser && !$loggedIn) goto("/");
-
   let client = new Verto();
   let post: string;
   let options: Promise<{ ticker: string; id: string; type: string }[]>;
@@ -39,13 +35,21 @@
   let loadingMetrics = false;
 
   onMount(async () => {
-    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
-    if (res.country === "US") {
-      goto("/usa");
+    if (window.arweaveWallet) {
+      tryToConnect();
+    } else {
+      addEventListener("arweaveWalletLoaded", tryToConnect);
     }
 
-    client = new Verto(JSON.parse($keyfile));
+    try {
+      const ip = await (await fetch("https://api.my-ip.io/ip.json")).json();
+      const res = await (
+        await fetch(`https://ipwhois.app/json/${ip.ip}`)
+      ).json();
+      if (res.country_code === "US") {
+        goto("/usa");
+      }
+    } catch {}
 
     const params = new URLSearchParams(window.location.search);
     post = params.get("post") || (await client.recommendPost());
@@ -66,6 +70,19 @@
       if (accounts.length == 0) connected = false;
     }
   });
+
+  async function tryToConnect() {
+    const permissions = await window.arweaveWallet.getPermissions();
+    if (
+      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("ACCESS_ALL_ADDRESSES") > -1 &&
+      permissions.indexOf("SIGN_TRANSACTION") > -1
+    ) {
+      // User is connected with the correct permissions.
+    } else {
+      goto("/");
+    }
+  }
 
   let disabled: boolean = true;
   $: {
@@ -151,10 +168,6 @@
     return token
       ? await receive(amnt, token, type === "Buy" ? "Sell" : "Buy")
       : ">" + amnt;
-  }
-
-  function update() {
-    client = new Verto(JSON.parse($keyfile));
   }
 
   async function getOptions(): Promise<
@@ -508,7 +521,7 @@
   <title>Verto — Swap</title>
 </svelte:head>
 
-<NavBar {update} />
+<NavBar />
 <div class="swap" in:fade={{ duration: 400 }}>
   <Balance />
   <div class="swap-content">

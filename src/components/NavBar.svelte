@@ -1,170 +1,95 @@
 <script lang="typescript">
-  import { fade, fly } from "svelte/transition";
-  import {
-    address,
-    loggedIn,
-    logOut,
-    profiles,
-    keyfile,
-  } from "../stores/keyfileStore";
-  import { notification } from "../stores/notificationStore";
+  import { fade } from "svelte/transition";
+  import { address, logOut } from "../stores/keyfileStore";
   import { goto } from "@sapper/app";
   import swapIcon from "../assets/nav/swap.svg";
   import tokensIcon from "../assets/nav/tokens.svg";
   import chatIcon from "../assets/nav/chat.svg";
-  import peopleIcon from "../assets/nav/people.svg";
-  import { NotificationType, DisplayTheme } from "../utils/types";
+  import signoutIcon from "../assets/nav/signout.svg";
+  import { DisplayTheme } from "../utils/types";
   import { displayTheme } from "../stores/themeStore";
-  import downArrow from "../assets/down-arrow.svg";
-  import closeIcon from "../assets/close.svg";
-  import addIcon from "../assets/add.svg";
-  import { getSetting } from "../utils/settings";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
+
+  let hasWallet: boolean = false;
+  let connected: boolean = false;
+  let names: string[] = [];
 
   export let hero: boolean = false;
-  export let update: Function = null;
 
   let y: number;
-  let showProfileSwitcher: boolean = false;
   let navHeight: number = 0;
-  let mobileHeight: number = 0;
-  let mobile: boolean = false;
-  let mediaWatch;
-
-  $: switchMobile = () =>
-    (mobile = mediaWatch === undefined ? false : mediaWatch.matches);
 
   onMount(() => {
-    mobile = window.innerWidth <= 720;
-    mediaWatch = window.matchMedia("(max-width: 720px)");
-    mediaWatch.addListener(switchMobile);
+    // @ts-ignore
+    if (window.arweaveWallet) {
+      tryToConnect();
+    } else {
+      addEventListener("arweaveWalletLoaded", tryToConnect);
+    }
   });
 
-  onDestroy(() => {
-    if (mediaWatch === undefined) return;
-    mediaWatch.removeListener(switchMobile);
-  });
+  async function tryToConnect() {
+    hasWallet = true;
+    // @ts-ignore
+    const permissions = await window.arweaveWallet.getPermissions();
+    if (
+      permissions.indexOf("ACCESS_ADDRESS") > -1 &&
+      permissions.indexOf("ACCESS_ALL_ADDRESSES") > -1 &&
+      permissions.indexOf("SIGN_TRANSACTION") > -1
+    ) {
+      connected = true;
 
-  function _logOut(e?: MouseEvent) {
-    if (!process.browser) return;
-    if (!$loggedIn) return;
-    if (e !== undefined && e.preventDefault) e.preventDefault();
-    logOut();
-    goto("/");
-    notification.notify(
-      "Logged out",
-      "You've successfully logged out.",
-      NotificationType.log,
-      5000
-    );
-  }
-
-  function switchKeyfile(_address: string) {
-    if ($address === _address) return;
-    const profileData = $profiles.filter(
-      (prof) => prof.address === _address
-    )[0];
-
-    keyfile.set(profileData.keyfile);
-    address.set(profileData.address);
-    if (update !== null) update();
-    // update the users tokens, used by the library
-    localStorage.setItem(
-      "tokens",
-      JSON.stringify(
-        getSetting("tokens", $address) !== undefined
-          ? getSetting("tokens", $address)
-          : []
-      )
-    );
-    if (mobile) showProfileSwitcher = false;
-    notification.notify(
-      "Success",
-      "Switched profile.",
-      NotificationType.success,
-      5000
-    );
-  }
-
-  function removeKeyfile(_address: string) {
-    profiles.removeKeyfile(_address);
-    if ($address === _address) switchKeyfile($profiles[0].address);
+      // @ts-ignore
+      names = await window.arweaveWallet.getWalletNames();
+    }
   }
 </script>
 
 <svelte:window bind:scrollY={y} />
 <div
-  class="NavBar {$loggedIn ? '' : 'logged-out'}"
+  class="NavBar {connected ? '' : 'logged-out'}"
   class:scrolled={y > 20}
   class:hero
   bind:clientHeight={navHeight}
   in:fade={{ duration: 750 }}
   style="--profiles-color: {$displayTheme === DisplayTheme.Dark ? 'unset' : 'invert(45%)'};">
-  <a href={$loggedIn ? '/app' : '/'} class="title">
+  <a href={connected ? '/app' : '/'} class="title">
     <img
       src={$displayTheme === DisplayTheme.Dark ? '/logo_dark.svg' : '/logo_light.svg'}
       alt="v" />
     <span class="beta">alpha</span>
   </a>
   <div class="menu">
-    {#if $loggedIn}
+    {#if connected}
       <a href="/swap">Swap</a>
       <a href="/tokens">Tokens</a>
-      <a
-        href="/"
-        class="profiles"
-        on:mouseover={() => (showProfileSwitcher = true)}
-        on:click={(e) => e.preventDefault()}>
-        Profile <object data={downArrow} type="image/svg+xml" title="down-arrow" />
+      <a href="/" on:click={logOut} class="signout">
+        {names[$address]}
+        <div class="tooltip">Click to sign out</div>
       </a>
-    {:else}<a href="/tokens">Tokens</a> <a href="/login">Sign In</a>{/if}
+    {:else}
+      <a href="/tokens">Tokens</a>
+      <a
+        target="_blank"
+        href={hasWallet ? '' : 'https://chrome.google.com/webstore/detail/arconnect/einnioafmpimabjcddiinlhmijaionap'}
+        on:click={async () => {
+          await window.arweaveWallet.connect([
+            'ACCESS_ADDRESS',
+            'ACCESS_ALL_ADDRESSES',
+            'SIGN_TRANSACTION',
+          ]);
+          connected = true;
+          address.sync();
+          goto('/app');
+        }}>{hasWallet ? 'Connect' : 'Install ArConnect'}</a>
+    {/if}
   </div>
 </div>
 <div
-  class="NavBarSpacer {$loggedIn ? '' : 'logged-out'}"
+  class="NavBarSpacer {connected ? '' : 'logged-out'}"
   style="height: {navHeight}px" />
-{#if showProfileSwitcher}
-  {#if mobile}
-    <div
-      class="mobile-switcher-bg"
-      on:click={() => (showProfileSwitcher = false)}
-      transition:fade={{ duration: 400 }} />
-  {/if}
-  <div
-    class="profile-switcher"
-    on:mouseleave={() => (showProfileSwitcher = false)}
-    transition:fly={{ duration: 400, y: mobile ? 1000 : 0, opacity: 0 }}
-    style="{!mobile ? `top: ${navHeight + 10}px;` : `bottom: ${mobileHeight}px;`} --profile-border: {$displayTheme === DisplayTheme.Dark ? 'rgba(255, 255, 255, .2)' : 'rgba(0, 0, 0, .075)'};">
-    {#each $profiles as profile}
-      <div class="profile">
-        <button
-          on:click={() => switchKeyfile(profile.address)}
-          class="address"
-          style={$address === profile.address ? 'font-weight: 600;' : ''}
-          title={profile.address}>{profile.address}</button>
-        {#if $profiles.length > 1}
-          <button
-            class="remove"
-            on:click={() => removeKeyfile(profile.address)}><object
-              data={closeIcon}
-              type="image/svg+xml"
-              title="down-arrow" /></button>
-        {/if}
-      </div>
-    {/each}
-    <button class="action" on:click={() => goto('/login')}>
-      <object data={addIcon} type="image/svg+xml" title="nav-icon" /> Add keyfile
-    </button>
-    <button
-      class="action sign-out"
-      title="Remove all keyfiles and sing out"
-      on:click={_logOut}>
-      Sign Out
-    </button>
-  </div>
-{/if}
-<div class="mobile-nav" bind:clientHeight={mobileHeight}>
-  {#if $loggedIn}
+<div class="mobile-nav">
+  {#if connected}
     <a href="/swap"><object
         data={swapIcon}
         type="image/svg+xml"
@@ -181,12 +106,10 @@
         data={chatIcon}
         type="image/svg+xml"
         title="nav-icon" /></a>
-    <a
-      href="/"
-      on:click={(e) => {
-        e.preventDefault();
-        showProfileSwitcher = !showProfileSwitcher;
-      }}><object data={peopleIcon} type="image/svg+xml" title="nav-icon" /></a>
+    <a href="/" on:click={logOut}><object
+        data={signoutIcon}
+        type="image/svg+xml"
+        title="nav-icon" /></a>
   {/if}
 </div>
 
@@ -489,5 +412,39 @@
 
         &.verto
           height: 2.17em
+
+  .signout
+    position: relative
+
+    .tooltip
+      $borderRadius: 6.5px
+      position: absolute
+      top: 140%
+      right: 50%
+      background-color: var(--inverted-elements-color)
+      color: var(--background-color)
+      border-radius: $borderRadius
+      font-size: 1em
+      font-weight: 500
+      font-family: "Inter", sans-serif
+      padding: .2em .37em
+      opacity: 0
+      display: none
+      width: max-content
+      transition: all .23s ease-in-out
+
+      &::after
+        content: ""
+        position: absolute
+        bottom: 100%
+        right: $borderRadius
+        margin-left: -5px
+        border-width: 5px
+        border-style: solid
+        border-color: transparent transparent var(--inverted-elements-color) transparent
+
+    &:hover .tooltip
+      opacity: 1
+      display: block
 
 </style>

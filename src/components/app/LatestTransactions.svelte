@@ -5,19 +5,14 @@
   import { fade } from "svelte/transition";
 
   const client = new Verto();
-  let transactions: Promise<
-    {
-      id: string;
-      amount: number;
-      type: string;
-      status: string;
-      timestamp: number;
-    }[]
-  > = client.getTransactions($address);
+  let transactions = [];
 
-  export const update = () => {
-    transactions = client.getTransactions($address);
-  };
+  $: {
+    if (address) {
+      // @ts-ignore
+      transactions = client.getTransactions($address);
+    }
+  }
 </script>
 
 <div class="section">

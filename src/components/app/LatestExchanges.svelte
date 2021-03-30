@@ -1,6 +1,5 @@
 <script lang="ts">
   import Verto from "@verto/lib";
-  import { address, keyfile } from "../../stores/keyfileStore";
   import Arweave from "arweave";
   import { query } from "../../api-client";
   import { notification } from "../../stores/notificationStore";
@@ -10,23 +9,17 @@
   import Loading from "../Loading.svelte";
   import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
+  import { address } from "../../stores/keyfileStore";
 
   const client = new Verto();
-  let exchanges: Promise<
-    {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[]
-  > = client.getExchanges($address);
+  let exchanges = [];
 
-  export const update = () => {
-    exchanges = client.getExchanges($address);
-  };
+  $: {
+    if (address) {
+      // @ts-ignore
+      exchanges = client.getExchanges($address);
+    }
+  }
 
   let currentCancel = "";
   let tx;
@@ -60,13 +53,10 @@
       })
     ).data.transaction.recipient;
 
-    tx = await client.createTransaction(
-      {
-        target,
-        data: Math.random().toString().slice(-4),
-      },
-      JSON.parse($keyfile)
-    );
+    tx = await client.createTransaction({
+      target,
+      data: Math.random().toString().slice(-4),
+    });
 
     for (const [key, value] of Object.entries(tags)) {
       tx.addTag(key, value.toString());
@@ -79,7 +69,7 @@
       protocol: "https",
     });
 
-    await client.transactions.sign(tx, JSON.parse($keyfile));
+    await client.transactions.sign(tx);
     await client.transactions.post(tx);
 
     openModal = false;
