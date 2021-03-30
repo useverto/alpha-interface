@@ -10,6 +10,7 @@
   import Modal from "../../components/Modal.svelte";
   import { fade } from "svelte/transition";
   import addIcon from "../../assets/add.svg";
+  import { saveSetting } from "../../utils/settings";
 
   let client = new Verto();
   let balances = [];
@@ -95,11 +96,11 @@
     if (amnt % 1 !== 0) amnt = Math.round(amnt);
   }
 
-  // TODO(@johnletey)
   async function addToken() {
-    // await client.saveToken(newToken);
-    // saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
-    // balances = client.getAssets($address);
+    await client.saveToken(newToken);
+    saveSetting("tokens", JSON.parse(localStorage.getItem("tokens")), $address);
+    // @ts-ignore
+    balances = client.getAssets($address);
     newToken = "";
   }
 </script>
