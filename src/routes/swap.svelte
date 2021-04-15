@@ -39,9 +39,14 @@
   let loadingMetrics = false;
 
   onMount(async () => {
-    const ip = await (await fetch("https://api.ipify.org?format=json")).json();
-    const res = await (await fetch(`https://ipapi.co/${ip.ip}/json`)).json();
-    if (res.country === "US") {
+    let res: string;
+    try {
+      res = await (await fetch("/loc")).json();
+    } catch {
+      res = await (await fetch("https://get.geojs.io/v1/ip/country")).json();
+    }
+
+    if (res === "US") {
       goto("/usa");
     }
 
