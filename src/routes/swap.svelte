@@ -46,7 +46,10 @@
       res = await (await fetch("https://get.geojs.io/v1/ip/country")).json();
     }
 
+    console.log(res);
+
     if (res === "US") {
+      console.log("hmmm");
       goto("/usa");
     }
 
